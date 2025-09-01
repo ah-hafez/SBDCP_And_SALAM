@@ -1,0 +1,512 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\EntityFramework.6.4.0\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.4.0\build\EntityFramework.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8EFBFBF5-B3F5-4FA3-91D4-4CBA735CFA11}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MCS.DataAccess</RootNamespace>
+    <AssemblyName>MCS.DataAccess</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>
+    </DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Audit.EntityFramework, Version=21.1.0.0, Culture=neutral, PublicKeyToken=571d6b80b242c87e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Audit.EntityFramework.21.1.0\lib\net472\Audit.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Audit.EntityFramework.Identity, Version=21.1.0.0, Culture=neutral, PublicKeyToken=571d6b80b242c87e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Audit.EntityFramework.Identity.21.1.0\lib\net45\Audit.EntityFramework.Identity.dll</HintPath>
+    </Reference>
+    <Reference Include="Audit.NET, Version=21.1.0.0, Culture=neutral, PublicKeyToken=571d6b80b242c87e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Audit.NET.21.1.0\lib\net461\Audit.NET.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.4.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.4.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.2\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.2\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Owin">
+      <HintPath>..\Binaries\Common\Microsoft.AspNet.Identity.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.5.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.HashCode, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.HashCode.1.1.0\lib\net461\Microsoft.Bcl.HashCode.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.EntityFrameworkCore, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.EntityFrameworkCore.3.1.0\lib\netstandard2.0\Microsoft.EntityFrameworkCore.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.EntityFrameworkCore.Abstractions, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.EntityFrameworkCore.Abstractions.3.1.0\lib\netstandard2.0\Microsoft.EntityFrameworkCore.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.EntityFrameworkCore.Relational, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.EntityFrameworkCore.Relational.3.1.0\lib\netstandard2.0\Microsoft.EntityFrameworkCore.Relational.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Caching.Abstractions, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Caching.Abstractions.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Caching.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Caching.Memory, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Caching.Memory.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Caching.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration.Abstractions, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.Abstractions.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration.Binder, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.Binder.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Configuration.Binder.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.3.1.0\lib\net461\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.3.1.0\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.Abstractions.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Options, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Options.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Options.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Primitives, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Primitives.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.IdentityModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin, Version=4.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.4.2.2\lib\net45\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb">
+      <HintPath>..\Binaries\Common\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security">
+      <HintPath>..\Binaries\Common\Microsoft.Owin.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.OAuth">
+      <HintPath>..\Binaries\Common\Microsoft.Owin.Security.OAuth.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Logging, Version=4.1.0.0, Culture=neutral, PublicKeyToken=e44a2bc38ed2c13c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.Practices.EnterpriseLibrary.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.Practices.ServiceLocation.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.13.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Oracle.ManagedDataAccess, Version=4.122.18.3, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Oracle.ManagedDataAccess.dll</HintPath>
+    </Reference>
+    <Reference Include="Oracle.ManagedDataAccess.EntityFramework, Version=6.122.18.3, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Oracle.ManagedDataAccess.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.4.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Immutable, Version=1.2.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.1.7.0\lib\netstandard2.0\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Annotations, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ComponentModel.Annotations.4.7.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Diagnostics.DiagnosticSource, Version=4.0.5.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.4.7.0\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.3\lib\netstandard2.0\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.4.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.7.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Http.Owin">
+      <HintPath>..\Binaries\Common\System.Web.Http.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AuditingInterceptor.cs" />
+    <Compile Include="DbMigrationBase.cs" />
+    <Compile Include="Implementation\ConfidentialityAcknowledgmentRepository.cs" />
+    <Compile Include="Implementation\AuditLogRepository.cs" />
+    <Compile Include="Implementation\OnlineUserRepository.cs" />
+    <Compile Include="Implementation\WordAddInRepository.cs" />
+    <Compile Include="Implementation\IC_SUBJECTRepository.cs" />
+    <Compile Include="Implementation\ChatRepository.cs" />
+    <Compile Include="Implementation\CityRepository.cs" />
+    <Compile Include="Implementation\ConfidentialityRepository.cs" />
+    <Compile Include="Implementation\CorrespondentRepository.cs" />
+    <Compile Include="Implementation\FollowUpProccessRepository.cs" />
+    <Compile Include="Implementation\ReleaseNotesRepository.cs" />
+    <Compile Include="Implementation\FollowUpSourceRepository.cs" />
+    <Compile Include="Implementation\FollowUpMethodRepository.cs" />
+    <Compile Include="Implementation\FollowUpPriorityTypeRepository.cs" />
+    <Compile Include="Implementation\SpecificLevelRepository.cs" />
+    <Compile Include="Implementation\SurveyRepository.cs" />
+    <Compile Include="Implementation\SystemDefaultValuesRepository.cs" />
+    <Compile Include="Implementation\DocumentAttributeRepository.cs" />
+    <Compile Include="Implementation\EscalationRepository.cs" />
+    <Compile Include="Implementation\HubAttachmentRepository.cs" />
+    <Compile Include="Implementation\HubRecordRepository.cs" />
+    <Compile Include="Implementation\HubRelatedPersonRepository.cs" />
+    <Compile Include="Implementation\HubRQUIDRepository.cs" />
+    <Compile Include="Implementation\HubTransactionRepository.cs" />
+    <Compile Include="Implementation\PriorityExceptionRepository.cs" />
+    <Compile Include="Implementation\SignedDeliveryReportRepository.cs" />
+    <Compile Include="Implementation\UserPendingGroupsRepository.cs" />
+    <Compile Include="Implementation\UserMobileRepository.cs" />
+    <Compile Include="Implementation\ReporterRepository.cs" />
+    <Compile Include="Implementation\TransactionEntityDetailsRepository.cs" />
+    <Compile Include="Implementation\YesserMappingRepository.cs" />
+    <Compile Include="Infrastructre\AuditRepository.cs" />
+    <Compile Include="Infrastructre\DatabaseLogger.cs" />
+    <Compile Include="Infrastructre\DbCommandInterceptor.cs" />
+    <Compile Include="Interfaces\IConfidentialityAcknowledgmentRepository.cs" />
+    <Compile Include="Interfaces\IAuditLogRepository.cs" />
+    <Compile Include="Interfaces\IOnlineUserRepository.cs" />
+    <Compile Include="Interfaces\IWordAddInRepository.cs" />
+    <Compile Include="Interfaces\IIC_SUBJECTRepository.cs" />
+    <Compile Include="Interfaces\IChatRepository.cs" />
+    <Compile Include="Interfaces\ICityRepository.cs" />
+    <Compile Include="Interfaces\IConfidentialityRepository.cs" />
+    <Compile Include="Interfaces\ICorrespondentRepository.cs" />
+    <Compile Include="Interfaces\IReleaseNotesRepository.cs" />
+    <Compile Include="Interfaces\IFollowUpProccessRepository.cs" />
+    <Compile Include="Interfaces\IFollowUpSourceRepository.cs" />
+    <Compile Include="Interfaces\IFollowUpMethodRepository.cs" />
+    <Compile Include="Interfaces\ISpecificLevelRepository.cs" />
+    <Compile Include="Interfaces\ISurveyRepository.cs" />
+    <Compile Include="Interfaces\ISystemDefaultValuesRepository.cs" />
+    <Compile Include="Interfaces\IDocumentAttributeRepository.cs" />
+    <Compile Include="Implementation\DocProvidersRepository.cs" />
+    <Compile Include="Infrastructre\BaseLookupRepository.cs" />
+    <Compile Include="Infrastructre\BaseRepository.cs" />
+    <Compile Include="DataAccessException.cs" />
+    <Compile Include="Infrastructre\BaseWrappers.cs" />
+    <Compile Include="Infrastructre\Extensions.cs" />
+    <Compile Include="Infrastructre\IRepository.cs" />
+    <Compile Include="Interfaces\IEscalationRepository.cs" />
+    <Compile Include="Interfaces\IHubAttachmentRepository.cs" />
+    <Compile Include="Interfaces\IHubRecordRepository.cs" />
+    <Compile Include="Interfaces\IHubRelatedPersonRepository.cs" />
+    <Compile Include="Interfaces\IHubRQUIDRepository.cs" />
+    <Compile Include="Interfaces\IHubTransactionRepository.cs" />
+    <Compile Include="Interfaces\IPriorityExceptionRepository.cs" />
+    <Compile Include="Interfaces\ISignedDeliveryReportRepository.cs" />
+    <Compile Include="Interfaces\IFollowUpPriorityTypeRepository.cs" />
+    <Compile Include="Interfaces\IUserPendingGroupsRepository.cs" />
+    <Compile Include="Interfaces\IUserMobileRepository.cs" />
+    <Compile Include="Interfaces\IReporterRepository.cs" />
+    <Compile Include="Interfaces\ITransactionEntityDetailsRepository.cs" />
+    <Compile Include="Interfaces\IYesserMappingRepository.cs" />
+    <Compile Include="Mappings\OnlineUserMapping.cs" />
+    <Compile Include="Mappings\ChatRoomMapping.cs" />
+    <Compile Include="Mappings\ChatMessageMapping.cs" />
+    <Compile Include="Mappings\EscalationMapping.cs" />
+    <Compile Include="Mappings\ExternalPartyAttachmentMapping.cs" />
+    <Compile Include="Mappings\PriorityExceptionMapping.cs" />
+    <Compile Include="Mappings\IC_SUBJECTMapping.cs" />
+    <Compile Include="Mappings\TransactionPathDetailsMapping.cs" />
+    <Compile Include="Mappings\TransactionPathMapping.cs" />
+    <Compile Include="Mappings\DistributionListMapping.cs" />
+    <Compile Include="Mappings\FollowUpDetailsMapping.cs" />
+    <Compile Include="Mappings\HubAttachmentMapping.cs" />
+    <Compile Include="Mappings\HubTransactionMapping.cs" />
+    <Compile Include="Mappings\AspNetRoleMapping.cs" />
+    <Compile Include="Mappings\AspNetUserClaimMapping.cs" />
+    <Compile Include="Mappings\AspNetUserLoginMapping.cs" />
+    <Compile Include="Mappings\AspNetUserMapping.cs" />
+    <Compile Include="Mappings\DocProviderMapping.cs" />
+    <Compile Include="Mappings\DocumentAttributeMapping.cs" />
+    <Compile Include="Interfaces\IDocProvidersRepository.cs" />
+    <Compile Include="Mappings\ResourceMapping.cs" />
+    <Compile Include="Mappings\TransactionEntityDetailMapping.cs" />
+    <Compile Include="Mappings\TransactionFollowUpMapping.cs" />
+    <Compile Include="Mappings\TransactionReservationMapping.cs" />
+    <Compile Include="Mappings\UserGroupMapping.cs" />
+    <Compile Include="Mappings\UserMobileMapping.cs" />
+    <Compile Include="Mappings\AllowedAssignmentMapping.cs" />
+    <Compile Include="MCSDbContext.cs" />
+    <Compile Include="CodeConfig.cs" />
+    <Compile Include="Migrations\202101251012222_ini.cs" />
+    <Compile Include="Migrations\202101251012222_ini.designer.cs">
+      <DependentUpon>202101251012222_ini.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="OracleMigrations\Configuration.cs" />
+    <Compile Include="SPsWrappers\AdminOperationsWrapper.cs" />
+    <Compile Include="SPsWrappers\DashboardHomeWrapper.cs" />
+    <Compile Include="SPsWrappers\MobileWrapper.cs" />
+    <Compile Include="SPsWrappers\ReportWrapper.cs" />
+    <Compile Include="SPsWrappers\ERPIntegrationWrapper.cs" />
+    <Compile Include="SPsWrappers\SearchWrapper.cs" />
+    <Compile Include="Mappings\TaskAttachmentsMapping.cs" />
+    <Compile Include="Tenants\Mappings\TenantNotificationDetailMapping.cs" />
+    <Compile Include="Tenants\Mappings\UserTenantMapping.cs" />
+    <Compile Include="Tenants\MasterDbContext.cs" />
+    <Compile Include="Implementation\ActionRepository.cs" />
+    <Compile Include="Implementation\AttachmentTypeRepository.cs" />
+    <Compile Include="Implementation\AuditingRepository.cs" />
+    <Compile Include="Implementation\BarcodeRepository.cs" />
+    <Compile Include="Implementation\CollaborationRepository.cs" />
+    <Compile Include="Implementation\CounterRepository.cs" />
+    <Compile Include="Implementation\CultureRepository.cs" />
+    <Compile Include="Implementation\DocumentRepository.cs" />
+    <Compile Include="Implementation\ExplanationRepository.cs" />
+    <Compile Include="Implementation\ExternalPartyRepository.cs" />
+    <Compile Include="Implementation\FormRepository.cs" />
+    <Compile Include="Implementation\LetterTypeRepository.cs" />
+    <Compile Include="Implementation\LinkRepository.cs" />
+    <Compile Include="Implementation\LookupRepository.cs" />
+    <Compile Include="Implementation\NameRepository.cs" />
+    <Compile Include="Implementation\NotificationRepository.cs" />
+    <Compile Include="Implementation\OrgUnitRepository.cs" />
+    <Compile Include="Implementation\PermissionRepository.cs" />
+    <Compile Include="Implementation\PriorityRepository.cs" />
+    <Compile Include="Implementation\SettingRepository.cs" />
+    <Compile Include="Implementation\SubjectClassificationRepository.cs" />
+    <Compile Include="Implementation\SuggestedTopicRepository.cs" />
+    <Compile Include="Implementation\TaskHistoryRepository.cs" />
+    <Compile Include="Implementation\TaskReminderRepository.cs" />
+    <Compile Include="Tenants\Implementation\TenantManagementRepository.cs" />
+    <Compile Include="Implementation\TransactionAssignmentHistoryRepository.cs" />
+    <Compile Include="Implementation\TransactionAssignmentRepository.cs" />
+    <Compile Include="Implementation\TransactionDeliveryReportRepository.cs" />
+    <Compile Include="Implementation\TransactionHistoryRepository.cs" />
+    <Compile Include="Implementation\TransactionIndexLogRepository.cs" />
+    <Compile Include="Implementation\TransactionLoggingRepository.cs" />
+    <Compile Include="Implementation\TransactionRepository.cs" />
+    <Compile Include="Implementation\TransactionTypeRepository.cs" />
+    <Compile Include="Implementation\TransactionTaskRepository.cs" />
+    <Compile Include="Implementation\TrayRepository.cs" />
+    <Compile Include="Implementation\UserCategoryRepository.cs" />
+    <Compile Include="Implementation\UserManagementRepository.cs" />
+    <Compile Include="Implementation\UserPreferenceRepository.cs" />
+    <Compile Include="Interfaces\IActionRepository.cs" />
+    <Compile Include="Interfaces\IAttachmentTypeRepository.cs" />
+    <Compile Include="Interfaces\IAuditingRepository.cs" />
+    <Compile Include="Interfaces\IBarcodeRepository.cs" />
+    <Compile Include="Interfaces\ICollaborationRepository.cs" />
+    <Compile Include="Interfaces\ICounterRepository.cs" />
+    <Compile Include="Interfaces\ICultureRepository.cs" />
+    <Compile Include="Interfaces\IDocumentRepository.cs" />
+    <Compile Include="Interfaces\IExplanationRepository.cs" />
+    <Compile Include="Interfaces\IExternalPartyRepository.cs" />
+    <Compile Include="Interfaces\IFormRepository.cs" />
+    <Compile Include="Interfaces\ILetterTypeRepository.cs" />
+    <Compile Include="Interfaces\ILookupRepository.cs" />
+    <Compile Include="Interfaces\INameRepository.cs" />
+    <Compile Include="Interfaces\INotificationRepository.cs" />
+    <Compile Include="Interfaces\IOrgUnitRepository.cs" />
+    <Compile Include="Interfaces\IPermissionRepository.cs" />
+    <Compile Include="Interfaces\IPriorityRepository.cs" />
+    <Compile Include="Interfaces\ISettingRepository.cs" />
+    <Compile Include="Interfaces\ISubjectClassificationRepository.cs" />
+    <Compile Include="Interfaces\ISuggestedTopicRepository.cs" />
+    <Compile Include="Interfaces\ITaskHistoryRepository.cs" />
+    <Compile Include="Interfaces\ITaskReminderRepository.cs" />
+    <Compile Include="Tenants\Interfaces\ITenantManagementRepository.cs" />
+    <Compile Include="Interfaces\ITransactionAssignmentHistoryRepository.cs" />
+    <Compile Include="Interfaces\ITransactionAssignmentRepository.cs" />
+    <Compile Include="Interfaces\ITransactionDeliveryReportRepository.cs" />
+    <Compile Include="Interfaces\ITransactionHistoryRepository.cs" />
+    <Compile Include="Interfaces\ITransactionIndexLogRepository.cs" />
+    <Compile Include="Interfaces\ITransactionLinkRepository.cs" />
+    <Compile Include="Interfaces\ITransactionLoggingRepository.cs" />
+    <Compile Include="Interfaces\ITransactionRepository.cs" />
+    <Compile Include="Interfaces\ITransactionTypeRepository.cs" />
+    <Compile Include="Interfaces\ITransactionTaskRepository.cs" />
+    <Compile Include="Interfaces\ITrayRepository.cs" />
+    <Compile Include="Interfaces\IUserCategoryRepository.cs" />
+    <Compile Include="Interfaces\IUserManagementRepository.cs" />
+    <Compile Include="Interfaces\IUserPreferenceRepository.cs" />
+    <Compile Include="Mappings\AssignmentGroupMapping.cs" />
+    <Compile Include="Mappings\AttachmentMapping.cs" />
+    <Compile Include="Mappings\AttachmentTypeMapping.cs" />
+    <Compile Include="Mappings\AuditDetailMapping.cs" />
+    <Compile Include="Mappings\AuditMapping.cs" />
+    <Compile Include="Mappings\BarcodeDesignMapping.cs" />
+    <Compile Include="Mappings\CollaborationMapping.cs" />
+    <Compile Include="Mappings\CounterDetailMapping.cs" />
+    <Compile Include="Mappings\CounterMapping.cs" />
+    <Compile Include="Mappings\CultureMapper.cs" />
+    <Compile Include="Mappings\DocumentInfoMapping.cs" />
+    <Compile Include="Mappings\ExplanationMapping.cs" />
+    <Compile Include="Mappings\ExternalPartyManagerMapping.cs" />
+    <Compile Include="Mappings\ExternalPartyMapping.cs" />
+    <Compile Include="Mappings\FormMapping.cs" />
+    <Compile Include="Mappings\GroupMapping.cs" />
+    <Compile Include="Mappings\LetterTypeMapping.cs" />
+    <Compile Include="Mappings\LinkMapping.cs" />
+    <Compile Include="Mappings\LocalizationIdentifierMapping.cs" />
+    <Compile Include="Mappings\LocalizationMapping.cs" />
+    <Compile Include="Mappings\LookupMapping.cs" />
+    <Compile Include="Mappings\NameMapping.cs" />
+    <Compile Include="Mappings\NotificationAttachmentMapping.cs" />
+    <Compile Include="Mappings\NotificationDetailMapping.cs" />
+    <Compile Include="Mappings\NotificationMapping.cs" />
+    <Compile Include="Mappings\NotificationTemplateMapping.cs" />
+    <Compile Include="Mappings\OrgUnitLinkMapping.cs" />
+    <Compile Include="Mappings\OrgUnitMapping.cs" />
+    <Compile Include="Mappings\PermissionMapping.cs" />
+    <Compile Include="Mappings\PriorityMapping.cs" />
+    <Compile Include="Mappings\ActionMapping.cs" />
+    <Compile Include="Mappings\SettingMapping.cs" />
+    <Compile Include="Mappings\TransactionTypeMapping.cs" />
+    <Compile Include="Mappings\SubjectClassificationMapping.cs" />
+    <Compile Include="Mappings\SuggestedTopicMapping.cs" />
+    <Compile Include="Mappings\TaskHistoryMapping.cs" />
+    <Compile Include="Mappings\TaskMapping.cs" />
+    <Compile Include="Mappings\TaskReminderMapping.cs" />
+    <Compile Include="Tenants\Mappings\TenantCultureMapper.cs" />
+    <Compile Include="Tenants\Mappings\TenantLocalizationIdentifierMapping.cs" />
+    <Compile Include="Tenants\Mappings\TenantLocalizationMapping.cs" />
+    <Compile Include="Tenants\Mappings\TenantLookupLocalizationMapping.cs" />
+    <Compile Include="Tenants\Mappings\TenantLookupMapping.cs" />
+    <Compile Include="Tenants\Mappings\TenantMapping.cs" />
+    <Compile Include="Mappings\TransactionAssignmentHistoryMapping.cs" />
+    <Compile Include="Mappings\TransactionAssignmentMapping.cs" />
+    <Compile Include="Mappings\TransactionCopyMapping.cs" />
+    <Compile Include="Mappings\TransactionDeliveryReportMapping.cs" />
+    <Compile Include="Mappings\TransactionHistoryMapping.cs" />
+    <Compile Include="Mappings\TransactionIndexLogMapping.cs" />
+    <Compile Include="Mappings\TransactionLinkMapping.cs" />
+    <Compile Include="Mappings\TransactionMapping.cs" />
+    <Compile Include="Mappings\TrayMapping.cs" />
+    <Compile Include="Mappings\UserCategoryMapping.cs" />
+    <Compile Include="Mappings\UserDelegationMapping.cs" />
+    <Compile Include="Mappings\UserPermissionMapping.cs" />
+    <Compile Include="Mappings\UserPreferenceMapping.cs" />
+    <Compile Include="Mappings\UserProfileMapping.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tenants\Migrations\202101191142318_init.cs" />
+    <Compile Include="Tenants\Migrations\202101191142318_init.designer.cs">
+      <DependentUpon>202101191142318_init.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Tenants\Migrations\TenantsConfiguration.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MCS.FRAMEWORK\MCS.Framework.csproj">
+      <Project>{5b5b0b7b-1a75-4a12-9cea-5b527af8b6e5}</Project>
+      <Name>MCS.Framework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MCS.Common\MCS.Common.csproj">
+      <Project>{dd463041-b635-4b24-b3e1-0a942ab358e0}</Project>
+      <Name>MCS.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MCS.Domain\MCS.Domain.csproj">
+      <Project>{affe1dc1-c4bb-4219-9362-eed2d4f08ea9}</Project>
+      <Name>MCS.Domain</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Migrations\SeedData\01.Initial.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\SeedData\02.StoredProcedureAndFunction.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OracleMigrations\SeedData\01.Initial.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tenants\Migrations\SeedData\01.Initial.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tenants\OracleMigration\01.OracleInitial.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="OracleMigrations\SeedData\02.StoredProcedureAndFunction.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202101251012222_ini.resx">
+      <DependentUpon>202101251012222_ini.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tenants\Migrations\202101191142318_init.resx">
+      <DependentUpon>202101191142318_init.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.0\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.0\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.0\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.0\build\EntityFramework.targets'))" />
+  </Target>
+  <Import Project="..\packages\EntityFramework.6.4.0\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.4.0\build\EntityFramework.targets')" />
+</Project>

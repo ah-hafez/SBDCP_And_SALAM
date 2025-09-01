@@ -1,0 +1,322 @@
+﻿
+@model MCS.UI.Areas.User.Models.Search.TransactionCertificate.InboundCertificateVM
+@using MCS.UI.Helpers
+
+
+@{
+    string GUID = Guid.NewGuid().ToString();
+}
+<style>
+    ul.nav li a {
+        font-weight: 700;
+        font-size: 15px !important;
+    }
+</style>
+<ul class="nav nav-tabs custom-sub-nav-tabs mb-3" role="tablist">
+    @Html.StickyHidden("hdnGUID", GUID, new { @class = "hdnGUID" })
+    <li role="presentation">
+        <a href="@("#" + GUID + "_sub-tab-1")" aria-controls="@(GUID + "_sub-tab-1")" role="tab" data-bs-toggle="tab" class="active">
+            @DbRes.TResource("User.TransactionLog.CurrentTransactionData")
+        </a>
+    </li>
+
+    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.TransactionCertificate.Tracking))
+    {
+        <li role="presentation">
+            <a href="@("#" + GUID + "_sub-tab-3")" aria-controls="@(GUID + "_sub-tab-3")" role="tab" data-bs-toggle="tab" onclick="GetTransactionLogs(this)">
+                @DbRes.TResource("User.TransactionLog.TransactionActions")
+            </a>
+        </li>
+    }
+</ul>
+<!-- Tab panes -->
+<div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="@(GUID + "_sub-tab-1")">
+        <div class="row m-0">
+            @if (Model.DocumentVM != null)
+            {
+                <div class="archiving_group">
+                    <div class="archiving_group_content">
+                        <a href="" onclick="ShowDocumentViewer('@Model.DocumentVM.Id','@ViewData["DocumentSessionKey"]'); return false;">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="col-md-4 green-color" style="font-weight:700">
+                                        <i class="la la-paperclip"></i>
+                                        @DbRes.TResource("User.TransactionCertificate.LetterOfOrigin")
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            }
+
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                <label class="w-100">
+                    @DbRes.TResource("User.Editor.BasicInfo.OutboundInternal.Number") :
+                    <span class="green-color">
+                        @Html.DisplayFor(model => model.InboundNumber)
+                    </span>
+                </label>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                <label class="w-100">
+                    @DbRes.TResource("User.Search.BasicInfo.DirectedTo"):
+                    <span class="green-color">
+                        @Html.DisplayFor(model => model.CreatedByUser)
+                    </span>
+                </label>
+            </div>
+            @if (Model.DirectedTo == null)
+            {
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                    <label class="w-100">
+                        @DbRes.TResource("User.Transaction.Assignment.ToEmployee"):
+                        <span class="green-color">
+                        </span>
+                    </label>
+                </div>
+            }
+            else
+            {
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                    <label class="w-100">
+                        @DbRes.TResource("User.Transaction.Assignment.ToEmployee"):
+                        <span class="green-color">
+                            @Html.DisplayFor(model => model.DirectedTo)
+                        </span>
+                    </label>
+                </div>
+            }
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                <label class="w-100">
+                    @DbRes.TResource("User.Transaction.Assignment.ToOrgUnit"):
+                    <span class="green-color">
+                        @Html.DisplayFor(model => model.ToEntity)
+                    </span>
+                </label>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                <label class="w-100">
+                    @DbRes.TResource("User.Transaction.Search.TransactionType"):
+                    <span class="green-color">
+                        @Html.DisplayFor(model => model.TransactionType)
+                    </span>
+                </label>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                <label class="w-100">
+                    @DbRes.TResource("User.InboundCertificate.ConfidentialityLevel")
+                    <span class="green-color">
+                        @Html.DisplayFor(model => model.ConfidentialityLevel)
+                    </span>
+                </label>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-3 hidden_">
+                <label class="w-100">
+                    @DbRes.TResource("User.Inbound.BasicInfo.ReceiveMethod")
+                    <span class="green-color">
+                        @Html.DisplayFor(model => model.DeliveryMethod)
+                    </span>
+                </label>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                <label class="w-100">
+                    @DbRes.TResource("User.InboundCertificate.PriorityLevel")
+                    <span class="green-color">
+                        @Html.DisplayFor(model => model.PriorityLevel)
+                    </span>
+                </label>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                <label class="w-100">
+                    @DbRes.TResource("User.Transaction.BasicInfo.Type"):
+                    <span class="green-color">
+                        @Html.DisplayFor(model => model.LetterType)
+                    </span>
+                </label>
+            </div>
+
+            @if (Model.RecordNumber != null)
+            {
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                    <label class="w-100">
+                        رقم الوثيقة
+                    </label>
+                    <label class="green-color">
+                        @Html.DisplayFor(model => model.RecordNumber)
+                    </label>
+                </div>
+            }
+            @if (Model.LetterNumber != null)
+            {
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                    <label class="w-100">
+                        رقم المستند
+                    </label>
+                    <label class="green-color">
+                        @Html.DisplayFor(model => model.LetterNumber)
+                    </label>
+                </div>
+            }
+
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-3 hidden_">
+                <label class="w-100">
+                    @DbRes.TResource("User.Transaction.HasDate"):
+                    <span class="green-color">
+                        @if (Model.HasDate)
+                        {
+                            @DbRes.TResource("نعم")
+                        }
+                        else
+                        {
+                            @DbRes.TResource("لا")
+                        }
+                    </span>
+                </label>
+            </div>
+            @if (Model.HasDate)
+            {
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-3 hidden_">
+                    <label class="w-100">
+                        @DbRes.TResource("User.TransactionLog.RemindDate"):
+                        <span class="green-color">
+                            @DateHelper.GetDate(Model.RemindDateH) - @Model.RemindTime
+                        </span>
+                    </label>
+                </div>
+            }
+
+            <div class="col-lg-6 col-md-12 mb-3 hidden_">
+                <label class="w-100">
+                    @DbRes.TResource("User.Transaction.BasicInfo.ProcessPeriodTransaction"):
+                    <span class="green-color">
+                        @Html.DisplayFor(model => model.ProcessPeriodTransaction)
+                    </span>
+                </label>
+            </div>
+            <div class="clearfix"></div>
+            <div class="col-lg-6 col-md-12 mb-3">
+                <label class="w-100">
+                    @DbRes.TResource("User.Inbound.BasicInfo.Subject"):
+                    <span class="green-color" style="word-break:break-all">
+                        @Html.DisplayFor(model => model.Subject)
+                    </span>
+                </label>
+            </div>
+            <div class="col-lg-6 col-md-12 mb-3">
+                <label class="w-100">
+                    @DbRes.TResource("User.Inbound.BasicInfo.Remarks") :
+                    <span class="green-color" style="word-break:break-all">
+                        @Html.DisplayFor(model => model.Remarks)
+                    </span>
+                </label>
+            </div>
+            @if (Model.RemindDateH != null)
+            {
+                <div class="col-lg-6 col-md-12 mb-3">
+                    <label class="w-100">
+                        @DbRes.TResource("User.Transaction.BasicInfo.AppointmentTime") :
+
+                        <span class="green-color" style="word-break:break-all">
+                            @Html.DisplayFor(model => model.RemindDateH)
+                        </span>
+
+
+                        <span class="green-color" style="word-break:break-all">
+                            @Html.DisplayFor(model => model.RemindTime)
+                        </span>
+
+                    </label>
+                </div>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model.ClassificationName))
+            {
+                <div class="col-lg-6 col-md-12 mb-3">
+                    <label class="w-100">
+                        @DbRes.TResource("User.Inbound.BasicInfo.ClassificationName") :
+                        <span class="green-color" style="word-break:break-all">
+                            @Html.DisplayFor(model => model.ClassificationName)
+                        </span>
+                    </label>
+                </div>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Model.FileDescription))
+            {
+                <div class="col-lg-6 col-md-12 mb-3">
+                    <label class="w-100">
+                        @DbRes.TResource("User.Inbound.BasicInfo.FileDescription") :
+                        <span class="green-color" style="word-break:break-all">
+                            @Html.DisplayFor(model => model.FileDescription)
+                        </span>
+                    </label>
+                </div>
+            }
+            @if (Model.FileNumber > 0)
+            {
+                <div class="col-lg-6 col-md-12 mb-3">
+                    <label class="w-100">
+                        @DbRes.TResource("User.Inbound.BasicInfo.FileNumber") :
+                        <span class="green-color" style="word-break:break-all">
+                            @Html.DisplayFor(model => model.FileNumber)
+                        </span>
+                    </label>
+                </div>
+            }
+        </div>
+    </div>
+    <div role="tabpanel" class="tab-pane" id="@(GUID + "_sub-tab-2")">
+        @*@Html.Partial("~/Areas/User/Views/Shared/TransactionCertificate/_TransationAuditPartial.cshtml", ViewData["TransactionAudits"])*@
+    </div>
+    <div role="tabpanel" class="tab-pane" id="@(GUID + "_sub-tab-3")">
+        @*@Html.Partial("~/Areas/User/Views/Shared/TransactionCertificate/_TransactionLogPartial.cshtml", ViewData["TransactionLogs"])*@
+    </div>
+</div>
+
+@Html.Hidden("hdnMainTransactionId", Model.Id.ToString())
+@Html.Hidden("hdnAuditFor", AuditFor.MainDataAuditDetails)
+@Html.Hidden("hdnEntityName", AuditEntityName.MainTransaction)
+<script>
+     function GetTransactionAudits(element) {
+        var TransId = $("#hdnMainTransactionId").val();
+        var AuditFor = $("#hdnAuditFor").val();
+        var EntityName = $("#hdnEntityName").val();
+        var url = '@Url.Action("GetTransactionAuditingGrid", "TransactionLog")';
+        var data = { transactionId: TransId, auditFor: AuditFor, EntityName: EntityName };
+        $.ajax({
+            type: 'get',
+            cache: false,
+            url: url,
+            data: data,
+            success: function (data) {
+                $("#" + $(element).parent().find(".hdnGUID:first").val() + "_sub-tab-3").html("");
+                $("#" + $(element).parent().find(".hdnGUID:first").val() + "_sub-tab-2").html("");
+                $("#" + $(element).parent().find(".hdnGUID:first").val() + "_sub-tab-2").html(data.Html);
+            }
+        });
+
+    }
+
+    function GetTransactionLogs(element) {
+                var GUIDValue = '@GUID';
+
+        var TransId = $("#hdnMainTransactionId").val();
+        var url = '@Url.Action("GetTransactionLogGrid", "TransactionLog")';
+        var data = { transactionId: TransId};
+        $.ajax({
+            type: 'get',
+            cache: false,
+            url: url,
+            data: data,
+            success: function (data) {
+                debugger;
+                /* $("#" + GUIDValue + "_sub-tab-1").html("");*/
+
+
+                $("#" + GUIDValue + "_sub-tab-3").html(data.Html);
+            }
+        });
+
+    }
+</script>

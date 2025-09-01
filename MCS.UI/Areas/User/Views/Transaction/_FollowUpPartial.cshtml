@@ -1,0 +1,415 @@
+﻿@model MCS.UI.Areas.User.Models.Transaction.TransactionFollowUpVM
+@using MCS.Common;
+@using MCS.Framework.Controls
+@using MCS.Framework.Localization
+@using MCS.Framework.Controls.Mvc
+@{
+    /**/
+    string controller = TempData.Peek("ControllerName") != null ? TempData.Peek("ControllerName").ToString() : ViewContext.RouteData.Values["controller"].ToString();
+    ViewData.TemplateInfo.HtmlFieldPrefix = "FollowUpTab";
+    if (ViewData["FollowUpOrgId"] != null)
+    {
+        Model.FollowUpEntityId = Convert.ToInt32(ViewData["FollowUpOrgId"]);
+    }
+    if (ViewData["FollowUpUserId"] != null)
+    {
+        Model.FollowUpUserId = Convert.ToInt32(ViewData["FollowUpUserId"]);
+    }
+    if (ViewData["TransactionId"] != null)
+    {
+
+
+        Model.TransactionId = (int)ViewData["TransactionId"];
+    }
+
+}
+<ul class="nav nav-pills MCShomeTabs">
+    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.FollowUps.AddPublicFollowUp))
+    {
+        <li id="liPublicFollowup" role="presentation">
+            <a id="tblPublicFollowup" class="">
+                <span>
+                    @DbRes.TResource("User.OutboundDraft.PublicFollowUp")
+
+                </span>
+            </a>
+        </li>
+    }
+    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.FollowUps.AddPrivetFollowUp))
+    {
+        <li id="liPrivetFollowup" role="presentation" class="">
+            <a id="tblPrivetFoloolwup">
+
+                <span>
+                    @DbRes.TResource("User.OutboundDraft.PrivetFollowUp")
+
+                </span>
+            </a>
+        </li>
+    }
+</ul>
+
+<div class="content_container" id="divFollowUpForm">
+    <div>
+        @*@if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.FollowUps.AddFollowUp) )*@
+        @if (true)
+        {
+            <div>
+                <div class="form-horizontal form-row">
+                    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.FollowUps.AddPrivetFollowUp))
+                    {
+                        <div class="form-group col-lg-6 col-md-4 col-sm-6 col-xs-12 mb-3" id="dvFollowUpDepartment" style="display:none">
+                            <div id="divFollowUpEntityTree">
+                                @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.FollowUpEntityId, TreeMode.Single, "treeFollowUpToOrgUnit", true, "GetFollowUpUsersByOrgUnitId", null, "divFollowUpEntityTree")
+                                @Html.HiddenFor(model => model.FollowUpEntityName, new { id = "hdnFromEntityName" })
+                            </div>
+                        </div>
+                        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3" id="dvfollowUpEmp" style="display:none">
+                            <label class="w-100">@DbRes.TResource("User.Transaction.FollowUp.Employee")<span class="stark NotIndividual">*</span></label>
+                            @Html.AutoCompleteBuilder("autoCompleteToUserId", "hdnFollowUpToUserId", ViewData["OrgUnitsUsersData"] != null ? ViewData["OrgUnitsUsersData"].ToString() : null, Model != null ? Model.FollowUpUserId.ToString() : null, true, "form-control")
+                            @Html.HiddenGroupFor(model => model.FollowUpUserId, new { @Value = "", id = "hdnFollowUpToUserId" }, "")
+                            @Html.HiddenFor(model => model.FollowUpUserName, new { id = "hdnEmployeeName", @class = "UserName" })
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="hidden_">
+                            <div class="form-group col-lg-6 col-md-4 col-sm-6 col-xs-12 mb-3" id="dvFollowUpDepartment" style="display:none">
+                                <div id="divFollowUpEntityTree">
+                                    @Html.DepartmentsTree(ViewData["FollowUpDepartmentsData"] as TreeViewModel, model => model.FollowUpEntityId, TreeMode.Single, "treeFollowUpToOrgUnit", true, "GetFollowUpUsersByOrgUnitId", null, "divFollowUpEntityTree")
+                                    @Html.HiddenFor(model => model.FollowUpEntityName, new { id = "hdnFromEntityName" })
+                                </div>
+                            </div>
+                            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3" id="dvfollowUpEmp" style="display:none">
+                                <label class="w-100">@DbRes.TResource("User.Transaction.FollowUp.Employee")<span class="stark NotIndividual">*</span></label>
+                                @Html.AutoCompleteBuilder("autoCompleteToUserId", "hdnFollowUpToUserId", ViewData["OrgUnitsUsersData"] != null ? ViewData["OrgUnitsUsersData"].ToString() : null, Model != null ? Model.FollowUpUserId.ToString() : null, true, "form-control")
+                                @Html.HiddenGroupFor(model => model.FollowUpUserId, new { @Value = "", id = "hdnFollowUpToUserId" }, "")
+                                @Html.HiddenFor(model => model.FollowUpUserName, new { id = "hdnEmployeeName", @class = "UserName" })
+                            </div>
+                        </div>
+                    }
+                    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.FollowUps.AddPublicFollowUp) || SessionInfo.CurrentUser.Claims.Contains(UserClaims.FollowUps.AddPrivetFollowUp))
+                    {
+                        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3" id="dvProccess" style="display:none" >
+                            <label class="w-100">@DbRes.TResource("User.Transaction.FollowUp.Proccess") <span class="stark">*</span></label>
+                            @Html.AutoCompleteBuilder("ddlFollowUpProccess", "FollowUpProccessId", ViewData["FollowUpProccess"].ToString(), null, true, "form-control", selectFirstIndex: true)
+                            @Html.HiddenGroupFor(model => model.FollowUpProccessId, new { @Value = "", id = "FollowUpProccessId" }, "FollowUp")
+                        </div>
+
+                        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3" id="dvPeriod" style="display:none">
+                            <label class="w-100">@DbRes.TResource("User.Transaction.FollowUp.Period") <span class="stark">*</span></label>
+                            @Html.AutoCompleteBuilder("ddlFollowUpPeriod", "FollowUpPeriodId", ViewData["FollowUpPeriod"].ToString(), null, true, "form-control", selectFirstIndex: true)
+                            @Html.HiddenGroupFor(model => model.ProccessPeriod, new { @Value = "FollowUpPeriodId", id = "FollowUpPeriodId" }, "FollowUp")
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="hidden_">
+                            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                                <label class="w-100">@DbRes.TResource("User.Transaction.FollowUp.Proccess") <span class="stark">*</span></label>
+                                @Html.AutoCompleteBuilder("ddlFollowUpProccess", "FollowUpProccessId", ViewData["FollowUpProccess"].ToString(), null, true, "form-control", selectFirstIndex: true)
+                                @Html.HiddenGroupFor(model => model.FollowUpProccessId, new { @Value = "", id = "FollowUpProccessId" }, "FollowUp")
+                            </div>
+
+                            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                                <label class="w-100">@DbRes.TResource("User.Transaction.FollowUp.Period") <span class="stark">*</span></label>
+                                @Html.AutoCompleteBuilder("ddlFollowUpPeriod", "FollowUpPeriodId", ViewData["FollowUpPeriod"].ToString(), null, true, "form-control", selectFirstIndex: true)
+                                @Html.HiddenGroupFor(model => model.ProccessPeriod, new { @Value = "FollowUpPeriodId", id = "FollowUpPeriodId" }, "FollowUp")
+                            </div>
+                        </div>
+
+                    }
+
+                    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.FollowUps.AddPrivetFollowUp))
+                    {
+                        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3" id="divFollowupDate" style="display:none">
+
+                            <label class="w-100">@DbRes.TResource("User.Transaction.FollowUp.EndDate")<span class="stark NotIndividual">*</span></label>
+                            <div class="with-icon">
+                                @Html.CalendarCustom("FollowUpDateCal", "hdnFolloupDateGreg", "hdnFollowUpDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), Model != null ? Model.DateToH : null, "form-control")
+                                <a class=" date-icon2 " onclick="showCalender('FollowUpDateCal')"><i class="uicon icon_calendar"></i></a>
+                                @Html.HiddenGroupFor(model => model.DateTo, new { id = "hdnFolloupDateGreg", AutoComplete = "off" }, "")
+                                @Html.HiddenGroupFor(model => model.DateToH, new { id = "hdnFollowUpDateUm", AutoComplete = "off" }, "")
+                                <i id="FollowUpMessage" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                                <span id="FollowUpdateMessage" style="color:red"></span>
+                            </div>
+                            @Html.StickyHiddenFor(model => model.TransactionId)
+                            @Html.StickyHiddenFor(model => model.FollowUpTypeId, new { id = "hdnfollowuptype" })
+
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="hidden_">
+                            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3" id="divFollowupDate" style="display:none">
+
+                        <label class="w-100">@DbRes.TResource("User.Transaction.FollowUp.EndDate")<span class="stark NotIndividual">*</span></label>
+                        <div class="with-icon">
+                            @Html.CalendarCustom("FollowUpDateCal", "hdnFolloupDateGreg", "hdnFollowUpDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), Model != null ? Model.DateToH : null, "form-control")
+                            <a class=" date-icon2 " onclick="showCalender('FollowUpDateCal')"><img src="~/Content/User/lib/images/SystemIcon/main bar-08.svg" width="30" /></a>
+                            @Html.HiddenGroupFor(model => model.DateTo, new { id = "hdnFolloupDateGreg", AutoComplete = "off" }, "")
+                            @Html.HiddenGroupFor(model => model.DateToH, new { id = "hdnFollowUpDateUm", AutoComplete = "off" }, "")
+                            <i id="FollowUpMessage" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                            <span id="FollowUpdateMessage" style="color:red"></span>
+                        </div>
+                        @Html.StickyHiddenFor(model => model.TransactionId)
+                        @Html.StickyHiddenFor(model => model.FollowUpTypeId, new { id = "hdnfollowuptype" })
+
+                            </div>
+
+                        </div>
+                    }
+                    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.FollowUps.AddPublicFollowUp) || SessionInfo.CurrentUser.Claims.Contains(UserClaims.FollowUps.AddPrivetFollowUp))
+                    {
+                        <div class="text-right" id="dvAddButton" style="display:none;">
+                            <button class="btn-site" id="btnConfirmAddFollowUp" type="button" validationgroup="FollowUpValidation" value="إضافة" style="margin-top:22px"><i class="glyphicon glyphicon-plus"></i>إضافة</button>
+                            @Html.ClientActionButton(DbRes.TResource("User.Transaction.FollowUp.Add"), Url.Action("AddFollowUp", controller), "divFollowUpContent", "OnAddFollowUpEmployeeSuccess", null, "FollowUpValidation", "btnAddFollowUp", "divFollowUpForm", " btn-site clsHidden", null, "", UserClaims.FollowUps.AddFollowUp, "<i class='glyphicon glyphicon-plus'></i>")
+                        </div>
+                    }
+                        @*<div class="form-group col-lg-12 col-md-12 col-xs-12 col-sm-12">
+                <p class="stark">@DbRes.TResource("Admin.User.MustFill") * </p>
+            </div>*@
+                    </div>
+                <div class="panel-body">
+                    @*<div class="text-right">
+                            <button class="btn-site" id="btnConfirmAddFollowUp" type="button" validationgroup="FollowUpValidation" value="إضافة"><i class="glyphicon glyphicon-plus"></i>إضافة</button>
+                            @Html.ClientActionButton(DbRes.TResource("User.Transaction.FollowUp.Add"), Url.Action("AddFollowUp", controller), "divFollowUpContent", "OnAddFollowUpEmployeeSuccess", null, "FollowUpValidation", "btnAddFollowUp", "divFollowUpForm", " btn-site clsHidden", null, "CheckFollowUpDate", UserClaims.FollowUps.AddFollowUp, "<i class='glyphicon glyphicon-plus'></i>")
+                        </div>*@
+                </div>
+            </div>
+
+        }
+        <div class="">
+            <div class="col-xs-12">
+                <h4 class="title4">@DbRes.TResource("User.Transaction.FollowUp.List") </h4>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="panel-body">
+            <div id="divFollowUpContent">
+                @Html.Partial("~/Areas/User/Views/Transaction/_FollowUpGridPartial.cshtml", Model.FollowUps)
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+
+    $(function () {
+        if ($('#tblPublicFollowup').hasClass("active")) {
+            $("#hdnfollowuptype").val("2");
+        } else if ($('#tblPrivetFoloolwup').hasClass("active")) {
+            $("#hdnfollowuptype").val("1"); // خاصة
+        } else {
+              $("#hdnfollowuptype").val("2");
+        }
+
+
+    $('#ddlFollowUpPeriod').change(function () {
+
+        var selectedPeriod= $(this).val();
+
+        if (selectedPeriod == "أخرى") {
+            $('#FollowUpDateCal').attr('autocomplete', 'off');
+            $('#divFollowupDate').show();
+        } else {
+            $('#divFollowupDate').hide();
+
+        }
+                    });
+
+        $('#tblPublicFollowup').click(function (e) {
+
+            $('#tblPublicFollowup').addClass("active");
+            $('#tblPrivetFoloolwup').removeClass("active");
+            $('#dvFollowUpDepartment').hide();
+            $('#dvfollowUpEmp').hide();
+            $('#dvProccess').show();
+            $('#dvPeriod').show();
+            $('#dvAddButton').show();
+            $("#hdnfollowuptype").val("2");
+        });
+
+        $('#tblPrivetFoloolwup').click(function (e) {
+
+            $('#dvFollowUpDepartment').show();
+            $('#dvfollowUpEmp').show();
+            $('#dvProccess').show();
+            $('#dvPeriod').show(); 
+            $('#dvAddButton').show();
+            $('#tblPrivetFoloolwup').addClass("active");
+            $('#tblPublicFollowup').removeClass("active");
+            $("#hdnfollowuptype").val("1"); // خاصة
+
+        });
+    });
+
+
+    function CheckFollowUpDate() {
+
+        var dateNow = $.datepicker.formatDate('dd/mm/yy', new Date($.now()));
+        var currentDate = convertdate(dateNow);
+        if ($("#FollowUpDateCal").val() != "") {
+            if ($("#hdnFolloupDateGreg").val() != undefined) {
+                var selectedDate = convertdate($("#hdnFolloupDateGreg").val());
+
+                if (selectedDate < currentDate) {
+                    $("#FollowUpMessage").removeClass("hidden_");
+                    $("#FollowUpMessage").show();
+                    $('#FollowUpDateCal').addClass('RedBorder');
+                    $("#FollowUpdateMessage").html(' @Html.Raw(DbRes.TValidation("User.FollowUp.RemindDateCompare"))');
+                    return false;
+                }
+                else {
+                    $('#FollowUpDateCal').removeClass('RedBorder');
+                    $("#FollowUpMessage").hide()
+                    $("#FollowUpdateMessage").html('');
+                    if ($('#FollowUpEntityId_txtDepartmentNumber').val() == "") {
+                        $('#FollowUpEntityId_txtDepartmentNumber, #FollowUpEntityId_txtDepartmentName').addClass('RedBorder');
+                    }
+                    else {
+                        $('#FollowUpEntityId_txtDepartmentNumber, #FollowUpEntityId_txtDepartmentName').removeClass('RedBorder');
+                    }
+                    return true;
+                }
+            }
+        }
+        else {
+              $("#FollowUpMessage").removeClass("hidden_");
+                    $("#FollowUpMessage").show();
+                    $('#FollowUpDateCal').addClass('RedBorder');
+                    $("#FollowUpdateMessage").html(' @Html.Raw(DbRes.TValidation("User.Report.TransactionsDeliveryReport.DateToRequired"))');
+            if ($('#divFollowUpForm .txtDepartmentNumber').val() == "")
+            {
+                $('#divFollowUpForm .txtDepartmentNumber ,#divFollowUpForm .txtDepartmentName ').addClass('RedBorder');
+            }
+            else
+            {
+                $('#divFollowUpForm .txtDepartmentNumber ,#divFollowUpForm   .txtDepartmentName ').removeClass('RedBorder');
+            }
+            return false;
+        }
+    }
+
+    $(document).ready(function () {
+        $('#FollowUpDateCal').attr('autocomplete', 'off');
+        GetFollowUpUsersByOrgUnitId(callback);
+
+        $('#btnConfirmAddFollowUp').click(function () {
+            //if (CheckFollowUpDate()) {
+                ShowConfirmMessage("هل انت متأكد من الاضافة؟", 'addFollowUp');
+            //}
+        });
+    });
+
+    function addFollowUp() {
+        $('#btnAddFollowUp').click();
+    }
+
+    function DeleteTransactionFollowUp(transactionFollowUpId) {///////////////////for _FollowUpGridPartial.cshtml//////////////////////////
+        var token = $("input[name='__RequestVerificationToken']").val();
+        $.ajax({
+            type: 'post',
+            data: { id: transactionFollowUpId, __RequestVerificationToken: token },
+            url: '@Url.Action("FollowUpUpdateIsDeleted", controller)',
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    $("#divContainer__frmAddTransactionType").remove();
+                    $("#divForm__frmAddTransactionType").html("");
+                    $("#divForm__frmAddTransactionType").html(data.Html);
+                    jQuery.validator.unobtrusive.parse('#divForm__frmAddTransactionType');
+                    $('#transId').val("");
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            }
+        });
+    }
+    function GetFollowUpUsersByOrgUnitId(callback) { ///////////////////for _FollowUpPartial.cshtml//////////////////////////
+        debugger;
+        if ($("#FollowUpTab_FollowUpEntityId").val() != "" && $("#FollowUpTab_FollowUpEntityId").val() !=undefined)
+        {
+
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetUnitUsers", controller)',
+                data: { id: $("#FollowUpTab_FollowUpEntityId").val() },
+                success:
+               function (data) {
+                   $("#autoCompleteToUserId").val("");
+                   $("#hdnFollowUpToUserId").val("");
+                   AutoCompleteChangeList("autoCompleteToUserId", data);
+                   $("#autoCompleteToUserId").prop('disabled', false);
+
+                   if (typeof callback !== 'undefined' && $.isFunction(callback)) {
+                       callback();
+                   }
+               }
+            });
+            return false;
+        }
+        else {
+            $("#autoCompleteToUserId").prop('disabled', true);
+            $("#autoCompleteToUserId").val("");
+            $("#hdnFollowUpToUserId").val("");
+            AutoCompleteChangeList("autoCompleteToUserId", "[]");
+        }
+    }
+    function callback() {
+         if ('@ViewData["FollowUpUserId"]' != null)
+       {
+           $("#hdnFollowUpToUserId").val('@ViewData["FollowUpUserId"]');
+                $("#autoCompleteToUserId").trigger('change');
+                $("#hdnFollowUpToUserId").trigger('change');
+            }
+    }
+    function OnAddFollowUpEmployeeSuccess(data) { ///////////////////for _FollowUpPartial.cshtml//////////////////////////
+
+        if (data.MessageType != 2) {
+            $("#divFollowUpContent").html('');
+            $("#divFollowUpContent").html(data);
+            ClearInputs('divFollowUpForm');
+            if ('@ViewData["FollowUpUserId"]' != null)
+            {
+                $("#FollowUpTab_FollowUpEntityId").val("@ViewData["FollowUpOrgId"]");
+                SetTreeDefaultInfo("FollowUpEntityId");
+                GetFollowUpUsersByOrgUnitId(function () {
+                     $("#hdnFollowUpToUserId").val('@ViewData["FollowUpUserId"]');
+                $("#autoCompleteToUserId").trigger('change');
+                $("#hdnFollowUpToUserId").trigger('change');
+                });
+            }
+            else
+            {
+                $("#FollowUpTab_FollowUpEntityId").val("@ViewData["FollowUpOrgId"]");
+                SetTreeDefaultInfo("FollowUpEntityId");
+            }
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+    function LoadFollowUpDetailsTab() {
+
+        var id = $("#hdnTransactionID").val();
+        $("#divTransactionFollowUp").removeAttr('onclick');
+        $.ajax({
+            url: '@Url.Action("FollowUpDetailsLoad", controller)',
+                data: { transactionId: id },
+            success: function (data) {
+                $("#divFollowUpContent").html(data);
+
+            }
+        })
+    }
+</script>
+<style>
+    .RedBorder {
+        border: 1px solid #fe0000 !important
+    }
+
+    .clsHidden {
+        display: none;
+    }
+</style>

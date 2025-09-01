@@ -1,0 +1,18 @@
+﻿@using MCS.Framework.Controls.Mvc
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.Tray
+
+@model AjaxGrid<TrayVM>
+@{
+    Layout = null;
+}
+@Html.Grid(Model, "_Grid").Named("TraysGrid").Columns(columns =>
+    {
+
+        columns.Add(model => model.Id, true);
+        columns.Add(model => model.LocalName, "Name").Titled(DbRes.TResource("Admin.Trays.TrayName"));
+
+        columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => @Html.GridImageButton("GetTray", "TraysGrid", 0, OperationType.Update, "EditDiv", null, null,"OnGetSuccess", "", "get"));
+
+
+    }).WithPaging(GridHelper.PageSize).Sortable().Selectable(false).Filterable().UpdateActionUrl(Url.Action("UpdateTraysGrid", "UserCategoryTrays"))

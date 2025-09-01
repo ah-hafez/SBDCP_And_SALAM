@@ -1,0 +1,75 @@
+﻿@using MCS.Common
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Transaction
+@model IList<ReceivedTaskVM>
+
+@{
+    bool isVIP = (bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser);
+    DefaultDisplay defaultDisplay = (DefaultDisplay)SessionInfo.GetObjectFromSession(Constants.DefaultDisplay);
+    Session["viewType"] = "Tasks";
+}
+
+<script>
+    $(document).ready(function () {
+     var isVIPUser = '@SessionInfo.GetObjectFromSession(Constants.IsVIPUser)';
+        if ($('#selectAll').is(":checked")) {
+            $('#selectAll').click();
+        }
+        if (isVIPUser.toLowerCase() == 'true') {
+            goTableView();
+        }
+        else {
+            var type = localStorage.getItem('CurrentTypeView');
+            if (type) {
+                if (type === "Table") {
+                    goTableView();
+                }
+                else if (type === "Card") {
+                    goCardsView();
+                }
+            }
+        }
+    });
+</script>
+@if (defaultDisplay == DefaultDisplay.Cards@*&& !isVIP*@)
+{
+    <div class="boxes">
+        @{
+            Session["renderType"] = "cardItem";
+            Html.RenderPartial("~/Areas/User/Views/File/_TasksGrid.cshtml", Model,
+                  new ViewDataDictionary {
+                  { "ListItemName", "_TransactionTasks_Item" },
+                  { "GridName", "TransactionTasksGrid" },
+                  { "dateType", ViewData["dateType"] }
+                        });
+        }
+    </div>
+}
+else
+{
+    Session["renderType"] = "tableItem";
+    Html.RenderPartial("~/Areas/User/Views/File/_TasksGrid.cshtml", Model,
+        new ViewDataDictionary {
+        { "ListItemName", "_TransactionTasks_TableItem" },
+        { "GridName", "TransactionTasksGrid" },
+        { "dateType", ViewData["dateType"] },
+        { "renderType", "tableItem" }
+                            });
+}
+<script>
+    var TasksGridEventHandler = "@Html.Raw(Url.Action("TasksGridEventHandler", "File",new { transactionId= "transactionIdToReplace",  transactionTypeId= "transactionTypeIdToReplace" }))";
+    function prepareTransactionsGrid() {
+        if (!pageGrids.TransactionTasksGrid) {
+            $(".grid-mvc").gridmvc();
+        }
+        pageGrids.TransactionTasksGrid.ajaxify({
+            getPagedData: TasksGridEventHandler.replace("transactionIdToReplace", "@ViewData["TransactionId"]").replace("transactionTypeIdToReplace", "@ViewData["TransactionTypeId"]"),
+            getData: TasksGridEventHandler.replace("transactionIdToReplace", "@ViewData["TransactionId"]").replace("transactionTypeIdToReplace", "@ViewData["TransactionTypeId"]"),
+            callbackClientFunctionAfter: ["goToViewAfterPaging"]
+        });
+    }
+
+    $(document).ready(function () {
+        prepareTransactionsGrid();
+    });
+</script>

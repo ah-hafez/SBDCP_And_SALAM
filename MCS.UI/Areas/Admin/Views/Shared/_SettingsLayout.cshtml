@@ -1,0 +1,117 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Common;
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_BaseLayout.cshtml";
+    var controllerName = HttpContext.Current.Request.RequestContext.RouteData.Values["controller"].ToString();
+    var actionName = ViewContext.RouteData.GetRequiredString("action").ToString();
+}
+
+@section Menu
+{
+    <div class="align-self-start main_sidebar">
+        @*<div class="my-3 mx-3 d-flex logo_div">
+            <a class="main_logo" href="#">
+                <img src="~/Content/Admin/lib/images/logo.png" title="" alt="" class="logo">
+                <img src="~/Content/Admin/lib/images/GAMI_Logo_Color-01.svg" title="" class="GAMI_Logo_Color-01.svg">
+            </a>
+        </div>*@
+        <div class="d-none d-md-block mr-auto">
+            <a class="nav-link nav-menu-main menu-toggle hidden-xs is-active" href="#"><img src="~/Content/Admin/lib/images/menu/menu.svg" style="width:22px"></a>
+        </div>
+        <div class=" main-menu menu-fixed menu-light menu-accordion menu-icon-left" data-scroll-to-active="true" style="direction:ltr;">
+            <div class="main-menu-content">
+                <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
+                        <!--<li class="@(controllerName == "SystemSettings" && actionName == "GeneralSettings" ? "nav-item active" : "nav-item")">-->
+                            @*<a href="@Url.Action("GeneralSettings", "SystemSettings")">*@
+                                <!--<i class="la la-cog"></i>
+                                <span class="menu-title">@DbRes.TResource("Admin.GeneralSettings.Title")</span>
+                            </a>
+                        </li>-->
+                        @*<li class="@(controllerName == "BarcodeDesigner" && actionName == "Index" ? "nav-item active" : "nav-item")">
+
+                            <a href='@Url.Action("Index" ,"BarcodeDesigner")'>
+                                <i class="la la-code"></i>
+                                <span class="menu-title">@DbRes.TResource("Admin.BarcodeDesigner.BarcodeSettings")</span>
+                            </a>
+                        </li>*@
+                        @*<li class="@(controllerName == "BarcodeDesigner" && actionName == "VisitTicket" ? "nav-item active" : "nav-item")">
+                            <a href="@Url.Action("VisitTicket", "BarcodeDesigner")">
+                                <i class="la la-barcode"></i>
+                                <span class="menu-title">@DbRes.TResource("Admin.BarcodeDesigner.VisitTicket")</span>
+                            </a>
+                        </li>*@
+                        <li class="@(controllerName == "SystemSettings" && actionName == "SMSSettings" ? "nav-item active" : "nav-item")">
+                            <a href="@Url.Action("SMSSettings", "SystemSettings")">
+                                <i class="la la-envelope"></i>
+                                <span class="menu-title">@DbRes.TResource("Admin.SMSSettings.Title")</span>
+                            </a>
+                        </li>
+                        <li class="@(controllerName == "SystemSettings" && actionName == "EmailSettings" ? "nav-item active" : "nav-item")">
+                            <a href="@Url.Action("EmailSettings", "SystemSettings")">
+                                <i class="la la-at"></i>
+                                <span class="menu-title">@DbRes.TResource("Admin.EmailSettings.Title")</span>
+                            </a>
+                        </li>
+                        <li class="@(controllerName == "SystemSettings" && actionName == "SearchSettings" ? "nav-item active" : "nav-item")">
+                            <a href="@Url.Action("SearchSettings", "SystemSettings")">
+                                <i class="la la-search"></i>
+                                <span class="menu-title">@DbRes.TResource("Admin.SearchSettings.Title")</span>
+                            </a>
+                        </li>
+                        <li class="@(controllerName == "SystemSettings" && actionName == "TraysSettings" ? "nav-item active" : "nav-item")">
+                            <a href="@Url.Action("TraysSettings", "SystemSettings")">
+                                <i class="la la-archive"></i>
+                                <span class="menu-title">@DbRes.TResource("Admin.TraySettings.Title")</span>
+                            </a>
+                        </li>
+                        @*<li class="@(controllerName == "SystemSettings" && actionName == "AgencySettings" ? "nav-item active" : "nav-item")">
+                            <a href="@Url.Action("AgencySettings", "SystemSettings")">
+                                <i class="la la-sitemap"></i>
+                                <span class="menu-title">@DbRes.TResource("Admin.UnitSetting")</span>
+                            </a>
+                        </li>*@
+                        @*<li class="@(controllerName == "SystemSettings" && actionName == "SmartPhoneSettings" ? "nav-item active" : "nav-item")">
+                            <a href="@Url.Action("SmartPhoneSettings", "SystemSettings")">
+                                <i class="la la-mobile"></i>
+                                <span class="menu-title">@DbRes.TResource("Admin.SmartPhoneSettings.Title")</span>
+                            </a>
+                        </li>*@
+                        @*<li class="@(controllerName == "SystemSettings" && actionName == "VersionSettings" ? "nav-item active" : "nav-item")">
+                            <a href="@Url.Action("VersionSettings", "SystemSettings")">
+                                <i class="la la-copy"></i>
+                                <span class="menu-title">@DbRes.TResource("Admin.VersionSetting.Title")</span>
+                            </a>
+                        </li>*@
+                        <li class="@(controllerName == "SystemSettings" && actionName == "AllEscalations" ? "nav-item active" : "nav-item")">
+                            <a href="@Url.Action("AllEscalations", "Escalation")">
+                                <i>
+                                    <img src="~/Content/Admin/lib/images/menu/numbered-information.svg">
+                                </i>
+                                <span class="menu-title">@DbRes.TResource("Admin.Setting.EscalationSetting")</span>
+                            </a>
+                        </li>
+                        @*<li class="@(controllerName == "SystemSettings" && actionName == "DateAndNumbersSettings" ? "nav-item active" : "nav-item")">
+                            <a href="@Url.Action("DateAndNumbersSettings", "SystemSettings")">
+                                <i class="la la-calendar"></i>
+                                <span class="menu-title">@DbRes.TResource("Admin.DateAndNumbersSettings.Title")</span>
+                            </a>
+                        </li>*@
+                        @*<li class="@(controllerName == "SystemSettings" && actionName == "CounterSetting" ? "nav-item active" : "nav-item")">
+                            <a href="@Url.Action("CounterSetting", "SystemSettings")">
+                                <i class="la la-calculator"></i>
+                                <span class="menu-title">@DbRes.TResource("Admin.Setting.CounterSetting")</span>
+                            </a>
+                        </li>*@
+                    </ul>
+            </div>
+        </div>
+        <!-- END: Vertical Menu -->
+    </div>
+}
+
+
+@section Body
+{
+    @RenderBody()
+}

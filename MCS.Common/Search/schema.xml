@@ -1,0 +1,188 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+
+<schema name="example" version="1.5">
+  <fields>
+    <field name="DocId" type="int" indexed="true" stored="true" required="true" multiValued="false" />
+    <field name="TransactionTypeId" type="int" indexed="true" stored="true" required="true" multiValued="false" />
+    <field name="TypeId" type="int" indexed="true" stored="true"/>
+    <field name="Number" type="int" indexed="true" stored="true" multiValued="false"/>
+    <field name="Barcode" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="DateH" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="Date" type="date" indexed="true" stored="true" required="true" default="NOW" multiValued="false"/>
+    <field name="Year" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="YearH" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="PermissionCode" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="PriorityId" type="int" indexed="true" stored="true" multiValued="false"/>
+    <field name="PartyId" type="int" indexed="true" stored="true" multiValued="false"/>
+    <field name="OrgUnitId" type="int" indexed="true" stored="true" multiValued="false"/>
+    <field name="SignedByUserId" type="int" indexed="true" stored="true" multiValued="false"/>
+    <field name="DirectedToUserId" type="int" indexed="true" stored="true" multiValued="false"/>
+    <field name="StatusId" type="int" indexed="true" stored="true" multiValued="false"/>
+    <field name="LetterTypeId" type="int" indexed="true" stored="true" multiValued="false"/>
+    <field name="OrgUnitNameAr" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="OrgUnitNameEn" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="TypeNameAr" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="TypeNameEn" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="PartyNameAr" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="PartyNameEn" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="SignedByNameAr" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="SignedByNameEn" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="ConfidentialityNameAr" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="ConfidentialityNameEn" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="PriorityNameAr" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="PriorityNameEn" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="StatusNameAr" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="StatusNameEn" type="string" indexed="true" stored="true" multiValued="false"/>    
+    <field name="TransactionTypeNameAr" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="TransactionTypeNameEn" type="string" indexed="true" stored="true" multiValued="false"/>    
+    <field name="Subject" type="text_arabic" indexed="true" stored="true" multiValued="false"/>
+    <field name="Assignments" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="WithArchiving" type="boolean" indexed="true" stored="true" multiValued="false"/>
+    <field name="Color" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="SubjectClassifications" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="AllFields" type="text" indexed="true" stored="true" multiValued="true"/>   
+    <field name="_version_" type="long" indexed="true" stored="true"/> 
+  </fields>
+
+  <copyField source="TransactionTypeId" dest="AllFields"/>
+  <copyField source="TypeId" dest="AllFields"/>
+  <copyField source="Number" dest="AllFields"/>
+  <copyField source="Barcode" dest="AllFields"/>
+  <copyField source="DateH" dest="AllFields"/>
+  <copyField source="Date" dest="AllFields"/>
+  <copyField source="Year" dest="AllFields"/>
+  <copyField source="YearH" dest="AllFields"/>
+  <copyField source="PermissionCode" dest="AllFields"/>
+  <copyField source="PriorityId" dest="AllFields"/>
+  <copyField source="PartyId" dest="AllFields"/>
+  <copyField source="OrgUnitId" dest="AllFields"/>
+  <copyField source="SignedByUserId" dest="AllFields"/>
+  <copyField source="DirectedToUserId" dest="AllFields"/>
+  <copyField source="StatusId" dest="AllFields"/>
+  <copyField source="LetterTypeId" dest="AllFields"/>
+  <copyField source="OrgUnitNameAr" dest="AllFields"/>
+  <copyField source="OrgUnitNameEn" dest="AllFields"/>
+  <copyField source="TypeNameAr" dest="AllFields"/>
+  <copyField source="TypeNameEn" dest="AllFields"/>
+  <copyField source="PartyNameAr" dest="AllFields"/>
+  <copyField source="PartyNameEn" dest="AllFields"/>
+  <copyField source="SignedByNameAr" dest="AllFields"/>
+  <copyField source="SignedByNameEn" dest="AllFields"/>
+  <copyField source="ConfidentialityNameAr" dest="AllFields"/>
+  <copyField source="ConfidentialityNameEn" dest="AllFields"/>
+  <copyField source="PriorityNameAr" dest="AllFields"/>
+  <copyField source="PriorityNameEn" dest="AllFields"/>
+  <copyField source="StatusNameAr" dest="AllFields"/>
+  <copyField source="StatusNameEn" dest="AllFields"/>
+  <copyField source="TransactionTypeNameAr" dest="AllFields"/>
+  <copyField source="TransactionTypeNameEn" dest="AllFields"/>
+  <copyField source="Subject" dest="AllFields"/>
+  <copyField source="Assignments" dest="AllFields"/>
+  <copyField source="SubjectClassifications" dest="AllFields"/>
+
+  <uniqueKey>DocId</uniqueKey>
+
+  <types>
+    <fieldType name="strings" class="solr.StrField" sortMissingLast="true" multiValued="true"/>
+    <fieldType name="tdates" class="solr.TrieDateField" positionIncrementGap="0" multiValued="true" precisionStep="6"/>
+    <fieldType name="tdoubles" class="solr.TrieDoubleField" positionIncrementGap="0" multiValued="true" precisionStep="8"/>
+    <fieldType name="tfloats" class="solr.TrieFloatField" positionIncrementGap="0" multiValued="true" precisionStep="8"/>
+    <fieldType name="tints" class="solr.TrieIntField" positionIncrementGap="0" multiValued="true" precisionStep="8"/>
+    <fieldType name="tlongs" class="solr.TrieLongField" positionIncrementGap="0" multiValued="true" precisionStep="8"/>
+    <fieldType name="booleans" class="solr.BoolField" sortMissingLast="true" multiValued="true"/>
+    <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
+    <fieldType name="int" class="solr.TrieIntField" precisionStep="0" positionIncrementGap="0"/>
+    <fieldType name="float" class="solr.TrieFloatField" precisionStep="0" positionIncrementGap="0"/>
+    <fieldType name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0"/>
+    <fieldType name="double" class="solr.TrieDoubleField" precisionStep="0" positionIncrementGap="0"/>
+    <fieldType name="tint" class="solr.TrieIntField" precisionStep="8" positionIncrementGap="0"/>
+    <fieldType name="tfloat" class="solr.TrieFloatField" precisionStep="8" positionIncrementGap="0"/>
+    <fieldType name="tlong" class="solr.TrieLongField" precisionStep="8" positionIncrementGap="0"/>
+    <fieldType name="tdouble" class="solr.TrieDoubleField" precisionStep="8" positionIncrementGap="0"/>
+    <fieldType name="date" class="solr.TrieDateField" precisionStep="0" positionIncrementGap="0"/>
+    <fieldType name="tdate" class="solr.TrieDateField" precisionStep="6" positionIncrementGap="0"/>
+    <fieldtype name="binary" class="solr.BinaryField"/>
+    <fieldType name="random" class="solr.RandomSortField" indexed="true" />    
+    <fieldType name="string" class="solr.StrField" sortMissingLast="true" />
+    <fieldType name="text" class="solr.TextField" sortMissingLast="true" positionIncrementGap="100">
+      <analyzer>
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory" />
+        <filter class="solr.TrimFilterFactory" />
+        <!--<filter class="solr.PatternReplaceFilterFactory" pattern="(\s+)" replacement="" replace="all" />
+        <filter class="solr.ReversedWildcardFilterFactory" />-->
+        <filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
+        <filter class="solr.ArabicNormalizationFilterFactory"/>
+        <filter class="solr.ArabicStemFilterFactory"/>
+      </analyzer>
+      <!--<analyzer type="index">
+        <tokenizer class="solr.KeywordTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory" />
+        <filter class="solr.TrimFilterFactory" />
+        <filter class="solr.PatternReplaceFilterFactory" pattern="(\s+)" replacement="" replace="all" />
+        <filter class="solr.ReversedWildcardFilterFactory" />
+        <filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
+        <filter class="solr.ArabicNormalizationFilterFactory"/>
+        <filter class="solr.ArabicStemFilterFactory"/>
+      </analyzer>
+      <analyzer type="query">
+        <tokenizer class="solr.KeywordTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory" />
+        <filter class="solr.TrimFilterFactory" />       
+        <filter class="solr.PatternReplaceFilterFactory" pattern="(\s+)" replacement="" replace="all" />
+        <filter class="solr.ReversedWildcardFilterFactory" />
+        --><!--<filter class="solr.ArabicNormalizationFilterFactory"/>--><!--
+        --><!--<filter class="solr.ArabicStemFilterFactory"/>--><!--
+      </analyzer>-->
+    </fieldType>
+    <fieldType name="alphaOnlySort" class="solr.TextField" sortMissingLast="true" omitNorms="true">
+      <analyzer>
+        <tokenizer class="solr.KeywordTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory" />
+        <filter class="solr.TrimFilterFactory" />
+        <filter class="solr.PatternReplaceFilterFactory" pattern="([^a-z])" replacement="" replace="all"
+      />
+      </analyzer>
+    </fieldType>
+    <fieldtype name="phonetic" stored="false" indexed="true" class="solr.TextField" >
+      <analyzer>
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.DoubleMetaphoneFilterFactory" inject="false"/>
+      </analyzer>
+    </fieldtype>
+    <fieldtype name="payloads" stored="false" indexed="true" class="solr.TextField" >
+      <analyzer>
+        <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+        <filter class="solr.DelimitedPayloadTokenFilterFactory" encoder="float"/>
+      </analyzer>
+    </fieldtype>
+    <fieldType name="lowercase" class="solr.TextField" positionIncrementGap="100">
+      <analyzer>
+        <tokenizer class="solr.KeywordTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory" />
+      </analyzer>
+    </fieldType>
+    <fieldType name="text_path" class="solr.TextField" positionIncrementGap="100">
+      <analyzer>
+        <tokenizer class="solr.PathHierarchyTokenizerFactory"/>
+      </analyzer>
+    </fieldType>
+    <fieldType name="text_arabic" class="solr.TextField">
+      <analyzer>
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+        <filter class="solr.ICUFoldingFilterFactory"/>
+        <!--<filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_ar.txt" />-->
+        <filter class="solr.ArabicNormalizationFilterFactory"/>
+        <filter class="solr.ArabicStemFilterFactory"/>
+        <filter class="solr.NGramFilterFactory" minGramSize="3" maxGramSize="20"/>
+      </analyzer>
+    </fieldType>
+    <fieldtype name="ignored" stored="false" indexed="false" multiValued="true" class="solr.StrField" />
+    <fieldType name="uuid" class="solr.UUIDField" indexed="true" />
+    <fieldType name="point" class="solr.PointType" dimension="2" subFieldSuffix="_d"/>
+    <fieldType name="location" class="solr.LatLonType" subFieldSuffix="_coordinate"/>
+    <fieldtype name="geohash" class="solr.GeoHashField"/>
+    <fieldType name="currency" class="solr.CurrencyField" precisionStep="8" defaultCurrency="USD" currencyConfig="currency.xml" />
+  </types>
+</schema>

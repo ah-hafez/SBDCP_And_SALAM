@@ -1,0 +1,145 @@
+﻿@using MCS.Common
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Assignment
+@model TransactionAssignmentVM
+
+
+
+<div class="panel-heading">
+    <h3 class="panel-title">@DbRes.TResource("User.Transaction.Assignmnet.AssignTo")</h3>
+</div>
+<div class="panel-body editor" id="dvAssignmentContainer">
+    @{if (!Convert.ToBoolean(ViewData["HasAssignmentPaper"]))
+        {
+            <div class="alert alert-warning" role="alert">
+                <span class="fa fa fa-warning"></span>
+                @DbRes.TResource("User.Transaction.Assignment.AssignmentPaperUndefined")
+            </div>
+        }
+        else
+        {
+            if (!Convert.ToBoolean(ViewData["HasActions"]))
+            {
+                <div class="alert alert-warning" role="alert">
+                    <span class="fa fa fa-warning"></span>
+                    @DbRes.TResource("User.Transaction.Assignment.ActionUndefined")
+                </div>
+            }
+        }
+    }
+    <p>@DbRes.TResource("Global.Forms.MandatoryFields")</p>
+    <div class="select_which">
+        <div class="row">
+            <div class="panel-group accordion">
+                <!-- ACCORDION -->
+                <div class="col-md-6">
+                    <div class="blue_border">
+                        <div class="blue_title w">@DbRes.TResource("User.Transaction.Assignment.Individual")</div>
+                        <div class="panel-body_n" id="dvAssignmentIndividual">
+                            <div id="dvAssignmentIndividualBody">
+                                @Html.Partial("~/Areas/User/Views/Shared/_AssignmentIndividualPartial.cshtml")
+                            </div>
+                            @Html.StickyHidden("hdnAssignmentIndividualData", "[]")
+                        </div>
+                    </div>
+                    <div style=" clear:both;"></div>
+                    <div class="panel-footer middle">
+                        @Html.ClientActionButton(DbRes.TResource("User.Transaction.Assignment.Add"), "AddAssignmentIndividual", "dvAssignmentIndividualGrid", "IndividualOnSuccess", null, "AssignmentIndividual", "btnAddIndividual", "dvAssignmentIndividual", "btn btn-permissions pull-right")
+                        @Html.ClientActionButton(DbRes.TResource("User.Transaction.Assignment.Update"), "EditAssignmentIndividual", "dvAssignmentIndividualGrid", "IndividualOnEditSuccess", null, "AssignmentIndividual", "btnEditIndividual", "dvAssignmentIndividual", "btn btn-permissions pull-right")
+                        <a class="btn-link pull-right" id="aCancelIndividual" onclick="CancelIndividual(); return false;">@DbRes.TResource("User.Transaction.Assignment.Cancel")</a>
+                    </div>
+                    <div id="dvAssignmentIndividualGrid">
+                        @Html.Partial("~/Areas/User/Views/Shared/_AssignmentIndividualGridPartial.cshtml", ViewData["AssignmentIndividualGridData"])
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div id="dvAssignmentGroupInputs">
+                        <div class="blue_border">
+                            <div class="blue_title w">@DbRes.TResource("User.Transaction.Assignment.Group")</div>
+                            <div class="panel-body_n" id="dvAssignmentGroupBody">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.GroupId, new { @class = "col-md-4 control-label" })
+                                    <div class="col-md-8">
+                                        <div class="">
+                                            @Html.AutoCompleteBuilder("ddlGroupId", "hdnGroupId", ViewData["AssignmentGroupData"].ToString(), null, true, "form-control")
+                                            @Html.HiddenGroupFor(model => model.GroupId, new { @Value = "", id = "hdnGroupId" }, "AssignmentGroup")
+                                            @Html.HiddenGroupFor(model => model.GroupName, new { @Value = "", id = "hdnGroupName" }, "AssignmentGroup")
+                                            @Html.StickyHidden("hdnGroupData", ViewData["AssignmentGroupData"].ToString())
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-4">
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="panel-title">
+                                            @{if (Convert.ToBoolean(ViewData["IsAllowedToCreateGroup"]))
+                                                {
+                                                    @Html.ClientLinkTag(DbRes.TResource("User.Transaction.Assignment.CreateGroup"), null, "btn btn-primary btn-block btn-rounded create_group opnDialog", null, null, null, UserClaims.UserPreferences.AssignmentPaper)
+                                                }
+                                                else
+                                                {
+                                                    @Html.ClientLinkTag(DbRes.TResource("User.Transaction.Assignment.CreateGroup"), null, "btn btn-primary btn-block btn-rounded create_group disable", " pointer-events: none;cursor: default;", null, null, UserClaims.UserPreferences.AssignmentPaper)
+                                                }
+                                            }
+
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.ActionForAllId, new { @class = "col-md-4 control-label" })
+                                    <div class="col-md-8">
+                                        <div class="">
+                                            @Html.AutoCompleteBuilder("ddlActionForAllId", "hdnActionForAllId", ViewData["ActionData"].ToString(), null, true, "form-control", "hdnActionTypeForAllId")
+                                            @Html.HiddenGroupFor(model => model.ActionForAllId, new { @Value = "", id = "hdnActionForAllId" }, "AssignmentGroup")
+                                            @Html.HiddenGroupFor(model => model.ActionNameForAll, new { @Value = "", id = "hdnActionNameForAll" }, "AssignmentGroup")
+                                            @Html.HiddenGroupFor(model => model.ActionTypeForAllId, new { @Value = "", id = "hdnActionTypeForAllId" }, "AssignmentGroup")
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.RemarksForAll, new { @class = "col-md-4 control-label" })
+                                    <div class="col-md-8">
+                                        <div class="">
+                                            @Html.TextAreaGroupFor(model => model.RemarksForAll, new { @class = "form-control", @rows = "3" })
+                                        </div>
+                                    </div>
+                                </div>
+                                @Html.StickyHidden("hdnAssignmentGroupData", "[]")
+                                @Html.StickyHidden("hdnDetailAssignmentGroupData", "[]")
+                                @Html.StickyHidden("hdnHeaderActionId")
+                            </div>
+                        </div>
+
+                        <div style=" clear:both;"></div>
+
+                        <div class="panel-footer middle">
+                            @Html.ClientActionButton(DbRes.TResource("User.Transaction.Assignment.Add"), "AddAssignmentGroup", "dvAssignmentGroupGrid", "GroupOnSuccess", null, "AssignmentGroup", "btnAddGroup", "dvAssignmentGroupBody", "btn btn-permissions pull-right")
+                        </div>
+                        <div id="dvAssignmentGroupGrid">
+                            @Html.Partial("~/Areas/User/Views/Shared/_AssignmentGroupGridPartial.cshtml", ViewData["AssignmentGroupGridData"])
+                        </div>
+                    </div>
+                </div>
+            </div><!-- END ACCORDION -->
+        </div>
+    </div>
+    @Html.Hidden("hdnTransactionId", ViewData["hdnAssignmentTransactionId"])
+    @Html.StickyHidden("hdnTransactionReportInfo")
+
+    @Html.StickyHidden("trayId")
+    @Html.StickyHidden("page")
+    @Html.StickyHidden("gridColumn")
+    @Html.StickyHidden("fromDate")
+    @Html.StickyHidden("toDate")
+    @Html.StickyHidden("number")
+    @Html.StickyHidden("filter")
+    @Html.StickyHidden("dateType")
+    @Html.StickyHidden("dir")
+    @Html.StickyHidden("pageSize")
+</div>
+

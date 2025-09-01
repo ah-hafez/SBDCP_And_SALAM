@@ -1,0 +1,658 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Common;
+@using MCS.UI.Areas.User.Models.Assignment
+@using MCS.UI.Areas.User.Models.Transaction;
+@using MCS.Framework.Controls
+
+@model VIPAssignmentVM
+
+@{
+    Model.DeliveryMethodId = DeliveryMethodType.Electronic.LookupIdentity(LookupCategory.DeliveryMethod, SessionInfo.CultureShortName);
+    int i = 1;
+
+}
+<div>
+    <div>
+        <div class="" id="dvEditorTreeAssignmentPaper">
+
+            <div id="dvAddTemporaryEntity" class="col-xs-12">
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3 hidden_">
+                    <div class="inline-radio ">
+                        <label>@DbRes.TResource("User.Transaction.Assignment.SearchType")</label>
+                        <div>
+                            @Html.RadioButton("rbgSearchMethod", @DbRes.TResource("User.Transaction.Assignment.SearchByUser"), true, htmlAttributes: new { @onchange = "toggleSearchMethod()", id = "EditorAssignmentPaper_rbSearchByUser" })
+                            @DbRes.TResource("User.Transaction.Assignment.SearchByUser")
+
+                            @Html.RadioButton("rbgSearchMethod", @DbRes.TResource("User.Transaction.Assignment.SearchByOrgUnit"), false, htmlAttributes: new { @onchange = "toggleSearchMethod()", id = "EditorAssignmentPaper_rbSearchByOrgUnit" })
+                            @DbRes.TResource("User.Transaction.Assignment.SearchByOrgUnit")
+
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3" id="divUser">
+                    @Html.LabelFor(model => model.ToUserId, new { @class = "w-100" })
+                    @Html.EditorFor(model => model.ToUserId, "AutoComplete", additionalViewData: new { autoCompleteControlid = "ddlAssignmentPaperUsers", hdnIdToSaveValue = "hdnAssignmentPaperUserId", items = "", selectedId = Model != null ? Model.ToUserId.ToString() : null, matchAnywhere = true, hdnExtraParametersId = "", selectFirstIndex = false, validationGroup = "AssignmentPaper", onChangeCallback = "DoCheckUser", sourceMethod = Url.Action("AutoComplete_SearchUsersByOrgUnit", "Inbound"), sourceParameters = "" })
+                    @Html.HiddenFor(model => model.ToUserName, new { id = "hdnAssignmentPaperUserName" })
+                </div>
+                @Html.StickyHidden("isConfirmed", "false")
+                <div class="form-group col-lg-6 col-md-4 col-sm-6 col-xs-12 mb-3" id="divOrgUnit">
+                    <div id="dvDepartmentsTrees">
+
+                        @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.ToOrgUnitId, TreeMode.Single, "AssignmentToOrgUnitId", true, "GetToUsersByOrgUnitId_Assignment", null, "dvDepartmentsTrees")
+
+                    </div>
+                    <i id="CalMessageIcon" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                    <span id="DepartmentValidateMessage" style="color:red"></span>
+                </div>
+
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3" style="margin-top:23px;">
+                    <a class="btn-site" onclick="Clear()"> <i class="glyphicon glyphicon-remove"></i> @DbRes.TResource("User.Transaction.Assignment.Cancel") </a>
+                    <a class="btn-site" onclick="checkIfAnEntitySelected()"><i class="glyphicon glyphicon-plus"></i> @DbRes.TResource("User.Transaction.Assignment.TemporaryAddition") </a>
+                </div>
+            </div>
+
+        </div>
+
+
+
+        <div class="form-horizontal">
+
+            <div id="AddedEntities">
+                @{
+                    var list = ViewData["AssignmentPaperData"] as List<VIPTransactionAssignmentVM> ?? new List<VIPTransactionAssignmentVM>();
+                }
+                <table class="table" style="border: 2px solid #e7e7e7">
+
+                    <tbody>
+                        @foreach (var group in list.GroupBy(a => a.GroupName))
+                        {
+                            <tr>
+                                <th scope="row" id="groupName" style="cursor:pointer" onclick="GroupDisplay('@group.Key')"><h3 class="title4 sub-title sub-title-margin d-inline-block" style="color:black; white-space:nowrap">@group.Key</h3></th>
+                                <td>
+                                    <div id="GroupData_@group.Key">
+
+                                        @foreach (var item in group)
+                                        {
+                                            item.Key = i;
+                                            Html.RenderPartial("~/Areas/User/Views/Vip/AssignmentPaper/_DraftAddedAssignmentEntities.cshtml", item, Html.ViewData);
+                                            i++;
+
+
+                                        }
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <i id="CalMessageOrg" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+            <span id="dateMessageOrg" style="color:red"></span>
+
+            <div class="row">
+                <div class="col-xs-12">
+
+                </div>
+            </div>
+
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                @{ ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+                <label class="w-100">@DbRes.TResource("User.Explanation.Confidentiality")<span class="stark NotIndividual">*</span></label>
+                @Html.AutoCompleteBuilder("ddlExplanationConfedentialityForAssignmentPaper", "hdnExplanationConfedentialityForAssignmentPaper", ViewData["ConfidentialityData"].ToString(), ViewData["ConfidentialityId"].ToString(), true, "form-control", "", "", "", false)
+                @Html.Hidden("ExplanationConfedentialityForAssignmentPaperId", "", new { id = "hdnExplanationConfedentialityForAssignmentPaper" })
+            </div>
+            <i id="CalMessageConfidentiality" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+            <span id="dateMessageConfidentiality" style="color:red"></span>
+
+            <div class="form-group col-sm-6 col-xs-12 mb-3">
+                @{ ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+                <label class="w-100">@DbRes.TResource("User.Transaction.Assignment.AssignmentPaper") </label>
+                <textarea cols="20" id="explanation" name="ExplanationForAssignmentPaper" class="form-control explanationDiv"></textarea>
+
+            </div>
+
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3" hidden>
+                <label class="w-100">@DbRes.TResource("User.Transaction.Assignment.DeliveryMethod") <span class="stark"> *</span> </label>
+                @Html.AutoCompleteBuilder("ddlDeliveryMethodForAssignmentPaper", "hdnDeliveryMethodForAssignmentPaper", ViewData["DeliveryMethod"].ToString(),
+               Model != null ? Model.DeliveryMethodId.ToString() : null, true, "form-control", onChangeCallback: "onChangeAssinmentPaperMethod")
+                @Html.Hidden("hdnDeliveryMethodForAssignmentPaper", "", new { @Value = "", id = "hdnDeliveryMethodForAssignmentPaper" })
+                <i id="CalMessageDeliveryMethod" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                <span id="dateMessageDeliveryMethod" style="color:red"></span>
+            </div>
+
+
+            <div class="row">
+                <div class="col-xs-12">
+                    @*<hr />*@
+                </div>
+                <div class="col-xs-12 text-right preview-mini-options">
+
+
+                    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Assignments.Save))
+                    {
+                        <a class="btn-site btn-icon" onclick="SaveAssignmentPaper()">Save </a>
+                    }
+                    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Assignments.Approve))
+                    {
+                        <a class="btn-site btn-icon" onclick="Approved()">Approve</a>
+                    }
+
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+    @Html.StickyHidden("hdnTransactionId", ViewData["TransactionId"].ToString(), new { id = "hdnAssignmentsTransactionId", @class = "TransactionId" })
+
+</div>
+
+
+
+
+<script>
+    function Approved() {
+        debugger;
+        var hdnMainDocToken  = $('#hdnMainDocToken').val();
+        var token = $("#frmAddTemporaryEntity").find("input[name='__RequestVerificationToken']").val();
+        var AddedEntities = $("#AddedEntities :input").serialize();
+
+        var explanation = $("#explanation").text();
+
+
+        var TransactionId = @ViewData["TransactionId"];
+
+        var requestData = "__RequestVerificationToken=" + token +
+            "&" + AddedEntities +
+            "&transactionId=" + TransactionId +
+            "&MainDocToken=" + hdnMainDocToken +
+            "&explanation=" + explanation;
+
+
+            if (AddedEntities != "") {
+            $.ajax({
+                type: 'post',
+                cache: false,
+                url: '@Url.Action("VIPPdfAssignmentPaper", "Inbound")',
+                data: requestData,
+                success:
+                    function (data) {
+                        if (data) {
+                            if (data.MessageType != 2) {
+
+                                //document.getElementById('frameViewerAttachment').contentWindow.location.reload();
+                                document.getElementById('frameViewer').contentWindow.location.reload();
+                                //refreshDoconut();
+                            }
+                            else {
+                                ShowErrorMessage(data.MessageText);
+                            }
+                        }
+                    }
+                });
+            }
+    }
+
+
+
+        function SaveAssignmentPaper() {
+            var AddFollowUp = false;
+            errorCount = 0;
+
+
+            var token = $("#frmAddTemporaryEntity").find("input[name='__RequestVerificationToken']").val();
+            var AddedEntities = $("#AddedEntities :input").serialize();
+            var TransactionId = @ViewData["TransactionId"];
+            var explanation = $("#explanationTxt").val();
+
+
+            var requestData = "__RequestVerificationToken=" + token + "&" + AddedEntities + "&TransactionId=" + $('#InboundId').val() + "&explanationTxt=" + explanation;
+
+
+            if (AddedEntities != "") {
+                $.ajax({
+                    type: 'post',
+                    cache: false,
+                    url: '@Url.Action("SaveAssignmentPaper","Inbound")',
+                    data: requestData,
+                    success:
+                        function (data) {
+                            debugger;
+                            if (data.MessageType != 2) {
+                                 ShowSuccesMessage(data.MessageText);
+                            }
+                            else {
+                                debugger;
+                                //RedirectToTargetPage();
+                                ShowErrorMessage(data.MessageText);
+                            }
+                        }
+                });
+            }
+        }
+
+
+
+    function GroupDisplay(id) {
+        var GroupData = document.getElementById('GroupData_'+id);
+        debugger
+        if (GroupData.style.display === "none") {
+            GroupData.style.display = "block";
+        }
+        else {
+            GroupData.style.display = "none";
+        }
+    }
+
+      function GetToUsersByOrgUnitId_Assignment() {
+
+        var token = $("input[name='__RequestVerificationToken']").val();
+          if ($("#AssignmentVM_ToOrgUnitId").val() != "") {
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("GetUsersByOrgUnitId")',
+                data: { id: $("#AssignmentVM_ToOrgUnitId").val(), __RequestVerificationToken: token  },
+                success:
+               function (data) {
+
+                   $("#ddlAssignmentPaperUsers").val("");
+                   AutoCompleteChangeList("ddlAssignmentPaperUsers", data);
+                   $("#ddlAssignmentPaperUsers").prop('disabled', false);
+               }
+            });
+            return false;
+        }
+        else {
+              $("#ddlAssignmentPaperUsers").prop('disabled', true);
+              $("#ddlAssignmentPaperUsers").val("");
+              AutoCompleteChangeList("ddlAssignmentPaperUsers", "[]");
+        }
+    }
+
+
+
+    function GetUserDelegationsById() {
+
+
+             var errorCount = 0;
+        if (localStorage.getItem("selectedEntity") == null) {
+            $("#CalMessageOrg").removeClass("hidden_");
+            $("#CalMessageorg").show();
+            $("#dateMessageOrg").html('@Html.Raw(DbRes.TValidation("User.Transaction.AssignedToEntityValidation"))');
+            errorCount++;
+        }
+        if ($('#hdnDeliveryMethodForAssignmentPaper').val() == null || $('#hdnDeliveryMethodForAssignmentPaper').val() == "") {
+            $("#CalMessageDeliveryMethod").removeClass("hidden_");
+            $("#CalMessageDeliveryMethod").show();
+            $("#dateMessageDeliveryMethod").html('@Html.Raw(DbRes.TValidation("User.Transaction.AssignmentPaper.DeliveryMethodValidation"))');
+            errorCount++
+        }
+        if (($('#explanation').text() != null && $('#explanation').text().trim() != "") && ($('#hdnExplanationConfedentialityForAssignmentPaper').val() == null || $('#hdnExplanationConfedentialityForAssignmentPaper').val() == "")) {
+            $("#CalMessageConfidentiality").removeClass("hidden_");
+            $("#CalMessageConfidentiality").show();
+            $("#dateMessageConfidentiality").html('@Html.Raw(DbRes.TValidation("User.Explanation.ConfidentialityRequired"))');
+            errorCount++
+        }
+        if (errorCount > 0) {
+            return false;
+        }
+
+        var AssginmentIndividualToUserId = '';
+        var AssginmentIndividualToUserName = '';
+        $('input.isAssigned').each(function () {
+            if ($(this).attr('value')) {
+                AssginmentIndividualToUserId = $(this).parent().find('.ToUserId').val();
+                AssginmentIndividualToUserName = $(this).parent().parent().find("#ToUserNamelabel").text();
+            }
+
+        });
+
+        var del = "{0} مفوض بالعمل عن {1} من تاريخ {2} الى تاريخ {3}."
+        var DelegationsList = '';
+        $("ul#UserDelegationsList").html('');
+        if (AssginmentIndividualToUserId != '') {
+            $.ajax({
+                url: "@Url.Action("GetUserDelegationsById", "Inbound")",
+                type: 'GET',
+                data: { UserId: AssginmentIndividualToUserId },
+                success: function (data) {
+                    if (data.result != null) {
+                        if (data.result.length > 0) {
+
+                            data.result.forEach(element => {
+                                var Msg = del;
+                                Msg = Msg.replace('{0}', AssginmentIndividualToUserName);
+                                Msg = Msg.replace('{1}', element.UserPreferenceName);
+                                Msg = Msg.replace('{2}', new Date(parseInt(element.FromDate.replace('/Date(', '').replace(')/', ''))).toLocaleDateString());
+                                Msg = Msg.replace('{3}', new Date(parseInt(element.ToDate.replace('/Date(', '').replace(')/', ''))).toLocaleDateString());
+
+                                DelegationsList = DelegationsList + '<li>' + Msg + '</li>'
+                            });
+
+                            $("ul#UserDelegationsList").append(DelegationsList);
+                            $("#UserDelegationsModal").modal();
+                        }
+                        else {
+                            $("#UserDelegationsList").hide();
+                            $("#UserDelegationsModal").modal('hide');
+                            SendAssignmentPaper();
+                        }
+
+
+                    } else {
+                        $("#UserDelegationsModal").modal('hide');
+                        SendAssignmentPaper();
+                    }
+
+
+
+                },
+                error: function (a) {
+                }
+            });
+        } else {
+            $("#UserDelegationsModal").modal('hide');
+            SendAssignmentPaper();
+        }
+    }
+
+    $(document).ready(function () {
+
+
+        $("#btnsConfirmSendEditorAssignments").click(function () {
+
+            $("#UserDelegationsModal").modal('hide');
+            SendAssignmentPaper();
+        });
+        setTimeout(function () {
+            $('#EditorAssignmentPaper_rbSearchByOrgUnit').click();
+        }, 500);
+    });
+</script>
+
+<script>
+
+
+    $(document).ready(function () {
+        onChangeAssinmentPaperMethod();
+    });
+
+    function onChangeAssinmentPaperMethod() {
+        var value = $('#hdnDeliveryMethodForAssignmentPaper').val();
+        switch (parseInt(value)) {
+            case DeliveryMethodType.Paper:
+                ShowHideAssinmentPaperReporterContent(true);
+                break;
+            case DeliveryMethodType.Electronic:
+                ShowHideAssinmentPaperReporterContent(false);
+                break;
+            case DeliveryMethodType.ElectronicPaper:
+                ShowHideAssinmentPaperReporterContent(true);
+                break;
+            default:
+        }
+    }
+
+    function ShowHideAssinmentPaperReporterContent(isShow) {
+        if (isShow) {
+            $('#ReporterContentAssignmentPaper').removeClass('hide');
+        } else {
+            $('#ReporterContentAssignmentPaper').addClass('hide');
+        }
+    }
+
+    function ActionChanged() {
+        var divrValue = $(".rValue:checked").closest(".divRadio").next(".divDDl").find(".AutPosition");
+        if (divrValue && divrValue.length > 0) {
+            var ddlControl = $(divrValue).find(".DDLClass");
+            if (ddlControl && ddlControl.length > 0) {
+                $('#explanation > .tag').remove();
+                $("#explanation").html('<span class="tag" contenteditable="false" style="display:inline-block;"><a class="d-flex flex-nowrap" data-editable="True"><span class="align-self-center">' + ddlControl.val() + '</span><span class="align-self-center removing_tag uicon icon_close" title="حذف"></span> </a> </span>' + ' ' + $("#explanation").html().trim() + '&nbsp;');
+            }
+        }
+    }
+
+    var urlAccordingToTransactionType;
+    var errorCount = 0;
+
+
+
+
+
+
+    function RedirectToTargetPage() {
+        setTimeout(function () {
+            window.location.href = urlAccordingToTransactionType;
+        }, 3000);
+    }
+
+    function AddNewEntity() {
+        var token = $("input[name='__RequestVerificationToken']").val();
+        var AddedEntities = $("#AddedEntities :input").serialize();
+        var NewEntity = $("#dvAddTemporaryEntity :input").serialize();
+        var requestData = "__RequestVerificationToken=" + token + "&" + NewEntity + '&' + AddedEntities;
+        $.ajax({
+            type: 'post',
+            cache: false,
+            url: '@Url.Action("VIPAddTemporaryEntity")',
+            data: requestData,
+            success:
+                function (data) {
+                    if (data.MessageType == @((int)MessageType.Error)) {
+                        ShowErrorMessage(data.MessageText);
+                    } else {
+                        addEntitySuccess(data, "");
+                    }
+                }
+        });
+    }
+
+    function UpdateAssignedToEntity(obj) {
+        $(".isAssigned").each(function () {
+            $(this).val(false);
+        });
+
+        var objId = obj.id;
+        var hdnId = objId.replace("Radio_", "hdn_");
+        $('#' + hdnId).val(true);
+        localStorage.setItem('selectedEntity', objId);
+    }
+
+    function UpdateIsCopy(obj) {
+        var objId = obj.id;
+        var hdnId = objId.replace("ch_", "hdn_");
+        if (obj.checked) {
+            $('#' + hdnId).val(true);
+        } else {
+            $('#' + hdnId).val(false);
+        }
+    }
+              function UpdateIsBCC(obj) {
+        debugger;
+        var objId = obj.id;
+        var hdnId = objId.replace("ch_", "hdn_");
+        if (obj.checked) {
+            $('#' + hdnId).val(true);
+            UpdateAssignedToEntity(obj)
+        } else {
+            $('#' + hdnId).val(false);
+        }
+    }
+    function addEntitySuccess(data, div) {
+        var includeCopy = [];
+        $('input[type = "checkbox"]:checked').each(function (index, obj) {
+            includeCopy.push(obj.id);
+        });
+
+        if (data != "") {
+            $('#AddedEntities').append(data.html);
+            $('#' + localStorage.getItem("selectedEntity")).attr("checked", true);
+
+            $.each(includeCopy, function (i, val) {
+                $('#' + val).attr("checked", true);
+            });
+        }
+    }
+
+    function Clear(){
+        ClearInputs('dvAddTemporaryEntity');
+    }
+
+    function checkIfAnEntitySelected() {
+
+        var ToOrgUnitId = $("#AssignmentVM_ToOrgUnitId").val();
+        if  (ToOrgUnitId == "") {
+            $("#dvAddTemporaryEntity .InboundDepName, #dvAddTemporaryEntity .InboundDepNum").addClass('RedBorder');
+        }
+        else {
+            $("#dvAddTemporaryEntity .InboundDepName, #dvAddTemporaryEntity .InboundDepNum").removeClass('RedBorder');
+        }
+
+        if (ToOrgUnitId.length == 0) {
+            $("#CalMessageIcon").removeClass("hidden_");
+            $("#CalMessageIcon").show();
+            $('#DepartmentValidateMessage').html('@DbRes.TValidation("User.UserDelegation.OrgUnitRequired")');
+            return false;
+        } else {
+            $('#DepartmentValidateMessage').html('');
+            $("#CalMessageIcon").addClass("hidden_");
+            return ChecktAllowedUserAssignment();
+        }
+
+    }
+
+    function DoCheckUserr() {
+
+       AutoCompleteChangeSourceParameters("dddlAssignmentPaperUsers", '@Url.Action("AutoComplete_SearchUsersByOrgUnit", "Inbound")', "");
+    }
+    function DoCheckUser() {
+
+        var rbSearchByUser = $("#EditorAssignmentPaper_rbSearchByUser");
+
+        if (rbSearchByUser.is(':checked')) {
+            ClearInputs('divOrgUnit')
+        }
+    }
+    function DoCheckOrgUnit() {
+        var rbSearchByOrgUnit = $("#EditorAssignmentPaper_rbSearchByOrgUnit");
+        $('#ddlAssignmentPaperUsers').removeAttr('disabled');
+        if (rbSearchByOrgUnit.is(':checked')) {
+            ClearInputs('divUser')
+        }
+    }
+
+    $(document).ready(function () {
+     /*   ClearInputs('dvEditorTreeAssignmentPaper');*/
+        $("#ddlAssignmentPaperUsers").prop('disabled', false);
+        localStorage.removeItem("selectedEntity");
+    });
+
+    function AddAssignmentPaperOnSuccess(data, div) {
+        if (data.MessageType != 2) {
+            $("#" + div).html("");
+            $("#" + div).html(data.Html);
+            //ShowSuccesMessage(data.MessageText)
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    $("#ddlAssignmentPaperUsers").change(function () {
+        $("#hdnAssignmentPaperUserName").val($(this).val());
+    })
+
+    $("#ddlAssignmentPaperAction").change( function () {
+        $("#hdnAssignmentPaperActionName").val($(this).val());
+    })
+
+    function OnSelectAssignmentPaperOrgUnit(selectedParty) {
+
+
+    }
+
+    function toggleSearchMethod() {
+        var rbSearchByUser = $("#EditorAssignmentPaper_rbSearchByUser");
+        var rbSearchByOrgUnit = $("#EditorAssignmentPaper_rbSearchByOrgUnit");
+        var divUser = $("#divUser");
+        var divOrgUnit = $("#divOrgUnit");
+
+        if (rbSearchByUser.is(':checked')) {
+            divOrgUnit.insertAfter(divUser);
+            AutoCompleteChangeSourceParameters("ddlAssignmentPaperUsers", '@Url.Action("AutoComplete_SearchUsersByOrgUnit", "Inbound")', "");
+            TreeChangeGetChildrenParameters("ToOrgUnitId", { UserId: "##ddlAssignmentPaperUsers_hdnIdToSaveValue" });
+            ResetAutoComplete("ddlAssignmentPaperUsers");
+            ResetTree("ToOrgUnitId");
+        }
+        else {
+            divUser.insertAfter(divOrgUnit);
+            AutoCompleteChangeSourceParameters("ddlAssignmentPaperUsers", '@Url.Action("AutoComplete_SearchUsersByOrgUnit", "Inbound")', { orgUnitId: "#input[name ='EditorAssignmentPaper.ToOrgUnitId']" });
+            TreeChangeGetChildrenParameters("ToOrgUnitId", "");
+            ResetAutoComplete("ddlAssignmentPaperUsers");
+            ResetTree("ToOrgUnitId");
+            ClearInputs('divUser');
+            $('#ddlAssignmentPaperUsers').attr('disabled', 'disabled');
+        }
+    }
+    d = Date.now();
+    d = new Date(d);
+    d = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' ' + (d.getHours() > 12 ? d.getHours() - 12 : d.getHours()) + ':' + d.getMinutes() + ' ' + (d.getHours() >= 12 ? "PM" : "AM");
+
+    $('#CurrentDate').append(d);
+</script>
+
+<script>
+     function ChecktAllowedUserAssignment() {
+         var UserId = $("#hdnAssignmentPaperUserId").val();
+         if (!UserId) {
+             AddNewEntity();
+             return;
+         }
+          $.ajax({
+            type: 'get',
+            data: { FromUserId: UserId },
+            url: '@Url.Action("GetAllowedUserAssignment", "Inbound")',
+              success: function (data) {
+                  debugger
+                  if (data.selectedUserAllowedAssignmentCount == 0) {
+                      AddNewEntity();
+                }
+                else {
+                    if (data.isUserAllowAssignment) {
+                        AddNewEntity();
+                    }
+                    else {
+                        ShowInformationMessage(data.MessageText);
+                    }
+                }
+
+
+            }
+        });
+    }
+
+</script>
+<style>
+    .RedBorder {
+        border: 1px solid #0E8270 !important
+    }
+
+    #CurrentDate {
+        direction: ltr;
+    }
+
+    .explanationDiv {
+        min-height: 70px;
+        height: auto;
+    }
+
+    .modal-lg {
+        min-width: 65vw !important;
+    }
+
+    #followupshow {
+        display: none;
+    }
+</style>

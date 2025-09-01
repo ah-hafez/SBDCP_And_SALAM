@@ -1,0 +1,414 @@
+﻿@using MCS.Common
+@using MCS.Framework.Localization
+@model MCS.UI.Areas.User.Models.Search.AdvancedSearchVM
+@{
+    ViewBag.Title = DbRes.TResource("User.Search.Title");
+    Layout = "~/Areas/User/Views/Shared/_SearchLayout.cshtml";
+}
+
+@{
+    bool havefullperm = false;
+    if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Search.SearchAllModules) ||
+        SessionInfo.CurrentUser.Claims.Contains(UserClaims.Search.SearchAllTransactions) ||
+        SessionInfo.CurrentUser.Claims.Contains(UserClaims.Search.SearchAllChildsModules) ||
+        SessionInfo.CurrentUser.Claims.Contains(UserClaims.Search.SearchParentDepartment))
+    {
+
+        havefullperm = true;
+
+    }
+}
+
+@using (Html.BeginForm("Search", "Search", FormMethod.Post, new { id = "frmSearch" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="page-title mt-5">
+        <div class="content_container content_container--header extra-padding mt-5">
+            <div class="row">
+                <div class="col-md-12">
+                    <h3 class="title2"> @DbRes.TResource("User.Search.Search")</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-content-wrap">
+        <div class="row">
+            <div class="col-md-12">
+                <form class="form-horizontal form-row">
+                    <div class="">
+                        <div class="white-container mx-5 mx-xs-3">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="col-lg-6" style="display:@(havefullperm ? "block" : "none")">
+
+                                        <div id="dvOrgUnitTrees">
+                                            @*@Html.DepartmentsTree(ViewData["OrgUnits"] as TreeViewModel, model => model.OrgUnitId, TreeMode.SingleNotMandatory, "dvOrgUnitTree", true, "", null, "dvOrgUnitTrees")*@
+                                            @Html.DepartmentsTree(ViewData["OrgUnits"] as TreeViewModel, model => model.OrgUnitId, TreeMode.Single, "ToOrgUnitId", true, "GetDirectedToUsersByOrgUnitId", null, "dvOrgUnitTrees")
+
+                                        </div>
+
+                                        @*<label>@Html.DisplayNameFor(model => model.OrgUnitId)<span class="stark">*</span></label>*@
+                                        @*@Html.EditorFor(model => model.OrgUnitId, "OrgHierarchyCaller", additionalViewData: new { treeId = "OrgUnitId", OrgUnitTreeMode = (int)OrgUnitTreeMode.Search, GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Shared"), GetNodeInfoByIdActionURL = @Url.Action("GetInternalPartyInfoById", "Shared"), GetNodeInfoByNumActionURL = @Url.Action("GetInternalPartyInfoByNumber", "Shared"), onClickfunction = "GetUsersByOrgUnitId", ValidationGroup = "", ShowAddPartyButton = false })*@
+                                    </div>
+                                    <div class="col-md-4">
+                                        @Html.LabelFor(model => model.SearchTypeId, new { @class = " control-label" })
+                                        <div class="form-group">
+                                            @Html.EditorFor(model => model.SearchTypeId, "AutoComplete", additionalViewData: new { autoCompleteControlid = "ddlSearchType", hdnIdToSaveValue = "hdnSearchTypeId", items = ViewData["searchTypes"] != null ? ViewData["searchTypes"].ToString() : null, selectedId = ViewData["searchTypeId"] != null ? ViewData["searchTypeId"].ToString() : null, matchAnywhere = true, inputClassName = "form-control", hdnExtraParametersId = "", ulClassName = "", buttonId = "", selectFirstIndex = false, validationGroup = "Search", onChangeCallback = "" })
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="row" id="SearchByView">
+                            </div>
+                        </div>
+                        <div class="row text-right mr-5 mt-4 ml-xs-3 mb-4">
+                            @Html.ActionButton(DbRes.TResource("User.Search.SubmitSearch"), "Search", "resultDiv", null, null, "OnSuccess", null, "post", "Search", "btnSearch", "frmSearch", "btn btn-st2 btn-lg pull-right hidden_", "DateTimeValidation")
+                        </div>
+                    </div>
+                </form>
+                <div class="panel panel-default panel-results white-container mx-5 mx-xs-3" style="display:none;" id="searchResultsDiv">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">@DbRes.TResource("User.Search.SearchResult")</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="col-xs-12">
+                            <div class="boxes">
+                                <div class="row">
+                                    <div id="dvInboundGridContener" style="display:none;">
+                                    </div>
+                                    <div id="dvOutboundGridContener" style="display:none;">
+                                    </div>
+                                    <div id="dvGeneralGridContener" style="display:none;">
+                                    </div>
+                                    <div id="dvOutboundInternalGridContener" style="display:none;">
+                                    </div>
+                                    <div id="dvOutboundDraftGridContener" style="display:none;">
+                                    </div>
+                                    <div id="dvCreatrGridContener" style="display:none;">
+                                    </div>
+                                    <div id="dvBarcodeGridContener" style="display:none;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    $(document).on("click", "span[data-node-id]", function () {
+        var elemnt = $(this);
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('InternalLoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetOrgUnitsNodes")',
+                data: { parentId: $(this).data("node-id"), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+                success:
+                    function (data) {
+
+                        $(elemnt).closest('li').children('ul').last().empty()
+
+                        $(elemnt).closest('li').children('ul').last().append(data);
+
+                        $(elemnt).removeClass("InternalLoadedData");
+                    }
+            });
+        }
+    });
+
+    document.onreadystatechange = function () {
+        if (document.readyState == "complete") {
+            fillSearchType();
+        }
+    }
+
+    function ShowTransactionCertificate(id, transactionType) {
+        debugger;
+        var url;
+
+        switch (transactionType) {
+
+            case '@TransactionCategory.Inbound.ToString()':
+
+                url = '@Url.Action("InboundCertificate", "Shared")' + '?transactionId=' + id;
+
+                break;
+
+            case '@TransactionCategory.InternalOutbound.ToString()':
+
+                url = '@Url.Action("InboundCertificate", "Shared")' + '?transactionId=' + id;
+
+                break;
+
+            case '@TransactionCategory.ExternalOutbound.ToString()':
+
+                url = '@Url.Action("OutboundCertificate", "Shared")' + '?transactionId=' + id;
+
+                break;
+        }
+
+        ShowDialog(url,'dialogbox col-md-12');
+    }
+     function ChangeSubject(transactionId,subject) {
+
+          var url = '@Url.Action("UpdateTransactionSubject", "Inbound")' + '?transactionId=' + transactionId + "&subject=" + subject;
+
+        ShowDialog(url, 'dialogbox col-md-12');
+    }
+     function OnUpdateSuccess(data) {
+
+        if (data.MessageType != 2) {
+           /* $("#btnSearch").click();*/
+            $(".closeIcon").click();
+            ShowSuccesMessage('@DbRes.TResource("User.UpdateTransactionSubject.Success")', ReloadResult() );
+
+        } else {
+            ShowInformationMessage(data.MessageText);
+
+        }
+    }
+    function ReloadResult() {
+        $("#btnSearch").click();
+    }
+
+
+    function fillSearchType() {
+        if ('@(ViewData["searchTypeId"])' != "" && '@(ViewData["searchData"])' != "") {
+            $("#ddlSearchType").trigger("change");
+        }
+
+    }
+
+    function fillFields() {
+        if ('@(ViewData["searchTypeId"])' != "" && '@(ViewData["searchData"])' != "") {
+            if ($("#ddlSearchType_hdnIdToSaveValue").val() == 1317) {
+                $('#InboundSearch_Number').val('@(ViewData["searchData"])');
+            } else if ($("#ddlSearchType_hdnIdToSaveValue").val() == 1319) {
+                $('#SubjectSearch_Subject').val('@(ViewData["searchData"])');
+            }
+            $('#btnSearch').trigger("click");
+        }
+    }
+     function PrintOutBoundAddress() {
+         var transId = $(event.currentTarget).data("encryptedid");
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("GetOutBoundAddressInfo", "Shared")',
+            data: { TransactionId: transId },
+        }).success(function (data) {
+
+            if (data.MessageType != 2) {
+                var BarcodeWindow = window.open('', '_blank', 'width=500,height=500');
+                BarcodeWindow.opener = null;
+                BarcodeWindow.document.write(data.Html);
+                BarcodeWindow.document.close();
+                BarcodeWindow.focus();
+                setTimeout(function () { BarcodeWindow.print(); BarcodeWindow.close(); }, 3000);
+            }
+
+        });
+
+    }
+    $(document).ready(function () {
+            $("#ddlSearchType").change(function () {
+            $("#dvInboundGridContener").html("");
+            $("#dvGeneralGridContener").html("");
+            $("#dvOutboundDraftGridContener").html("");
+            $("#dvOutboundInternalGridContener").html("");
+            $("#dvOutboundGridContener").html("");
+            $('#searchResultsDiv').hide();
+            $("#dvOutboundGridContener").hide();
+            $("#dvOutboundDraftGridContener").hide();
+            $("#dvOutboundInternalGridContener").hide();
+            $("#dvInboundGridContener").hide();
+            $("#dvGeneralGridContener").hide();
+                $("#dvBarcodeGridContener").hide();
+
+                if ($("#ddlSearchType_hdnIdToSaveValue").val() != '' && $("#ddlSearchType_hdnIdToSaveValue").val() != null) {
+
+                $.ajax({
+                    type: 'Get',
+                    url: '@Url.Action("GetSearchViewBySearchTypeId")',
+                    data: { id: $("#ddlSearchType_hdnIdToSaveValue").val() },
+                    success:
+                   function (response) {
+
+                       $("#SearchByView").html(response.html);
+                       var form = $("#frmSearch");
+                       form.removeData('validator');
+                       form.removeData('unobtrusiveValidation');
+                       $.validator.unobtrusive.parse(form);
+
+                       fillFields();
+                       $("#ddlSearchType_hdnIdToSaveValue").trigger('change');
+
+                       //encodeForm();
+                       //AddMaxLength();
+                   }
+                });
+
+            }
+            else {
+
+                $("#SearchByView").html('');
+                }
+
+        });
+
+       
+        if ($("#ddlSearchType_hdnIdToSaveValue").val() == '' || $("#ddlSearchType_hdnIdToSaveValue").val() == '0') {
+            $("#ddlSearchType_hdnIdToSaveValue").val(1);
+            $("#ddlSearchType").trigger('change');
+
+        }
+    });
+
+    function OnSuccess(data) {
+
+        if (data.MessageType != 2) {
+
+            $('#searchResultsDiv').show();
+
+            if (data.Type == '@TransactionCategory.Inbound.ToString()') {
+
+                $("#dvOutboundGridContener").hide();
+                $("#dvGeneralGridContener").hide();
+                $("#dvOutboundDraftGridContener").hide();
+                $("#dvOutboundInternalGridContener").hide();
+                $("#dvInboundGridContener").html(data.Html);
+                $("#dvInboundGridContener").show();
+
+            }
+
+        if (data.Type == '@TransactionCategory.ExternalOutbound.ToString()') {
+
+            $("#dvInboundGridContener").hide();
+            $("#dvGeneralGridContener").hide();
+            $("#dvOutboundDraftGridContener").hide();
+            $("#dvOutboundInternalGridContener").hide();
+            $("#dvOutboundGridContener").html(data.Html);
+            $("#dvOutboundGridContener").show();
+
+        }
+        if (data.Type == '@TransactionCategory.InternalOutbound.ToString()') {
+
+            $("#dvInboundGridContener").hide();
+            $("#dvGeneralGridContener").hide();
+            $("#dvOutboundDraftGridContener").hide();
+            $("#dvOutboundGridContener").hide();
+            $("#dvOutboundInternalGridContener").html(data.Html);
+            $("#dvOutboundInternalGridContener").show();
+
+        }
+        if (data.Type == '@TransactionCategory.DraftOutbound.ToString()') {
+
+            $("#dvInboundGridContener").hide();
+            $("#dvGeneralGridContener").hide();
+            $("#dvOutboundInternalGridContener").hide();
+            $("#dvOutboundGridContener").hide();
+            $("#dvOutboundDraftGridContener").html(data.Html);
+            $("#dvOutboundDraftGridContener").show();
+
+        }
+        if(data.Type=='@TransactionCategory.None.ToString()')
+        {
+            $("#dvOutboundGridContener").hide();
+            $("#dvOutboundInternalGridContener").hide();
+            $("#dvOutboundDraftGridContener").hide();
+            $("#dvInboundGridContener").hide();
+            $("#dvGeneralGridContener").html(data.Html);
+            $("#dvGeneralGridContener").show();
+            }
+            $(".boxes").show();
+        } else {
+            ShowInformationMessage(data.MessageText);
+            $(".boxes").hide();
+        }
+    }
+
+
+    function GetUsersByOrgUnitId()
+    {
+
+        if ($("#rightToOrgUnitId").val() != "" && $("#rightToOrgUnitId").val() !=undefined) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetUnitUsers", "Editor")',
+                data: { id: $("#rightToOrgUnitId").val() },
+                success:
+               function (data) {
+                   $("#ddlDirectedToId").val("");
+                   AutoCompleteChangeList("ddlDirectedToId", data);
+                   $("#ddlDirectedToId").prop('disabled', false);
+               }
+            });
+            return false;
+        }
+        else {
+             $("#ddlDirectedToId").prop('disabled', true);
+             $("#ddlDirectedToId").val("");
+             AutoCompleteChangeList("ddlDirectedToId", "[]");
+        }
+        }
+
+    function DateTimeValidation() {
+        var orgUnitId = $("#rightToOrgUnitId").val();// $('#divForm__dvOrgUnitTree').find('.hdnDepartmentId').val();
+        if (orgUnitId == undefined || orgUnitId.trim() == '') {
+            $('#divForm__dvOrgUnitTree .txtDepartmentNumber').addClass('RedBorder');
+            $('#divForm__dvOrgUnitTree .txtDepartmentName').addClass('RedBorder');
+            return false;
+        }
+        else {
+            $('#divForm__dvOrgUnitTree .txtDepartmentNumber').removeClass('RedBorder');
+            $('#divForm__dvOrgUnitTree .txtDepartmentName').removeClass('RedBorder');
+        }
+
+        if ($("#ddlSearchType").val() == "البحث بالجهة") {
+            if ($('#divContainerExternalParties .txtDepartmentName').val() == "") {
+                $('#divContainerExternalParties   .txtDepartmentNumber  ,  #divContainerExternalParties   .txtDepartmentName ').addClass('RedBorder');
+                return true;
+            }
+            else {
+                $('#divContainerExternalParties   .txtDepartmentNumber  ,  #divContainerExternalParties   .txtDepartmentName ').removeClass('RedBorder');
+            }
+        }
+        if ($("#ddlSearchType_hdnIdToSaveValue").val() != '1319') {
+
+            var fromDate = $("#hdnFromDateGreg").val();
+            var toDate = $("#hdnToDateGreg").val();
+
+            if (fromDate == null || fromDate == '' || toDate == null || toDate == '')
+                return true;
+
+            var date1 = convertdate(fromDate);
+            var date2 = convertdate(toDate);
+
+            if (date1 != date2) {
+
+                $("#hdnTimeSpanTimeFrom").val('');
+                $("#hdnTimeSpanTimeTo").val('');
+            }
+            else {
+
+                AppendHours('hdnTimeSpanTimeFrom', 'ddlHourFrom');
+                AppendMinutes('hdnTimeSpanTimeFrom', 'ddlMinuteFrom');
+
+                AppendHours('hdnTimeSpanTimeTo', 'ddlHourTo');
+                AppendMinutes('hdnTimeSpanTimeTo', 'ddlMinuteTo');
+            }
+        }
+
+        return true;
+    }
+</script>
+<style>
+    .RedBorder {
+        border: 1px solid #fe0000 !important
+    }
+</style>

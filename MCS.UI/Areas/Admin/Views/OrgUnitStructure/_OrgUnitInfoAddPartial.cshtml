@@ -1,0 +1,202 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Common;
+@using MCS.UI.Areas.Admin.Controllers;
+@*@model MCS.UI.Areas.Admin.Models.OrgUnit.OrgStructureInfoAddVM*@
+@model MCS.UI.Areas.Admin.Models.OrgUnit.OrgStructureInfoEditVM
+@{
+
+    Layout = null;
+}
+
+<script>
+
+    $('#ckIsRoot').change(function () {
+
+        if ($(this).is(':checked')) {
+
+            $('#dvParent').hide();
+            $('#hdnAddParentKeyId').val('-1');
+        }
+        else {
+
+            $('#dvParent').show();
+            $('#hdnAddParentKeyId').val('');
+        }
+    });
+
+    function OnSuccess(data) {
+         
+        if (data.MessageType != 2) {
+
+            $("#jstree_default").jstree("open_node", $("#node_" + data.parentId));
+            ShowSuccesMessage(data.MessageText);
+            $("#jstree_default").jstree("refresh");
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function doReload() {
+        __dialog.close();
+        return false;
+    }
+
+    $(document).on('focusout', '#ddlAddParentKey, #txtAddNumber', function () {
+        if ($("#hdnAddParentKeyId").val() != '' && $("#txtAddNumber").val() != '') {
+            var barCode = $("#txtAddNumber").val()
+            $("#txtBarCode").val(BuildBarCode(barCode));
+        }
+    });
+</script>
+
+@using (Html.BeginForm("OrgUnitInfo", "OrgUnitStructure", FormMethod.Post, new { id = "frmAddOrgUnitInfo" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(Model => Model.Key, new { id = "hdnOrgUnitKey" });
+    @Html.Hidden("departmentsStructure", null, new { id = "hdnDepartmentsStructure" })
+    <script>
+        $('#hdnDepartmentsStructure').val($('#hdnSaveDepartmentsData').val());
+    </script>
+    <div class="modal-body">
+        <div class="panel-body">
+            <p>@DbRes.TResource("Global.Forms.MandatoryFields")</p>
+            <div class="row">
+                <div class="col-md-6">
+                    @for (int m = 0; m < Model.Names.Count; m++)
+                    {
+                    <div class="form-group">
+                        @Html.CustomLabelFor(model => Model.Names[m].CultureName, new { @class = "col-md-4 control-label" }, DbRes.TResource(string.Format("Admin.OrgUnitInfo.Name.{0}", Model.Names[m].CultureName)))
+                        @Html.HiddenFor(model => Model.Names[m].CultureId, Model.Names[m].CultureId)
+                        @Html.HiddenFor(model => Model.Names[m].CultureName, Model.Names[m].CultureName)
+                        @Html.HiddenFor(model => Model.Names[m].Id, Model.Names[m].Id)
+
+                        <div class="col-md-8">
+                            <div class="">
+                                @Html.TextBoxGroupFor(model => Model.Names[m].Text, "AddOrgUnitInfo", new { @class = "form-control" }, DbRes.TValidation(string.Format("Admin.OrgUnitInfo.NameRequired.{0}", Model.Names[m].CultureName)))
+                            </div>
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+                    }
+                    <div class="form-group">
+                        <span class="help-block"></span>
+                    </div>
+                    @{OrgUnitMode orgUnitMode = (OrgUnitMode)Convert.ToInt32(ViewData["OrgUnitMode"]); }
+                    @if (orgUnitMode == OrgUnitMode.NotRoot)
+                    {
+                        <div class="form-group" id="dvParent">
+                            @Html.CustomLabelFor(model => model.ParentId, new { id = "lblUserNoTitle", @class = "col-md-4 control-label" })
+                            <div class="col-md-8">
+                                <div class="">
+                                    @Html.AutoComplete("ddlAddParentKey", "hdnAddParentKeyId", Newtonsoft.Json.JsonConvert.SerializeObject(ViewData["ListOfUnits"]).ToString(), true, Model.ParentId.ToString(), "form-control")
+                                    @Html.HiddenGroupFor(model => model.ParentId, new { id = "hdnAddParentKeyId" }, "AddOrgUnitInfo")
+                                </div>
+                                <span class="help-block"></span>
+                            </div>
+                        </div>
+                    }
+                    @if (orgUnitMode == OrgUnitMode.IsRoot)
+                    {
+                        <div class="form-group" id="dvRoot" style="display:none;">
+                            <div class="checkbox">
+                                <label>
+                                    @Html.CheckBoxFor(model => Model.IsRoot, new { id = "ckIsRoot" })
+                                    @Html.LabelFor(model => Model.IsRoot, new { @class = "none" })
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group" style="display:none" id="dvParent">
+                            @Html.CustomLabelFor(model => model.ParentId, new { id = "lblUserNoTitle", @class = "col-md-4 control-label" })
+                            <div class="col-md-8">
+                                <div class="">
+                                    @Html.AutoCompleteBuilder("ddlAddParentKey", "hdnAddParentKeyId", Newtonsoft.Json.JsonConvert.SerializeObject(ViewData["ListOfUnits"]).ToString(), null, true, "form-control")
+                                    @Html.HiddenGroupFor(model => model.ParentId, new { id = "hdnAddParentKeyId", @Value = "" }, "AddOrgUnitInfo")
+                                </div>
+                                <span class="help-block"></span>
+                            </div>
+                        </div>
+                    }
+                    @if (orgUnitMode == OrgUnitMode.NoRoot)
+                    {
+                        <div class="form-group" id="dvRoot">
+                            <div class="checkbox">
+                                <label>
+                                    @Html.CheckBoxFor(model => Model.IsRoot, new { id = "ckIsRoot" })
+                                    @Html.LabelFor(model => Model.IsRoot, new { @class = "none" })
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group" id="dvParent">
+                            @Html.CustomLabelFor(model => model.ParentId, new { id = "lblUserNoTitle", @class = "col-md-4 control-label" })
+                            <div class="col-md-8">
+                                <div class="">
+                                    @Html.AutoCompleteBuilder("ddlAddParentKey", "hdnAddParentKeyId", Newtonsoft.Json.JsonConvert.SerializeObject(ViewData["ListOfUnits"]).ToString(), null, true, "form-control")
+                                    @Html.HiddenGroupFor(model => model.ParentId, new { id = "hdnAddParentKeyId", @Value = "" }, "AddOrgUnitInfo")
+                                </div>
+                                <span class="help-block"></span>
+                            </div>
+                        </div>
+                    }
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label>
+                                @Html.CheckBoxFor(model => Model.IsVirtualUnit)
+                                @Html.LabelFor(model => Model.IsVirtualUnit, new { @class = "none" })
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.CustomLabelFor(model => model.Number, new { @class = "col-md-4 control-label" })
+                        <div class="col-md-8">
+                            <div class="">
+                                @Html.NumericTextBoxFor(model => model.Number, new { id = "txtAddNumber", @class = "form-control", @Value = "", maxlength = "9" }, "AddOrgUnitInfo")
+                            </div>
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.CustomLabelFor(model => model.BarCode, new { @class = "col-md-4 control-label" })
+                        <div class="col-md-8">
+                            <div class="">
+                                @Html.TextBoxGroupFor(model => model.BarCode, null, new { id = "txtBarCode", @class = "form-control", @readonly = "readonly" })
+                            </div>
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.CustomLabelFor(model => model.TransactionsProcessingPeriod, new { @class = "col-md-4 control-label" })
+                        <div class="col-md-6">
+                            <div class="">
+                                @Html.NumericTextBoxFor(model => model.TransactionsProcessingPeriod, new { @class = "form-control", @Value = "" }, "AddOrgUnitInfo")
+                            </div>
+                            <span class="help-block"></span>
+                        </div>
+                        <div class="col-md-2">@DbRes.TResource("Admin.OrgUnitInfo.Day")</div>
+                    </div>
+                    <div class="form-group">
+
+                        @Html.CustomLabelFor(model => model.ManagerId, new { @class = "col-md-4 control-label" })
+                        <div class="col-md-8">
+                            <div class="">
+                                @Html.AutoCompleteBuilder("ddlAddManagerId", "hdnAddManagerId",
+                                Newtonsoft.Json.JsonConvert.SerializeObject(ViewData["OrgUnitUsers"]).ToString(), null, true, "form-control")
+                                @Html.HiddenFor(model => model.ManagerId, new { @Value = "", id = "hdnAddManagerId" })
+                            </div>
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        @Html.ActionButton(DbRes.TResource("Admin.OrgUnitStructure.Save"), Url.Action("AddOrgUnitInfo", "OrgUnitStructure"), null, null, null, "OnSuccess", null, "post", "AddOrgUnitInfo", "EditAdd", "frmAddOrgUnitInfo", "btn btn-save pull-right")
+        <button type="button" class="btn btn-default" id="btnClose" onclick="__dialog.close(); globalActionId = undefined; return false;">@DbRes.TResource("Admin.OrgUnitInfo.Close")</button>
+    </div>
+}
+
+
+

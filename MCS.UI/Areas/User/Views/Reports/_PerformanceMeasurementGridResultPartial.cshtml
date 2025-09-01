@@ -1,0 +1,223 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Report;
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<PerformanceMeasurementGridResultVM>
+@{
+    List<int> columnsToGrid = ViewData["ColumnsToGrid"] == null ? new List<int>() : (List<int>)ViewData["ColumnsToGrid"];
+    bool showUserName = ViewData["ShowReportUser"] == null ? false : (bool)ViewData["ShowReportUser"];
+}
+
+
+@Html.Grid(Model).Named("GridPerformanceMeasurementReport").CollectionName("PerformanceMeasurementResults").Columns(columns =>
+{
+    //columns.Add(model => model.OrgUnitsID).Titled(DbRes.TResource("User.Copy.OrgUnitId"));
+    columns.Add(model => model.OrgUnitName).Titled(DbRes.TResource("User.Copy.OrgUnitName"));
+    columns.Add(model => model.UserProfileName, ViewData["ReportType"].ToString()=="1").Titled(DbRes.TResource("User.Employee"));
+    columns.Add().Encoded(false).Sanitized(false).Titled("", "المعاملات الصادرة").RenderValueAs(a => @"<div class='text-center'>" + a.OutboundCount + "</div>");
+    columns.Add().Encoded(false).Sanitized(false).Titled("", "عدد المعاملات").RenderValueAs(a => @"<div class='text-center'>" + a.InboundCountCreated + "</div>");
+    columns.Add().Encoded(false).Sanitized(false).Titled("", "عدد المعاملات المحاله").RenderValueAs(a => @"<div class='text-center'>" + a.AssignedCount + "</div>");
+    columns.Add().Encoded(false).Sanitized(false).Titled("", "عدد المعاملات (تحت الاجراء)").RenderValueAs(a => @"<div class='text-center' onclick='showInProgressTransactions(" + a.OrgUnitsID + ")'>" + a.InProgressCount + "</div>");
+    columns.Add().Encoded(false).Sanitized(false).Titled("", "عدد المعاملات المعلقة").RenderValueAs(a => @"<div class='text-center'>" + a.SavedCount + "</div>");
+    columns.Add().Encoded(false).Sanitized(false).Titled("", "المعاملات المنتهية").RenderValueAs(a => @"<div class='text-center'>" + a.FinishedCount + "</div>");
+    columns.Add().Encoded(false).Sanitized(false).Titled("", "المعاملات المتأخرة").RenderValueAs(a => @"<div class='text-center' onclick='showDelayedTransactions(" + a.OrgUnitsID + ")'>" + a.DelayedCount + "</div>");
+
+    //columns.Add().Encoded(false).Sanitized(false).Css("px-0").Titled("", @"<div class='row m-0'>
+    //                                                <div class='text-center col-xs-8 mb-2'>مسودة الخطاب</div>
+    //                                                <hr>
+    //                                                <div class='text-center col-xs-4'>المنشأة</div>
+    //                                                <div class='text-center col-xs-4'>المحالة</div>
+    //                                                </div>").RenderValueAs(a => @"<div class='text-center col-xs-4'>" + a.OutboundDraftCountCreated+"</div>" +
+    //                                                                             "<div class='text-center col-xs-4'>" + a.OutboundDraftCountAssigned+"</div>");
+    //columns.Add().Encoded(false).Sanitized(false).Css("px-0").Titled("", @"<div class='row m-0'>
+    //                                                <div class='text-center col-xs-8 mb-2'>المعاملات الواردة</div>
+    //                                                <hr>
+    //                                                <div class='text-center col-xs-4'>المنشأة</div>
+    //                                                <div class='text-center col-xs-4'>المحالة</div>
+    //                                                </div>").RenderValueAs(a => @"<div class='text-center col-xs-4'>" + a.InboundCountCreated + "</div>" +
+    //                                                                             "<div class='text-center col-xs-4'>" + a.InboundCountAssigned + "</div>");
+    //columns.Add().Encoded(false).Sanitized(false).Css("px-0").Titled("", @"<div class='row m-0'>
+    //                                                <div class='text-center col-xs-8 mb-2'>المعاملات الداخلية</div>
+    //                                                <hr>
+    //                                                <div class='text-center col-xs-4'>المنشأة</div>
+    //                                                <div class='text-center col-xs-4'>المحالة</div>
+    //                                                </div>").RenderValueAs(a => @"<div class='text-center col-xs-4'>" + a.InternalOutboundCountCreated + "</div>" +
+    //                                                                             "<div class='text-center col-xs-4'>" + a.InternalOutboundCountAssigned + "</div>");
+
+}).WithPaging(UIHelper.PageSize)
+
+<script>
+    var myPerformanceSearchGridEventHandler = "@Url.Action("PerformanceSearch", "Reports")";
+    function preparePerformanceMeasurementReportGrid() {
+        $(".grid-mvc").gridmvc();
+        var searchCriteriaData = [];
+        var token = $("#FormPerformanceSearch").find("input[name='__RequestVerificationToken']").val();
+
+        searchCriteriaData = JSON.parse(JSON.stringify(searchCriteria.data));
+        searchCriteriaData.push({ name: '__RequestVerificationToken', value: token });
+
+        pageGrids.GridPerformanceMeasurementReport.ajaxify({
+            getPagedData: myPerformanceSearchGridEventHandler,
+            requestType: "post",
+            getData: myPerformanceSearchGridEventHandler,
+            optionalData: searchCriteriaData
+        });
+    }
+    var reportType;
+    $(document).ready(function () {
+        preparePerformanceMeasurementReportGrid();
+
+        var colorsElement = '<tr>';
+
+        reportType = @ViewData["ReportType"].ToString() == 1
+        debugger
+        if (reportType == true) {
+            for (var i = 1; i <= 8; i++) {
+                switch (i) {
+                    case 5:
+                        colorsElement += '<td style="background-color:yellow;"></td>';
+                        break;
+                    case 6:
+                        colorsElement += '<td style="background-color:gray;"></td>';
+                        break;
+                    case 7:
+                        colorsElement += '<td style="background-color:green;"></td>';
+                        break;
+                    case 8:
+                        colorsElement += '<td style="background-color:red;"></td>';//'<td style="background-color:red;></td>';
+                        break;
+                    default:
+                        colorsElement += '<td></td>';
+                        break;
+                }
+            }
+        } else {
+            for (var i = 1; i <= 9; i++) {
+                switch (i) {
+                    case 6:
+                        colorsElement += '<td style="background-color:yellow;"></td>';
+                        break;
+                    case 7:
+                        colorsElement += '<td style="background-color:gray;"></td>';
+                        break;
+                    case 8:
+                        colorsElement += '<td style="background-color:green;"></td>';
+                        break;
+                    case 9:
+                        colorsElement += '<td style="background-color:red;"></td>';//'<td style="background-color:red;></td>';
+                        break;
+                    default:
+                        colorsElement += '<td></td>';
+                        break;
+                }
+            }
+        }
+
+        colorsElement += '</tr>';
+        $('#grid-table-GridPerformanceMeasurementReport tbody').find('tr').first().before(colorsElement);
+    });
+
+    function showDelayedTransactions(orgUnitId) {
+        if (reportType == false) {
+            return;
+        }
+        var itemId = 8;
+        var fromDate = $("#hdnFromDateGreg").val().split('/');
+
+        if (fromDate[0].length == 1) {
+            fromDate[0] = '0' + fromDate[0];
+        }
+
+        if (fromDate[1].length == 1) {
+            fromDate[1] = '0' + fromDate[1];
+        }
+
+        fromDate = fromDate[0] + '/' + fromDate[1] + '/' + fromDate[2];
+
+        var toDate = $("#hdnToDateGreg").val().split('/');
+
+        if (toDate[0].length == 1) {
+            toDate[0] = '0' + toDate[0];
+        }
+
+        if (toDate[1].length == 1) {
+            toDate[1] = '0' + toDate[1];
+        }
+
+        toDate = toDate[0] + '/' + toDate[1] + '/' + toDate[2];
+
+        var departmentId = orgUnitId;
+        $("#hdnDepartmentId").val(orgUnitId);
+
+            //$('#ItemId').val(itemId);
+            //$('#FromDate').val(fromDate);
+            //$('#ToDate').val(toDate);
+            //$('#DepartmentId').val(departmentId);
+
+            globalItemId = itemId
+
+        var url = '@Url.Action("LateTransactionsDetails", "Shared")' + "?From=" + fromDate + "&To=" + toDate + "&DepartmentId=" + departmentId;
+            ShowDialog(url, 'dialogbox col-md-12');
+
+            @*$.ajax({
+                type: 'get',
+                url: '@Url.Action("DashboardDetails")',
+                data: { FromDate: fromDate, ToDate: toDate, DepartmentId: departmentId, ItemId: itemId, PageIndex: 0, PageSize: 10 },
+                success:
+                    function (data) {
+                        alert();
+               }
+            });*@
+    }
+
+    function showInProgressTransactions(orgUnitId) {
+        if (reportType == false) {
+            return;
+        }
+        var itemId = 8;
+        var fromDate = $("#hdnFromDateGreg").val().split('/');
+
+        if (fromDate[0].length == 1) {
+            fromDate[0] = '0' + fromDate[0];
+        }
+
+        if (fromDate[1].length == 1) {
+            fromDate[1] = '0' + fromDate[1];
+        }
+
+        fromDate = fromDate[0] + '/' + fromDate[1] + '/' + fromDate[2];
+
+        var toDate = $("#hdnToDateGreg").val().split('/');
+
+        if (toDate[0].length == 1) {
+            toDate[0] = '0' + toDate[0];
+        }
+
+        if (toDate[1].length == 1) {
+            toDate[1] = '0' + toDate[1];
+        }
+
+        toDate = toDate[0] + '/' + toDate[1] + '/' + toDate[2];
+
+        var departmentId = orgUnitId;
+        $("#hdnDepartmentId").val(orgUnitId);
+
+            //$('#ItemId').val(itemId);
+            //$('#FromDate').val(fromDate);
+            //$('#ToDate').val(toDate);
+            //$('#DepartmentId').val(departmentId);
+
+            globalItemId = itemId
+
+        var url = '@Url.Action("InProgressTransactionsDetails", "Shared")' + "?From=" + fromDate + "&To=" + toDate + "&DepartmentId=" + departmentId;
+            ShowDialog(url, 'dialogbox col-md-12');
+
+            @*$.ajax({
+                type: 'get',
+                url: '@Url.Action("DashboardDetails")',
+                data: { FromDate: fromDate, ToDate: toDate, DepartmentId: departmentId, ItemId: itemId, PageIndex: 0, PageSize: 10 },
+                success:
+                    function (data) {
+                        alert();
+               }
+            });*@
+    }
+</script>

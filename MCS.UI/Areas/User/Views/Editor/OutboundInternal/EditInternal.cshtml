@@ -1,0 +1,188 @@
+﻿@using MCS.UI.Areas.User.Models.Transaction
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Assignment;
+@model MCS.UI.Areas.User.Models.Transaction.Outbound.Internal.EditOutboundInternalVM
+
+@{
+    bool isVIP = (bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser);
+    if (!isVIP)
+    {
+        Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Areas/User/Views/Shared/_VIPLayout.cshtml";
+    }
+}
+
+@{string controller = TempData.Peek("ControllerName") != null ? TempData.Peek("ControllerName").ToString() : ViewContext.RouteData.Values["controller"].ToString();}
+
+<div class="panel-body editor">
+
+    <div class="col-md-12">
+        <div class="content_container site_border">
+            <div class="content_container content_container--header extra-padding">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <h3 class="title2 title2-padding">@DbRes.TResource("User.OutboundInternal.EditInternalOutbound")</h3>
+                    </div>
+                    <div class="col-xs-6 text-right">
+                        @*<a class="btn-site btn-inbox-up" href="#"><i class="uicon icon_copy"></i> نسخ بيانات أخر وارد</a>*@
+                        <a class="close-box hidden-xs" href="#"><i class="uicon icon_close"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="content_container content_container--body transparent-bg">
+                <div class="options-list row">
+
+                    <div class="col-xs-4 col-sm-2 text-center">
+                        <a href="#" class="boardered-circle-transparent active"><i class="uicon icon_folder1"></i></a>
+                        <a href="#"> البيانات الاساسية</a>
+                    </div>
+
+                    <div class="col-xs-4 col-sm-2 text-center">
+                        <a href="#" class="boardered-circle-transparent"><i class="uicon icon_folder2"></i></a>
+                        <a href="#"> ملحقات اصل المعاملة</a>
+                    </div>
+                    <div class="col-xs-4 col-sm-2 text-center">
+                        <a href="#" class="boardered-circle-transparent"><i class="uicon icon_folder3"></i></a>
+                        <a href="#">  @DbRes.TResource("User.Inbound.Names") </a>
+                    </div>
+                    <div class="col-xs-4 col-sm-2 text-center">
+                        <a href="#" class="boardered-circle-transparent"><i class="uicon icon_folder4"></i></a>
+                        <a href="#"> @DbRes.TResource("User.OutboundDraft.ElectronicCopies")</a>
+                    </div>
+                    <div class="col-xs-4 col-sm-2 text-center">
+                        <a href="#" class="boardered-circle-transparent"><i class="uicon icon_folder4"></i></a>
+                        <a href="#"> نسخ الكترونية لادارة خارجية</a>
+                    </div>
+                    <div class="col-xs-4 col-sm-2 text-center">
+                        <a href="#" class="boardered-circle-transparent"><i class="uicon icon_folder5"></i></a>
+                        <a href="#"> @DbRes.TResource("User.Inbound.Link")</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @using (Html.BeginForm("EditOutboundIntrnal", "OutboundIntrnal", FormMethod.Post, new { id = "frmEditOutboundInternal" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.StickyHiddenFor(model => model.Id, new { id = "hdnOutboundInternalId" })
+        @Html.StickyHiddenFor(model => model.OutboundInternalBasicInfoEdit.Number)
+        @Html.StickyHiddenFor(model => model.HijriRecordDate)
+        @Html.StickyHiddenFor(model => model.RecordDate)
+        @Html.StickyHiddenFor(model => model.StatusId)
+
+        <div class="page-content-wrap page-tabs-item active tabscontent" id="first-tab">
+            @{
+                Html.ViewData.TemplateInfo.HtmlFieldPrefix = "OutboundInternalBasicInfoEdit";
+                Html.ViewData.Add("HijriDate", Model.HijriRecordDate);
+                Html.ViewData.Add("HijriDateTitle", DbRes.TResource("User.OutboundInternal.RecordDate"));
+                Html.ViewData.Add("TransactionNumber", Model.OutboundInternalBasicInfoEdit.Number);
+                Html.ViewData.Add("TransactionNumberTitle", DbRes.TResource("User.OutboundInternal.Number"));
+            }
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-horizontal form-row">
+                        <div class="panel panel-default">
+                            <div id="dvBasicInfo">
+                                @Html.Partial("~/Areas/User/Views/Editor/OutboundInternal/_BasicInfoEditPartial.cshtml", Model.OutboundInternalBasicInfoEdit, Html.ViewData)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="page-content-wrap page-tabs-item tabscontent" id="third-tab"></div>
+        <div class="page-content-wrap page-tabs-item tabscontent" id="fifth-tab">
+            @*@{Html.ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+            @Html.Partial("~/Areas/User/Views/Transaction/_NamesPartial.cshtml", new TransactionNameVM(), Html.ViewData)*@
+        </div>
+        <div class="page-content-wrap page-tabs-item tabscontent" id="sixth-tab">
+            @{Html.ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+            @Html.Partial("~/Areas/User/Views/Shared/_LinksPartial.cshtml", new TransactionLinkVM(), Html.ViewData)
+        </div>
+        <div class="page-content-wrap page-tabs-item tabscontent" id="second-tab">
+            @Html.Partial("~/Areas/User/Views/Shared/_AssignmentsPartial.cshtml", new TransactionAssignmentVM(), Html.ViewData)
+        </div>
+        <div id="dvArchivingPartialContainer" style="position:absolute; visibility:hidden; display:block;">
+            @{ Html.ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+            @Html.Partial("~/Areas/User/Views/Transaction/_AttachmentsPartial.cshtml", new TransactionAttachmentVM(), Html.ViewData)
+            @Html.Partial("~/Areas/User/Views/Transaction/_ArchivingPartial.cshtml", new TransactionArchiveVM(), Html.ViewData)
+        </div>
+        <div class="page-content-wrap">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-footer only">
+                            @Html.ConfirmAction(OperationType.Update, "btnSaveOutboundInternal", DbRes.TResource("User.OutboundInternal.Edit"), Url.Action("EditOutboundInternal", "Editor"), null, null, null, "OnSuccess", null, DbRes.TResource("User.OutboundInternal.SaveMessage"), "post", "frmEditOutboundInternal", "BasicInformation", "btn btn-save pull-right", "CheckPriorityIfHasDate")
+                            <a data-bs-toggle="tooltip" id="aPrint" data-placement="top" title="@DbRes.TResource("User.OutboundInternal.Print")" class="dialog_print dialog_print_icon" onclick="ShowPrintDialog(); return false;"><i class="fa fa-print"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<script>
+
+    function SetSuggestedTopic() {
+        $("#txtAreaSubject").val($("#divForm__dvSuggestedTopicTree .txtDepartmentName").val());
+    }
+
+    $("ul.anchor a").click(function () {
+        $("ul.anchor a").removeClass("selected");
+        $("ul.anchor a").addClass("disabled");
+        $(this).addClass("selected");
+        $(".tabscontent").removeClass("active");
+
+        var divId = $(this).data("divid");
+        $("#" + divId).addClass("active");
+    });
+
+
+    function ShowPrintDialog() {
+        var params = { transactionId: $("#hdnOutboundInternalId").val() };
+
+        ShowDialogAjaxPrintingBarcodes('@Url.Action("PrinttingBarcodes","Shared")' + "?" + $.param(params), {}, 'OpenPrintDialogSuccess', 'dialogbox col-md-12 ');
+    }
+
+    function OpenPrintDialogSuccess(data, $obj) {
+        if (data.MessageType != 2) {
+            $obj.setContent(data.Html);
+        }
+        else {
+            __dialog.close();
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    $("#anchorArchiving").click(function () {
+        if ($("#third-tab div").length == 0) {
+            $("#third-tab").html($("#dvArchivingPartialContainer").html());
+            $("#dvArchivingPartialContainer").html("");
+        }
+    });
+    $(document).ready(function () {
+        $("#hdnTransactionId").val('@Model.Id');
+    })
+
+    function OnSuccess(data) {
+
+        if (data.MessageType != 2) {
+            ShowSuccesMessage(data.MessageText);
+
+            if (data.IsPopularization != false) {
+                $("#transactionAssigmentsTab").hide();
+                $("#ulTabs").addClass("steps_4");
+                $("#ulTabs").removeClass("steps_5");
+            }
+        }
+        else {
+
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+</script>

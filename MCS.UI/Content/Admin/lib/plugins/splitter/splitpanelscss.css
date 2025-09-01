@@ -1,0 +1,134 @@
+@charset "utf-8";
+/* CSS Document */
+
+
+.page-container {
+  margin: 20px;
+	
+}
+.help-text{
+    word-wrap: normal;
+	color:black;
+	display: block;
+	max-width:98%;
+	max-height: calc(100% - 75px) !important;
+	overflow-y: scroll;
+    overflow-x: hidden;
+}
+.help-text2{
+	word-wrap: normal;
+	color:black;
+	display: block;
+	max-width:98%;
+}
+
+
+/* horizontal panel*/
+
+.panel-container {
+  display: flex;
+  flex-direction: row;
+  border: 1px solid silver;
+  overflow: hidden;
+  height:100%;
+	position: relative;
+  
+  /* avoid browser level touch actions */
+  xtouch-action: none;
+
+}
+
+.panel-left {
+  flex: 0 0 auto;
+  /* only manually resize */
+  width: 20%;
+  min-width: 20%;
+  max-width: 80%;
+  z-index: 2;
+  background-color:white;
+  height:100%;
+  pointer-events: all;
+}
+.panel-left .input-group{
+  flex:1 1;
+}
+
+.splitter {
+  flex: 0 0 auto;
+  width: 3px;  
+  background: url(https://raw.githubusercontent.com/RickStrahl/jquery-resizable/master/assets/vsizegrip.png) center center no-repeat #535353;
+  min-height: 200px;
+  cursor: col-resize; 
+  height:100%;
+  pointer-events: all;
+}
+
+.panel-right {
+  flex: 1 1 auto;
+  /* resizable */
+  padding: 10px;
+  width: 0!important;
+  min-height: 200px;
+  min-width: 200px;
+  overflow-x: hidden;
+}
+
+
+/* vertical panel */
+
+.panel-container-vertical {
+  display: flex;
+  flex-direction: column;
+  height: 500px;
+  border: 1px solid silver;
+  overflow: hidden;
+}
+
+.panel-top {
+  flex: 0 0 auto;
+  /* only manually resize */
+  padding: 10px;
+  height: 150px;
+  width: 100%;
+  white-space: nowrap;
+  background: #838383;
+  color: white;
+}
+
+.splitter-horizontal {
+  flex: 0 0 auto;
+  height: 18px;
+  background: url(https://raw.githubusercontent.com/RickStrahl/jquery-resizable/master/assets/hsizegrip.png) center center no-repeat #535353;
+  cursor: row-resize;
+}
+
+.panel-bottom {
+  flex: 1 1 auto;
+  /* resizable */
+  padding: 10px;
+  min-height: 200px;
+  background: #eee;
+}
+.all-panel-container{
+	position: fixed;
+	height: 100%;
+	width: 100%;
+	top: 0px;
+	left:0px;
+	z-index: 9999999999;
+	pointer-events: none;
+}
+
+
+.appear{
+	display: none;
+}
+
+pre {
+  margin: 20px;
+  padding: 10px;
+  background: #eee;
+  border: 1px solid silver;
+  border-radius: 4px;
+  overflow: auto;
+}

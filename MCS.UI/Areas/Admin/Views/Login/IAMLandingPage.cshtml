@@ -1,0 +1,27 @@
+﻿@model YESSER.NCS.MCS.UI.Areas.User.Models.Login.IAMLogin
+@using YESSER.NCS.Framework.Localization
+
+@{
+    ViewBag.Title = DbRes.TResource("User.Login.Title");
+    Layout = "~/Views/Shared/_EmptyLayout.cshtml";
+}
+
+<div class="login-container">
+    @Html.HiddenFor(model => model.UserNationalId)
+</div>
+
+<div class="spinner" style="display:none;">
+    <div class="bounce1"></div>
+    <div class="bounce2"></div>
+    <div class="bounce3"></div>
+</div>
+
+<script>
+
+
+    $(document).ready(function () {
+        $(".spinner").show();
+        var sUserNationalId = $('#UserNationalId').val();
+        window.location.href = '@Url.Action("ContinueIAMLogin", "Login")?sUserNationalId=' + sUserNationalId;
+    });
+</script>

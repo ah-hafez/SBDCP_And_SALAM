@@ -1,0 +1,235 @@
+﻿@model VerificationCodeVM
+
+@{
+    ViewBag.Title = ViewData["FileTitle"];
+    Layout = "~/Areas/User/Views/Shared/_LayoutVerificationCode.cshtml";
+}
+
+<center> 
+    <img src="~/Content/User/lib/images/Logo-1.svg" width="120" />
+
+    <div class="page-content-wrap">
+        <br />
+        <br />
+        <span>@DbRes.TResource("User.Transaction.VerificationCode.Title") </span>
+        <div class="row">
+            <div class="col-md-6" style="display:none" id="dvUserVerifyCode">
+                <br />
+                <br />
+                <input type="text" id="UserVerifyCode" placeholder="ادخل رمز التحقق المرسل" required class="form-control" />
+            </div>
+        </div>
+        <br />
+        <div class="content_container site_border" style="margin-bottom:50px;">
+            <div class="content_container content_container--header">
+                <div class="row">
+                    <div class="col-md-2 text-center">
+                        <a class="btn btn-st2 mr-1" id="btnSendCode" onclick="SendCode(@Model.TransactionId,@Model.TransactionCategoryId)">@DbRes.TResource("User.Transaction.VerificationCode.SendCode")</a>
+                    </div>
+                    <div class="col-md-2 text-center">
+                        <a class="btn btn-st2 mr-1" style="display:none" id="btnVerifyCode" onclick="VerifyCode(@Model.TransactionId,@Model.TransactionCategoryId)">@DbRes.TResource("User.Transaction.VerificationCode.VerifyCode")</a>
+                    </div>
+                    <div class="col-md-2 text-center">
+                        <a class="btn btn-st2 mr-1" style="display:none" id="btnResendCode" onclick="ResendCode(@Model.TransactionId,@Model.TransactionCategoryId)">@DbRes.TResource("User.Transaction.VerificationCode.ResendCode")</a>
+                    </div>
+                    <div id="countdown" class="badge badge-danger col-md-4 text-center" style="display: none;"></div>
+                </div>
+
+            </div>
+        </div>
+        @Html.StickyHiddenFor(model => model.Mode, new { id = "hdnMode" })
+        @Html.StickyHiddenFor(model => model.CodeExpirationDuration, new { id = "hdnCodeExpirationDuration" })
+
+    </div>
+</center>
+<script>
+    var countdownValue = $('#hdnCodeExpirationDuration').val();
+    function VerifyCode(TransactionId, TransactionCategoryId) {
+        debugger; 
+        var UserVerifyCode = $('#UserVerifyCode').val();
+        var wheretogo = $('#hdnMode').val();
+        if (UserVerifyCode != null && UserVerifyCode != "") {
+            debugger;
+            var data = { transactionId: TransactionId, UserVerifyCode: UserVerifyCode };
+            event.preventDefault();
+
+            $.ajax({
+                url: '@Url.Action("VerifyCode", "Inbound")',
+                type: 'GET',
+                data: data,
+                success: function (data) {
+                    debugger;
+                    if (data.MessageType != 2) {
+                        $("#btnVerifyCode").attr("disabled", "disabled");
+                      OpenTransaction(TransactionId, TransactionCategoryId, wheretogo);
+                    }
+                    else
+                    {
+                        ShowErrorMessage(data.MessageText);
+                    }
+
+                }
+            });
+        } else {
+
+            $('#UserVerifyCode').addClass('RedBorder');
+
+        }
+
+    }
+    function SendCode(TransactionId, TransactionCategoryId) {
+        debugger;
+        startCountdown();
+        var token = $("input[name='__RequestVerificationToken']").val();
+        var data = {
+            transactionId: TransactionId, TransactionCategoryId: TransactionCategoryId, __RequestVerificationToken: token
+        };
+                event.preventDefault();
+
+      $.ajax({
+     url: '@Url.Action("SendTransactionEncryptionCode", "Inbound")',
+     type: 'POST',
+     data: data,
+     success: function (data) {
+         debugger;
+         if (data.Count > 0) {
+             debugger;
+
+         }
+     }
+ });
+    } 
+    function ResendCode(TransactionId, TransactionCategoryId) {
+        startCountdown();
+        var token = $("input[name='__RequestVerificationToken']").val();
+        var data = {
+            transactionId: TransactionId, TransactionCategoryId: TransactionCategoryId, __RequestVerificationToken: token
+        };
+       event.preventDefault();
+
+     $.ajax({
+     url: '@Url.Action("ReSendTransactionEncryptionCode", "Inbound")',
+     type: 'POST',
+     data: data,
+     success: function (data) {
+         debugger;
+         if (data.Count > 0) {
+             document.getElementById('countdown').innerHTML = data.MessageText;
+
+         }
+     }
+ });
+    }
+    function startCountdown() {
+        var countdownElement = document.getElementById('countdown');
+        var resendButton = document.getElementById('btnResendCode');
+        var sendCodeButton = document.getElementById('btnSendCode');
+        var dvUserVerifyCode = document.getElementById('dvUserVerifyCode');
+        var VerifyCode = document.getElementById('btnVerifyCode');
+
+        // Display the countdown element
+        dvUserVerifyCode.style.display = 'block';
+        VerifyCode.style.display = 'block';
+        countdownElement.style.display = 'block';
+        sendCodeButton.style.display = 'none';
+
+        // Disable the "Send Code" button during countdown
+
+        // Update countdown value every second
+        var countdownInterval = setInterval(function () {
+            countdownElement.innerHTML ='@DbRes.TResource("User.Transaction.VerificationCode.ResendCodeCounter")'+" " + countdownValue ;
+            countdownValue--;
+
+
+            if (countdownValue < 0) {
+                clearInterval(countdownInterval);
+                countdownElement.style.display = 'none';
+                resendButton.style.display = 'block';
+
+                countdownValue = 60;
+            }
+        }, 1000);
+    }
+    function OpenTransaction(TransactionId, TransactionCategoryId, wheretogo) {
+        var urlActionPage = "";
+        var isVIPUser = $("#IsVIPUser").val();
+        if (wheretogo == "Edit") {
+            switch (TransactionCategoryId) {
+                case @TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName):
+
+                    controllerName = 'Inbound';
+                    if (isVIPUser != '' && isVIPUser != null && isVIPUser == 'True') {
+                        urlActionPage = '@Url.Action("Edit", "VipInbound")?id=';
+                    } else {
+                        urlActionPage = '@Url.Action("Edit", "Inbound")?id=';
+                    }
+
+
+                    break;
+                case @TransactionCategory.ExternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName):
+                    controllerName = 'OutboundExternal';
+                    if (isVIPUser != '' && isVIPUser != null && isVIPUser == 'True') {
+                        urlActionPage = '@Url.Action("VIPEdit", "OutboundExternal")?id=';
+                    } else {
+                        urlActionPage = '@Url.Action("Edit", "OutboundExternal")?id=';
+                    }
+                    break;
+                case @TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName):
+                    controllerName = 'OutboundInternal';
+                    if (isVIPUser != '' && isVIPUser != null && isVIPUser == 'True') {
+                        urlActionPage = '@Url.Action("Edit", "VipOutboundInternal")?id=';
+                    } else {
+                        urlActionPage = '@Url.Action("Edit", "OutboundInternal")?id=';
+
+
+                    }
+                    break;
+                case @TransactionCategory.DraftOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName):
+                    controllerName = 'OutboundDraft';
+                    if (isVIPUser != '' && isVIPUser != null && isVIPUser == 'True') {
+                        urlActionPage = '@Url.Action("VIPEdit", "OutboundDraft")?id=';
+                    } else {
+                        urlActionPage = '@Url.Action("Edit", "OutboundDraft")?id=';
+
+
+                    }
+                    break;
+            }
+        urlActionPage = urlActionPage + EncryptionKey(TransactionId);
+        window.location.href = urlActionPage;
+        }
+       else if(wheretogo == "Editor")
+        {
+
+            switch (TransactionCategoryId) {
+             case @TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName):
+                 controllerName = 'Inbound';
+                 urlActionPage = '@Url.Action("Editor", "Inbound")?id=';
+                 break;
+             case @TransactionCategory.ExternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName):
+                 controllerName = 'OutboundExternal';
+                 urlActionPage = '@Url.Action("Editor", "OutboundExternal")?id=';
+                 break;
+             case @TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName):
+                 controllerName = 'OutboundInternal';
+                 urlActionPage = '@Url.Action("Editor", "OutboundInternal")?id=';
+                 break;
+             case @TransactionCategory.DraftOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName):
+                 controllerName = 'OutboundDraft';
+                 urlActionPage = '@Url.Action("Editor", "OutboundDraft")?id=';
+                 break;
+         } 
+            urlActionPage = urlActionPage + EncryptionKey(TransactionId);
+
+            window.location.href = urlActionPage;
+
+    }
+
+
+    }
+</script>
+<style>
+    .RedBorder {
+        border: 1px solid #fe0000 !important
+    }
+</style>

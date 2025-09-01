@@ -1,0 +1,63 @@
+﻿@{
+    ViewBag.Title = "EntityTransCountReport";
+}
+
+<div class="grid formAction noBorder">
+    <div class="headRow">
+        <div class="col4">
+            <div class="iconHeadRow">
+                <img src="~/images/sentPapersMini.png" width="32" height="32" alt="">
+            </div>
+            <h2>
+                @Html.Label("رسم بياني للمعاملات حسب الإدارة", new { id = "lblPageTitle" })
+                @*<asp:Literal ID="lblPageTitle" runat="server" meta:resourcekey="lblPageTitleResource1"
+                            Text="رسم بياني للمعاملات حسب الإدارة" />*@
+            </h2>
+        </div>
+    </div>
+    <div class="rowF text-center">
+        <div class="colWide98">
+            @*            <asp:validationsummary id="wcValidationSummary" runat="server" showmessagebox="false"
+                cssclass="alert alert-danger" showsummary="true" meta:resourcekey="wcValidationSummaryResource1"
+                validationgroup="EntityTransCount" forecolor="" />*@
+        </div>
+    </div>
+    <div class="rowF">
+        <div class="pading">&nbsp;</div>
+        <div class="col2">
+            @Html.Label("الإدارة", new { id = "wslblMenuLabel", @Class = "LredColor" })
+            @*<asp:Label ID="wslblMenuLabel" runat="server" />*@
+        </div>
+
+        @Html.Partial("~/View/Shared/_MenuCollapsiblePartial.cshtml", null)
+    </div>
+    @*<div validationcontrol="wcrfvDepartments">
+                <asp:Literal ID="lblDepartment" runat="server" meta:resourcekey="lblDepartmentResource1" Visible="false" />
+                <uc1:menucollapsible id="ucMenuCallerCabinets" runat="server" ismandatory="true" />
+                <asp:CustomValidator ID="wcrfvDepartments" runat="server" ClientValidationFunction="__IsDepartmentFilled"
+                    Display="None" meta:resourcekey="wcrfvDepartmentsResource1" ValidationGroup="EntityTransCount"
+                    SetFocusOnError="true" />
+            </div>*@
+    <div class="rowF text-center">
+        <div class="colWide">
+            <input type="button" value="@DbRes.TResource("User.Search.SubmitSearch")" id="eibtnSearchResults" class="btn btnBlue expandPopupBtn" />
+            @*<sss:sssbutton id="eibtnSearch" runat="server" cssclass="btn btnBlue" onclick="eibtnSearch_Click"
+                meta:resourcekey="eibtnSearch" />*@
+        </div>
+    </div>
+    @*<div class="rowF text-center">
+        <div class="colWide">
+            <sss:sssbuttonhtml5 id="eibtnSearchResults" cssclass="btn btnBlue expandPopupBtn" runat="server"
+                causesvalidation="True" meta:resourcekey="eibtnSearchResultsResource1"
+                onclick="OnClickButtonSearch" validationgroup="EntityTransCount" />
+        </div>
+    </div>*@
+    <div class="rowF">
+        <div runat="server" id="divPrinter" class="rowExpandArea text-center expandArea">
+            @*<uc1:printbar id="ucPrintBar" runat="server" />*@
+        </div>
+    </div>
+    <div class="footerRow">
+        &nbsp;
+    </div>
+</div>

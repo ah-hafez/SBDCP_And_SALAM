@@ -1,0 +1,19 @@
+﻿@using MCS.UI.Areas.User.Models.Transaction;
+@model AjaxGrid<TransactionReservedVM>
+
+@{
+    Layout = null;
+}
+
+@Html.Grid(Model).CollectionName("Reservations").Named("grdTransactionsReservations").Columns(columns =>
+{
+    columns.Add(model => model.Type).Titled(DbRes.TResource("User.Transaction.Reservation.Type"));
+    columns.Add(model => model.Year).Titled(DbRes.TResource("User.Transaction.Reservation.Year"));
+    columns.Add(model => model.Number).Titled(DbRes.TResource("User.Transaction.Reservation.Number"));
+
+})
+
+<script>
+
+</script>
+

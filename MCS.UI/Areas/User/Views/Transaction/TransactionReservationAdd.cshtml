@@ -1,0 +1,139 @@
+﻿@using MCS.UI.Areas.User.Models
+@using MCS.UI.Areas.User.Models.Transaction
+@using MCS.Framework.Localization
+@using MCS.Common
+@using MCS.UI.Areas.User.Models.OrgUnit
+@model TransactionReservationVM
+
+@{
+    string controller = "Reservation";
+    ViewBag.Title = DbRes.TResource("User.Transaction.TransactionReservation");
+    Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
+}
+
+<div class="mb-3 mx-5 mx-xs-3 header-container2 d-flex align-items-center mt-5">
+    <h3 class="title2 title2-padding">@DbRes.TResource("User.Transaction.TransactionReservation")</h3>
+    <div class="close-icon mt-0 ml-auto" data-bs-toggle="tooltip" data-placement="bottom" title="">
+        <a class="circle-icon color-white" href="@Url.Action("Reservation","File")"><i class="la la-close"></i></a>
+    </div>
+</div>
+
+<div class="content_container">
+    <div class="white-container mx-5 mx-xs-3">
+        <form id="frmReservation" >
+            @Html.AntiForgeryToken()
+            <div id="ReservationContent">
+                <div class="form-row">
+                    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                        @Html.LabelFor(model => model.TransactionCategoryId, new { @class = "" })<span class="red-color">*</span>
+                        @Html.DropDownListFor(model => model.TransactionCategoryId, new List<SelectListItem>
+                        {
+                            new SelectListItem { Text = @DbRes.TResource("User.SubjectSearch.Inbound"), Value = Convert.ToString(TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName)) },
+                            new SelectListItem { Text = @DbRes.TResource("User.SubjectSearch.Outbound"), Value = Convert.ToString(TransactionCategory.ExternalOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName))},
+                        }, new { @class = "form-control" })
+                    </div>
+                    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12" id="dvDepartments">
+
+
+                        @*<label>@Html.DisplayNameFor(model => model.EntityId)<span class="stark">*</span></label>
+
+                        @Html.EditorFor(model => model.EntityId, "OrgHierarchyCaller", additionalViewData: new { treeId = "dvDepartmentsTree", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Shared"), GetNodeInfoByIdActionURL = @Url.Action("GetInternalPartyInfoById", "Shared"), GetNodeInfoByNumActionURL = @Url.Action("GetInternalPartyInfoByNumber", "Shared"), onClickfunction = "GetUsersByOrgUnitId", ValidationGroup = "AddReservation", ShowAddPartyButton = false })*@
+
+
+                        @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.EntityId, TreeMode.Single, "dvDepartmentsTree", true, "GetUsersByOrgUnitId", "AddReservation", "dvDepartments")
+                        @Html.StickyHiddenFor(model => model.EntityName, new { @id = "OrgUnitName" })
+
+                    </div>
+                    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                        <label class="">@DbRes.TResource("User.Transaction.Reservation.User")</label><span class="red-color">*</span>
+                        @Html.AutoCompleteBuilder("ddlOrgUnitUsers", "hdnOrgUnitUsers", ViewData["OrgUnitsUsersData"] != null ? ViewData["OrgUnitsUsersData"].ToString() : null, Model != null ? Model.UserId.ToString() : null, true, "form-control")
+                        @Html.HiddenGroupFor(model => model.UserId, new { id = "hdnOrgUnitUsers" }, "AddReservation")
+                        @Html.StickyHiddenFor(model => model.UserId, new { @id = "hdnOrgUnitUserName" })
+                    </div>
+                    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                        @Html.LabelFor(model => model.Count, new { @class = "" })<span class="red-color">*</span>
+                        @Html.NumericTextBoxFor(model => model.Count, new { @class = "form-control", @Value = "", @maxlength = "3" }, "AddReservation")
+                        @Html.HiddenFor(model => model.Value, new { id = "hdnValue" })
+                    </div>
+                    <div class="form-group col-lg-6 col-md-8 col-sm-6 col-xs-12">
+                        @Html.LabelFor(model => model.Reason, new { @class = "" })<span class="red-color">*</span>
+                        @Html.TextAreaGroupFor(model => model.Reason, new { id = "txtAreaReason", @class = "form-control" }, "AddReservation")
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="pull-right mx-3 mx-sm-5">
+        @Html.ConfirmAction(OperationType.Save, "btnSaveReservation", DbRes.TResource("User.Transaction.Reservation.Save"), Url.Action("SaveTransactionReservation", "Reservation"), null, null, null, "OnSaveReservationCallBack", null, DbRes.TResource("User.Inbound.SaveMessage"), "post", "frmReservation", "AddReservation", "btn btn-st1 btn-lg")
+    </div>
+</div>
+
+<script src="~/Scripts/Transaction.js"></script>
+
+<script type="text/javascript">
+    $(document).on("click", "span[data-node-id]", function () {
+        var elemnt = $(this);
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('InternalLoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetOrgUnitsNodes")',
+                data: { parentId: $(this).data("node-id"), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+                success:
+                    function (data) {
+
+                        $(elemnt).closest('li').children('ul').last().empty()
+
+                        $(elemnt).closest('li').children('ul').last().append(data);
+
+                        $(elemnt).removeClass("InternalLoadedData");
+                    }
+            });
+        }
+    });
+
+    function OnSaveReservationCallBack(data) {
+        if (data.MessageType != 2 && data.MessageType != 1) {
+            UpdateMenuFileInformation('@Url.Action("GetMenuFile", "Shared")');
+            ShowSuccesMessage('@DbRes.TResource("User.AssignmentPaper.SaveSucceeded")', "ReturnToReservationTray");
+            ClearInputs('ReservationContent');
+        } else if (data.MessageType == 1) {
+            ShowErrorMessage(data.MessageText);
+        } else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function GetUsersByOrgUnitId() {
+
+        if ($("#EntityId").val() != '' && $("#frmReservation .txtDepartmentName").val() != '') {
+            $("#hdnOrgUnitUsers").val('');
+            $("#ddlOrgUnitUsers").val('');
+            $("#hdnOrgUnitUserName").val('');
+            $('#hdnOrgUnitName').val($('#frmReservation .txtDepartmentName').val());
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetUsersByOrgUnitId", "Reservation")',
+                data: { id: $("#EntityId").val() },
+                success:
+                    function (data) {
+                        AutoCompleteChangeList("ddlOrgUnitUsers", data);
+                        $("#ddlOrgUnitUsers").trigger('change');
+                        $("#hdnOrgUnitUsers").trigger('change');
+                        $("#ddlOrgUnitUsers").prop('disabled', false);
+                    }
+            });
+            return false;
+        }
+        else {
+            AutoCompleteChangeList("ddlOrgUnitUsers", "[]");
+            $("#hdnOrgUnitUsers").val('');
+            $("#ddlOrgUnitUsers").trigger('change');
+            $("#hdnOrgUnitUsers").trigger('change');
+            $("#ddlOrgUnitUsers").prop('disabled', true);
+        }
+    }
+
+    function ReturnToReservationTray() {
+         window.location.href = '@Url.Action("Reservation", "File")';
+    }
+</script>

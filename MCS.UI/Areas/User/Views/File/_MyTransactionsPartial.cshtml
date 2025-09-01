@@ -1,0 +1,855 @@
+﻿@using MCS.Common
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.File
+@using MCS.UI.Areas.User.Models.Transaction
+@model IList<TransactionTrayInfoVM>
+@{
+
+
+}
+
+<div class="mb-3 mb-lg-0 mt-md-5 mt-auto">
+    @*<h3 class="site-color mb-3 mb-lg-4">@DbRes.TResource("User.File.MyTransactions")</h3>*@
+    @Html.Partial("~/Areas/User/Views/File/_TransactionColorExplainPartial.cshtml", null)
+</div>
+<div class="content_container site_border">
+
+    <div class="">
+        <div class="d-block d-lg-flex mx-3 mb-3 mt-4">
+            @if (!(bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser))
+            {
+                <ul class="nav nav-tabs custom-sub-nav-tabs" role="tablist">
+                    <li role="presentation" class="active">
+                        <a href="#sub-tab-1" aria-controls="sub-tab-1" role="tab" data-toggle="tab" onclick="sortingByDateType(this,'@Convert.ToInt32(TransactionDateType.Any)','ALL')"> <span class="badge badge badge-primary badge-pill1 spnCount_@((int)TrayType.MyTransactions)">0</span> @DbRes.TResource("User.File.All")</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#sub-tab-4" aria-controls="sub-tab-4" role="tab" data-toggle="tab" onclick="sortingByDateType(this,'@Convert.ToInt32(TransactionDateType.Today)')"> <span class="badge badge badge-primary badge-pill1 spnCount_@((int)TrayType.Today)">0</span> @DbRes.TResource("User.File.Today")</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#sub-tab-2" aria-controls="sub-tab-2" role="tab" data-toggle="tab" onclick="sortingByDateType(this,'@Convert.ToInt32(TransactionDateType.HasDate)','ALL')">  <span class="badge badge badge-primary badge-pill1 spnCount_@((int)TrayType.HasDate)">0</span> @DbRes.TResource("User.File.HasDate")</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#sub-tab-3" aria-controls="sub-tab-3" role="tab" data-toggle="tab" onclick="sortingByDateType(this,'@Convert.ToInt32(TransactionDateType.Late)','ALL')"> <span class="badge badge badge-primary badge-pill1 spnCount_@((int)TrayType.Late)">0 </span> @DbRes.TResource("User.File.Late")</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#sub-tab-4" aria-controls="sub-tab-4" role="tab" data-toggle="tab" onclick="sortingByDateType(this,'@Convert.ToInt32(TransactionDateType.Decisions)')">قرارات <span class="badge badge badge-primary badge-pill spnCount_@((int)TrayType.Decisions)">0</span> </a>
+                    </li>
+
+                    <li role="presentation">
+                        <a href="#sub-tab-5" aria-controls="sub-tab-5" role="tab" data-toggle="tab" onclick="sortingByDateType(this,'@Convert.ToInt32(TransactionDateType.Circulars)')">تعاميم <span class="badge badge badge-primary badge-pill spnCount_@((int)TrayType.Circulars)">0</span> </a>
+                    </li>
+
+                    <li role="presentation">
+                        <a href="#sub-tab-6" aria-controls="sub-tab-5" role="tab" data-toggle="tab" onclick="sortingByDateType(this,'@Convert.ToInt32(TransactionDateType.SublimeMatter)')">أمر سامي <span class="badge badge badge-primary badge-pill spnCount_@((int)TrayType.SublimeMatter)">0</span> </a>
+                    </li>
+                </ul>
+            }
+            else
+            {
+                <ul class="nav nav-tabs custom-sub-nav-tabs" role="tablist">
+                    <li role="presentation" class="active">
+                        <a href="#sub-tab-1" aria-controls="sub-tab-1" role="tab" data-toggle="tab" onclick="sortingByDateType(this,'@Convert.ToInt32(TransactionDateType.Any)','ALL')"> <span class="badge badge badge-primary badge-pill1 spnCount_@((int)TrayType.MyTransactions)">0</span> @DbRes.TResource("User.File.All")</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#sub-tab-4" aria-controls="sub-tab-4" role="tab" data-toggle="tab" onclick="sortingByDateType(this,'@Convert.ToInt32(TransactionDateType.Decisions)')">قرارات <span class="badge badge badge-primary badge-pill spnCount_@((int)TrayType.Decisions)">0</span> </a>
+                    </li>
+
+                    <li role="presentation">
+                        <a href="#sub-tab-5" aria-controls="sub-tab-5" role="tab" data-toggle="tab" onclick="sortingByDateType(this,'@Convert.ToInt32(TransactionDateType.Circulars)')">تعاميم <span class="badge badge badge-primary badge-pill spnCount_@((int)TrayType.Circulars)">0</span> </a>
+                    </li>
+                </ul>
+            }
+            <div class="ml-auto align-items-baseline options p-0">
+                <div class="filter-link ml-md-auto mr-lg-3 my-2 mt-lg-auto">
+                    <div class="checkbox">
+                        <label for="CheckAllBoxes">
+                            <input id="CheckAllBoxes" type="checkbox" value="">
+                            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                            <span class="Darkgreen bold">
+                                @DbRes.TResource("User.File.SelectAll")
+                            </span>
+                        </label>
+                    </div>
+                    <a class="dashed-circle sort-target" href="javascript:toggleOrderBox()">
+                        <i class="uicon icon_order Darkgreen"></i>
+                        <span class="Darkgreen font-size-16">
+                            @DbRes.TResource("User.File.SortBy")
+
+                        </span>
+                    </a>
+                    <a href="javascript:toggleFilterBox()" class="dashed-circle filter-target">
+                        <i class="uicon icon_filter Darkgreen"></i>
+                        <span class="Darkgreen font-size-16">
+                            @DbRes.TResource("User.Layout.Search")
+
+                        </span>
+                    </a>
+
+                    @if ((bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser))
+                    {
+                        <a data-type="Card" onclick="goToView(1)" href="#" class=" system_1 Darkgreen font-size-16">
+                            <i class="uicon icon_cards Darkgreen font-size-16"></i>
+                            <span class="Darkgreen font-size-16">
+                                @DbRes.TResource("User.File.Cards")
+                            </span>
+                        </a>
+                        <a data-type="Table" onclick="goToView(2)" href="#" class="active grid_system Darkgreen font-size-16">
+                            <i class="uicon icon_table Darkgreen font-size-16"></i>
+                            <span class="Darkgreen font-size-16">
+                                @DbRes.TResource("User.File.Table")
+                            </span>
+                        </a>
+                    }
+                    else
+                    {
+                        <a data-type="Card" onclick="goToView(1)" href="#" class="active system_1">
+                            <i class="uicon icon_cards Darkgreen font-size-16"></i>
+                            <span class="Darkgreen font-size-16">
+                                @DbRes.TResource("User.File.Cards")
+                            </span>
+                        </a>
+                        <a data-type="Table" onclick="goToView(2)" href="#" class="active grid_system">
+                            <i class="uicon icon_table Darkgreen font-size-16"></i>
+                            <span class="Darkgreen font-size-16">
+                                @DbRes.TResource("User.File.Table")
+                            </span>
+                        </a>
+                    }
+
+                </div>
+            </div>
+
+        </div>
+        @if (!(bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser))
+        {
+            <div class="row">
+                <div class="col-lg-12 d-flex justify-content-between">
+                    <div class="d-flex">
+                        <ul class="nav nav-pills MCShomeTabs">
+                            <li>
+                                <a onclick="FilterByProcedure('@Convert.ToInt32(TrayProcedureId.Necessary)')">
+
+                                    <span class="badge badge-danger spnCount_@((int)TrayProcedureFilter.Necessary)" id="myNecessaryCounter"></span>
+                                    <span>
+                                        @DbRes.TResource("User.File.Transaction.NecessaryProcess")
+                                    </span>
+                                </a>
+                            </li>
+                            <li role="presentation">
+                                <a onclick="FilterByProcedure('@Convert.ToInt32(TrayProcedureId.Opinion)')">
+
+                                    <span class="badge badge-danger spnCount_@((int)TrayProcedureFilter.Opinion)" id="myOpinionCounter"></span>
+                                    <span>
+                                        @DbRes.TResource("User.File.Transaction.Opinion")
+                                    </span>
+                                </a>
+                            </li>
+                            <li role="presentation">
+                                <a onclick="FilterByProcedure('@Convert.ToInt32(TrayProcedureId.Follow)')">
+
+                                    <span class="badge badge-danger spnCount_@((int)TrayProcedureFilter.Follow)" id="myFollowCounter"></span>
+                                    <span>
+                                        @DbRes.TResource("User.File.Transaction.Follow")
+                                    </span>
+                                </a>
+                            </li>
+                            <li role="presentation">
+                                <a onclick="FilterByProcedure('@Convert.ToInt32(TrayProcedureId.Reviews)')">
+
+                                    <span class="badge badge-danger spnCount_@((int)TrayProcedureFilter.Reviews)" id="myReviewsCounter"></span>
+                                    <span>
+                                        @DbRes.TResource("User.File.Transaction.Reviews")
+                                    </span>
+                                </a>
+                            </li>
+                            <li role="presentation">
+                                <a id="othrs" onclick="ShowProcedure()">
+
+                                    <span class="badge badge-danger spnCount_@((int)TrayProcedureFilter.OthersAll)" id="myOthersCounter"></span>
+                                    <span>
+                                        @DbRes.TResource("User.File.Transaction.Others")
+                                    </span>
+                                </a>
+                            </li>
+                            <li id="divProcedure" style="display:none;">
+                                @Html.AutoCompleteBuilder("ddlActionId", "hdnActionId1", ViewData["AllActionsData"].ToString(), "", true, "form-control", "", "", "", false, "", "ApplyFilterByProcedure")
+                                @Html.StickyHidden("hdnActionId1", "", new { id = "hdnActionId1" })
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+                </div>
+
+            </div>
+        }
+        <hr class="mb-3" />
+    </div>
+    <form>
+        @Html.Partial("~/Areas/User/Views/Search/_FilteringAndOrdaringPartial.cshtml", new TransactionTrayInfoVM())
+    </form>
+    @Html.StickyHidden("selectedTab", "1584", new { id = "selectedTab" })
+    @Html.Hidden("transId", new { id = "transId" })
+    @Html.StickyHidden("transactionsIds", "", new { id = "transactionsIds" })
+    @Html.StickyHidden("encryptedTransactionsIds", "", new { id = "encryptedTransactionsIds" })
+    @Html.EncryptedStickyHidden("numberOne", "1", new { id = "numberOne" })
+    @Html.EncryptedStickyHidden("numberTwo", "2", new { id = "numberTwo" })
+    @Html.StickyHidden("hdnFilter")
+    @Html.StickyHidden("hdnProcedure", "", new { id = "hdnProcedure" })
+    <div class="content_container" id="TransactionsBoxes">
+        @Html.Partial("~/Areas/User/Views/File/_TransactionsBoxesPartial.cshtml", Model)
+    </div>
+</div>
+
+
+@*
+    <script src=@Url.Content("~/Content/User/lib/js/jquery.slimscroll.min.js")></script>
+    <script src=@Url.Content("~/Content/User/lib/js/mousewheel.min.js")></script>
+    <script src=@Url.Content("~/Content/User/lib/js/jquery.iviewer.min.js")></script>
+    <script src=@Url.Content("~/Content/User/lib/js/app.min.js")></script>
+    <script src=@Url.Content("~/Content/User/lib/js/sideBarControl/SideBarControl.min.js")></script>
+*@
+<div class="sidebarMultiOptions invisible transparent-bg">
+    <div class="options-list d-flex">
+
+        <div class="d-flex mr-auto info-bottom">
+
+
+            <a class="align-self-start close-box" href="javascript:toggleSelectedPaperBox()">
+                <i class="uicon icon_arrow_down"></i>
+            </a>
+            <span class="paper_count"></span>
+            <span>@DbRes.TResource("User.Transaction.Count")</span>
+        </div>
+
+        <div class="d-flex bottom-actions text-right">
+
+            <div class="d-flex text-center">
+                <a onclick="openPendingExecution('@((int)TrayType.MyTransactions)','1')" class="boardered-circle-transparent"><i class="demo-icon icon-assignment mt-3"></i></a>
+                <a onclick="openPendingExecution('@((int)TrayType.MyTransactions)','1')">@DbRes.TResource("User.Transaction.Assignment")</a>
+            </div>
+            @if (!(bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser))
+            {
+                <div class="d-flex text-center">
+                    <a onclick="openPendingExecution('@((int)TrayType.MyTransactions)','2')" class="boardered-circle-transparent"><i class="demo-icon icon-transfertoclosed"></i></a>
+                    <a onclick="openPendingExecution('@((int)TrayType.MyTransactions)','2')">@DbRes.TResource("User.Transaction.Done")</a>
+                </div>
+            }
+
+            @*<div class="d-flex text-center" id="divPrintAssignment">
+                    <a onclick="PrintAssignment()" class="boardered-circle-transparent"><i class="fa fa-print"></i></a>
+                    <a onclick="PrintAssignment()">@DbRes.TResource("User.Transaction.Assignment.Print")</a>
+                </div>*@
+            <a href="javascript:closeSendActionShowMessage()" class="close-box close-box-md hidden-success"><i class="uicon icon_close"></i></a>
+
+        </div>
+    </div>
+    <div class="bottom-white selected-papers-wrapper">
+        <div class="col-xs-12">
+            <ul class="papers-selected"></ul>
+        </div>
+    </div>
+
+    <div class="bottom-white msg-bottom-box msg-confirm-box">
+        <div class="col-xs-12 col-sm-6">
+            <h4 class="title4">
+                <i class="glyphicon glyphicon-question-sign"></i>
+                <span>سيتم نقل المعاملات الى قائمة المعاملات المنجزة</span>
+            </h4>
+        </div>
+        <div class="col-sm-6 text-right">
+            <a class="btn-site " href="javascript:closePaperSendToDone()">الغاء</a>
+            <a class="btn-site" href="javascript:sendActionShowMessage()">موافق</a>
+        </div>
+    </div>
+
+    <div class="bottom-white msg-bottom-box success-done-msg">
+        <div class="col-xs-12 col-sm-6">
+            <h4 class="title4">
+                <i class="glyphicon glyphicon-ok"></i>
+                <span>تم نقل المعاملات الى قائمة المعاملات المنجزة بنجاح</span>
+            </h4>
+        </div>
+        <div class="col-sm-6 text-right">
+            <a class="btn-site" href="#">الذهاب الى المعاملات المنجزة</a>
+        </div>
+    </div>
+</div>
+<style>
+    .nav {
+        padding-right: 27px;
+    }
+</style>
+
+<script>
+
+
+
+    var urlActionPage = "";
+    function Open(Id, encryptedId) {
+
+        var isVIPUser = $("#IsVIPUser").val();
+            var currentTarget = $(event.currentTarget);
+            var isViewed = currentTarget.data('viewed');
+            var deliveryMethodId = currentTarget.data('deliverymethodid');
+            var type = $('#hdnTransactionType_' + Id).val();
+        var transactionType = $('#hdnType_' + Id).val();
+        var isEncrypted = $('#hdnEncrypted_' + Id).val();
+         var token = $("input[name='__RequestVerificationToken']").val();
+            var controllerName;
+
+             var data = {
+                 transactionId: Id, TransactionCategoryId: transactionType, Mode: "Edit", __RequestVerificationToken: token};
+        if (isEncrypted == "True") {
+            debugger;
+            $.ajax({
+                url: '@Url.Action("ShowVerifyCodeBox", "Inbound")',
+                type: 'POST',
+                data: data,
+                success: function (data) {
+                    debugger;
+                    if (data.Count > 0) {
+                        debugger;
+                        ShowEncrypttionDialog(data.Html, "new-footer dialogbox col-md-8 col-md-offset-2 col-xs-8 col-xs-offset-2");
+                    };
+                }
+            });
+
+        }
+        else {
+            switch (type) {
+                case 'Inbound':
+
+                    controllerName = 'Inbound';
+                    if (isVIPUser != '' && isVIPUser != null && isVIPUser == 'True') {
+                        urlActionPage = '@Url.Action("Edit", "VipInbound")?id=';
+                    } else {
+                        urlActionPage = '@Url.Action("Edit", "Inbound")?id=';
+                    }
+
+
+                    break;
+                case 'ExternalOutbound':
+                    controllerName = 'OutboundExternal';
+                    if (isVIPUser != '' && isVIPUser != null && isVIPUser == 'True') {
+                        urlActionPage = '@Url.Action("VIPEdit", "OutboundExternal")?id=';
+                    } else {
+                        urlActionPage = '@Url.Action("Edit", "OutboundExternal")?id=';
+                    }
+                    break;
+                case 'InternalOutbound':
+                    controllerName = 'OutboundInternal';
+                    if (isVIPUser != '' && isVIPUser != null && isVIPUser == 'True') {
+                        urlActionPage = '@Url.Action("Edit", "VipOutboundInternal")?id=';
+                    } else {
+                        urlActionPage = '@Url.Action("Edit", "OutboundInternal")?id=';
+
+
+                    }
+                    break;
+                case 'DraftOutbound':
+                    controllerName = 'OutboundDraft';
+                    if (isVIPUser != '' && isVIPUser != null && isVIPUser == 'True') {
+                        urlActionPage = '@Url.Action("VIPEdit", "OutboundDraft")?id=';
+                    } else {
+                        urlActionPage = '@Url.Action("Edit", "OutboundDraft")?id=';
+
+
+                    }
+                    break;
+            }
+             urlActionPage = urlActionPage + EncryptionKey(encryptedId);
+     @*if (JSON.parse(isViewed.toLowerCase()) == false && deliveryMethodId == DeliveryMethodType.ElectronicPaper) {
+         ShowVerifyTransactionNumberOrBarcode('@Url.Action("VerifyTransactionNumberOrBarcode", "Transaction")'.replace("Transaction", controllerName), Id, transactionType);
+     }*@
+     //else {
+         ExecuteTargetFunction();
+     //}
+        }
+
+
+        }
+
+        function ExecuteTargetFunction() {
+            window.location.href = urlActionPage;
+    }
+    function OpenPupUp(Id, encryptedId) {
+        ShowErrorMessage('ليس لديك صلاحية الدخول على المعاملة');
+        //$('#transId').val(transId);
+       // ShowRejectTransactionPopup('إرجاع المعاملة', '', 'ليس لديك صلاحية الدخول على المعاملة', '', 'إرجاع')
+    }
+
+    function OpenEditors(Id, encryptedId) {
+        debugger;
+            var currentTarget = $(event.currentTarget);
+            var isViewed = currentTarget.data('viewed');
+            var deliveryMethodId = currentTarget.data('deliverymethodid');
+            var type = $('#hdnTransactionType_' + Id).val();
+        var transactionType = $('#hdnType_' + Id).val();
+        var isEncrypted = $('#hdnEncrypted_' + Id).val();
+
+        var token = $("input[name='__RequestVerificationToken']").val();
+        var data = {
+            transactionId: Id, TransactionCategoryId: transactionType, Mode:"Editor", __RequestVerificationToken: token
+        };
+            var controllerName;
+            urlActionPage
+        if (isEncrypted == "True") {
+            debugger;
+            $.ajax({
+                url: '@Url.Action("ShowVerifyCodeBox", "Inbound")',
+                type: 'POST',
+                data: data,
+                success: function (data) {
+                    debugger;
+                    if (data.Count > 0) {
+                        debugger;
+                        ShowEncrypttionDialog(data.Html, "new-footer dialogbox col-md-8 col-md-offset-2 col-xs-8 col-xs-offset-2");
+                    };
+                }
+            });
+
+        }
+        else {
+
+            switch (type) {
+                case 'Inbound':
+                    controllerName = 'Inbound';
+                    urlActionPage = '@Url.Action("Editor", "Inbound")?id=';
+                    break;
+                case 'ExternalOutbound':
+                    controllerName = 'OutboundExternal';
+                    urlActionPage = '@Url.Action("Editor", "OutboundExternal")?id=';
+                    break;
+                case 'InternalOutbound':
+                    controllerName = 'OutboundInternal';
+                    urlActionPage = '@Url.Action("Editor", "OutboundInternal")?id=';
+                    break;
+                case 'DraftOutbound':
+                    controllerName = 'OutboundDraft';
+                    urlActionPage = '@Url.Action("Editor", "OutboundDraft")?id=';
+                    break;
+            }
+
+
+            urlActionPage = urlActionPage + EncryptionKey(encryptedId);
+            @*if (JSON.parse(isViewed.toLowerCase()) == false && deliveryMethodId == DeliveryMethodType.ElectronicPaper) {
+                ShowVerifyTransactionNumberOrBarcode('@Url.Action("VerifyTransactionNumberOrBarcode", "Transaction")'.replace("Transaction", controllerName), Id, transactionType);
+            }
+            else {
+                ExecuteTargetFunction();
+            }*@
+
+            ExecuteTargetFunction();
+        }
+        }
+    function OpenEditor(trayId, id, type) {
+        debugger;
+            window.location.href = '@Url.Action("Index","Editor")?trayId=' + trayId + "&transactionId=" + id + "&transactionCategoryId=" + type;
+        }
+</script>
+<script>
+        var idsList = [];
+        function openPendingExecution(type, tabId) {
+            idsList = $('#encryptedTransactionsIds').val().split(",");
+            var encryptedtype = type == '1' ? $('#numberOne').val() : $('#numberTwo').val();
+            var encryptedtab = tabId == '1' ? $('#numberOne').val() : $('#numberTwo').val();
+            var queryString = idsList.length > 0 ? "?" : "";
+            for (var i = 0; i < idsList.length; i++) {
+                queryString = queryString + "transactionsIds=" + idsList[i] + "&";
+            }
+            window.location.href = '@Url.Action("PendingExecuting", "File")' + queryString + 'type=' + encryptedtype + '&tabId=' + encryptedtab;
+        }
+
+        var myTransactionEventHandler = "@Html.Raw(Url.Action("UpdateTrayTransactions", "File", new { trayId = ViewData["TrayType"] ?? 1, dateType = ViewData["dateType"] ?? 1 }))";
+
+        function prepareTransactions(optionalData) {
+            $(".grid-mvc").gridmvc();
+            pageGrids.MyTransactionsGrid.ajaxify(
+                {
+                    getPagedData: myTransactionEventHandler,
+                    getData: myTransactionEventHandler,
+                    requestType: "POST",
+                    callbackClientFunctionAfter: ["goToViewAfterPaging"],
+                    optionalData: optionalData
+                });
+        }
+
+    function sortingByDateType(obj, dateType) {
+            $("div.mr-auto.filter-link a").removeClass("active");
+        $(obj).addClass("active");
+        var sortByDateTypeData = { trayId: '@Convert.ToInt32(TrayType.MyTransactions)', dateType: parseInt(dateType), PageSize: @ViewData["PageSize"]!= null ?@ViewData["PageSize"]: '@UIHelper.PageSize'};
+            $("#TransactionsBoxes").html("");
+            $.ajax({
+                url: '@Url.Action("UpdateTrayTransactions","File")',
+                type: 'POST',
+                data: sortByDateTypeData,
+                success: function (data) {
+                    $("#TransactionsBoxes").html(data.Html);
+                    $('#selectedTab').val(dateType);
+                    unfillSelectedAll();
+                    prepareTransactions(sortByDateTypeData);
+                },
+                error: function (a) {
+                }
+            });
+    }
+
+      function goToView(id) {
+
+          var TypeData = { trayId: '@Convert.ToInt32(TrayType.MyTransactions)', dateType: parseInt('@Convert.ToInt32(TransactionDateType.Any)'), PageSize: @ViewData["PageSize"]!= null ?@ViewData["PageSize"]: '@UIHelper.PageSize', renderType : id};
+            $("#TransactionsBoxes").html("");
+            $.ajax({
+                url: '@Url.Action("UpdateTrayTransactions","File")',
+                type: 'POST',
+                data: TypeData,
+                success: function (data) {
+                    $("#TransactionsBoxes").html(data.Html);
+                    $('#selectedTab').val(TypeData.dateType);
+                    unfillSelectedAll();
+                    prepareTransactions(TypeData);
+                },
+                error: function (a) {
+                }
+            });
+        }
+
+        function chechSourseTypeId() {
+            if ($('#hdnTransactionTypeId').val() != -1 && $('#hdnTransactionTypeId').val() != "") {
+                getSourceTypeByTransactionTypeId($('#hdnTransactionTypeId').val());
+                $('#SourceTypeId').attr('disabled', false);
+            } else {
+                $('#SourceTypeId').val("");
+                $('#hdnSourceTypeId').val("");
+                $('#SourceTypeId').attr('disabled', true);
+            }
+        }
+
+        function getSourceTypeByTransactionTypeId(typeId) {
+
+             $.ajax({
+                url: '@Url.Action("GetTransactionTypesForSearch", "File")',
+                type: 'GET',
+                cache: false,
+                 data: { transactionCategory: typeId },
+                 success: function (data) {
+                     $('#SourceTypeId').val("");
+                     $('#hdnSourceTypeId').val("");
+                     AutoCompleteChangeList("SourceTypeId", data);
+                }
+            });
+        }
+
+    $(document).ready(function () {
+        var selectddl = '';
+        $(".MCShomeTabs li").click(function () {
+
+            $(".MCShomeTabs").find('li').removeClass("active");
+
+            if (selectddl == '') {
+                $('#othrs').removeClass("active");
+                selectddl = '';
+            }
+            else {
+                $('#othrs').addClass("active");
+                selectddl = '';
+            }
+            $(this).addClass("active");
+        });
+            $('#SourceTypeId').val("");
+            $('#SourceTypeId').attr('disabled', true);
+
+            $(".aSave").click(function () {
+            idsList = [];
+            $('.boxes input:checked').each(function (index, obj) {
+                idsList.push(parseInt(obj.id.replace("ch_", "")));
+            });
+                var transactionsIds = idsList.join(',');
+                var trayid = @((int)TrayType.MyTransactions);
+                var trayActionType = @((int)TrayActionType.Save);
+                var token = $("input[name='__RequestVerificationToken']").val();
+
+                var data = {
+                    trayId: trayid, transactionsIds: transactionsIds, trayActionType: trayActionType, __RequestVerificationToken: token
+                };
+
+                $.ajax({
+                    url: '@Url.Action("MoveTransactionsList", "File")',
+                    type: 'POST',
+                    data: data,
+                    success: function (data) {
+                        window.location.href = '@Url.Action("MyTransactions", "File")';
+                    }
+                });
+            });
+
+        switch (localStorage.getItem('CurrentTypeView')) {
+            case 'Card': goCardsView(event);
+                break;
+            case 'Table': goTableView(event);
+                break;
+            default: goTableView(event);
+        }
+
+    $.ajax({
+			   url: '@Url.Action("GetReleaaseNotes", "File")',
+			   type: 'GET',
+             success: function (data) {
+                 if (data.Count > 0) {
+                     ShowCommitmentDialog(data.Html, "new-footer dialogbox col-md-8 col-md-offset-2 col-xs-8 col-xs-offset-2");
+                 };
+			   }
+           });
+        });
+
+
+        var sortingOrders = [];
+        var currentIndex = 1;
+
+        function updateSortingData(index, ascending, obj) {
+            var objIndex = checkIfExist(obj, ascending);
+
+            if (obj.value == "") {
+               sortingOrders.splice(objIndex, 1);
+            } else {
+                if (objIndex == -1) {
+                    sortingOrders.push({ Index: index, Ascending: ascending, ColunmName: obj.id });
+                    currentIndex++;
+                } else {
+                    sortingOrders[objIndex].Ascending = ascending;
+                }
+            }
+        }
+
+        function checkIfExist(obj) {
+            var index = -1;
+            for (var i = 0; i < sortingOrders.length; i++) {
+                if (sortingOrders[i].ColunmName == obj.id) {
+                    index = i;
+                    break;
+                }
+            }
+            return index;
+        }
+
+    function doSort(obj, value) {
+        debugger;
+            var selectedTab = parseInt($('#selectedTab').val());
+             var dir = "";
+
+            updateSortingData(currentIndex, value, obj);
+
+            var filters = $("#hdnFilter").val();
+            var sortData = { trayId: 1, dateType: selectedTab, sortType: obj.id, dir: dir, searchData: value, SortingOrders: sortingOrders, filter: filters };
+            $.ajax({
+                url: '@Url.Action("UpdateTrayTransactions", "File")',
+                type: 'POST',
+                cache: false,
+                data: sortData,
+                success: function (data) {
+                    $('#TransactionsBoxes').html("");
+                    $('#TransactionsBoxes').html(data.Html);
+                    prepareTransactions(sortData);
+                    goToViewAfterPaging();
+                }
+            });
+        }
+
+        function fillHidden(obj) {
+            $('#hdn' + obj.id).val("");
+            $('#hdn' + obj.id).val(obj.value);
+        }
+
+        function FilterBy() {
+            var trayid = 1;
+            var selectedTab = parseInt($('#selectedTab').val());
+            var filter = "";
+            if ($("#hdnPriorityLevelId").val() != "" && $("#hdnPriorityLevelId").val() != null) {
+
+                filter += "Priority__1__" + $("#hdnPriorityLevelId").val();
+            }
+            if ($("#hdnConfidentialityLevelId").val() != "" && $("#hdnConfidentialityLevelId").val() != null) {
+
+                if (filter.length > 0) {
+                    filter += "&";
+                }
+                filter += "Confidentiality__1__" + $("#hdnConfidentialityLevelId").val();
+            }
+            if ($("#hdnTransactionTypeId").val() != "" && $("#hdnTransactionTypeId").val() != null) {
+
+                if (filter.length > 0) {
+                    filter += "&";
+                }
+                filter += "TransactionType__1__" + $("#hdnTransactionTypeId").val();
+            }
+            if ($("#TransId").val() != "" && $("#TransId").val() != null) {
+
+                if (filter.length > 0) {
+                    filter += "&";
+                }
+                filter += "Number__1__" + $("#TransId").val();
+            }
+            if ($("#hdnExternalPartyId").val() != "" && $("#hdnExternalPartyId").val() != null) {
+
+                if (filter.length > 0) {
+                    filter += "&";
+                }
+                filter += "ExternalParty__1__" + $("#hdnExternalPartyId").val();
+            }
+            if ($("#hdnSourceTypeId").val() != "" && $("#hdnSourceTypeId").val() != null) {
+
+                if (filter.length > 0) {
+                    filter += "&";
+                }
+                filter += "SourceType__1__" + $("#hdnSourceTypeId").val();
+            }
+            if ($("#hdnDateCal").val() != "" && $("#hdnDateCal").val() != null) {
+
+                if (filter.length > 0) {
+                    filter += "&";
+                }
+                filter += "Date__1__" + $("#hdnDateCal").val();
+            }
+            if ($("#hdnSubjectClassification").val() != "" && $("#hdnSubjectClassification").val() != null) {
+
+                if (filter.length > 0) {
+                    filter += "&";
+                }
+                filter += "LetterType__1__" + $("#hdnSubjectClassification").val();
+            }
+            if ($("#Description").val() != "" && $("#Description").val() != null) {
+
+                if (filter.length > 0) {
+                    filter += "&";
+                }
+                filter += "Subject__2__" + $("#Description").val();
+            }
+            if ($("#hdnPrivecyLevelId").val() != "" && $("#hdnPrivecyLevelId").val() != null) {
+
+                if (filter.length > 0) {
+                    filter += "&";
+                }
+                filter += "PrivecyId__1__" + $("#hdnPrivecyLevelId").val();
+            }
+            if ($("#hdnFromOrgUnit").val() != "" && $("#hdnFromOrgUnit").val() != null) {
+
+                if (filter.length > 0) {
+                    filter += "&";
+                }
+                filter += "FromEntityId__1__" + $("#hdnFromOrgUnit").val();
+            }
+            if ($("#hdnProcedure").val() != "" && $("#hdnProcedure").val() != null) {
+                if (filter.length > 0) {
+                    filter += "&";
+                }
+                filter += "ActionId__1__" + $("#hdnProcedure").val();
+            }
+            $("#hdnFilter").val(filter);
+
+            var filterData = { trayId: trayid, dateType: selectedTab, filter: filter, SortingOrders: sortingOrders };
+
+            $.ajax({
+                url: '@Url.Action("UpdateTrayTransactions","File")',
+                type: 'POST',
+                data: filterData,
+                success: function (data) {
+                    $('#TransactionsBoxes').html("");
+                    $('#TransactionsBoxes').html(data.Html);
+                    prepareTransactions(filterData);
+                    goToViewAfterPaging();
+                }
+            });
+        }
+
+        function showRejectionPopup(transId) {
+            $('#transId').val(transId);
+            ShowRejectTransactionPopup('إرجاع المعاملة', '', 'يرجى ادخال سبب الارجاع *  ','','إرجاع')
+        }
+
+        $(document).on("RejectButtonPopupClicked", function (event, param) {
+            if ($('#rejectionReason').val().trim() == '') {
+                $('#errorMessageValidate').html(" أدخل سبب الإرجاع");
+            } else {
+                if ($('#transId').val() != "") {
+                    RejectTransaction($('#transId').val(), $('#rejectionReason').val().trim());
+                }
+            }
+
+        });
+
+    function RejectTransaction(transactionId, rejectionReason) {
+
+            var trayid = @((int)TrayType.MyTransactions);
+            var transactionId = parseInt(transactionId);
+            var trayActionType = @((int)TrayActionType.RejectRevert) ;
+        var remarks = rejectionReason;
+        var pageSize = 0;
+            var token = $("input[name='__RequestVerificationToken']").val();
+            var data = {
+                trayId: trayid,
+                transactionId: transactionId, trayActionType: trayActionType, pageSize: pageSize
+                , remarks: remarks, __RequestVerificationToken: token
+            };
+            $.ajax({
+                url: '@Url.Action("MoveTransaction", "File")',
+                type: 'POST',
+                data: data,
+                success: function (data) {
+                    $('#transId').val("");
+                    $('#rejectionReason').val("");
+                    $('#errorMessageValidate').html("");
+                    $('.close-button-popup').click();
+                    if (data.MessageText != "")
+                        ShowSuccesMessage(data.MessageText);
+                    else {
+                        ShowSuccesMessage("تم إرجاع المعاملة بنجاح");
+                        doReload();
+                    }
+                }
+            });
+        }
+
+    function doReload() {
+            window.location.href = '@Url.Action("MyTransactions", "File")';
+        }
+
+    function CreateOutboundDraft(baseTransactionId) {
+
+        window.location.href = '@Url.Action("Add", "OutboundExternal")?baseTransactionId=' + baseTransactionId;
+    }
+
+    function PrintAssignment() {
+        var TransactionId = $('#transactionsIds').val();
+        var url = '@Url.Action("GetTransactionAssignmentHistoryWithContent", "TransactionLog")' + '?transactionId=' + TransactionId;
+        ShowDialog(url, 'dialogbox col-md-12 ');
+    }
+
+    function FilterByProcedure(ProcedureId) {
+        $("#divProcedure").css("display", "none");
+        $('#hdnProcedure').val(ProcedureId);
+        FilterBy();
+    }
+
+    function ApplyFilterByProcedure() {
+
+        $('#hdnProcedure').val($('#hdnActionId1').val());
+        FilterBy();
+    }
+
+    function ShowProcedure() {
+        $("#divProcedure").css("display", "block");
+    }
+
+
+</script>
+
+
+<script>
+    $(document).ready(function ()
+    {
+        //goCardsView();
+        //sessionStorage.setItem('CurrentTypeView', 'Card');
+    });
+
+</script>

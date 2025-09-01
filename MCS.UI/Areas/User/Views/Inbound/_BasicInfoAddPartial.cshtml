@@ -1,0 +1,1166 @@
+﻿    @model AddInboundBasicInfoVM
+@using MCS.Common
+@using MCS.Framework.Controls.Mvc
+@using MCS.Framework.Controls
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Transaction.Inbound
+@using MCS.UI.Areas.User.Models.Transaction
+<!-- ******************************Content ************************* -->
+@*Remove Class row*@
+<div class="form-row">
+    @*<div class="form-group col-lg-12 col-md-12 col-xs-12 col-sm-12">
+            <div class="mt-2 text-danger pull-left">
+                <p class="stark">@DbRes.TResource("Admin.User.MustFill") * </p>
+            </div>
+        </div>*@
+
+
+    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+        <label>@DbRes.TResource("User.Inbound.BasicInfo.InboundDocumentNumber")<span class="stark NotIndividual">*</span></label>
+        @Html.TextBoxGroupFor(model => model.InboundDocumentNumber, "BasicInformation", new { @class = "form-control", maxlength = "30", @Value = "" })
+        <i id="CalMessage11" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+        <span id="dateMessage" style="color:red"></span>
+    </div>
+
+
+    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3 with-icon">
+        <label>@DbRes.TResource("User.Inbound.BasicInfo.date")<span class="stark NotIndividual">*</span></label>
+        @Html.CalendarCustom("HasInboundDateCal", "hdnHasInboundDateGreg", "hdnHasDateInboundUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), Model != null ? Model.InboundDateH : null, "form-control")
+        <a class=" date-icon2 " onclick="showCalender('HasInboundDateCal')"><img src="~/Content/User/lib/images/SystemIcon/main bar-08.svg" width="30" /></a>
+        @Html.StickyHidden("hdnHasInboundDateGreg", null, new { id = "hdnHasInboundDateGreg" })
+        @Html.HiddenGroupFor(model => model.InboundDateH, new { id = "hdnHasDateInboundUm", AutoComplete = "off" }, "BasicInformation")
+        <i id="CalMessage11" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+        <span id="dateMessage" style="color:red"></span>
+    </div>
+
+
+    <div class="form-group col-lg-3 col-md-6 col-sm-12 col-xs-12" id="inboundDestDv" style="display:none;">
+        <label>@DbRes.TResource("User.Inbound.BasicInfo.InboundDestination")</label>
+        <div>
+            @Html.CustomRadioButtonFor(model => model.IsForIndividual, "false", new { @id = "Entities", Checked = "checked" })
+            @DbRes.TResource("User.Inbound.BasicInfo.InboundDestination.Entities")
+
+            @Html.CustomRadioButtonFor(model => model.IsForIndividual, "true", new { @id = "Individual" })
+            @DbRes.TResource("User.Inbound.BasicInfo.InboundDestination.Individual")
+        </div>
+    </div>
+    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.GeneralPermissions.AdministrationCreated))
+    {
+        <div class="form-group col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-3">
+            <fieldset class="field-set" id="dvDepartmentsTree2">
+                @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.OriginatorOrgUnitId, TreeMode.Single, "treeDirectedToOrgUnit2", true, "GetDirectedToUsersByOrgUnitId", "BasicInformation", "dvDepartmentsTree2")
+            </fieldset>
+        </div>
+    }
+
+    <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12 mb-3">
+        <fieldset>
+            <div class="form-group">
+                <label class="w-100">@DbRes.TResource("User.Inbound.BasicInfo.InboundType") <span class="stark">*</span></label>
+                <div>
+                    @Html.AutoCompleteBuilder("ddlTransactionSourceType", "hdnTransactionSourceType", ViewData["TransactionTypesData"].ToString(), Model != null ? Model.TransactionTypeId.ToString() : null, true, "form-control", "hdnTypeIsPopularization", "", "", true)
+                    @Html.HiddenGroupFor(model => model.TransactionTypeId, new { @Value = "", id = "hdnTransactionSourceType" }, "BasicInformation")
+                    @Html.Hidden("hdnTypeIsPopularization", null, new { id = "hdnTypeIsPopularization" })
+                </div>
+            </div>
+        </fieldset>
+    </div>
+
+    <div class="form-group col-lg-6 col-md-6 col-sm-12 col-xs-12 readonlyByPrivilege">
+        <fieldset class="field-set">
+            <div id="divContainerExternalParties1">
+                @Html.Partial("~/Areas/User/Views/Inbound/_ExternalPartiesPartial.cshtml", new ViewDataDictionary { { "ExternalPartiesData", ViewData["ExternalPartiesData"] } })
+            </div>
+            @Html.HiddenFor(model => model.DestinationId, new { id = "hdnDestinationId" })
+        </fieldset>
+
+    </div>
+
+    <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12 mb-3">
+        <fieldset>
+            <div class="form-group">
+                <label class="w-100">@DbRes.TResource("User.Transaction.ConfidentialityLevel") <span class="stark">*</span></label>
+                <div>
+                    @Html.AutoCompleteBuilder("ddlConfedentiality", "hdnConfedentiality", ViewData["ConfidentialityData"].ToString(), Model != null ? Model.ConfidentialityLevelId.ToString() : null, true, "form-control", "", "", "", true)
+                    @Html.HiddenGroupFor(model => model.ConfidentialityLevelId, new { @Value = "", id = "hdnConfedentiality" }, "BasicInformation")
+
+                </div>
+            </div>
+        </fieldset>
+    </div>
+
+
+
+    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+        @Html.LabelFor(model => model.DirectedToId, new { @class = "w-100" })
+        @Html.EditorFor(model => model.DirectedToId, "AutoComplete", additionalViewData: new { autoCompleteControlid = "ddlDirectedToId", hdnIdToSaveValue = "hdnDirectedToId", items = ViewData["OrgUnitsUsersData"] != null ? ViewData["OrgUnitsUsersData"].ToString() : null, selectedId = Model.DirectedToId, matchAnywhere = true, hdnExtraParametersId = "", selectFirstIndex = false, validationGroup = "", onChangeCallback = "" })
+    </div>
+
+
+
+    <div class="form-group col-lg-6 col-md-4 col-sm-6 col-xs-12 mb-3" id="">
+        <fieldset class="field-set">
+            <div id="dvDepartmentsTree">
+                @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.DirectedToOrgUnitId, TreeMode.Single, "dvDepartmentsTree", true, "GetDirectedToUsersByOrgUnitId", "BasicInformation", "dvDepartmentsTree")
+            </div>
+        </fieldset>
+        @*<label>@Html.DisplayNameFor(model => model.DirectedToOrgUnitId)<span class="stark">*</span></label>
+            @Html.EditorFor(model => model.DirectedToOrgUnitId, "OrgHierarchyCaller", additionalViewData: new { treeId = "DirectedToOrgUnitId", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Shared"), GetNodeInfoByIdActionURL = @Url.Action("GetInternalPartyChildren", "Shared"), GetNodeInfoByNumActionURL = @Url.Action("GetInternalPartyChildren", "Shared"), onClickfunction = "GetDirectedToUsersByOrgUnitId", ValidationGroup = "BasicInformation", ShowAddPartyButton = false })*@
+    </div>
+
+
+    <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12 mb-3">
+        <fieldset>
+            <div class="form-group">
+                <label class="w-100">@DbRes.TResource("User.Transaction.PriorityLevel")<span class="stark">*</span></label>
+                <div>
+                    @Html.AutoCompleteBuilder("ddlPriorityLevel", "hdnPriorityLevel", ViewData["PrioritiesData"].ToString(), Model != null ? ViewData["PrioritiesData"].ToString() : null, true, "form-control", "", "", "", true)
+                    @Html.HiddenGroupFor(model => model.PriorityLevelId, new { @Value = "", id = "hdnPriorityLevel" }, "BasicInformation")
+                    @Html.Hidden("hdnPriorityHasDate", null, new { id = "hdnPriorityHasDate" })
+                </div>
+            </div>
+        </fieldset>
+    </div>
+
+
+    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3" style="display:none">
+        <label>@DbRes.TResource("User.DistrubutionList.DistrubutionListLabel")</label>
+        @Html.EditorFor(model => model.DistrubutionListId, "AutoComplete", additionalViewData: new { autoCompleteControlid = "ddlDistrubutionList", hdnIdToSaveValue = "hdnDistrubutionList", items = ViewData["DistributionLists"] != null ? ViewData["DistributionLists"].ToString() : null, selectedId = Model != null ? Model.DistrubutionListId.ToString() : null, matchAnywhere = true, inputClassName = "form-control", hdnExtraParametersId = "", ulClassName = "", buttonId = "", selectFirstIndex = false, validationGroup = "", onChangeCallback = "" })
+    </div>
+
+
+
+    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+        <label>@DbRes.TResource("User.Inbound.BasicInfo.DeliveryMethod") <span class="stark">*</span></label>
+        @Html.EditorFor(model => model.DeliveryMethodId, "AutoComplete", additionalViewData: new { autoCompleteControlid = "ddlBasicDeliveryMethod", hdnIdToSaveValue = "hdnBasicDeliveryMethod", items = ViewData["DeliveryMethod"] != null ? ViewData["DeliveryMethod"].ToString() : null, selectedId = SystemDefaultValuesHelper.GetDefaultValue(TransactionCategories.Inbound, CategoryTypes.BasicDeliveryMethod), matchAnywhere = true, inputClassName = "form-control", hdnExtraParametersId = "", ulClassName = "", buttonId = "", selectFirstIndex = false, validationGroup = "", onChangeCallback = "onChangeDeliveryMethod" })
+    </div>
+
+
+    <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12 mb-3" style="display:none">
+        <fieldset>
+            <div class="form-group">
+                <label class="w-100">@DbRes.TResource("User.Transaction.Outbound.DeliveryMethod")<span class="stark">*</span></label>
+                <div>
+                    @Html.AutoCompleteBuilder("ddlBasicDeliveryMethod", "hdnBasicDeliveryMethod", ViewData["DeliveryMethod"].ToString(), Model != null ? ViewData["DeliveryMethod"].ToString() : null, true, "form-control", "", "", "", true, "", "onChangeDeliveryMethod")
+                    @Html.HiddenGroupFor(model => model.DeliveryMethodId, new { @Value = "", id = "hdnBasicDeliveryMethod" }, "BasicInformation")
+
+                </div>
+            </div>
+        </fieldset>
+    </div>
+
+
+
+
+    @*//Ehab*@
+
+
+
+    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3" style="display:none">
+        <label class="w-100">@DbRes.TResource("User.Transaction.Name.City")</label>
+        @Html.AutoCompleteBuilder("ddlCity", "City", ViewData["SettingCity"].ToString(), null, true, "form-control")
+        @Html.HiddenGroupFor(model => model.CityId, new { @Value = "", id = "City" }, "BasicInformation")
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12 mb-3" style="display:none;">
+        @Html.LabelFor(model => model.SignedById, new { @class = " w-100" })
+        @Html.EditorFor(model => model.SignedById, "AutoComplete", additionalViewData: new { autoCompleteControlid = "ddlSignedById", hdnIdToSaveValue = "hdnSignedById", items = ViewData["ExternalPartiesManagers"] != null ? ViewData["ExternalPartiesManagers"].ToString() : null, selectedId = Model != null ? Model.SignedById.ToString() : null, matchAnywhere = true, inputClassName = "form-control", hdnExtraParametersId = "", ulClassName = "", buttonId = "", selectFirstIndex = false, validationGroup = "", onChangeCallback = "" })
+    </div>
+
+
+
+    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.GeneralPermissions.EncryptTransaction))
+    {<div class="form-group col-lg-3 col-md-6 col-sm-12 col-xs-12 mb-3" style="display:none">
+            @Html.LabelFor(model => Model.Encrypted, new { @class = "w-100" })
+            <div class="form-check form-check-inline">
+                @Html.RadioButtonFor(model => model.Encrypted, "true", new { @class = "form-check-input", type = "radio", name = "inlineRadioOptions", id = "inlineRadio1", value = "option1", })
+
+                <label class="form-check-label" for="inlineRadio1">@DbRes.TResource("Admin.OrgUnit.OrgYes")</label>
+            </div>
+            <div class="form-check form-check-inline">
+                @Html.RadioButtonFor(model => model.Encrypted, "false", new { @class = "form-check-input", type = "radio", name = "inlineRadioOptions", id = "inlineRadio1", value = "option1" })
+
+                <label class="form-check-label" for="inlineRadio2">@DbRes.TResource("Admin.OrgUnit.OrgNo")</label>
+            </div>
+        </div>
+
+    }
+
+    <div class="form-group col-lg-3 col-md-6 col-sm-12 col-xs-12 mb-3">
+        <label class="w-100">@DbRes.TResource("User.Inbound.BasicInfo.IsAppointment") </label>
+        <label>
+            @Html.RadioButton("radio1", "1", new { id = "radio1", @class = "radio-inline" })
+            <text> @DbRes.TResource("Global.Dialog.Yes")</text>
+        </label>
+        <label>
+            @Html.RadioButton("radio1", "0", new { Checked = "checked", id = "radio1", @class = "radio-inline pr-5" })
+            <text> @DbRes.TResource("Global.Dialog.No")</text>
+        </label>
+    </div>
+    <div class="form-group col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-3 with-icon" id="datePicker">
+        @DbRes.TResource("User.Transaction.BasicInfo.AppointmentDate")
+        <div class="d-flex">
+            <div class="with-icon">
+                @Html.CalendarCustom("HasDateCal", "hdnHasDateGreg", "hdnHasDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), Model != null ? Model.RemindDateH : null, "form-control")
+                <a class=" date-icon2 " onclick="showCalender('HasDateCal')"><img src="~/Content/User/lib/images/SystemIcon/main bar-08.svg" width="30" /></a>
+                @Html.HiddenGroupFor(model => model.RemindDateH, new { id = "hdnHasDateUm" }, "BasicInformation")
+                @Html.HiddenGroupFor(model => model.RemindDate, new { id = "hdnHasDateGreg" }, "BasicInformation")
+            </div>
+
+            @DbRes.TResource("User.Transaction.BasicInfo.AppointmentTime")
+            <div class="indent-text">
+                <div class="col-sm-4 col-xs-4">
+                    @Html.AutoCompleteBuilder("ddlMinute", "hdnMinuteId", LookupCategory.Minute, null, true, "form-control time", null, null, false, null, DbRes.TResource("Global.MinuteSymbole"))
+                    @Html.HiddenGroupFor(model => model.Minute, new { id = "hdnMinute" }, "")
+                    @Html.Hidden("hdnMinuteId", "", new { id = "hdnMinuteId" })
+                </div>
+                <div class="col-sm-4 col-xs-4">
+                    @Html.AutoCompleteBuilder("ddlHour", "hdnHourId", LookupCategory.Hour, null, true, "form-control time", null, null, false, null, DbRes.TResource("Global.HourSymbole"))
+                    @Html.HiddenGroupFor(model => model.Hour, new { id = "hdnHour" }, "")
+                    @Html.Hidden("hdnHourId", "", new { id = "hdnHourId" })
+                </div>
+            </div>
+            <i id="CalMessage1" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+            <span id="CalMessage" style="color:red"></span>
+        </div>
+    </div>
+
+
+
+    <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12 mb-3">
+        <fieldset>
+            <div class="form-group">
+                <label class="w-100">@DbRes.TResource("User.Transaction.BasicInfo.Type") <span class="stark">*</span></label>
+                <div>
+                    @Html.AutoCompleteBuilder("ddlInboundDocumentType", "hdnInboundDocumentType", ViewData["LetterTypeData"].ToString(), Model != null ? ViewData["LetterTypeData"].ToString() : null, true, "form-control", "", "", "", true)
+                    @Html.HiddenGroupFor(model => model.LetterTypeId, new { @Value = "", id = "hdnInboundDocumentType" }, "BasicInformation")
+
+                </div>
+            </div>
+        </fieldset>
+    </div>
+
+    <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12 mb-3">
+        <fieldset>
+            <div class="form-group">
+                <label class="w-100">@DbRes.TResource("User.Transaction.PrivecyLevel")</label>
+                <div>
+
+                    @Html.AutoCompleteBuilder("ddlPrivecyLevel", "hdnPrivecyLevel", ViewData["PrivecyLevelsData"].ToString(), Model != null ? Model.privacyLevelId.ToString() : null, true, "form-control", "", "", "", false)
+                    @Html.HiddenGroupFor(model => model.privacyLevelId, new { @Value = "", id = "hdnPrivecyLevel" })
+
+                </div>
+            </div>
+        </fieldset>
+    </div>
+
+
+    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3 LetterNumber" style="display:none">
+        <label> رقم المستند</label>
+        @Html.TextBoxFor(m => m.LetterNumber, new { @class = "form-control", id = "LetterNumber" })
+    </div>
+    @*<div class="form-group col-lg-6 col-md-6 col-sm-12 col-xs-12" id="divContainerExternalParties">
+            <label>@Html.DisplayNameFor(model => model.DestinationId)<span class="stark">*</span></label>
+            @Html.EditorFor(model => model.DestinationId, "OrgHierarchyCaller", additionalViewData: new { treeId = "DestinationId", GetChildrenActionURL = @Url.Action("GetExternalPartyChildren", "Shared"), GetNodeInfoByIdActionURL = @Url.Action("GetExternalPartyInfoById", "Shared"), GetNodeInfoByNumActionURL = @Url.Action("GetExternalPartyInfoByNumber", "Shared"), onClickfunction = "GetDestinationUsersByOrgUnitId", ValidationGroup = "BasicInformation", ShowAddPartyButton = SessionInfo.CurrentUser.Claims.Contains(UserClaims.AddExternalParty.AddExternalPartyForInbound) })
+
+        </div>*@
+
+
+
+    <!--<div class="form-group col-lg-6 col-md-6 col-sm-12 col-xs-12 readonlyByPrivilege">
+    <fieldset class="field-set">
+        <div id="divContainerSideContactExternalEntity">-->
+    @*<label>@DbRes.TResource("User.Inbound.BasicInfo.SideContactExternalEntity")</label>*@
+
+    <!--<div class="externalParties">
+    <fieldset class="field-set">
+         @Html.DepartmentsTreeOnDemand(ViewData["ExternalPartiesData"] as TreeViewModel, model => model.SideContactExternalEntityID, TreeMode.Single, "dvSideContactExternnalEntityTree", true, "", "BasicInformation", "divContainerSideContactExternalEntity", false)-->
+    @*@Html.DepartmentsTree(ViewData["ExternalPartiesData"] as TreeViewModel, model => model.SideContactExternalEntityID, TreeMode.Single, "dvSideContactExternnalEntityTree", true, "BasicInformation",  "divContainerSideContactExternalEntity")*@
+    <!--@Html.HiddenFor(model => model.SideContactExternalEntityID, new { id = "hdnCopyOrgUnitName" })
+
+            </fieldset>
+        </div>
+
+    </div>-->
+    @* @Html.HiddenFor(model => model.SideContactExternalEntityID, new { id = "hdnSideContactExternalEntityID" })*@
+    <!--</fieldset>-->
+    @*<div class="External">
+            @Html.ClientButton("<i class='la la-plus'></i>" + DbRes.TResource("User.OutboundExternal.BasicInfo.AddNewExternalParty"), null, " btn btn-st5 margin-top-5", "AddExternalParty", UserClaims.AddExternalParty.AddExternalPartyForInbound)
+        </div>*@
+    <!--</div>-->
+    @*<div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+            <label>@DbRes.TResource("User.Inbound.BasicInfo.NumberContact")</label>
+            @Html.TextBoxGroupFor(model => model.NumberContact, "", new { @class = "form-control" })
+        </div>*@
+
+    @*<div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+            <label>@DbRes.TResource("User.Transaction.ConfidentialityLevel") <span class="stark">*</span></label>
+            @Html.EditorFor(model => model.ConfidentialityLevelId, "AutoComplete", additionalViewData: new { autoCompleteControlid = "ddlConfedentiality", hdnIdToSaveValue = "hdnConfedentiality", items = ViewData["ConfidentialityData"].ToString(), selectedId = SystemDefaultValuesHelper.GetDefaultValue(TransactionCategories.Inbound, CategoryTypes.Confedentiality), matchAnywhere = true, inputClassName = "form-control", hdnExtraParametersId = "", ulClassName = "", buttonId = "", selectFirstIndex = false, validationGroup = "BasicInformation", onChangeCallback = "" })
+        </div>*@
+
+
+    @*<div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+            <label>@DbRes.TResource("User.Inbound.BasicInfo.InboundType") <span class="stark">*</span></label>
+            @Html.EditorFor(model => model.TransactionTypeId, "AutoComplete", additionalViewData: new { autoCompleteControlid = "ddlTransactionSourceType", hdnIdToSaveValue = "hdnTransactionSourceType", items = ViewData["TransactionTypesData"] != null ? ViewData["TransactionTypesData"].ToString() : null, selectedId = SystemDefaultValuesHelper.GetDefaultValue(TransactionCategories.Inbound, CategoryTypes.TransactionSourceType), matchAnywhere = true, inputClassName = "form-control", hdnExtraParametersId = "", ulClassName = "", buttonId = "", selectFirstIndex = false, validationGroup = "BasicInformation", onChangeCallback = "" })
+        </div>*@
+
+
+    @*<div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+            @Html.LabelFor(model => model.ReceiveMethodId, new { @class = " w-100" })
+            @Html.EditorFor(model => model.ReceiveMethodId, "AutoComplete", additionalViewData: new { autoCompleteControlid = "ddlBasicReceiveMethod", hdnIdToSaveValue = "hdnBasicReceiveMethod", items = ViewData["ReceiveMethod"] != null ? ViewData["ReceiveMethod"].ToString() : null, selectedId = DeliveryMethodType.Paper.LookupIdentity(LookupCategory.DeliveryMethod, SessionInfo.CultureShortName), matchAnywhere = true, inputClassName = "form-control", hdnExtraParametersId = "", ulClassName = "", buttonId = "", selectFirstIndex = false, validationGroup = "", onChangeCallback = "onChangeReceiveMethod" })
+        </div>*@
+
+
+
+
+
+    <div class="form-group col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-3" style="display:none;">
+        @Html.LabelFor(model => model.InboundIntendedPerson, new { @class = " w-100" })
+        @Html.TextBoxGroupFor(model => model.InboundIntendedPerson, "BasicInformation", new { @class = "form-control" })
+    </div>
+
+    @*<div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+            <label>@DbRes.TResource("User.Transaction.PriorityLevel") <span class="stark">*</span></label>
+            @Html.EditorFor(model => model.PriorityLevelId, "AutoComplete", additionalViewData: new { autoCompleteControlid = "ddlPriorityLevel", hdnIdToSaveValue = "hdnPriorityLevel", items = ViewData["PrioritiesData"] != null ? ViewData["PrioritiesData"].ToString() : null, selectedId = SystemDefaultValuesHelper.GetDefaultValue(TransactionCategories.Inbound, CategoryTypes.PriorityLevel), matchAnywhere = true, inputClassName = "form-control", hdnExtraParametersId = "hdnPriorityHasDate", ulClassName = "", buttonId = "", selectFirstIndex = false, validationGroup = "BasicInformation", onChangeCallback = "" })
+            @Html.Hidden("hdnPriorityHasDate", null, new { id = "hdnPriorityHasDate" })
+        </div>*@
+
+
+    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3 RecordNumber" style="display:none">
+        <label> رقم الوثيقة</label>
+        @Html.TextBoxFor(m => m.RecordNumber, new { @class = "form-control" })
+    </div>
+    @*<div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3 InboundType">
+            <label>@DbRes.TResource("User.Transaction.BasicInfo.Type") <span class="stark">*</span></label>
+            @Html.EditorFor(model => model.LetterTypeId, "AutoComplete", additionalViewData: new { autoCompleteControlid = "ddlInboundDocumentType", hdnIdToSaveValue = "hdnInboundDocumentType", items = ViewData["LetterTypeData"] != null ? ViewData["LetterTypeData"].ToString() : null, selectedId = SystemDefaultValuesHelper.GetDefaultValue(TransactionCategories.Inbound, CategoryTypes.InboundDocumentType), matchAnywhere = true, inputClassName = "form-control", hdnExtraParametersId = "", ulClassName = "", buttonId = "", selectFirstIndex = false, validationGroup = "BasicInformation", onChangeCallback = "" })
+        </div>*@
+    @*<div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+            <label>@DbRes.TResource("User.DistrubutionList.DistrubutionListLabel")</label>
+            @Html.EditorFor(model => model.DistrubutionListId, "AutoComplete", additionalViewData: new { autoCompleteControlid = "ddlDistrubutionList", hdnIdToSaveValue = "hdnDistrubutionList", items = ViewData["DistributionLists"] != null ? ViewData["DistributionLists"].ToString() : null, selectedId = Model != null ? Model.DistrubutionListId.ToString() : null, matchAnywhere = true, inputClassName = "form-control", hdnExtraParametersId = "", ulClassName = "", buttonId = "", selectFirstIndex = false, validationGroup = "", onChangeCallback = "" })
+        </div>
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3" >
+            <fieldset class="field-set" id="dvDepartmentsTree">*@
+
+
+
+    @*<div class="form-group col-lg-3 col-md-6 col-sm-12 col-xs-12 mb-3" style="display:none;">
+            <label class="w-100">@DbRes.TResource("التصنيف الموضوعي") <span class="stark"></span></label>
+            <div>
+                @Html.AutoCompleteBuilder("ddlSubjectClassifications", "hdnSubjectClassifications", ViewData["SubjectClassifications"].ToString(), Model != null ? ViewData["SubjectClassifications"].ToString() : null, true, "form-control")
+                @Html.HiddenFor(model => model.SubjectClassificationsId, new { @Value = "", id = "hdnSubjectClassifications" })
+
+            </div>
+        </div>*@
+
+    <div class="col-lg-12"></div>
+    <div class="form-group col-lg-6 col-md-6 col-sm-12 col-xs-12  mb-3">
+        <div class="input-group w-100">
+            <div class="form-group w-100">
+                <label class="w-100">@DbRes.TResource("User.Inbound.BasicInfo.Subject") <span class="stark">*</span></label>
+                @Html.TextAreaGroupFor(model => model.Subject, new { id = "txtAreaSubject", @class = "form-control", @rows = "11" }, "BasicInformation")
+            </div>
+        </div>
+    </div>
+    <div style="display:grid" class="col-lg-6 col-md-6 col-sm-12 col-xs-12  mb-3">
+        <div class="form-group col-lg-12 col-md-6 col-sm-12 col-xs-12  mb-3">
+            <div class="form-group w-100">
+                <label class="w-100">@DbRes.TResource("User.OutboundInternal.BasicInfo.Summary") </label>
+                @Html.TextAreaGroupFor(model => model.Summary, new { @class = "form-control basic-info-add", @rows = "3" }, "BasicInformation")
+            </div>
+        </div>
+        <div class="form-group col-lg-12 col-md-6 col-sm-12 col-xs-12  mb-3">
+            <div class="input-group w-100">
+                <div class="w-100">
+                    <label class="w-100">@DbRes.TResource("User.OutboundInternal.BasicInfo.Remarks") </label>
+                    @Html.TextAreaGroupFor(model => model.Remarks, new { @class = "form-control", @rows = "3" })
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+    @*<div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3 with-icon">
+            <label class="w-100">تاريخ المراسلة</label>
+
+            @Html.CalendarCustom("HasContacDateCal", "hdnHasContacDateGreg", "hdnHasContacDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), Model != null ? Model.ContactDateH : null, "form-control")
+            <a class=" date-icon2 " onclick="showCalender('HasContacDateCal')"><i class="uicon icon_calendar"></i></a>
+            @Html.StickyHidden("hdnHasContacDateGreg", null, new { id = "hdnHasContacDateGreg" })
+            @Html.HiddenGroupFor(model => model.ContactDateH, new { id = "hdnHasContacDateUm", AutoComplete = "off" }, "BasicInformation")
+            <i id="CalMessage11" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+            <span id="dateMessage" style="color:red"></span>
+        </div>*@
+
+    <div id="ReporterContent" class="hide form-group col-lg-12 col-md-4 col-sm-6 col-xs-12 mb-3">
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mt-3">
+            @Html.LabelFor(model => model.ReporterId, new { @class = " control-label" })
+            @Html.EditorFor(model => model.ReporterId, "AutoComplete", additionalViewData: new { autoCompleteControlid = "ddlBasicReporter", hdnIdToSaveValue = "hdnBasicReporter", items = ViewData["Reporters"] != null ? ViewData["Reporters"].ToString() : null, selectedId = Model != null ? Model.ReporterId.ToString() : null, matchAnywhere = true, inputClassName = "form-control", hdnExtraParametersId = "", ulClassName = "", buttonId = "", selectFirstIndex = false, validationGroup = "", onChangeCallback = "" })
+        </div>
+        @Html.ClientButton("<i class='glyphicon glyphicon-plus'></i>" + DbRes.TResource("User.Transaction.BasicInfo.AddNewReporter"), null, "btn btn-st5  col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3 mt-2 mt-5", "AddReporter", UserClaims.Reporter.AddReporter)
+    </div>
+
+
+
+    @Html.StickyHidden("PrioritiesItems", ViewData["PrioritiesData"].ToString())
+    @Html.StickyHidden("ConfidentialityItems", ViewData["ConfidentialityData"].ToString())
+    @Html.StickyHidden("SourceTypeItems", ViewData["TransactionTypesData"].ToString())
+    @Html.StickyHidden("ConfidentialityAcknowledgmentMassage", ViewData["ConfidentialityAcknowledgment"].ToString())
+
+    @*<div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+            <div>
+                <label>  </label>
+                <input style="max-height:42px" type="button" class="btn btn-st1 btn-lg" id="btnShowAttachment" value="@DbRes.TResource("User.Transaction.Archiving")" />
+
+            </div>
+        </div>*@
+
+
+</div>
+
+@*<div id="dvAttachments" class="row" style="display:none">
+        @{Html.ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+        @Html.Partial("~/Areas/User/Views/Transaction/_ArchivingPartial.cshtml", new TransactionArchiveVM(TransactionAttachmentType.Attachment, false, false, false), Html.ViewData)
+    </div>*@
+
+<br />
+
+<div class="extraOption">
+    <h4>
+        <a role="button" style="display:flex">
+            <span onclick="CollapseDiv('divArchiving'); return false;" style="cursor: pointer;">
+                <img src="~/Content/User/lib/images/plus-icon.svg" id="divArchivingPlusIcon" width="25" />
+                <img src="~/Content/User/lib/images/Dash-icon.svg" id="divArchivingDashIcon" width="25" style="display: none;" />
+            </span>
+            <span class="ml-3 mt-1">@DbRes.TResource("User.Transaction.BasicInfo.Attachments")</span>
+        </a>
+    </h4>
+    <div role="tabpanel" class="tab-pane" id="divArchiving" style="display:none">
+        <div>
+            @Html.Partial("~/Areas/User/Views/Transaction/_ArchivingPartial.cshtml", new TransactionArchiveVM(TransactionAttachmentType.Attachment, false, false, false), Html.ViewData)
+        </div>
+    </div>
+</div>
+<br />
+
+<div class="extraOption">
+    <h4>
+        <a role="button" style="display:flex">
+            <span onclick="CollapseDiv('divPicAndCopies'); return false;" style="cursor: pointer;">
+                <img src="~/Content/User/lib/images/plus-icon.svg" id="divPicAndCopiesPlusIcon" width="25" />
+                <img src="~/Content/User/lib/images/Dash-icon.svg" id="divPicAndCopiesDashIcon" width="25" style="display: none;" />
+            </span>
+            <span class="ml-3 mt-1">@DbRes.TResource("User.Inbound.PicAndCopies")</span>
+        </a>
+    </h4>
+
+    <div role="tabpanel" class="tab-pane" id="divPicAndCopies" style="display:none">
+        @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.CopiesInternal.DisplayLink))
+        {
+            <div>
+                @Html.Partial("~/Areas/User/Views/Transaction/_CopiesPartial.cshtml", new TransactionCopyVM())
+            </div>
+        }
+
+        <br />
+        @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.CopiesExternal.DisplayLink))
+        {
+            <div>
+                @Html.Partial("~/Areas/User/Views/Transaction/_ExternalCopiesPartial.cshtml", new TransactionExternalCopyVM())
+            </div>
+        }
+    </div>
+
+</div>
+<br />
+@*@if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Names.DisplayLink))
+    {
+        <div class="extraOption">
+            <h4>
+                <a role="button" style="display:flex">
+                    <span onclick="CollapseDiv('divNames'); return false;" style="cursor: pointer;">
+                        <img src="~/Content/User/lib/images/plus-icon.svg" id="divNamesPlusIcon" width="25" />
+                        <img src="~/Content/User/lib/images/Dash-icon.svg" id="divNamesDashIcon" width="25" style="display: none;" />
+                    </span>
+                    <span class="ml-3 mt-1">@DbRes.TResource("User.Inbound.Names")</span>
+                </a>
+            </h4>
+            <div role="tabpanel" class="tab-pane" id="divNames" style="display:none">
+                <div>
+                    @Html.Partial("~/Areas/User/Views/Transaction/_NamesPartial.cshtml", new TransactionNameVM())
+                </div>
+            </div>
+        </div>
+    }*@
+
+
+<div class="row">
+    @*<div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+            <label class="w-100">@DbRes.TResource("User.Transaction.Archive.ArchiveType") <span class="stark">*</span></label>
+            @Html.AutoCompleteBuilder("ddlSubjectClassifications", "hdnSubjectClassifications", ViewData["SubjectClassifications"].ToString(), Model != null ? ViewData["SubjectClassifications"].ToString() : null, true, "form-control")
+            @Html.HiddenFor(model => model.SubjectClassificationsId, new { @Value = "", id = "hdnSubjectClassifications" })
+        </div>*@
+    @{Html.ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+    @Html.Partial("~/Areas/User/Views/Transaction/_ArchivingPartialMainDocument.cshtml", new TransactionArchiveVM(TransactionAttachmentType.Main, true, false, false,
+                                            bStampPermission: SessionInfo.CurrentUser.Claims.Contains(UserClaims.UserPreferences.Mark),
+                                            bSignaturePermission: SessionInfo.CurrentUser.Claims.Contains(UserClaims.UserPreferences.Signature),
+                                            bAnnotationsPermission: SessionInfo.CurrentUser.Claims.Contains(UserClaims.Archiving.Annotations),
+                                            bColorScanningPermission: SessionInfo.CurrentUser.Claims.Contains(UserClaims.Archiving.ColorScanning)), Html.ViewData)
+</div>
+
+<!-- ****************************** end Content ************************* -->
+
+<script>
+    $("#ddlInboundDocumentType").change(function () {
+
+            if ($("#hdnInboundDocumentType").val() == '52') {
+                $('.RecordNumber').show();
+            }
+            else {
+                $('.RecordNumber').hide();
+            }
+        });
+
+         $(document).ready(function () {
+        if ($("#LetterNumber").val() != '') {
+            $('.LetterNumber').show();
+        }
+
+        $("#ddlInboundDocumentType").change(function () {
+
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetLetterTypeById")',
+                data: { letterTypeId: $("#hdnInboundDocumentType").val()},
+                success:
+                    function (data) {
+                        if (data.WithExtraField) {
+                            $('.LetterNumber').show();
+                        }
+                        else {
+                            $('.LetterNumber').hide();
+                        }
+                    }
+            });
+        });
+
+        });
+</script>
+<script>
+    function CollapseDiv(divName) {
+        if ($('#' + divName).css('display') == 'block') {
+            $('#' + divName).css("display", "none");
+            $('#' + divName + 'PlusIcon').css("display", "inline-block");
+            $('#' + divName + 'DashIcon').css("display", "none");
+        }
+        else {
+            $('#' + divName).css("display", "block");
+            $('#' + divName + 'PlusIcon').css("display", "none");
+            $('#' + divName + 'DashIcon').css("display", "inline-block");
+        }
+    }
+    $(document).ready(function () {
+        $('#ddlBasicReceiveMethod').prop('disabled', true);
+        onChangeDeliveryMethod();
+        InboundType();
+
+        $('#btnShowAttachment').click(function () {
+            $('#dvAttachments').slideToggle();
+            // $(this).hide();
+        });
+        $('#divForm__dvSideContactExternnalEntityTree:first .btn-st5').remove();
+
+        $('#ddlTransactionSourceType').on('change', function () {
+            debugger;
+            var Itemss = $.parseJSON($('#SourceTypeItems').val());
+            var ConfidentialityItemss = $.parseJSON($('#ConfidentialityItems').val());
+            if (Itemss[1].label == $("#ddlTransactionSourceType").val()) {
+                $("#ddlConfedentiality").val(ConfidentialityItemss[1].label);
+                $("#hdnConfedentiality").val(ConfidentialityItemss[1].value);
+            } else {
+                $("#ddlConfedentiality").val(ConfidentialityItemss[0].label);
+                $("#hdnConfedentiality").val(ConfidentialityItemss[0].value);
+            }
+
+            if (Itemss[2].label == $("#ddlTransactionSourceType").val()) {
+                $("#InboundBasicInfo_InboundDocumentNumber").prop('disabled', true);
+            }
+
+        });
+    });
+                function CancelConfidentialityAcknowledgment() {
+               var Items = $.parseJSON($('#ConfidentialityItems').val());
+               $("#ddlConfedentiality").val(Items[0].label);
+               $("#hdnConfedentiality").val(Items[0].value);
+               $("#Loader").hide();
+
+           }
+        function Acknowledgment() {
+
+            @Model.IsAcknowledged = true;
+       $('#hdnIsAcknowledged').val(true);
+        @*$.ajax({
+            url:  '@Url.Action("AddConfidentialityAcknowledgment")',
+            cache: false,
+            data: { transactionId: parseInt(id)},
+            success: function (data) {
+
+               }
+        });*@
+        return false;
+           }
+    function CheckboxAcknowledged() {
+
+              if ($('.requiredacknowledged:checked').length == $('.requiredacknowledged').length) {
+                    $('.acknowledged-btn').prop('disabled', false);
+                   $(".acknowledged-btn").css('background-color', '');
+              }
+              else
+               {
+                    $('.acknowledged-btn').prop('disabled', 'disabled');
+                   $(".acknowledged-btn").css('background-color', 'gray');
+               }
+           }
+    function onChangeDeliveryMethod() {
+        var value = $('#hdnBasicDeliveryMethod').val();
+        switch (parseInt(value)) {
+            case DeliveryMethodType.Paper:
+                ShowHideReporterContent(true);
+                break;
+            case DeliveryMethodType.Electronic:
+                ShowHideReporterContent(false);
+                break;
+            case DeliveryMethodType.ElectronicPaper:
+                ShowHideReporterContent(true);
+                break;
+            default:
+        }
+    }
+
+    function ShowHideReporterContent(isShow) {
+        if (isShow) {
+            $('#ReporterContent').removeClass('hide');
+            $('#ddlBasicReporter').prop('disabled', false);
+            $('#hdnBasicReporter').prop('disabled', false);
+        } else {
+            $('#ReporterContent').addClass('hide');
+            $('#ddlBasicReporter').prop('disabled', 'disabled');
+            $('#hdnBasicReporter').prop('disabled', 'disabled');
+        }
+    }
+
+    function InboundType() {
+
+        $('#inboundDestDv input[type=radio]').on('change', function () {
+            switch ($(this).val()) {
+                case 'true':
+
+                    $('#divContainerExternalParties #DestinationId_txtDepartmentNumber').val("");
+                    $('#divContainerExternalParties #DestinationId_txtDepartmentName').val("");
+                    $('#divContainerExternalParties #DestinationId_hdnDepartmentId').val("");
+                    $('#divContainerExternalParties #DestinationId_hdnIsYesserRegistered').val("");
+                    $('#divContainerExternalParties #DestinationId_txtDepartmentEmail').val("");
+                    //SigndBy  DestinationId_hdnDepartmentId
+                    $("#ddlSignedById").val("");
+                    $("#hdnSignedById").val("");
+                    $("#ddlSignedById").trigger('change');
+
+                    //$("#HasInboundDateCal").prop('disabled', true);
+                    //$("#hdnHasInboundDateGreg").val('');
+                    //$("#hdnHasDateInboundUm").val('');
+                    //$("#HasInboundDateCal").val('');
+                    //InboundNo
+                    $("#InboundBasicInfo_InboundDocumentNumber").val("");
+                    $("#ddlSignedById").prop('disabled', true);
+                    $("#InboundBasicInfo_InboundDocumentNumber").prop('disabled', true);
+
+                    $('#divContainerExternalParties #DestinationId_txtDepartmentNumber').prop('disabled', true);
+                    $('#divContainerExternalParties #DestinationId_txtDepartmentName').prop('disabled', true);
+                    $('#divContainerExternalParties #DestinationId_hrefShowDialog').prop('disabled', true);
+                    $('#divContainerExternalParties #DestinationId_hdnDepartmentId').val("0");
+                    $('#divContainerExternalParties #DestinationId_hdnIsYesserRegistered').val("");
+                    $('#divContainerExternalParties #DestinationId_txtDepartmentEmail').val("");
+                    $('.NotIndividual').hide();
+
+                    break;
+                case 'false':
+                    $.validator.unobtrusive.parseDynamicContent('#dvBasicInfo');
+                    $("#ddlSignedById").prop('disabled', false);
+                    $("#InboundBasicInfo_InboundDocumentNumber").prop('disabled', false);
+                    $('#divContainerExternalParties #DestinationId_txtDepartmentNumber').prop('disabled', false);
+                    $('#divContainerExternalParties #DestinationId_txtDepartmentName').prop('disabled', false);
+                    $('.NotIndividual').show();
+                    $('#hdnIsForIndividual').val("false");
+                    $("#ddlConfedentiality").val("");
+                    $("#ddlTransactionSourceType").val("");
+                    $("#ddlPriorityLevel").val("");
+                    $("#hdnConfedentiality").val("");
+                    $("#hdnPriorityLevel").val("");
+                    break;
+            }
+        });
+
+        $('#ddlConfedentiality').on('change', function () {
+            var Items = $.parseJSON($('#ConfidentialityItems').val());
+            var SourceTypeItems = $.parseJSON($('#SourceTypeItems').val());
+            if (Items[0].label == $("#ddlConfedentiality").val()) {
+                $("#ddlTransactionSourceType").val(SourceTypeItems[0].label);
+                $("#hdnTransactionSourceType").val(SourceTypeItems[0].value);
+            }    else {
+                $("#ddlTransactionSourceType").val(SourceTypeItems[1].label);
+                $("#hdnTransactionSourceType").val(SourceTypeItems[1].value);
+            }
+            if ($('#ConfidentialityAcknowledgmentMassage').val() != '[]') {
+                if (Items[0].label != $("#ddlConfedentiality").val()) {
+                    ShowConfidentialityAcknowledgmentMassage($.parseJSON($('#ConfidentialityAcknowledgmentMassage').val()), 'Acknowledgment', 'CancelConfidentialityAcknowledgment');
+                }
+            }
+        });
+    }
+
+    $(document).ready(function ()
+    {
+        $('#ChkSendEmail').hide();
+
+        $('#datePicker').hide();
+        $('#HasInboundDateCal').attr('autocomplete', 'off');
+        $('#HasDateCal').attr('autocomplete', 'off');
+
+        $.validator.unobtrusive.parseDynamicContent = function (selector) {
+            var $selector = $(selector),
+                $jqValUnob = $.validator.unobtrusive,
+                selectorsDataValAttr = $selector.attr('data-val'),
+                $validationInputs = $selector.find(':input[data-val=true]');
+
+            if ((selectorsDataValAttr !== 'true') &&
+                ($validationInputs.length === 0)) {
+                return;
+            }
+
+            if (selectorsDataValAttr === 'true') {
+                $jqValUnob.parseElement(selector, true);
+            }
+
+            $validationInputs.each(function () {
+                $jqValUnob.parseElement(this, true);
+            });
+
+            //get the relevant form
+            var $form = $selector.first().closest('form');
+
+            $jqValUnob.syncValdators($form);
+        };
+
+        /* synchronizes the unobtrusive validation with jquery validator */
+        $.validator.unobtrusive.syncValdators = function ($form) {
+            if ($.hasData($form[0])) {
+                var unobtrusiveValidation = $form.data('unobtrusiveValidation'),
+                    validator = $form.validate();
+
+                // add validation rules from unobtrusive to jquery
+                $.each(unobtrusiveValidation.options.rules, function (elname, elrules) {
+                    if (validator.settings.rules[elname] == undefined) {
+                        var args = {};
+                        $.extend(args, elrules);
+                        args.messages = unobtrusiveValidation.options.messages[elname];
+                        $("[name='" + elname + "']").rules("add", args);
+                    } else {
+                        $.each(elrules, function (rulename, data) {
+                            if (validator.settings.rules[elname][rulename] == undefined) {
+                                var args = {};
+                                args[rulename] = data;
+                                args.messages = unobtrusiveValidation.options.messages[elname][rulename];
+                                $("[name='" + elname + "']").rules("add", args);
+                            }
+                        });
+                    }
+                });
+                // remove all validation rules from jquery that arn't in unobtrusive
+                $.each(validator.settings.rules, function (elname, elrules) {
+                    if (unobtrusiveValidation.options.rules[elname] === undefined) {
+                        delete validator.settings.rules[elname];
+                    } else {
+                        $.each(elrules, function (rulename, data) {
+                            if (rulename !== "messages" && unobtrusiveValidation.options.rules[elname][rulename] === undefined) {
+                                delete validator.settings.rules[elname][rulename];
+                            }
+                        });
+                    }
+                });
+            }
+        };
+
+        $.validator.unobtrusive.unparseContent = function (selector) {
+            var $selector = $(selector);
+
+            // if its  a text node, then exit
+            if ($selector && $selector.length > 0 && $selector[0].nodeType === 3) {
+                return;
+            }
+
+            var $form = $selector.first().closest('form'),
+                unobtrusiveValidation = $form.data('unobtrusiveValidation');
+
+            $selector.find(":input[data-val=true]").each(function () {
+                removeValidation($(this), unobtrusiveValidation);
+            });
+            if ($selector.attr('data-val') === 'true') {
+                removeValidation($selector, unobtrusiveValidation);
+            }
+            $.validator.unobtrusive.syncValdators($form);
+        };
+
+        function removeValidation($element, unobtrusiveValidation) {
+            var elname = $element.attr('name');
+            if (elname !== undefined) {
+                $element.rules('remove');
+                if (unobtrusiveValidation) {
+                    if (unobtrusiveValidation.options.rules[elname]) {
+                        delete unobtrusiveValidation.options.rules[elname];
+                    }
+                    if (unobtrusiveValidation.options.messages[elname]) {
+                        delete unobtrusiveValidation.options.messages[elname];
+                    }
+                }
+            }
+        }
+
+
+    });
+
+        $(document).on("change", "#radio1", function () {
+        if ($(this).val() == 0) {
+            $('#datePicker').hide();
+                $("#CalMessage").html('');
+                $("#CalMessage1").addClass("hidden_");
+        } else {
+            $('#datePicker').show();
+        }
+        });
+    $(document).on("click", "span[data-node-id]", function () {
+
+        var elemnt = $(this);
+
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('LoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetExternalPartyNodes")',
+                data: { parentId: $(this).data("node-id"), letterId: $("#hdnInboundDocumentType").val(), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+                success:
+               function (data) {
+
+                   $(elemnt).closest('li').children('ul').last().empty()
+
+                   $(elemnt).closest('li').children('ul').last().append(data);
+
+                   if ($(elemnt).attr('data-isRefreshEnabled').toLowerCase() == 'false') {
+
+                       $(elemnt).removeClass("LoadedData")
+
+                   }
+
+               }
+            });
+        }
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('InternalLoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetOrgUnitsNodes")',
+                data: { parentId: $(this).data("node-id"), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+                success:
+               function (data) {
+
+                   $(elemnt).closest('li').children('ul').last().empty()
+
+                   $(elemnt).closest('li').children('ul').last().append(data);
+
+                   $(elemnt).removeClass("InternalLoadedData");
+               }
+            });
+        }
+    });
+    $(document).on("click", "span[data-multi-node-id]", function () {
+        var elemnt = $(this);
+
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('LoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetExternalPartyMultyNodes")',
+                data: { parentId: $(this).data("multi-node-id"), letterId: $("#hdnInboundDocumentType").val(), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func'), checkboxFunction:"ExternalCheckboxChange" },
+                success:
+               function (data) {
+                   $(elemnt).closest('li').children('ul').last().empty()
+
+                   $(elemnt).closest('li').children('ul').last().append(data);
+
+                   if ($(elemnt).attr('data-isRefreshEnabled').toLowerCase() == 'false') {
+
+                       $(elemnt).removeClass("LoadedData")
+
+                   }
+
+               }
+            });
+        }
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('InternalLoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetOrgUnitsMultiNodes")',
+                data: { parentId: $(this).data("multi-node-id"), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+                success:
+               function (data) {
+                   $(elemnt).closest('li').children('ul').last().empty()
+
+                   $(elemnt).closest('li').children('ul').last().append(data);
+
+                   $(elemnt).removeClass("InternalLoadedData");
+               }
+            });
+        }
+    });
+    function CheckPriorityIfHasDate()
+    {
+        $('#hdnHour').val($('#ddlHour').val());
+        $('#hdnDestinationId').val($('#divContainerExternalParties1 .hdnDepartmentId').val());
+        $('#hdnMinute').val($('#ddlMinute').val());
+        if ($('#datePicker').css('display') == 'none') {
+            $("#hdnHasDateGreg").val(null)
+        }
+        var individualIsChecked = $('#Individual').is(":checked") ? true : false;
+        if ($('#divContainerExternalParties .InboundDepName').val() == "" && individualIsChecked == false) {
+            $('#divContainerExternalParties .InboundDepNum ,  #divContainerExternalParties .InboundDepName ').addClass('RedBorder');
+            if ($('#dvDepartmentsTree  .txtDepartmentName').val() == "") {
+                $('#dvDepartmentsTree  .txtDepartmentNumber  ,  #dvDepartmentsTree  .txtDepartmentName ').addClass('RedBorder');
+                return true;
+            }
+        }
+        else {
+            $('#divContainerExternalParties .InboundDepNum ,  #divContainerExternalParties .InboundDepName ').removeClass('RedBorder');
+   }
+        if ($('#dvDepartmentsTree  .txtDepartmentName').val() == "") {
+            $('#dvDepartmentsTree  .txtDepartmentNumber  ,  #dvDepartmentsTree  .txtDepartmentName ').addClass('RedBorder');
+            return true;
+        }
+        else {
+            $('#dvDepartmentsTree  .txtDepartmentNumber  ,  #dvDepartmentsTree  .txtDepartmentName ').removeClass('RedBorder');
+        }
+
+            if ($('#datePicker').css('display') == 'block' && $("#hdnHasDateGreg").val() == "") {
+                $("#CalMessage1").removeClass("hidden_");
+                $("#CalMessage1").show();
+                $('#HasDateCal, .date-icon2').addClass("RedBorder");
+                $("#CalMessage").html('@Html.Raw(DbRes.TValidation("User.Inbound.RemindDateRequired"))');
+                return false;
+            }
+
+            var dateNow = $.datepicker.formatDate('dd/mm/yy', new Date($.now()));
+            var currentDate = convertdate(dateNow);
+            if ($("#hdnHasDateGreg").val() != "") {
+                if ($("#hdnHasDateGreg").val() != undefined) {
+                    var selectedDate = convertdate($("#hdnHasDateGreg").val());
+
+                    if (selectedDate < currentDate) {
+                        $("#CalMessage1").removeClass("hidden_");
+                        $("#CalMessage1").show();
+                        $('#HasDateCal, .date-icon2').addClass("RedBorder");
+                        $("#CalMessage").html(' @Html.Raw(DbRes.TValidation("User.Inbound.RemindDateCompare"))');
+                        return false;
+                    }
+                }
+            }
+
+            @*if ($('#datePicker').css('display') == 'block' && ($('#ddlMinute').val() == "" || $('#ddlHour').val() == "")) {
+                $("#CalMessage1").removeClass("hidden_");
+                $("#CalMessage1").show();
+                $('#HasDateCal, .date-icon2').removeClass("RedBorder");
+                $("#CalMessage").html('@Html.Raw(DbRes.TValidation("User.Inbound.RemindTime"))');
+                return false;
+            }
+            else {
+                $("#CalMessage").html('');
+                $("#CalMessage1").addClass("hidden_");
+                $('#ddlMinute, #ddlHour').removeClass("RedBorder");
+            }*@
+
+            if ($('#datePicker').css('display') == 'block') {
+                var time = new Date();
+                if (convertdate($("#hdnHasDateGreg").val()) > currentDate) {
+                    $("#CalMessage1").addClass("hidden_");
+                        $("#CalMessage1").hide();
+                    $("#CalMessage").html("");
+                    $('#HasDateCal, .date-icon2').removeClass("RedBorder");
+                    return CheckIfHasInboundDate();
+                }
+                else if ($("#hdnHasDateGreg").val() > convertdate($("#hdnHasDateGreg").val())) {
+                      $("#CalMessage1").addClass("hidden_");
+                        $("#CalMessage1").hide();
+                    $("#CalMessage").html("");
+                    $('#HasDateCal, .date-icon2').removeClass("RedBorder");
+                    return CheckIfHasInboundDate();
+                }
+                //else if ($('#ddlHour').val() > time.getHours()) {
+                //    $("#CalMessage").html("");
+                //    $('#HasDateCal, .date-icon2, #ddlMinute, #ddlHour').removeClass("RedBorder");
+                //    return CheckIfHasInboundDate();
+                //}
+                //else if ($('#ddlHour').val() == time.getHours() && $('#ddlMinute').val() > time.getMinutes()) {
+                //    $("#CalMessage").html("");
+                //    $('#HasDateCal, .date-icon2, #ddlMinute, #ddlHour').removeClass("RedBorder");
+                //    return CheckIfHasInboundDate();
+                //}
+                else {
+                    $("#CalMessage").html('@Html.Raw(DbRes.TValidation("User.Inbound.WrongRemindTime"))');
+                    $("#CalMessage1").removeClass("hidden_");
+                    $("#CalMessage1").show();
+                    return false;
+                }
+        }
+         if (!ValidateCopy()) {
+            return false;
+        }
+            return CheckIfHasInboundDate();
+
+    }
+
+    function CheckIfHasInboundDate() {
+
+        $('#hdnHour').val($('#ddlHour').val());
+        $('#hdnMinute').val($('#ddlMinute').val());
+        var individualIsChecked = $('#Individual').is(":checked") ? true : false;
+        if ($("#hdnHasInboundDateGreg").val() == "" && individualIsChecked == false) {
+            $('#HasInboundDateCal, .date-icon1').addClass('RedBorder');
+        }
+        else {
+            $('#HasInboundDateCal, .date-icon1').removeClass('RedBorder');
+        }
+        if ($("#hdnHasInboundDateGreg").val() != "" ) {
+            var dateNow = $.datepicker.formatDate('dd/mm/yy', new Date($.now()));
+            var currentDate = convertdate(dateNow);
+            if ($("#hdnHasInboundDateGreg").val() != undefined) {
+                var selectedDate = convertdate($("#hdnHasInboundDateGreg").val());
+
+                if (selectedDate > currentDate) {
+
+                    $("#CalMessage11").removeClass("hidden_");
+                    $("#CalMessage11").show();
+                    $("#dateMessage").html('@Html.Raw(DbRes.TValidation("User.Inbound.InboundDateCompare"))');
+                    $("#CalMessage1").addClass("hidden_");
+                    $("#CalMessage1").hide();
+                    $('#HasInboundDateCal').addClass('RedBorder');
+                    $('.date-icon1').addClass('RedBorder');
+                    return false;
+                }
+                else {
+                    $("#CalMessage1, #CalMessage11").addClass("hidden_");
+                    $("#CalMessage1, #CalMessage11").hide();
+                    $("#dateMessage").html('');
+                    $('#HasInboundDateCal, .date-icon1').removeClass('RedBorder');
+                    var individualIsChecked = $('#Individual').is(":checked") ? true : false;
+                    if (individualIsChecked == true) {
+                        return CheckIfHasName();
+
+                    }
+
+                    var Items = $.parseJSON($('#ConfidentialityItems').val());
+                    if (Items[0].label == $("#ddlConfedentiality").val()) {
+                        return checkIfHasMainDocument(false);
+                    }
+                    else {
+                        return checkIfHasMainDocument(true);
+                    }
+
+
+                }
+            }
+        }
+        else if ($('#hdnArchivigMainDocumentdata').val() != "[]" )
+        {
+            $("#dateMessage").html('');
+            $("#CalMessage11").addClass("hidden_");
+            $("#CalMessage11").hide();
+
+            $('#HasInboundDateCal, .date-icon1').addClass('RedBorder');
+
+        }
+        $("#dateMessage").html('');
+
+        return CheckIfHasName();
+    }
+
+    function CheckIfHasName() {
+
+        var isChecked = $('#Individual:checked').val() ? true : false;
+        if (isChecked) {
+            var emptylength = $("#grid-table-grdNames > tbody > .grid-empty-text").length;
+            if (emptylength === 1) {
+                ShowErrorMessage('@Html.Raw(DbRes.TValidation("User.Inbound.NameReq"))');
+                var Items = $.parseJSON($('#ConfidentialityItems').val());
+                return false;
+                if (Items[0].label == $("#ddlConfedentiality").val()) {
+                    return checkIfHasMainDocument(false);
+                }
+                else {
+                    return checkIfHasMainDocument(true);
+                }
+            }
+            else {
+                var Items = $.parseJSON($('#ConfidentialityItems').val());
+                if (Items[0].label == $("#ddlConfedentiality").val()) {
+                    return checkIfHasMainDocument(false);
+                }
+                else {
+                    return checkIfHasMainDocument(true);
+                }
+            }
+        }
+        else {
+            var Items = $.parseJSON($('#ConfidentialityItems').val());
+            if (Items[0].label == $("#ddlConfedentiality").val()) {
+                return checkIfHasMainDocument(false);
+            }
+            else {
+                return checkIfHasMainDocument(true);
+            }
+        }
+    }
+
+    function saveTransLetter() {
+        var letterText = document.getElementById("viewer");
+        alert(letterText.innerText);
+    }
+
+    function GetExternalParties(selectedNode) {
+        $("#divForm__dvDestinationTree").find("#divContainerExternalParties #hdnDepartmentId").val(selectedNode);
+
+        $.ajax({
+            cache: false,
+            type: 'get',
+            url: '@Url.Action("GetExternalParties")',
+            data: {
+                selectedParty: selectedNode },
+            success:
+           function (data) {
+
+               if ($('#divContainer__dvDestinationTree').css('display') == 'block') {
+
+                   ShowHideTree('#divContainer__dvDestinationTree');
+               }
+
+               $('#divContainer__dvDestinationTree').remove();
+
+               $("#divContainerExternalParties").html("");
+
+               $("#divContainerExternalParties").html(data);
+
+               GetDestinationUsersByOrgUnitId()
+           }
+        });
+        return false;
+    }
+
+</script>
+<style>
+    .RedBorder {
+        border: 1px solid #fe0000 !important
+    }
+</style>
+

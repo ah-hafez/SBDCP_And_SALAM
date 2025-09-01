@@ -1,0 +1,26 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Framework.Controls.Mvc
+@using MCS.UI.Areas.Admin.Models.OrgUnit
+@model AjaxGrid<CounterDetailVM>
+
+@{
+    ViewBag.Title = "_CounterDetailsGridParial";
+    bool isRoot = ViewData["IsRoot"] == null ? true : (bool)ViewData["IsRoot"];
+    string gridName = (string)ViewData["GridName"];
+}
+
+@Html.Grid(Model, "_Grid").Named(gridName).Columns(columns =>
+{
+    columns.Add(model => model.Id, true, string.Format("Id_{0}", gridName));
+    columns.Add(model => model.TransactionCategory, string.Format("TransactionCategory_{0}", gridName)).Titled(DbRes.TResource("Admin.LetterType.TransactionType"));
+    columns.Add(model => model.InitialValue, string.Format("InitialValue_{0}", gridName)).Titled(DbRes.TResource("Admin.Counter.InitialValue"));
+    columns.Add(model => model.Count, string.Format("Count_{0}", gridName)).Titled(DbRes.TResource("Admin.Counter.CurrentValue"));
+    if (isRoot)
+    {
+        columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model =>
+            @Html.GridCounterButton("GetCounter", 0, OperationType.Edit, "CounterContentAddEdit"));
+
+        columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model =>
+            @Html.GridCounterButton("DeleteCounterDetail", 0, OperationType.Delete, "dvGrid"));
+    }
+}).WithPaging(GridHelper.PageSize).Sortable(false).Filterable(false)

@@ -1,0 +1,12 @@
+@font-face {
+    font-family: 'Kanun AR+LT';
+    src: url('KanunARLT-Medium.eot');
+    src: url('KanunARLT-Medium.eot?#iefix') format('embedded-opentype'),
+        url('KanunARLT-Medium.woff2') format('woff2'),
+        url('KanunARLT-Medium.woff') format('woff'),
+        url('KanunARLT-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+

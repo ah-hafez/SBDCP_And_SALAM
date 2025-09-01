@@ -1,0 +1,18 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Transaction
+@using MCS.GridMvc.Helpers;
+@using MCS.GridMvc.Html;
+@using MCS.Common;
+@using MCS.UI.Helpers
+@using MCS.UI.Areas.User.Models.File
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<FollowUpAuditTrailVM>
+
+@Html.Grid(Model).CollectionName("FollowUpAuditTrails").Named("grdFollowUpAuditTrail").Columns(columns =>
+{
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.FollowupId, new { id = "Id_" + model.FollowupId }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.FollowupId, new { id = "Key_" + model.FollowupId }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(model => model.ProccessDescription).Titled(DbRes.TResource("User.FollowUpAuditTrail.Process"));
+columns.Add(model => model.UserEntityName).Titled(DbRes.TResource("User.FollowUpAuditTrail.EmpDept"));
+columns.Add(model => model.ProccessDateHj).Titled(DbRes.TResource("User.FollowUpAuditTrail.ProcessDate"));
+})
+

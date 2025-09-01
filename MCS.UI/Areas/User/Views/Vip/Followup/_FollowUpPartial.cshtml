@@ -1,0 +1,140 @@
+﻿@using MCS.UI.Areas.User.Models.Transaction;
+@model MCS.UI.Areas.User.Models.Transaction.TransactionFollowUpVM
+@using MCS.Common;
+@using MCS.Framework.Controls
+@using MCS.Framework.Localization
+@using MCS.Framework.Controls.Mvc
+@{
+    /**/
+    string controller = TempData.Peek("ControllerName") != null ? TempData.Peek("ControllerName").ToString() : ViewContext.RouteData.Values["controller"].ToString();
+ 
+    if (ViewData["TransactionId"] != null)
+    {
+
+        Model.TransactionId = (int)ViewData["TransactionId"];
+    }
+}
+<ul class="nav nav-pills MCShomeTabs">
+    <li id="liPublicFollowup" role="presentation">
+        <a id="tblPublicFollowup" class="active">
+
+            <span>
+                @DbRes.TResource("User.OutboundDraft.PublicFollowUp")
+
+            </span>
+        </a>
+    </li>
+    <li id="liPrivetFollowup" role="presentation" class="">
+        <a id="tblPrivetFollowup">
+
+            <span>
+                @DbRes.TResource("User.OutboundDraft.PrivetFollowUp")
+
+            </span>
+        </a>
+    </li>
+</ul>
+
+<div class="content_container" id="divFollowUpForm">
+
+    <div id="DivPublicFollowup">
+
+        @Html.Partial("~/Areas/User/Views/Vip/Followup/_PublicFollowupPartial.cshtml", new PublicFollowupVM(), Html.ViewData)
+    </div>
+    <div id="DivPrivateFollowup" style="display:none">
+
+        @Html.Partial("~/Areas/User/Views/Vip/Followup/_PrivateFollowupParital.cshtml", new PrivateFollowupVM(), Html.ViewData)
+    </div>
+
+    <div class="">
+        <div class="col-xs-12">
+            <h4 class="title4">@DbRes.TResource("User.Transaction.FollowUp.List") </h4>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="panel-body">
+        <div id="divFollowUpContent">
+            @Html.Partial("~/Areas/User/Views/Transaction/_FollowUpGridPartial.cshtml", Model.FollowUps)
+        </div>
+    </div>
+
+
+</div>
+<script>
+
+    $(function () {
+
+        $('#tblPublicFollowup').click(function (e) {
+
+            $('#tblPublicFollowup').addClass("active");
+            $('#tblPrivetFollowup').removeClass("active");
+            $('#DivPublicFollowup').show();
+            $('#DivPrivateFollowup').hide();
+
+        });
+
+        $('#tblPrivetFollowup').click(function (e) {
+
+            $('#tblPublicFollowup').removeClass("active");
+            $('#tblPrivetFollowup').addClass("active");
+            $('#DivPublicFollowup').hide();
+            $('#DivPrivateFollowup').show();
+
+
+        });
+    });
+    function GetFollowUpUsersByOrgUnitId(callback) {
+
+        if ($("#righttreeFollowUpToOrgUnit").val() != "" && $("#righttreeFollowUpToOrgUnit").val() != undefined)
+        {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetUnitUsers")',
+                data: { id: $("#FollowUpTab_EntityId").val() },
+                success:
+               function (data) {
+                   $("#autoCompleteToUserId").val("");
+                   $("#hdnFollowUpToUserId").val("");
+                   AutoCompleteChangeList("autoCompleteToUserId", data);
+                   $("#autoCompleteToUserId").prop('disabled', false);
+
+                   if (typeof callback !== 'undefined' && $.isFunction(callback)) {
+                       callback();
+                   }
+               }
+            });
+            return false;
+        }
+        else {
+            $("#autoCompleteToUserId").prop('disabled', true);
+            $("#autoCompleteToUserId").val("");
+            $("#hdnFollowUpToUserId").val("");
+            AutoCompleteChangeList("autoCompleteToUserId", "[]");
+        }
+    }
+
+
+    function callback()
+    {
+        debugger;
+         if ('@ViewData["FollowUpUserId"]' != null)
+       {
+           $("#hdnFollowUpToUserId").val('@ViewData["FollowUpUserId"]');
+                $("#autoCompleteToUserId").trigger('change');
+                $("#hdnFollowUpToUserId").trigger('change');
+            }
+    }
+
+</script>
+<style>
+    .RedBorder {
+        border: 1px solid #fe0000 !important
+    }
+
+    .clsHidden {
+        display: none;
+    }
+</style>
+
+
+

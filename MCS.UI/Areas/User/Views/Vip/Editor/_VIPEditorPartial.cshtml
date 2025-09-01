@@ -1,0 +1,135 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Common
+@using MCS.UI.Areas.User.Models
+@using TXTextControl.Web
+@using TXTextControl.Web.MVC
+@using MCS.UI.Areas.User.Models.Transaction;
+
+@model VIPTextEditorViewModel
+@{string controller = TempData.Peek("ControllerName") != null ? TempData.Peek("ControllerName").ToString() : ViewContext.RouteData.Values["controller"].ToString();
+    var links = (List<TransactionLinkVM>)ViewData["LinkTransactions"];
+    var archives = (List<TransactionArchiveVM>)ViewData["ArchiveListData"];
+}
+
+<div class="content_container content_container--body white-bg">
+    <div class="">
+
+        <div class="form-horizontal" dir="rtl">
+
+            <div id="IncludeArchivingSection" class="row enter_through d-flex" style="margin-right:10px;">
+                <div class="dv activate" id="dvTxtEditorIconWord" onclick="ShowScannerForArchiving()">
+                    <a id="aTextEditorWord" style="white-space:nowrap">
+
+                        @DbRes.TResource("مشروع الخطاب")
+                    </a>
+
+                </div>
+                <div class="dv" onclick="ShowTransactionEditorArchiving()">
+                    <h5>@DbRes.TResource("المرفقات")</h5>
+                    @if (archives != null && archives.Count > 0)
+                    {
+                        <sapn class="Archivebadget">
+                            @archives.Count
+                        </sapn>
+
+                    }
+                </div>
+                <div class="dv" onclick="ShowTransactionEditorLink()">
+                    <h5 id="UserTransactionEditorLink">@DbRes.TResource("الربط")</h5>
+                    @if (links != null && links.Count > 0)
+                    {
+                        <span class="Archivebadget">@links.Count</span>
+                    }
+                </div>
+            </div>
+            <div id="IncludeArchivingSection2">
+                <div id="dvUserTransactionEditorArchiving" style="display:none">
+                    @if (archives != null && archives.Count > 0)
+                    {
+                        foreach (var archive in archives.Where(x => !x.IsMainDocument).ToList())
+
+                        {
+                            <div onclick="ViewGridRow('@archive.Id','@archive.DocumentId','@archive.Key')" class="dv">
+                                <h5> @archive.ArcivingTypeName </h5>
+                            </div>
+                        }
+
+                    }
+                </div>
+                <div id="dvUserTransactionEditorLink" style="display:none">
+                    @if (links != null && links.Count > 0)
+                    {
+                        foreach (var link in links)
+
+                        {
+                            string headerText = " ربط برقم" + link.TransactionNumber;
+                            if (link.HasPermission)
+                            {
+                                <div onclick="return PreviewTransactionDocumentForLink(@link.TransactionId)" class="dv"><h5>  @headerText  </h5></div>
+
+                            }
+                            else
+                            {
+
+                                <div class="dv"><h5> @headerText </h5></div>
+
+                            }
+
+                        }
+
+                    }
+                </div>
+            </div>
+
+
+
+            @Html.HiddenFor(model => model.EditorType, new { id = "hdnEditorType" })
+            @Html.HiddenFor(model => model.IsSigned, new { id = "hdnIsSigned" })
+            @Html.HiddenFor(model => model.DocumentBase64String, new { id = "hdnBinaryDocument" })
+
+
+
+
+
+        </div>
+    </div>
+</div>
+
+<script>
+
+
+    function ShowTransactionEditorArchiving()
+    {
+
+        $("#dvUserTransactionEditorArchiving").addClass('d-flex');
+        $("#dvUserTransactionEditorLink").removeClass('d-flex');
+        $("#dvUserTransactionEditorExplain").removeClass('d-flex');
+        $("#DivtxtControls").hide();
+
+
+    }
+
+    function ShowScannerForArchiving()
+    {
+
+        $("#dvUserTransactionEditorArchiving").removeClass('d-flex');
+        $("#dvUserTransactionEditorLink").removeClass('d-flex');
+        $("#dvUserTransactionEditorExplain").removeClass('d-flex');
+        $("#dvScanningArchiving").hide();
+
+    }
+
+
+
+
+
+</script>
+<style>
+    .textbox {
+        width: 65vh;
+    }
+
+    .lableFortextbox {
+        width: 15vh;
+    }
+</style>

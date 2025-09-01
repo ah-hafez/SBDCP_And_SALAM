@@ -1,0 +1,91 @@
+﻿@using MCS.UI.Areas.User.Models.Report;
+@using System.Reflection;
+<script src="~/Scripts/chart.min.js"></script>
+@model List<PerformanceMeasurementGridResultVM>
+@{
+    string BarchartId = Guid.NewGuid().ToString();
+    string[] ItemsExcluded = { "OrgUnitsID", "OrgUnitName", "UserProfilesID", "UserProfileName" };
+    List<List<int>> DataList = new List<List<int>>();
+    Model.ForEach(i =>
+    {
+        DataList.Add(new List<int>() { i.OutboundCount, i.OutboundDraftCountCreated, i.OutboundDraftCountAssigned, i.InboundCountCreated, i.InboundCountAssigned, i.InternalOutboundCountCreated, i.InternalOutboundCountAssigned , i.DelayedCount });
+    });
+
+}
+<style>
+    .morris-hover.morris-default-style div {
+        display: inline-block;
+        margin: 5px 10px;
+        position: relative;
+        padding-right: 20px;
+        min-width: 20%;
+        font-weight: 600;
+        font-size: 12px;
+    }
+</style>
+<div class="w-100">
+        <canvas id="@BarchartId" height="100"></canvas>
+        <div class="morris-hover morris-default-style" style="position: relative; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+            <div class="morris-hover morris-default-style" style="left: 0px;">
+                <div class="morris-hover-point" style="color: #387AC5">
+                    المعاملات الصادرة
+                </div>
+                <div class="morris-hover-point" style="color: #8FE1A1">
+                    مسودة الخطاب المنشأة
+                </div><div class="morris-hover-point" style="color: #C3C538">
+                    مسودة الخطاب المحالة
+                </div><div class="morris-hover-point" style="color: #C56E38">
+                    المعاملات الواردة المنشأة
+                </div><div class="morris-hover-point" style="color: #E1D38F">
+                    المعاملات الواردة المحالة
+                </div><div class="morris-hover-point" style="color: #8D38C5">
+                    المعاملات الداخلية المنشأة
+                </div><div class="morris-hover-point" style="color: #E73232">
+                    المعاملات الداخلية المحالة
+                </div><div class="morris-hover-point" style="color: #4A38C5">
+                    المعاملات المتأخرة
+                </div>
+            </div>
+        </div>
+    </div>
+<script>
+    $(function () {
+        var dataT = {
+            labels: ['', '', '', '', '', '', '', ''],
+            datasets: [
+                @foreach (List<int> dataset in DataList)
+                {
+                    @:{
+                        @:label: '@Model[DataList.IndexOf(dataset)].OrgUnitName',
+                        @:data: '@string.Join(",", dataset.ToArray())'.split(','),
+                        @:fill: false,
+                        @:backgroundColor: ['#387AC5', '#8FE1A1', '#C3C538', '#C56E38', '#E1D38F', '#8D38C5', '#E73232', '#4A38C5'],
+                        @:borderColor: 'rgb(0, 0, 0, 0)',
+                        @:borderWidth: 1
+                    @:},
+                }
+
+            ]
+        };
+        var ctx = $("#@BarchartId").get(0).getContext("2d");
+        var myNewChart = new Chart(ctx, {
+            type: 'bar',
+            data: dataT,
+            options: {
+                responsive: true,
+                title: { display: false, text: '' },
+                legend: { display: false },
+                scales: {
+                    xAxes: [{
+                        display: false,
+                        ticks: { beginAtZero: true }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        ticks: { beginAtZero: true }
+                    }],
+                }
+            }
+        });
+    });
+</script>

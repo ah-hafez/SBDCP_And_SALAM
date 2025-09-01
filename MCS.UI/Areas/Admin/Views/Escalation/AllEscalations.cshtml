@@ -1,0 +1,63 @@
+﻿@using MCS.Common
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.Escalation
+@using MCS.GridMvc.Ajax.GridExtensions
+
+@model List<EscalationVM>
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_SettingsLayout.cshtml";
+}
+<!-- Bootstrap Core JavaScript -->
+<script src=@Url.Content("~/Content/User/lib/js/jquery.matchHeight-min.js")></script>
+<script src=@Url.Content("~/Content/User/lib/js/app.min.js")></script>
+<script src=@Url.Content("~/Scripts/Common.js")></script>
+<script src=@Url.Content("~/Content/User/lib/js/sideBarControl/SideBarControl.min.js")></script>
+
+<div class="mx-3 mx-sm-5 header-container d-flex  flex-column flex-lg-row align-items-md-center">
+    <h3 class="site-color px-0 px-sm-auto mr-auto">@DbRes.TResource("Admin.Setting.EscalationSetting")</h3>
+</div>
+<div class="d-block d-lg-flex mx-3 mx-sm-5 mb-2">
+    <ul class="nav nav-tabs custom-sub-nav-tabs mb-2 mb-sm-auto d-block d-sm-flex" role="tablist">
+        <li role="presentation" class="active" id="sub-Inbound">
+            <a href="#sub-tab-1" aria-controls="sub-tab-1" role="tab" data-toggle="tab" onclick="TransactionCategoryEscalation(@TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName))">
+                @DbRes.TResource("Admin.Priority.Inbound")
+            </a>
+        </li>
+        <li role="presentation" id="sub-InternalOutbound">
+            <a href="#sub-tab-2" aria-controls="sub-tab-2" role="tab" data-toggle="tab" onclick="TransactionCategoryEscalation(@TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName))">
+                @DbRes.TResource("Admin.Priority.InternalOutbound")
+            </a>
+        </li>
+    </ul>
+</div>
+<div class="white-container  mx-3 mx-md-5" id="EscalationLevelPartial_@Model.First().TransactionCategory">
+    <div class="tab-content">
+        @foreach (var item in Model)
+        {
+            var EscalationVM = new EscalationVM { TransactionCategory = item.TransactionCategory, Priority = item.Priority, PriorityId = item.PriorityId, EscalationsGrid = (AjaxGrid<EscalationVM>)new AjaxGridFactory().CreateAjaxGrid(item.EscalationsGrid, 1, item.EscalationsGrid.Count, false) };
+            @Html.Partial("~/Areas/Admin/Views/Escalation/_EscalationLevelPartial.cshtml", EscalationVM, Html.ViewData)
+        }
+
+    
+    </div>
+</div>
+<script>
+
+    function TransactionCategoryEscalation(encryptId) {
+        window.location.href = '@Url.Action("AllEscalations", "Escalation")?TransactionCategoryId=' + encryptId;
+    }
+
+    $(document).ready(function () {
+         
+        if ($("#CategoryId").val() == @((int)TransactionCategory.Inbound)) {
+            $("#sub-Inbound").addClass('active')
+            $("#sub-InternalOutbound").removeClass('active')
+        }
+        else {
+            $("#sub-InternalOutbound").addClass('active')
+            $("#sub-Inbound").removeClass('active')
+
+        }
+    });
+</script>

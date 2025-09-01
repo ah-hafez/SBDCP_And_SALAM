@@ -1,0 +1,97 @@
+﻿@using MCS.Framework.Localization;
+@using MCS.UI.Areas.User.Models.UserPreferences;
+@model CredentialVM
+@{
+    /**/
+
+    /**/
+
+    Layout = "~/Views/Shared/_DialogLayout.cshtml";
+}
+<style>
+    .rowhight {
+        height: 115px;
+    }
+</style>
+<div class="content-rtl panel panel-default dialogbox_panel">
+    <div class="panel-heading">
+        <h3 class="title2">
+            
+                <p>@DbRes.TResource("UserPreferences.CurrentPasswordSignture")</p>
+            
+        </h3>
+    </div>
+    <div class="modal-body">
+        <div>
+            @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmChangePassword", @class = "form-horizontal" }))
+            {
+                @Html.AntiForgeryToken()
+                <div>
+                    @Html.HiddenFor(model => model.PasswordType)
+                    @Html.HiddenFor(model => model.SignatureCurrentPasswordTxt)
+                    @Html.HiddenFor(model => model.SignatureNewPasswordTxt)
+                    <div class="col-md-12 mt-4">
+                         
+                            <div class="form-group col-sm-6 col-xs-12 mb-3">
+                                <label class="w-100">@DbRes.TResource("UserPreferences.PasswordSignture")<span class="stark">*</span></label>
+                                <div>
+                                    @Html.PasswordGroupFor(model => model.CurrentPassword, "ValidationFormChangePassword",
+                                    new { @class = "form-control", autofocus = "autofocus", @autocomplete = "off" })
+                                </div>
+                            </div>
+                         
+                        
+                    </div>
+                </div>
+                <div class="row text-right mr-5 mt-4 ml-xs-3 mb-4">
+                    @Html.ActionButton(DbRes.TResource("Admin.UserCategory.Save"), Url.Action("SignatureAuthentication").ToString(), null, null, null,
+                    "OnSuccessChangePassword", null, "post", "ValidationFormChangePassword", "btnUpdateEmail", "frmChangePassword",
+                    "btn btn-save pull-right", Model.PasswordType == PasswordType.Delete ? "DeletePassword" : "SavePassword")
+                    @Html.ResetButton("ClearInputs('frmChangePassword')")
+
+                    
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/aes.min.js"></script>
+<script>
+    function DeletePassword() {
+        if ($('#frmChangePassword').valid()) {
+            PasswordEncryptor("CurrentPassword", "SignatureCurrentPasswordTxt");
+            return true;
+        }
+        return false;
+    }
+
+    function SavePassword() {
+        if ($('#frmChangePassword').valid()) {
+            PasswordEncryptor("CurrentPassword", "SignatureCurrentPasswordTxt");
+            PasswordEncryptor("NewPassword", "SignatureNewPasswordTxt");
+            PasswordEncryptor("ConfirmPassword", "ConfirmPassword");
+            return true;
+        }
+        return false;
+    }
+
+    function PasswordEncryptor(elementId, elementIdToSetValue) {
+        debugger
+        var form = $('#frmChangePassword');
+        if (form.find('#' + elementId).length > 0 && form.find('#' + elementId).val() != "") {
+            var key = CryptoJS.enc.Utf8.parse('8080808080808080');
+            var iv = CryptoJS.enc.Utf8.parse('8080808080808080');
+            var value = form.find('#' + elementId).val().trim();
+            form.find('#' + elementIdToSetValue).val(CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(value), key,
+                {
+                    keySize: 128 / 8,
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                }));
+        }
+    }
+  
+</script>
+
+

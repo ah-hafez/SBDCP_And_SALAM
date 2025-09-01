@@ -1,0 +1,165 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.Lookups;
+@using MCS.GridMvc.Ajax.GridExtensions
+@model TransactionTypeViewModel
+@{
+    ViewBag.Title = DbRes.TResource("Admin.Lookups.TransactionType.Title");
+    Layout = "~/Areas/Admin/Views/Shared/_LookupsLayout.cshtml";
+}
+
+
+<div class="mx-3 mx-md-5 header-container d-flex flex-row align-items-center">
+    <div class="d-flex flex-column flex-md-row align-items-md-center flex-grow-1">
+        <h3 class="site-color mb-4">@DbRes.TResource("Admin.Lookups.TransactionType.Title")</h3>
+    </div>
+</div>
+<div class="white-container mx-3 mx-md-5">
+    <div class="w-100 d-flex align-items-center mt-2 mb-2">
+        <h3 class="white-c-title">@DbRes.TResource("Admin.Grid.TransactionType")</h3>
+        <span class="roundedred ml-3">@(((AjaxGrid<TransactionTypeVM>)ViewData["GridData"]).ItemsCount)</span>
+        <span class="pl-2 gray4">@DbRes.TResource("Admin.Grid.Records")</span>
+    </div>
+    @Html.Partial("~/Areas/Admin/Views/Lookups/_TransactionTypeGridPartial.cshtml", ViewData["GridData"])
+</div>
+
+<script>
+    function ShowEditDiv(data, div) {
+        $("#dvEdit").css("display", "block");
+        $("#dvAdd").css("display", "none");
+    }
+
+    function HideEditDiv()
+    {
+        $("#dvEdit").css("display", "none");
+        $("#dvAdd").css("display", "block");
+    }
+
+    function OnEditSuccess(data, div) {
+        if (data.MessageType != 2) {
+            $("#dvEdit").css("display", "none");
+            $("#dvAdd").css("display", "block");
+            $("#" + div).html("");
+            $("#" + div).html(data.Html);
+            jQuery.validator.unobtrusive.parse('#' + div);
+            ClearInputs('EditTransactionTypeContent');
+            ShowSuccesMessage(data.MessageText);
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function OnAddSuccess(data, div) {
+        if (data.MessageType != 2) {
+            $("#" + div).html("");
+            $("#" + div).html(data.Html);
+            jQuery.validator.unobtrusive.parse('#' + div);
+            ShowSuccesMessage(data.MessageText);
+            ClearInputs('AddTransactionTypeContent');
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function OnDeleteSuccess(data, divUpdatData, deletedList) {
+
+        if (data.TransactionTypesUsedList.length == 0) {
+
+            ShowSuccesMessage(data.MessageText);
+        }
+        else {
+
+            var msg = '';
+
+            for (var i = 0; i < data.TransactionTypesUsedList.length; i++) {
+
+                if (msg == '')
+                    msg = data.TransactionTypesUsedList[i];
+                else
+                    msg = msg + '</br>' + data.TransactionTypesUsedList[i];
+            }
+
+            msg = '@DbRes.TResource("Admin.TransactionType.DeleteTransactionTypesErrorMsg")' + '</br>' + msg;
+
+            ShowErrorMessage(msg);
+        }
+
+        var deletedArray = deletedList.split(',');
+
+        for (var i = 0; i < deletedArray.length; i++) {
+
+            var deleted = true;
+
+            for (var y = 0; y < data.TransactionTypesUsedList.length; y++) {
+
+                if (deletedArray[i] == data.TransactionTypesUsedList[y]) {
+
+                    deleted = false;
+                }
+            }
+
+            if (deleted)
+                if (deletedArray[i] == $('#hdnEditId').val())
+                    HideEditDiv();
+        }
+    }
+</script>
+<script type="text/javascript">
+    function OpenDialog(Id) {
+        ShowDialogAjax('@Url.Action("RenderAddPermissionDialog", "Permissions" )', { groupId: Id }, 'OpenDialogSuccess');
+
+    }
+    function OpenDialogSuccess(data, $obj) {
+        $obj.setContent(data.Html);
+
+
+        jQuery.validator.unobtrusive.parse('#frmAddPermission');
+    }
+
+    function OnSuccess(data, div) {
+        if (data.MessageType != 2) {
+            $("#divContainer__frmAddTransactionType").remove();
+            $("#divForm__frmAddTransactionType").html("");
+            $("#divForm__frmAddTransactionType").html(data.Html);
+            jQuery.validator.unobtrusive.parse('#divForm__frmAddTransactionType');
+
+            ShowSuccesMessage(data.MessageText);
+            __dialog.close();
+        }
+        else {
+
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function EditPermission(Id) {
+        ShowDialogAjax('@Url.Action("RenderEditPermissionDialog", "Permissions" )', { PermissionId: Id }, 'OpenDialogSuccess');
+    }
+    function DeletePermission(Id) {
+        ShowConfirmMessage('@(DbRes.TResource("Admin.Permissions.DeleteConfirm"))', "ConfirmDeletePermission");
+        $("#hdnPermissionId").val(Id);
+    }
+    function ConfirmDeletePermission()
+    {
+        var id = $("#hdnPermissionId").val();
+        $.ajax({
+            type: 'post',
+            data: { permissionId: id },
+            url: '@Url.Action("DeletePermission")',
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    $("#divContainer__frmAddTransactionType").remove();
+                    $("#divForm__frmAddTransactionType").html("");
+                    $("#divForm__frmAddTransactionType").html(data.Html);
+                    jQuery.validator.unobtrusive.parse('#divForm__frmAddTransactionType');
+
+                    ShowSuccesMessage(data.MessageText);
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            }
+        });
+    }
+</script>

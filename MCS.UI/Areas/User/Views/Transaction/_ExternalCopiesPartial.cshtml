@@ -1,0 +1,605 @@
+﻿@model MCS.UI.Areas.User.Models.Transaction.TransactionExternalCopyVM
+@using MCS.Common;
+@using MCS.Framework.Localization
+
+@{
+    Layout = null;
+    string controller = TempData.Peek("ControllerName") != null ? TempData.Peek("ControllerName").ToString() : ViewContext.RouteData.Values["controller"].ToString();
+    ViewData.TemplateInfo.HtmlFieldPrefix = "TransactionExtCopy";
+}
+
+<div class="tableBorder" id="dvExternalCopiesBody">
+    <ul class="test" style="display:flex; gap:25px; padding-right:10px;">
+        @*<li>
+                <a href="#fourth-tab" aria-controls="fourth-tab" role="tab" data-toggle="tab">
+                    <h1 style="font-size:16px; color:black;">@DbRes.TResource("User.OutboundDraft.ElectronicCopies")</h1>
+                </a>
+            </li>
+            <div class="border-left"></div>*@
+        <li>
+            <h1 style="font-size:16px; color:black;">@DbRes.TResource("User.Transaction.ExternalCopies")</h1>
+        </li>
+    </ul>
+
+    <hr class="hr" />
+    @Html.HiddenFor(model => model.OrgUnitName, new { id = "hdnExternalCopyOrgUnitName" })
+    <div id="dvExternalCopiesForm" class="form-horizontal form-row">
+        <div class="form-group col-lg-6 col-md-4 col-sm-6 col-xs-12 mb-3">
+            <div id="dvExternalCopyDepartmentsTree" class="externalParties" style="margin-right:40px;">
+                @*@Html.DepartmentsTreeOnDemand(ViewData["ExternalCopiesPartiesData"] as TreeViewModel, model => model.OrgUnitId, TreeMode.Single, "dvExternalCopyDepartmentsTree", true, "GetUsersByExternalPartyId", "ExternalCopies", "dvExternalCopyDepartmentsTree")*@
+                <fieldset class="field-set">
+                    <div class="externalParties">
+
+                        @Html.DepartmentsTreeOnDemand(ViewData["ExternalCopiesPartiesData"] as TreeViewModel, model => model.OrgUnitId, TreeMode.MultiCheckbox, "dvExternalCopyDepartmentsTree", true, "GetUsersByExternalPartyId", "ExternalCopies", "dvExternalCopyDepartmentsTree", false, false, false, "ExternalCheckboxChange")
+
+                        @Html.HiddenFor(model => model.OrgUnitName, new { id = "hdnExternalCopyOrgUnitName" })
+                        @Html.HiddenFor(model => model.ExternalOrgSelectedList, new { id = "ExternalOrgSelectedList" })
+                    </div>
+                </fieldset>
+
+            </div>
+
+
+
+        </div>
+
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3" hidden>
+            <label class="w-100">@DbRes.TResource("User.Transaction.Assignment.Reason") <span class="stark">*</span></label>
+            @Html.AutoCompleteBuilder("ddlExternalCopyActionId", "hdnExternalCopyActionId", ViewData["AllExternalActionsData"].ToString(), Model != null ? Model.ActionId.ToString() : null, true, "form-control", "hdnExternalCopyActionTypeId", "", "", true)
+            @Html.HiddenGroupFor(model => model.ActionId, new { @Value = "", id = "hdnExternalCopyActionId" }, "ExternalCopies")
+            @Html.HiddenGroupFor(model => model.ActionName, new { id = "hdnExternalCopyActionName" }, "ExternalCopies")
+            @Html.HiddenGroupFor(model => model.ActionTypeId, new { @Value = "", id = "hdnExternalCopyActionTypeId" }, "ExternalCopies")
+        </div>
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3" style="display:flex; gap:5px; margin-top:4px;">
+            @*<div id="dvUploadFiles">
+                    <input type="file" name="Files" multiple onchange="SaveAttachements()" id="Files" class="hidden">
+                    <a class="btn-site btn-upload" onclick="$('#Files').click();">
+                        <i class="uicon icon_attachment_plus"></i>
+                        @DbRes.TResource("User.Transaction.Copy.Attachment")
+                    </a>
+                </div>*@
+            <div>
+                @Html.ClientActionButton(DbRes.TResource("User.Transaction.Copies.Add"), Url.Action("AddExternalCopy", controller), "dvExternalCopiesGrid", "ExternalCopyOnSuccess", null, "ExternalCopies", "btnExternalCopy", "dvExternalCopiesBody", "btn-site btn-upload", null, "CheckDepartment", UserClaims.CopiesExternal.Add, "<i class='glyphicon glyphicon-plus'style=\"\r\n    margin-top: -10px;\r\n    font-size: small;\"></i>")
+            </div>
+
+            @*<label class="w-100"> </label>
+                <div class="form-check form-check-inline pl-0 pt-1">
+                    @Html.CheckBoxFor(model => model.SendEmail, new { @class = "toggleEmailField" })
+                    @Html.StickyHiddenFor(model => model.SendEmail, new { id = "hdnSendEmail" })
+                    <label class="form-check-label dark-color" for="inlineRadio1">   @DbRes.TResource("User.Transaction.Assignment.SendEmail")</label>
+                </div>*@
+        </div>
+        @*<div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                <label class="w-100">@DbRes.TResource("User.Transaction.Name.Email")</label>
+                @Html.TextBoxGroupFor(model => model.Email, "", new { @class = "form-control emailTextField", maxlength = "150", @disabled = "true" })
+            </div>*@
+        <div class="form-group col-lg-12 col-md-12 col-xs-12 col-sm-12" id="dvFilesUploader">
+            @*<div id="dvUploadFiles">
+                    <input type="file" name="Files" multiple onchange="SaveAttachements()" id="Files" class="hidden">
+                    <a class="btn-site btn-upload" onclick="$('#Files').click();">
+                        <i class="uicon icon_attachment_plus"></i>
+                        @DbRes.TResource("User.Transaction.Copy.Attachment")
+                    </a>
+                </div>*@
+            <div class=" col-uploadeed-files" style="margin-right:40px;">
+                @*<label class="control-label">@DbRes.TResource("User.Transaction.copy.AttachmentsAdded")</label>*@
+                <div class="uploaded-files" id="UploadedFilesName">
+                </div>
+            </div>
+            @Html.HiddenFor(model => model.attachmentNames, new { id = "hdnAttachmentNames" })
+        </div>
+        @*<div class="form-group col-lg-12 col-md-12 col-xs-12 col-sm-12">
+                <p class="stark">@DbRes.TResource("Admin.User.MustFill") * </p>
+            </div>*@
+    </div>
+   @* @Html.StickyHidden("hdnExternalCopies", ViewData["hdnExternalCopyArray"].ToString())*@
+    @Html.HiddenFor(model => model.AttachmentCount, new { @id = "hdnExternalCopiesAttachmentsCount", @disabled = "disabled" })
+    <div class="row">
+        <div class="col-xs-12 text-right panel-body" style="margin-top:-30px;">
+            @Html.StickyHiddenFor(model => model.Id, new { id = "hdnExEditId" })
+            @Html.StickyHiddenFor(model => model.Key, new { id = "hdnExEditKey" })
+            @Html.StickyHiddenFor(model => model.externalPartyAttachmentVMs, new { id = "hdnExAttachments" })
+            @Html.StickyHiddenFor(model => model.AttachmentCount, new { id = "hdnExternalCopyAttachment" })
+
+            @*<button class="btn-site" id="btnConfirmExternalCopy" type="button" validationgroup="ExternalCopies" value="إضافه"><i class="glyphicon glyphicon-plus"></i>إضافه</button>*@
+            @*@Html.ClientActionButton(DbRes.TResource("User.Transaction.Copies.Add"), Url.Action("AddExternalCopy", controller), "dvExternalCopiesGrid", "ExternalCopyOnSuccess", null, "ExternalCopies", "btnExternalCopy", "dvExternalCopiesBody", "btn-site", null, "CheckDepartment", UserClaims.CopiesExternal.Add, "<i class='glyphicon glyphicon-plus'></i>")*@
+            @Html.ClientActionButton(DbRes.TResource("Grid.Edit"), Url.Action("EditExternalCopy", controller), "dvExternalCopiesGrid", "ExternalCopiesOnEditSuccess", null, "ExternalCopies", "btnExternalEditCopies", "dvExternalCopiesBody", " btn-site  hidden_", null, "CheckDepartment", UserClaims.CopiesExternal.Edit)
+            <a class="btn-site " style="display:none" id="aCancelExternalCopy" onclick="CancelExternalCopyEdit(); return false;">@DbRes.TResource("User.Transaction.Name.Cancel")</a>
+        </div>
+    </div>
+    <div class="panel-body" style="padding-left:70px; padding-right:45px;">
+        <div class="row">
+            <div id="dvExternalCopiesGrid">
+                @Html.Partial("~/Areas/User/Views/Transaction/_ExternalCopiesGridPartial.cshtml", Model.ExternalCopies, Html.ViewData)
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function (){
+       // $("#dvFilesUploader").addClass("hidden_");
+
+        $('#btnConfirmExternalCopy').click(function () {
+            if (CheckDepartment()) {
+                ShowConfirmMessage("هل انت متأكد من الاضافة؟", 'addExternalCopyConfirmed');
+            }
+        });
+    });
+
+    function addExternalCopyConfirmed() {
+        $('#btnExternalCopy').click();
+    }
+
+    function CheckDepartment()
+    {
+        if ($("#dvExternalCopiesBody .txtDepartmentName").val() == "") {
+
+            $("#dvExternalCopiesBody .txtDepartmentName ,#dvExternalCopiesBody .txtDepartmentNumber").addClass("RedBorder");
+            return true;
+        }
+        else {
+            $("#dvExternalCopiesBody .txtDepartmentName ,#dvExternalCopiesBody .txtDepartmentNumber").removeClass("RedBorder");
+            //$("#hdnExternalCopyAttachment").val($('#dvUploadFiles').find($("input:file")).get(0).files.length);
+            //removeAttachemntPhysically();
+            //$('.uploaded-files').html("");
+            //SaveAttachements();
+            return true;
+        }
+    }
+
+
+    function ExternalCheckboxChange(orgSelected, id, number, name) {
+        var orgListString = $("#ExternalOrgSelectedList").val();
+        var initialValue = [];
+        if (orgListString != "") {
+            initialValue = orgListString.split(',');
+        }
+
+     
+        if (orgSelected.checked) {
+            initialValue.push(id);
+            $("#rightdvExternalCopyDepartmentsTree").val(number);
+            $("#leftdvExternalCopyDepartmentsTree").val(name);
+            $("#hdnExternalCopyOrgUnitName").val(name);
+            $("#TransactionExtCopy_OrgUnitId").val(id);
+
+
+        } else {
+
+            initialValue.splice($.inArray(id, initialValue), 1);
+        }
+        if (initialValue.length == 0) {
+
+            $("#rightdvCopyDepartmentsTree").val("");
+        }
+
+        $("#ExternalOrgSelectedList").val(initialValue.toString());
+
+    }
+
+    function SaveAttachements() {
+        var files = $('#dvUploadFiles').find($("input:file")).get(0).files;
+        var isValid = false;
+
+        if (files.length <= 0) {
+            return;
+        }
+
+        if (window.FormData !== undefined) {
+            var data = new FormData();
+            var fileExist = false;
+            for (i = 0; i < files.length; i++) {
+                $('.uploaded-files').find('.attachment_name').each(function () {
+                    if ($(this).html() == files[i].name) {
+                        fileExist = true;
+                    }
+                });
+                if (!fileExist) {
+                    var idxDot = files[i].name.lastIndexOf(".") + 1;
+                    var extFile = files[i].name.substr(idxDot, files[i].name.length).toLowerCase();
+                    //var isValidType = extFile != "" && $.inArray(extFile, typeFileValid) == -1;
+                    isValid = true;
+                    //if (isValidType) {
+                    //    isValid = false;
+                    //    break;
+                    //}
+                    data.append("file" + i, files[i], files[i].name);
+                    $('.uploaded-files').append('<div class="file newAdded"><i class="uicon icon_attachments"></i><span class="attachment_name">' + files[i].name + '</span><a href="javascript:removeAttachemntPhysically()" class="color-danger remove-mini"><i class="uicon icon_recycle"></i></a></div>');
+                }
+            }
+            $('.col-uploadeed-files').fadeIn(200);
+            if (isValid) {
+                data.append('ExternalCopyVM', $("#dvExternalCopiesBody :input").serializeArray());
+                data.append('EntityId', $("#dvExternalCopyDepartmentsTree_hdnDepartmentId").val());
+                var jqXHR = $.ajax({
+                    type: "post",
+                    url: '@Url.Action("UploadExternalCopyAttachments", controller)',
+                    data: data,
+                    contentType: false,
+                    processData: false,
+                    dataType: 'json',
+                    async: false,
+                }).done(function (data) {
+                    if (data.MessageType != 2) {
+                        if ($("#hdnAttachmentNames").val() == "" || $("#hdnAttachmentNames").val() == null) {
+                            $("#hdnAttachmentNames").val("[]");
+                        }
+                        var namesList = JSON.parse($("#hdnAttachmentNames").val());
+                        var addedItems = JSON.parse(data.AddedFilesJson);
+                        for (var i = 0; i < addedItems.length; i++) {
+                            namesList.push(addedItems[i]);
+                        }
+                        $("#hdnAttachmentNames").val(JSON.stringify(namesList));
+                    } else {
+                        ShowErrorMessage(data.MessageText);
+                    }
+                }).fail(function (jqXHR, textStatus) {
+                    alert("error");
+                });
+            }
+            else {
+                ShowErrorMessage('@DbRes.TResource("Task.File.MimeType")');
+            }
+        } else {
+            alert("Your browser doesn't support HTML5 multiple file uploads! Please use some decent browser.");
+            return;
+        }
+
+        var count = $("#UploadedFilesName  .file").length;
+        $('#hdnExternalCopyAttachment').val(count);
+        $('#hdnExternalCopiesAttachmentsCount').val(count);
+
+        return;
+    }
+
+    $("#ddlExternalCopyOrgUnitUsers").prop('disabled', true);
+
+    $(document).on('change', '#ddlExternalCopyOrgUnitUsers', function () {
+        $('#hdnExternalCopyOrgUnitUserName').val($('#ddlExternalCopyOrgUnitUsers').val());
+    });
+
+    $(document).on("change", "#ddlExternalCopyActionId", function () {
+        $("#hdnExternalCopyActionName").val($(this).val());
+    })
+    function GetUsersByExternalPartyId() {
+
+
+
+        $('#TransactionExtCopy_SendEmail').prop("checked", false);
+        $('#TransactionExtCopy_SendEmail').attr("disabled", true);
+        if ($("#dvExternalCopyDepartmentsTree_hdnDepartmentId").val() != '' && $("dvExternalCopyDepartmentsTree_txtDepartmentName").val() != '') {
+            if ($("#dvExternalCopyDepartmentsTree_txtDepartmentEmail").val() != '') {
+                $("#TransactionExtCopy_Email").val($("#dvExternalCopyDepartmentsTree_txtDepartmentEmail").val());
+                $('#TransactionExtCopy_SendEmail').removeAttr("disabled");
+                $('#TransactionExtCopy_SendEmail').prop("checked", false);
+            }
+            else {
+                $("#TransactionExtCopy_Email").val('');
+            }
+            $("#hdnExternalCopyOrgUnitUsers").val('');
+            $("#ddlExternalCopyOrgUnitUsers").val('');
+            $("#hdnExternalCopyOrgUnitUserName").val('');
+            $('#hdnExternalCopyOrgUnitName').val($('#dvExternalCopyDepartmentsTree_txtDepartmentName').val());
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetManagersByPartyId", controller)',
+                data: { id: $('[name="TransactionExtCopy.OrgUnitId"]').val() },
+                success:
+                    function (data) {
+                        AutoCompleteChangeList("ddlExternalCopyOrgUnitUsers", data);
+                        $("#ddlExternalCopyOrgUnitUsers").trigger('change');
+                        $("#hdnExternalCopyOrgUnitUsers").trigger('change');
+                        $("#ddlExternalCopyOrgUnitUsers").prop('disabled', false);
+                        $("#ExternalOrgSelectedList").val($('[name="TransactionExtCopy.OrgUnitId"]').val());
+
+                    }
+            });
+            return false;
+        }
+        else {
+            AutoCompleteChangeList("ddlExternalCopyOrgUnitUsers", "[]");
+            $("#hdnExternalCopyOrgUnitUsers").val('');
+            $("#ddlExternalCopyOrgUnitUsers").trigger('change');
+            $("#hdnExternalCopyOrgUnitUsers").trigger('change');
+            $("#ddlExternalCopyOrgUnitUsers").prop('disabled', true);
+         //   $("#dvFilesUploader").addClass("hidden_");
+        }
+    }
+
+    function ExternalCopyOnSuccess(data) {
+        if (data.MessageType != 2) {
+         
+            $("#grid-table-grdExternalCopies > tbody > .grid-empty-text").remove();
+            $("#grid-table-grdExternalCopies > tbody:last").append(data.Html);
+            $("#divContainer__dvExternalCopyDepartmentsTree").find('input[type=checkbox]').each(function () {
+                // some staff
+                this.checked = false;
+            });
+            $("#ExternalOrgSelectedList").val('');
+            $('#divContainer__dvExternalCopyDepartmentsTree').css("display", 'none');
+            $("#rightdvExternalCopyDepartmentsTree").val('');
+            $("#leftdvExternalCopyDepartmentsTree").val('');
+            $("#OrgSelectedList").val('');
+
+         /*   ClearInputs('dvExternalCopiesForm');*/
+          //  $("#dvFilesUploader").addClass("hidden_");
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+    function OnDeleteExternalCopiesSuccess(data) {
+      /*  $("#hdnExternalCopies").val(data.hdnValue);*/
+        $("#hdnExternalCopiesGrid").val(data.hdnValue);
+    }
+    $(document).on("change", "#Key", function () {
+        if ($(this).val().length == 10) {
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("GetCopies",controller)',
+                cache: false,
+                data: { "key": $(this).val() },
+                success:
+                    function (data) {
+                        var hasData = false;
+                        $.each(data, function (name, value) {
+                            $("#dvExternalCopiesForm #" + name).val(value);
+                            hasData = true;
+                        });
+                        if (hasData) {
+                            $("#dvExternalCopiesForm #key").trigger("change");
+                        }
+                        else {
+                            if ($("#btnExternalCopy").css("display") == "block") {
+                                $("#dvExternalCopiesForm #Id").val("");
+                            }
+                        }
+                        return;
+                    }
+            });
+        }
+    });
+
+    function ResetActionExternalCopy(orgUnitId) {
+        $("#btnExternalCopy").show();
+        $("#btnExternalEditCopies").hide();
+        $("#aCancelExternalCopy").hide();
+        $('.uploaded-files').html("");
+         $.ajax({
+                type: 'post',
+                url: '@Url.Action("DeleteExternalCopy", controller)',
+             data: { "OrgUnit": orgUnitId },
+                success: function (data) {
+                    return;
+                }
+            });
+    }
+
+    function CancelExternalCopyEdit()
+    {
+        $("#btnExternalCopy").show();
+        $("#btnResetExternalCopy").show();
+        $("#btnExternalEditCopies").hide();
+        $("#aCancelExternalCopy").hide();
+        $('.uploaded-files').html("");
+        $('#grid-table-grdExternalCopies').find('#Key_' + $("#hdnExEditKey").val()).closest('tr').removeClass("grid-row-selected");
+        ClearInputs('dvExternalCopiesForm');
+       // $("#dvFilesUploader").addClass("hidden_");
+    }
+    function ExternalCopiesOnEditSuccess(data) {
+        if (data.MessageType != 2) {
+            if (data.Key != "") {
+                $('#grid-table-grdExternalCopies').find('#Key_' + data.Key).closest('tr').replaceWith(data.Html);
+
+            }
+            ClearInputs('dvExternalCopiesForm');
+            $("#hdnExternalCopiesAttachmentsCount").attr("disabled" , "disabled");
+            $("#btnExternalCopy").show();
+            $("#btnResetExternalCopy").show();
+            $("#btnExternalEditCopies").hide();
+            $("#aCancelExternalCopy").hide();
+            $('.uploaded-files').html("");
+            $("#divContainer__dvExternalCopyDepartmentsTree").find('input[type=checkbox]').each(function () {
+                // some staff
+                this.checked = false;
+            });
+            $("#ExternalOrgSelectedList").val('');
+            $('#divContainer__dvExternalCopyDepartmentsTree').css("display",'none');
+            $("#rightdvExternalCopyDepartmentsTree").val('');
+            $("#OrgSelectedList").val('');
+            $("#leftdvExternalCopyDepartmentsTree").val('');
+           // $("#dvFilesUploader").addClass("hidden_");
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+    function removeAttachemntPhysically(key, AttachmentId) {
+        var token = $("#dvExternalCopiesBody").parents("form").find("input[name='__RequestVerificationToken']").val();
+        if (DeletedAttach && DeletedAttach != "" && key != undefined && AttachmentId != undefined) {
+            updateDeletedExAttachments(key, AttachmentId);
+        } else if (DeletedAttach && DeletedAttach != "" && key == undefined && AttachmentId == undefined){
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("RemoveAttachemntPhysically", controller)',
+                data: { "attachmentsToDelete": DeletedAttach, entityId: $("#dvExternalCopyDepartmentsTree .hdnDepartmentId").val() ,__RequestVerificationToken: token },
+                success: function (data) {
+                    if (data.MessageType != 2) {
+                        updateDeletedExAttachmentsByName(DeletedAttach.split(",")[0]);
+                    } else {
+                        ShowErrorMessage(data.MessageText);
+                    }
+                }
+            });
+        }
+    }
+    function updateDeletedExAttachmentsByName(name) {
+        var totalCount = 0;
+        var attachmentsNames = JSON.parse($("#hdnAttachmentNames").val());
+        totalCount = attachmentsNames.length;
+        for (var i = 0; i < attachmentsNames.length; i++) {
+            if (attachmentsNames[i].Name == name) {
+                var index = attachmentsNames.indexOf(attachmentsNames[i]);
+                if (index > -1) {
+                    attachmentsNames.splice(index, 1);
+                    totalCount -= 1;
+                }
+            }
+        }
+        $("#hdnExternalCopyAttachment").val(totalCount);
+        $("#hdnExternalCopiesAttachmentsCount").val(totalCount);
+        $("#hdnAttachmentNames").val(JSON.stringify(attachmentsNames));
+    }
+
+    function updateDeletedExAttachments(key, AttachmentId) {
+        var totalCount = 0;
+        var attachmentsNames = JSON.parse($("#ExAttachmentsNames_" + key).val());
+        totalCount = attachmentsNames.length;
+        for (var i = 0; i < attachmentsNames.length; i++) {
+            if (attachmentsNames[i].Id == AttachmentId) {
+                attachmentsNames[i].IsDeleted = 1;
+            }
+            if (attachmentsNames[i].IsDeleted == 1) {
+                totalCount -= 1;
+            }
+        }
+        $("#hdnExternalCopyAttachment").val(totalCount);
+        $("#hdnExternalCopiesAttachmentsCount").val(totalCount);
+        $("#hdnAttachmentNames").val(JSON.stringify(attachmentsNames));
+        $("#ExAttachmentsNames_" + key).val(JSON.stringify(attachmentsNames));
+    }
+
+    $(document).on('keyup', '#dvExternalCopiesBody .txtDepartmentNumber', function () {
+        if ($("#dvExternalCopiesBody .txtDepartmentName").val() != null && $("#dvExternalCopiesBody .txtDepartmentName").val() != "") {
+          //  $("#dvFilesUploader").removeClass("hidden_");
+        } else {
+          //  $("#dvFilesUploader").addClass("hidden_");
+        }
+    });
+    function GetExternalCopyById(key, orgUnitId) {
+     
+        var transId = $('#hdnTransactionID').val();
+        //SetTreeDefaultInfo("dvExternalCopyDepartmentsTree");
+        //$("#dvExternalCopyDepartmentsTree_hdnDepartmentId").val($("#dvExternalCopyDepartmentsTree_" + key).val());
+      /*  SetTreeDefaultInfo("dvExternalCopyDepartmentsTree",orgUnitId);*/
+        $('.uploaded-files').html("");
+        $('#hdnExEditKey').val(key);
+        //$("#divForm__dvExternalCopyDepartmentsTree").find(".hdnDepartmentId").val($("#ExOrgUnitId_" + key).val());
+        $("#dvExternalCopiesBody .txtDepartmentName").val($("#ExOrgUnitName_" + key).val());
+        $("#dvExternalCopiesBody .txtDepartmentNumber").val($("#ExOrgUnitId_" + key).val());
+        FillDepartmentTreeControlsById('dvExternalCopyDepartmentsTree', $("#ExOrgUnitId_" + key).val());
+        //GetUsersByExternalPartyId();
+
+        $("#hdnSendEmail").val($("#SendEmail_" + key).val().toLowerCase());
+        if ($("#SendEmail_" + key).val().toLowerCase() == "true") {
+
+            $('#TransactionExtCopy_SendEmail').prop('checked', $("#SendEmail_" + key).val().toLowerCase());
+        }
+
+
+        $('#hdnExternalCopyOrgUnitName').val($('#dvExternalCopiesBody .txtDepartmentName').val());
+        $("#ddlExternalCopyOrgUnitUsers").val($("#ExUserName_" + key).val());
+        $("#hdnExternalCopyOrgUnitUserName").val($("#ExUserName_" + key).val());
+        $("#hdnExternalCopyOrgUnitUsers").val($("#ExUserId_" + key).val());
+        $("#ddlExternalCopyActionId").val($("#ExActionName_" + key).val());
+        $("#hdnExternalCopyActionId").val($("#ExActionId_" + key).val());
+        $("#hdnExternalCopyActionName").val($("#ExActionName_" + key).val());
+        $("#hdnExAttachments").val($("#ExAttachments_" + key).val());
+        $("#hdnExternalCopiesAttachmentsCount").val($("#ExAttachment_" + key).val());
+        $("#hdnExternalCopiesAttachmentsCount").removeAttr("disabled");
+        $("#hdnExEditId").val($("#ExEditId_" + key).val());
+        $("#hdnAttachmentNames").val($("#ExAttachmentsNames_" + key).val());
+        var attachmentsNames = $("#ExAttachmentsNames_" + key).val();
+        if (attachmentsNames != '') {
+            var attachmentsNamesArr = JSON.parse(attachmentsNames);
+            for (i = 0; i < attachmentsNamesArr.length; i++) {
+                if (attachmentsNamesArr[i].IsDeleted != true) {
+                    $('.uploaded-files').append('<div class="file"><i class="uicon icon_attachments"></i><span class="attachment_name">' + attachmentsNamesArr[i].Name + '</span><a href="javascript:removeAttachemntPhysically(' + key + ',' + attachmentsNamesArr[i].Id + ')" class="color-danger remove-mini"><i class="uicon icon_recycle"></i></a></div>');
+                }
+            }
+            $('.col-uploadeed-files').fadeIn(200);
+        } else {
+            $.ajax({
+                type: 'Get',
+                url: '@Url.Action("RetriveExternalCopiesAttechment", controller)',
+                data: { "OrgUnitId": orgUnitId, "id": transId },
+
+                success: function (data) {
+                    var files = data.filesNames.split(',');
+                    if (data.filesNames == "")
+                        $('.uploaded-files').html("");
+                    else {
+                        for (i = 0; i < files.length; i++) {
+                            $('.uploaded-files').append('<div class="file"><i class="uicon icon_attachments"></i><span class="attachment_name">' + files[i] + '</span><a href="javascript:removeAttachemntPhysically(' + key +')" class="color-danger remove-mini"><i class="uicon icon_recycle"></i></a></div>');
+                        }
+                        $('.col-uploadeed-files').fadeIn(200);
+                    }
+
+                }
+            });
+        }
+        $("#hdnCopyIndex").val(key);
+         $("#btnExternalCopy").hide();
+        $("#btnResetExternalCopy").hide();
+        $("#btnExternalEditCopies").removeClass("hidden_");
+        $("#btnExternalEditCopies").show();
+        $("#aCancelExternalCopy").show();
+        //$("#dvFilesUploader").removeClass("hidden_");
+        $.ajax({
+            type: 'get',
+            url: '@Url.Action("GetManagersByPartyId", controller)',
+            data: { id: $("#ExOrgUnitId_" + key).val() },
+            success:
+                function (data) {
+                    AutoCompleteChangeList("ddlExternalCopyOrgUnitUsers", data);
+                    $("#ddlExternalCopyOrgUnitUsers").trigger('change');
+                    $("#hdnExternalCopyOrgUnitUsers").trigger('change');
+                    $("#ddlExternalCopyOrgUnitUsers").prop('disabled', false);
+                    //$("#dvFilesUploader").removeClass("hidden_");
+                }
+        });
+        $("#TransactionExtCopy_Email").val($("#dvExternalCopyDepartmentsTree_txtDepartmentEmail").val());
+        return false;
+    }
+
+    $('.toggleEmailField').change(function () {
+        var emailTextField = $('.emailTextField');
+        if (event.currentTarget.checked) {
+            $('.emailTextField').removeAttr('disabled');
+        } else {
+            $('.emailTextField').attr('disabled', true);
+        }
+    });
+
+</script>
+
+<style>
+    .clsHidden {
+        display: none;
+    }
+
+    .CopyesTitle {
+        font-size: 16px;
+        font-weight: bold;
+        margin: 35px;
+    }
+
+    .btn-site {
+        margin-bottom: 20px;
+    }
+
+    .btn-act {
+        margin-right: 25px;
+    }
+
+    .aactive {
+        color: green !important;
+        font-weight: bold;
+    }
+
+    .test .active a h1 {
+        color: green !important;
+        font-weight: bold;
+    }
+</style>

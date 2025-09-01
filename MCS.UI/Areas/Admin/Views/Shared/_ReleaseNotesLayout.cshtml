@@ -1,0 +1,10 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/_BaseLayout.cshtml";
+    var controllerName = HttpContext.Current.Request.RequestContext.RouteData.Values["controller"].ToString();
+    var actionName = ViewContext.RouteData.GetRequiredString("action").ToString();
+}
+
+@section Body
+{
+    @RenderBody()
+}

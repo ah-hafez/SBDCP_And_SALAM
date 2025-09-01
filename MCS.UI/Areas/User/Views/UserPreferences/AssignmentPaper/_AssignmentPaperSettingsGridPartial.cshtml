@@ -1,0 +1,101 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Common;
+@using MCS.UI.Areas.User.Models.OrgUnit
+@model AjaxGrid<AssignmentPaperBeneficiaryVM>
+
+
+@{
+    Layout = null;
+}
+
+@{string controller = "UserPreferences";}
+
+
+@Html.Grid(Model).CollectionName("AssignmentPaperBeneficiaryVMs").Named("grdBeneficiary").Columns(columns =>
+{
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Key, new { id = "Key_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.UserId, new { id = "UserId_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.BeneficiaryOrgUnitId, new { id = "BeneficiaryOrgUnitId_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.UserName, new { id = "UserName_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.OrgUnitName, new { id = "OrgUnitName_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.OrgUnitCode, new { id = "OrgUnitCode_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.GroupId, new { id = "GroupId_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.GroupName, new { id = "GroupName_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.ChkConstant, new { id = "ChkConstant_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.OrderNo, new { id = "OrderNo_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.DefaultActionId, new { id = "DefaultActionId_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add().Encoded(false).Sanitized(false).Titled(DbRes.TResource("User.Transaction.Copies.OrgUnit"))
+.RenderValueAs(o => @<div class="row">
+    <span class="col-md-2"></span>
+    @o.OrgUnitName
+
+    <span class="col-md-1">
+        <a id="ch_@o.Key.ToString()" onclick="ChangeBeneficiaryOrder('@o.Key','true')" class="la la-long-arrow-down"></a>
+    </span>
+    <span class="col-md-1">
+        <a id="ch_@o.Key.ToString()" onclick="ChangeBeneficiaryOrder('@o.Key','false')" class="la la-long-arrow-up"></a>
+    </span>
+
+
+</div>);
+
+
+columns.Add().Encoded(false).Sanitized(false).Titled(DbRes.TResource("User.Transaction.Copies.Employee")).RenderValueAs(x => (x.UserId.HasValue ? "<div style='width:100px;'>" + ' ' + x.UserName + "</div>" : string.Empty));
+//columns.Add().Encoded(false).Sanitized(false).Titled(DbRes.TResource("User.Transaction.Assignment.ChkConstant")).RenderValueAs(model => Html.CheckBox("checked", model.ChkConstant, new { value = model.ChkConstant }));
+columns.Add().Encoded(false).Sanitized(false).Titled(DbRes.TResource("User.Transaction.Assignment.ChkConstant"))
+.RenderValueAs(o => @<div class="row">
+    <span class="col-md-3"></span>
+    <span class="col-md-9">
+        <input type="checkbox" id="ch_@o.Key.ToString()" onchange="UpdateChkConstant(this)" checked="@o.ChkConstant">
+    </span>
+</div>);
+
+columns.Add().Encoded(false).Sanitized(false).Titled(DbRes.TResource("User.Transaction.Assignment.ActionId"))
+.RenderValueAs(o => @<div class="row">
+    <span class="col-md-3"></span>
+    <span class="col-md-9">
+
+        @Html.AutoCompleteBuilder("ddlActionId" + o.Key, "DefaultActionId_" + o.Key, ViewData["ActionData"].ToString(), o.DefaultActionId.ToString(), true, "form-control ddlActionIdGrid", "hdnDefaultAction_" + o.Key)
+
+    </span>
+</div>);
+
+columns.Add().Encoded(false).Sanitized(false).Css("fixed_col text-right site-danger action-icon").RenderValueAs(model => @Html.ClientLinkTag("", cssClass: "edit_link", title: DbRes.TResource("Grid.Edit"), clientFunctionToCall: "GetBeneficiaryById(" + model.Key + ")", permissionCode: UserClaims.UserPreferences.AssignmentPaper, innerHtml: "<i class='fa fa-edit'></i>"));
+columns.Add().Encoded(false).Sanitized(false).Css("fixed_col text-right site-danger action-icon").RenderValueAs(model => @Html.ClientLinkTag("", cssClass: "edit_link", permissionCode: UserClaims.UserPreferences.AssignmentPaper, clientFunctionToCall: "DeleteActionGrid(" + "'grdBeneficiary'," + model.Key + ",'" + DbRes.TResource("Grid.DeleteMassage") + "','' , 'CancelBeneficiaryEdit')", innerHtml: "<i class='glyphicon glyphicon-trash color-danger' title='حذف' ></i>"));
+});
+
+
+<script>
+
+    function UpdateChkConstant(obj)
+    {
+        debugger;
+        var objId = obj.id;
+        var hdnId = objId.replace("ch_", "ChkConstant_");
+        if (obj.checked)
+        {
+            $('#' + hdnId).val(true);
+        } else
+        {
+            $('#' + hdnId).val(false);
+        }
+    }
+
+    function ChangeBeneficiaryOrder(key, isMoveUp)
+    {
+        $("#hdnRefkey").val(key);
+        $("#hdnIsMoveUp").val(isMoveUp);
+        $("#btnChangeBeneficiaryOrder").click();
+    }
+
+
+
+</script>
+
+<script type="text/javascript">
+    //$(document).ready(function ()
+    //{
+    //    // Initialise the table
+    //    $("#grid-table-grdBeneficiary").tableDnD();
+    //});
+</script>

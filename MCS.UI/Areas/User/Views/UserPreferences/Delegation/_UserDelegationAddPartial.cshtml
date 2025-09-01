@@ -1,0 +1,161 @@
+﻿@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.UI.Areas.User.Models
+@using MCS.UI.Areas.User.Models.UserPreferences.UserDelegation;
+@using MCS.Common
+@using MCS.Framework.Localization
+@model UserDelegationVM
+@{
+    Layout = null;//"~/Views/Shared/_EmptyLayout.cshtml";
+}
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmUserDelegation", @class = "form-horizontal form-row" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="panel-body" id="dvAddDelegation">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="col-md-4 control-label">@DbRes.TResource("User.UserDelegation.DateBetween")</label>
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            @Html.HiddenGroupFor(model => model.FromDateH, new { id = "hdnFromDateUm" })
+                            @Html.Calendar("FromDateCal", "hdnFromDateGreg", "hdnFromDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+                            <span class="input-group-addon add-on"> - </span>
+                            @Html.HiddenGroupFor(model => model.ToDateH, new { id = "hdnToDateUm" })
+                            @Html.Calendar("toDateCal", "hdnToDateGreg", "hdnToDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+                        </div>
+                        @Html.HiddenGroupFor(model => model.FromDate, new { id = "hdnFromDateGreg", @Value = "" }, "AddDelegation")
+                        @Html.HiddenGroupFor(model => model.ToDate, new { id = "hdnToDateGreg", @Value = "" }, "AddDelegation")
+                    </div>
+                </div>
+                <div class="form-group TreeHeight" id="dvDepartments">
+                    @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.OrgUnitId, TreeMode.Single, "treeToOrgUnit", true, "GetDirectedToUsersByOrgUnitId", "AddDelegation", "dvDepartments")
+                    @Html.StickyHiddenFor(model => model.OrgUnit, new { @id = "OrgUnitName" })
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label">@DbRes.TResource("User.UserDelegation.EmployeeName")</label>
+                    <div class="col-md-8">
+                        <div class="">
+                            @Html.AutoCompleteBuilder("ddlDirectedToId", "hdnDirectedToId", ViewData["OrgUnitsUsersData"] != null ? ViewData["OrgUnitsUsersData"].ToString() : null, Model != null ? Model.DirectedToId.ToString() : null, true, "form-control")
+                            @Html.HiddenGroupFor(model => model.DirectedToId, new { @id = "hdnDirectedToId" }, "AddDelegation")
+                            @Html.StickyHiddenFor(model => model.DirectedTo, new { @id = "hdnDirectedToName" })
+                        </div>
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6" style="display:none;">
+                <div class="form-group">
+                    <label class="col-md-4 control-label">@DbRes.TResource("User.UserDelegation.Priority")</label>
+                    <div class="col-md-8">
+                        <div class="">
+                            @Html.AutoCompleteBuilder("ddlPriority", "hdnPriorityId", ViewData["PrioritiesData"].ToString(), Model != null ? Model.PriorityId.ToString() : null, true, "form-control")
+                            @Html.HiddenGroupFor(model => model.PriorityId, new { id = "hdnPriorityId" }, "AddDelegation")
+                            @Html.StickyHiddenFor(model => model.Priority, new { id = "hdnPriorityName" })
+                        </div>
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label">@DbRes.TResource("User.UserDelegation.SourceType")</label>
+                    <div class="col-md-8">
+                        <div class="">
+                            @Html.AutoCompleteBuilder("ddlSourceTypes", "hdnSourceTypesId", ViewData["TransactionCategoryData"].ToString(), Model != null ? Model.SourceTypesId.ToString() : null, true, "form-control")
+                            @Html.HiddenGroupFor(model => model.SourceTypesId, new { id = "hdnSourceTypesId" }, "AddDelegation")
+                            @Html.StickyHiddenFor(model => model.SourceType, new { id = "hdnSourceTypeName" })
+                        </div>
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label">@DbRes.TResource("User.UserDelegation.Confidentiality")</label>
+                    <div class="col-md-8">
+                        <div class="">
+                            @Html.AutoCompleteBuilder("ddlConfidentiality", "hdnConfidentialityId", ViewData["ConfidentialityData"].ToString(), Model != null ? Model.ConfidentialityId.ToString() : null, true, "form-control")
+                            @Html.HiddenGroupFor(model => model.ConfidentialityId, new { id = "hdnConfidentialityId" }, "AddDelegation")
+                            @Html.StickyHiddenFor(model => model.Confidentiality, new { id = "hdnConfidentialityName" })
+                        </div>
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel-footer middle">
+        @*@Html.StickyHiddenFor(model => model.UserId)*@
+        @Html.StickyHidden("hdnAddUsersArray", "[]")
+        @Html.StickyHidden("hdnAddCurrentUsersArray", ViewData["CurrentDelegations"].ToString())
+        @Html.ClientActionButton(DbRes.TResource("User.Transaction.Copies.Add"), Url.Action("AddUserDelegate", "UserPreferences"), "dvGrid", "OnAddSuccess", null, "AddDelegation", "btnAddDelegate", "dvAddDelegation", "btn-site pull-right")
+        @*@Html.ActionButton(DbRes.TResource("User.UserDelegation.Add"), "AddUserDelegate", "dvGrid", null, null, "OnAddSuccess", null, "post", "AddDelegation", "btnAddDelegate", "frmUserDelegation", "btn-site pull-right")*@
+        @Html.ActionButton(DbRes.TResource("User.UserDelegation.Edit"), "ClientEditUserDelegate", "dvGrid", null, null, "OnClientEditSuccess", null, "post", "btnEditDelegation", "btnClientEditDelegate", "frmUserDelegation", "btn-site pull-right hidden_")
+        <a class="btn-site pull-right" style="display:none" id="btnCancel" onclick="CancelDelegationEdit()">@DbRes.TResource("User.UserDelegation.Cancel")</a>
+    </div>
+}
+
+<script>
+    $(document).ready(function () {
+        $("#OrgUnitName").val($(".txtDepartmentName").val());
+        $(" .txtDepartmentName").change(function () {
+            debugger;
+            $("#OrgUnitName").val($(this).val());
+            GetDirectedToUsersByOrgUnitId();
+        });
+    });
+   
+    $("#ddlDirectedToId").change(function () {
+        $("#hdnDirectedToName").val($(this).val());
+    });
+    $("#ddlPriority").change(function () {
+        $("#hdnPriorityName").val($(this).val());
+    });
+    $("#ddlSourceTypes").change(function () {
+        $("#hdnSourceTypeName").val($(this).val());
+    });
+    $("#ddlConfidentiality").change(function () {
+        $("#hdnConfidentialityName").val($(this).val());
+    });
+
+    function GetDirectedToUsersByOrgUnitId() {
+        var token = $("#frmUserDelegation").find("input[name='__RequestVerificationToken']").val();
+        if ($("#treeToOrgUnit").val() != "") {
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("GetUsersByOrgUnitId", "UserPreferences")',
+                data: { id: $("#OrgUnitId").val(), __RequestVerificationToken: token },
+                success:
+                function (data) {
+                    $("#ddlDirectedToId").val("");
+                    $("#hdnDirectedToId").val("");
+                    AutoCompleteChangeList("ddlDirectedToId", data);
+
+                    $("#ddlDirectedToId").prop('disabled', false);
+                }
+            });
+            return false;
+        }
+        else {
+            $("#ddlDirectedToId").prop('disabled', true);
+            $("#ddlDirectedToId").val("");
+            $("#hdnDirectedToId").val("");
+            AutoCompleteChangeList("ddlDirectedToId", "[]");
+        }
+    }
+    function OnAddSuccess(data, div) {
+        if (data.MessageType != 2) {
+            //$("#" + div).html("");
+            //$("#" + div).html(data.Html);
+            $("#grid-table-grdCurrentDelegations> tbody > .grid-empty-text").remove();
+            $("#grid-table-grdCurrentDelegations > tbody").append(data.Html);
+            ClearInputs('frmUserDelegation')
+
+            // ShowSuccesMessage(data.MessageText)
+            $("#hdnAddUsersArray").val(data.hdnValue);
+            $("#hdnEditUsersArray").val(data.hdnValue);
+            $("#hdnUsersArray").val(data.hdnValue);
+
+        }
+        else {
+              ShowErrorMessage(data.MessageText);
+        }
+    }
+</script>

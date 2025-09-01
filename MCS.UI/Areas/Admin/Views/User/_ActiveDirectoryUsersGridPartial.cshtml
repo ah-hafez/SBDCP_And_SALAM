@@ -1,0 +1,16 @@
+﻿@using MCS.Framework.Controls.Mvc
+@using MCS.UI.Areas.Admin.Models.User
+@using MCS.Framework.Localization
+
+@model AjaxGrid<ActiveDirectoryUserVM>
+@{
+    Layout = null;
+}
+@Html.Grid(Model, "_Grid").Named("UsersGrid").Columns(columns =>
+    {
+        columns.Add(model => model.Email,true);
+        columns.Add(model => model.EmployeeName).Titled(DbRes.TResource("Admin.UserSearch.Name"));
+        columns.Add(model => model.UserName).Titled(DbRes.TResource("Admin.User.UserName"));
+
+    }).WithPaging(GridHelper.PageSize).Sortable().Filterable().UpdateActionUrl(Url.Action("UpdateGridActiveDirectoryUser", "User", new {@username=ViewData["UserName"] }))
+

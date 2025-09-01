@@ -1,0 +1,61 @@
+﻿@using MCS.Common
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.File
+@model IList<TransactionTrayInfoVM>
+
+@{
+    bool isVIP = (bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser);
+    DefaultDisplay defaultDisplay = (DefaultDisplay)SessionInfo.GetObjectFromSession(Constants.DefaultDisplay);
+    Session["viewType"] = "Withdrawal";
+}
+
+@if (defaultDisplay == DefaultDisplay.Cards @*&& !isVIP*@)
+{
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="sub-tab-1">
+            @{
+                Session["renderType"] = "cardItem";
+                Html.RenderPartial("~/Areas/User/Views/File/_FileGrid.cshtml", Model,
+                      new ViewDataDictionary {
+                          { "ListItemName", "_Withdrawal_Item" },
+                          { "GridName", "WithdrawalGrid" },
+                          { "dateType", ViewData["dateType"] },
+                          { "renderType", "cardItem" }
+    });
+            }
+        </div>
+    </div>
+}
+else
+{
+    Session["renderType"] = "tableItem";
+    Html.RenderPartial("~/Areas/User/Views/File/_FileGrid.cshtml", Model,
+        new ViewDataDictionary {
+        { "ListItemName", "_Withdrawal_TableItem" },
+        { "GridName", "WithdrawalGrid" },
+        { "dateType", ViewData["dateType"] },
+        { "renderType", "tableItem" }
+                            });
+}
+<script>
+    var transId = $("#TransId").val();
+    var transactionTypeId = $("#hdnTransactionTypeId").val();
+    var year = $("#ddlYear").val();
+
+    var withdrawalGridEventHandler = "@Html.Raw(Url.Action("GetWithdrawalData", "File",new { transactionId= "transactionIdToReplace",  transactionTypeId= "transactionTypeIdToReplace", year ="yearToReplace" }))";
+    function prepareTransactionsGrid() {
+        if (!pageGrids.WithdrawalGrid) {
+            $(".grid-mvc").gridmvc();
+        }
+        pageGrids.WithdrawalGrid.ajaxify({
+            getPagedData: withdrawalGridEventHandler.replace("transactionIdToReplace", transId).replace("transactionTypeIdToReplace", transactionTypeId).replace("yearToReplace", year),
+            getData: withdrawalGridEventHandler.replace("transactionIdToReplace", transId).replace("transactionTypeIdToReplace", transactionTypeId).replace("yearToReplace", year),
+            requestType: "POST",
+            callbackClientFunctionAfter: ["goToViewAfterPaging"]
+        });
+    }
+
+    //$(document).ready(function () {
+    //    prepareTransactionsGrid();
+    //});
+</script>

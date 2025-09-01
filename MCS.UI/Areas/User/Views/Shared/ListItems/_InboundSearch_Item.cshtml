@@ -1,0 +1,447 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Helpers
+@model MCS.UI.Areas.User.Models.Search.InboundSearchResultVM
+
+@{
+    /**/
+
+    // ViewData["dateType"] = ViewData["dateType"] ?? TransactionDateType.Any;
+    ViewData["dateType"] = 4;
+    string colorType = string.Empty;
+    string className = "result";
+    string classNameTo = "result";
+    if (Model.ConfidentialityId == 28 || Model.ConfidentialityId == 29)
+    {
+        className = "resultReed";
+    }
+    if (Model.TransactionTypeId == 2)
+    {
+        classNameTo = "resultReed";
+    }
+    string remindDate = (((TransactionDateType)ViewData["dateType"] == TransactionDateType.HasDate)
+                                   ? @DateHelper.GetDate(@Model.RemindDateH) + " - " + Model.RemindDate.Value.ToString("hh:mm tt")
+                                   : (TransactionDateType)ViewData["dateType"] == TransactionDateType.Late
+                                   ? DateTime.Now.Date >= Model.Date.Date.AddDays(2)
+                                   ? (Int32.Parse((DateTime.Now.Date - Model.Date.Date.AddDays(2)).Days.ToString()) + 1).ToString()
+                                   : Model.RemindDate.ToString() != ""
+                                   ? (Int32.Parse((DateTime.Now.Date - Model.Date.Date).Days.ToString()) + 1).ToString()
+                                   : "---"
+                                   : "");
+
+
+    bool HasPermissionToOpenEncrypted = true;
+    if (Model.Encrypted)
+    {
+        if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.GeneralPermissions.OpenEncryptTransaction))
+        {
+            HasPermissionToOpenEncrypted = true;
+        }
+        else
+        {
+
+            HasPermissionToOpenEncrypted = false;
+        }
+
+    }
+}
+
+@if (Model.ColorCode == Color.Red.LookupIdentity(LookupCategory.Color, SessionInfo.CultureShortName))
+{
+
+    colorType = "red";
+
+}
+else if (Model.ColorCode == Color.Blue.LookupIdentity(LookupCategory.Color, SessionInfo.CultureShortName))
+{
+
+    colorType = "green";
+
+
+}
+else
+{
+    colorType = "red";
+}
+
+<style>
+
+    .description {
+        text-align: center;
+    }
+
+    .cardTable {
+        max-height: 200px;
+        min-height: 197px;
+    }
+
+        .cardTable .table.section2 {
+            transform: translateY(-169px);
+            background: white;
+            display: none;
+        }
+
+        .cardTable:hover .table.section2 {
+            transform: translateY(-169px);
+            display: inline-table;
+            min-height: 197px;
+        }
+</style>
+<!-- #Start# BOX -->
+<div class="box-grid">
+    <div class="@string.Format("box animated zoomIn buttons-action")">
+        <div class="correspondence-t">
+            <div class="d-flex">
+                <div class="col-lg-12">
+                    <div class="mr-auto d-flex">
+                       <div class="pl-2">@Model.Number</div>
+
+                        @if (Model.DocumentNumber != null)
+                        {
+                            <div class="mt-1 ml-1" style="border:1px solid; height:19px"></div>
+                            <div class="pl-1" title="رقم صادر الجهة">@Model.DocumentNumber</div>
+                        }
+                    </div>
+                    <div class="title">
+                        @if (Model.PartyName != null && Model.PartyName.Length > 20)
+                        {
+                            <div title="@Model.PartyName">@Model.PartyName.Substring(0, 20)...</div>
+                        }
+                        else
+                        {
+                            @Model.PartyName
+                        }
+                    </div>
+                    <div class="correspondence-h d-flex">
+                        <div class="date" style="margin-top:-6px;">
+                            @DateHelper.GetDate(@Model.DateH)
+                            @Model.Date.ToShortTimeString()
+                        </div>
+                        <div class="@colorType" style="margin-top:-6px;">
+                            <span>مدة بقاء المعاملة:</span>
+                            <span>
+                                @if (!string.IsNullOrWhiteSpace(remindDate) && remindDate.Length > 10)
+                                {
+                                    @remindDate
+                                }
+                                else if (remindDate.Length <= 0)
+                                {
+                                    <span>--</span>
+                                }
+                                else
+                                {
+                                    @remindDate
+
+                                }
+                            </span>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <hr style="margin-top:-8px;" />
+
+        <div onclick='redirect()' class="hover-area correspondence-t">
+            @if (HasPermissionToOpenEncrypted)
+            {
+                if (Model.HasPermission)
+                {
+                    <div class="correspondence-b d-flex flex-wrap" style="background: #f1f1f1;">
+                        <div class="f-line w-full w-f-50">
+                            @if (Model.Subject != null && Model.Subject.Length > 24)
+                            {
+                                <div id="example" class="description" data-bs-toggle="tooltip" data-placement="bottom" title="  @Model.Subject">
+                                    @Model.Subject.Substring(0, 24)
+                                    ...
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="description">
+                                    @Model.Subject
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="correspondence-b d-flex flex-wrap" style="background: red;">
+                        <div class="f-line w-full w-f-50 description" style="color:white">
+                            غير مصرح لك
+                        </div>
+                    </div>
+                }
+                if (Model.HasPermission)
+                {
+                    <div class=" correspondence-b d-flex flex-wrap cardTable">
+                        <table class="table table-bordered section1" style="margin-top:10px;">
+                            <tbody>
+                                <tr>
+                                    <th scope="row" class="headerAddress">@DbRes.TResource("User.File.Priority")</th>
+                                    <td class="result">
+                                        @Model.PriorityName
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="headerAddress">@DbRes.TResource("User.File.Confidentiality")</th>
+                                    <td>
+                                        <div class="@className">
+                                            @Model.ConfidentialityName
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="headerAddress">@DbRes.TResource("User.Inbound.BasicInfo.InboundType")</th>
+                                    <td class="@classNameTo">
+                                        @Model.TransactionType
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="headerAddress">@DbRes.TResource("User.File.Status")</th>
+                                    <td class="result">
+                                        @Model.StatusName
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="table table-bordered section2">
+                            <tbody>
+                                <tr>
+                                    <th scope="row" class="headerAddress">@DbRes.TResource("Admin.AssignmentPaperActions.Action")</th>
+                                    <td class="result">
+                                        @if (Model.TransactionAssignmentInfoVM.Action != null)
+                                        {
+                                            <div class="result">
+
+                                                @Model.TransactionAssignmentInfoVM.Action
+
+
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="result">
+                                                ---
+                                            </div>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="headerAddress">@DbRes.TResource("User.File.AssignDate")</th>
+                                    <td class="result">
+                                        @if (Model.TransactionAssignmentInfoVM.Date != null && Model.TransactionAssignmentInfoVM.Date > (Convert.ToDateTime("01/01/2000")))
+                                        {
+                                            <div class="result" data-bs-toggle="tooltip" data-placement="bottom" title="@Model.TransactionAssignmentInfoVM.Date">
+                                                @if (Model.TransactionAssignmentInfoVM.Date.ToString().Length > 10)
+                                                {
+                                                    @Model.TransactionAssignmentInfoVM.Date.ToString().Substring(0, 10)
+                                                }
+                                                else
+                                                {
+                                                    @Model.TransactionAssignmentInfoVM.Date.ToString()
+                                                }
+
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="result">
+                                                ---
+                                            </div>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="headerAddress">@DbRes.TResource("User.Transaction.AssignmentFromEntity")</th>
+                                    <td class="result">
+                                        @if (Model.TransactionAssignmentInfoVM.FromEntity != null)
+                                        {
+                                            <div class="result" data-bs-toggle="tooltip" data-placement="bottom" title="@Model.TransactionAssignmentInfoVM.FromEntity">
+
+                                                @if (Model.TransactionAssignmentInfoVM.FromEntity.Length > 15)
+                                                {
+                                                    @Model.TransactionAssignmentInfoVM.FromEntity.Substring(0, 10)
+                                                }
+                                                else
+                                                {
+                                                    @Model.TransactionAssignmentInfoVM.FromEntity
+                                                }
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="result">
+                                                ---
+                                            </div>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="headerAddress">@DbRes.TResource("تاريخ الانجاز")</th>
+                                    <td class="result">
+                                        @if (@Model.RemindDateH != null && @Model.RemindDateH != "")
+                                        {
+                                            @DateTimeUtility.ConvertToUmAlQuraCalendar(Model.Date.Date.AddDays(2))
+                                            @DateHelper.GetDate(@Model.RemindDateH)
+                                        }
+                                        else
+                                        {
+                                            @DateTimeUtility.ConvertToUmAlQuraCalendar(Model.Date.Date.AddDays(2))
+                                        }
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class=" correspondence-b d-flex flex-wrap cardTable" @*style=" filter: blur(8px); -webkit-filter: blur(8px);"*@>
+                        <table class="table table-bordered section1" style="margin-top:10px; border:none">
+                            <tbody>
+                                <tr>
+                                    <td style="text-align: center; border-color: transparent; ">
+                                        <img src="~/Content/User/lib/images/warning1.svg" width="150" />
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                }
+
+
+
+            }
+            else
+            {
+
+                <div class="correspondence-b d-flex flex-wrap" style="background: red;">
+                    <div class="f-line w-full w-f-50 description" style="color:white">
+                        @DbRes.TResource("User.File.EncryptedTransaction")
+                    </div>
+                </div>
+                <div class=" correspondence-b d-flex flex-wrap cardTable" @*style=" filter: blur(8px); -webkit-filter: blur(8px);"*@>
+                    <table class="table table-bordered section1" style="margin-top:10px; border:none">
+                        <tbody>
+                            <tr>
+                                <td style="text-align: center; border-color: transparent; ">
+                                    <img src="~/Content/User/lib/images/warning1.svg" width="150" />
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            }
+        </div>
+        <div class="correspondence-t">
+            <div class="correspondence-icon d-flex" style="padding-right: 2px;">
+                @if (HasPermissionToOpenEncrypted)
+                {
+                    if (Model.HasPermission)
+                    {
+                        if (Model.ToUserId.HasValue && Model.ToUserId.Value == SessionInfo.CurrentUser.Id && (Model.ToEntityId == SessionInfo.CurrentUser.UserOrgUnits.Where(u => u.IsSelected == true).FirstOrDefault().Id) &&
+                            (Model.StatusId != TransactionStatus.Completed.LookupIdentity(LookupCategory.TransactionStatus, SessionInfo.CultureShortName) & Model.StatusId != TransactionStatus.TempSave.LookupIdentity(LookupCategory.TransactionStatus, SessionInfo.CultureShortName)))
+                        {
+                            if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Inbound.EditInbound))
+                            {
+                                <a title="@DbRes.TResource("Global.Edit")" onclick="Open('@Model.EncryptedId')"><img src="~/Content/User/lib/images/SystemIcon/main bar-24.svg" width="30" /></a>
+                                <div style="border-left: 3px solid white;"></div>
+                            }
+                            else if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Inbound.Editor))
+                            {
+                                <a title="@DbRes.TResource("Global.Editor")" onclick="Open('@Model.EncryptedId')"><img src="~/Content/User/lib/images/SystemIcon/main bar-22.svg" width="30" /></a>
+                                <div style="border-left: 3px solid white;"></div>
+                            }
+                        }
+                        <a id="Certificate" href="#" title="@DbRes.TResource("User.InboundSearch.InboundCertificate")" onclick="InboundCertificate(@Model.Id)">
+                            <img src="~/Content/User/lib/images/SystemIcon/main bar-14.svg" width="30" />
+                        </a>
+
+                        if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.GeneralPermissions.PrintEncryptionCode))
+                        {
+                            <div style="border-left: 3px solid white;"></div>
+                            <a href="#" title="@DbRes.TResource("User.InboundSearch.PrintBarcode")" onclick="ShowPrintDialog(@Model.Id)">
+                                <img src="~/Content/User/lib/images/SystemIcon/barcode-scanner.svg" width="35" />
+                            </a>
+                        }
+                        if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.GeneralPermissions.PrintReviewTicket))
+                        {
+                            <div style="border-left: 3px solid white;"></div>
+                            <a href="#" title="@DbRes.TResource("User.InboundSearch.PrintVisitTicket")" onclick="ShowVisitTickect(@Model.Id)">
+                                <img src="~/Content/User/lib/images/SystemIcon/printer.svg" width="25" />
+
+                            </a>
+                        }
+                        if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.GeneralPermissions.PrintArchiveTransaction))
+                        {
+                            <div style="border-left: 3px solid white;"></div>
+                            <a href="#" title="@DbRes.TResource("User.InboundSearch.PrintArchiveTransaction")" onclick="fncprintArchive(@Model.Id, 'false')">
+                                <img src="~/Content/User/lib/images/SystemIcon/ArchivePrint.svg" width="33" />
+                            </a>
+                        }
+                        if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.GeneralPermissions.PrintArchiveTransactionLink))
+                        {
+                            <div style="border-left: 3px solid white;"></div>
+                            <a href="#" title="@DbRes.TResource("User.InboundSearch.PrintArchiveTransactionLink")" onclick="fncprintArchive(@Model.Id, 'true')">
+                                <img src="~/Content/User/lib/images/SystemIcon/main bar-23.svg" width="28" />
+                            </a>
+                        }
+                        if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Search.ChangeSubject))
+                        {
+                            <div style="border-left: 2px solid white; "></div>
+                            <a id="link" href="#" title="@DbRes.TResource("User.InboundSearch.ChangeSubject")" onclick="ChangeSubject(@Model.Id,'@Model.Subject')">
+                                <img src="~/Content/User/lib/images/SystemIcon/main bar-24.svg" width="30" />
+                            </a>
+                        }
+
+                    }
+                    else
+                    {
+
+                        <a class="circle color-White" style="cursor:initial">
+                        </a>
+                    }
+
+
+
+
+
+                    <div class="ml-auto">
+                        <div class="info">
+                            @if (Model.HasLinks)
+                            {
+                                <i class="la la-link"></i>
+                                <span>
+                                    @DbRes.TResource("Admin.TransactionLink.Link")
+                                </span>
+                            }
+
+
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <a class="circle color-White" style="cursor:initial">
+                    </a>
+                }
+            </div>
+        </div>
+
+
+    </div>
+</div>
+<script>
+
+
+    function redirect() {
+        var link = $(event.currentTarget).parent().find('.correspondence-icon').children()[0];
+        link.click();
+    }
+</script>

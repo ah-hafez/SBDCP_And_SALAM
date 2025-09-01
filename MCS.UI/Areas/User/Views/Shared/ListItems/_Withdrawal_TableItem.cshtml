@@ -1,0 +1,94 @@
+﻿@using MCS.UI.Helpers
+@using MCS.Common
+@using MCS.UI.Areas.User.Models.File
+@model TransactionTrayInfoVM
+
+@{
+    bool isViewed = false;
+    string isViewedHeaderClass = "correspondence-t";
+    if (Model.TransactionAssignmentInfoVMs != null && Model.TransactionAssignmentInfoVMs.Count > 0)
+    {
+        isViewed = Model.TransactionAssignmentInfoVMs.FirstOrDefault().Viewed;
+    }
+    }
+
+<tr class="bg-white" style="cursor: pointer; " data-id="@Model.TransactionDetailsInfoVM.Id">
+    <td>
+        <div class="d-flex">
+            <div class="d-flex">
+                <div>@Model.TransactionDetailsInfoVM.Number</div>
+            </div>
+        </div>
+    </td>
+    <td>
+        @Model.TransactionDetailsInfoVM.TransactionCategory
+    </td>
+    <td>
+        @if (Model.TransactionDetailsInfoVM.TransactionCategoryId != TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName))
+        {
+            if (Model.TransactionDetailsInfoVM.ExternalPartyName == null)
+            {
+                <div></div>
+            }
+            else
+            {
+                <div class="title" id="entityName_@Model.TransactionDetailsInfoVM.Id">@Model.TransactionDetailsInfoVM.ExternalPartyName</div>
+                <div>
+                    @*@(Model.TransactionAssignmentInfoVMs[0].FromUser.CompareTo(Model.TransactionAssignmentInfoVMs[0].ToUser) == 0 ? "" : Model.TransactionAssignmentInfoVMs[0].FromUser)*@
+                </div>
+            }
+
+        }
+
+        else
+        {
+            <div class="title" id="entityName_@Model.TransactionDetailsInfoVM.Id">
+                @Model.TransactionDetailsInfoVM.EntityName
+            </div>
+            <div class="">
+                @*@(Model.TransactionAssignmentInfoVMs[0].FromUser.CompareTo(Model.TransactionAssignmentInfoVMs[0].ToUser) == 0 ? "" : Model.TransactionAssignmentInfoVMs[0].FromUser)*@
+            </div>
+        }
+    </td>
+    <td>
+        @DateHelper.GetDate(@Model.TransactionDetailsInfoVM.DateH)
+        @Model.TransactionDetailsInfoVM.Date.ToShortTimeString()
+    </td>
+    <td class="correspondence-icon">
+        <div class="w-full w-f-50">
+            @if (Model.TransactionDetailsInfoVM.HasPermission)
+            {
+                if (Model.TransactionDetailsInfoVM.Subject != null && Model.TransactionDetailsInfoVM.Subject.Length > 20)
+                {
+                    <div id="example" class="Tabledescription" data-bs-toggle="tooltip" data-placement="bottom" title="@Model.TransactionDetailsInfoVM.Subject">
+                        @Model.TransactionDetailsInfoVM.Subject.Substring(0, 20)
+                        ...
+                    </div>
+                }
+                else
+                {
+                    <div class=" Tabledescription">
+                        @Model.TransactionDetailsInfoVM.Subject
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="Tabledescription">***</div>
+            }
+        </div>
+    </td>
+    <td>
+        <div class="correspondence-icon-table d-flex">
+            <a class="" title="سحب وتعديل" data-Viewed="@isViewed"
+               data-DeliveryMethodId="@Model.TransactionDetailsInfoVM.DeliveryMethodId"
+               onclick="Open(@Model.TransactionDetailsInfoVM.Id,'@Model.TransactionDetailsInfoVM.EncryptedId')">
+                <img src="~/Content/User/lib/images/SystemIcon/main bar-24.svg" width="30" />
+            </a>
+
+            @Html.StickyHidden("TransactionType", ((TransactionCategory)Model.TransactionDetailsInfoVM.TransactionCategoryId.LookupInternalID(LookupCategory.TransactionCategory, SessionInfo.CultureShortName)).ToString(), new { id = "hdnTransactionType_" + Model.TransactionDetailsInfoVM.Id })
+            @Html.StickyHidden("Type", Model.TransactionDetailsInfoVM.TransactionCategoryId.ToString(), new { id = "hdnType_" + Model.TransactionDetailsInfoVM.Id })
+
+        </div>
+    </td>
+</tr>

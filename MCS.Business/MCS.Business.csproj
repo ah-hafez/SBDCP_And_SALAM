@@ -1,0 +1,353 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{985450A5-143C-47DF-A92B-416B6DBD284C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MCS.Business</RootNamespace>
+    <AssemblyName>MCS.Business</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework">
+      <HintPath>..\Binaries\Common\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core">
+      <HintPath>..\Binaries\Common\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework">
+      <HintPath>..\Binaries\Common\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Owin">
+      <HintPath>..\Binaries\Common\Microsoft.AspNet.Identity.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb">
+      <HintPath>..\Binaries\Common\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.Owin.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.OAuth">
+      <HintPath>..\Binaries\Common\Microsoft.Owin.Security.OAuth.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Logging, Version=4.1.0.0, Culture=neutral, PublicKeyToken=e44a2bc38ed2c13c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.Practices.EnterpriseLibrary.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <HintPath>..\Binaries\Common\Microsoft.Practices.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Administration, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.Web.Administration.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.13.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ASPNETIdentity\AspNetIdentityProvider.cs" />
+    <Compile Include="ASPNETIdentity\ASPNetIdentityUser.cs" />
+    <Compile Include="ASPNETIdentity\Configuration\CustomUserManagerConfiguration.cs" />
+    <Compile Include="ASPNETIdentity\Configuration\MultiTenantCustomUserManagerConfiguration.cs" />
+    <Compile Include="ASPNETIdentity\Configuration\MultiTenantSecurityConfigurationManager.cs" />
+    <Compile Include="ASPNETIdentity\Configuration\SecurityConfigurationManager.cs" />
+    <Compile Include="ASPNETIdentity\CustomIdentityDbContext.cs" />
+    <Compile Include="ASPNETIdentity\CustomSignInManager.cs" />
+    <Compile Include="ASPNETIdentity\CustomUserManager.cs" />
+    <Compile Include="ASPNETIdentity\EmailService.cs" />
+    <Compile Include="ASPNETIdentity\IdentityExtentions.cs" />
+    <Compile Include="ASPNETIdentity\MultiTenantAspNetIdentityProvider.cs" />
+    <Compile Include="ASPNETIdentity\MultiTenantCustomIdentityDbContext.cs" />
+    <Compile Include="ASPNETIdentity\MultiTenantCustomSignInManager.cs" />
+    <Compile Include="ASPNETIdentity\MultiTenantCustomUserManager.cs" />
+    <Compile Include="ASPNETIdentity\SmsService.cs" />
+    <Compile Include="BusinessException.cs" />
+    <Compile Include="EnumMapper.cs" />
+    <Compile Include="Implementation\AuditLogBL.cs" />
+    <Compile Include="Implementation\BarcodeInfo.cs" />
+    <Compile Include="Implementation\TransactionEncryptionBL.cs" />
+    <Compile Include="Implementation\WordAddInBL.cs" />
+    <Compile Include="Implementation\IC_SUBJECTBL.cs" />
+    <Compile Include="Implementation\ActionBL.cs" />
+    <Compile Include="Implementation\AttachmentBarcode.cs" />
+    <Compile Include="Implementation\ConfidentialityAcknowledgmentBL.cs" />
+    <Compile Include="Implementation\AttachmentTypeBL.cs" />
+    <Compile Include="Implementation\AuditingBL.cs" />
+    <Compile Include="Implementation\BarcodeBL.cs" />
+    <Compile Include="Implementation\BaseBL.cs" />
+    <Compile Include="Implementation\ChatBL.cs" />
+    <Compile Include="Implementation\CityBL.cs" />
+    <Compile Include="Implementation\CollaborationBL.cs" />
+    <Compile Include="Implementation\CommonBL.cs" />
+    <Compile Include="Implementation\ConfidentialityBL.cs" />
+    <Compile Include="Implementation\CorrespondentBL.cs" />
+    <Compile Include="Implementation\CounterBL.cs" />
+    <Compile Include="Implementation\DashboardHomeBL.cs" />
+    <Compile Include="Implementation\DeliveryReportCounter.cs" />
+    <Compile Include="Implementation\DocumentAttributeBL.cs" />
+    <Compile Include="Implementation\DocumentBL.cs" />
+    <Compile Include="Implementation\EditorBL.cs" />
+    <Compile Include="Implementation\EscalationBL.cs" />
+    <Compile Include="Implementation\ExternalPartyBL.cs" />
+    <Compile Include="Implementation\FileBL.cs" />
+    <Compile Include="Implementation\FollowUpMethodBL.cs" />
+    <Compile Include="Implementation\FollowUpProccessBL.cs" />
+    <Compile Include="Implementation\FollowUpSourceBL.cs" />
+    <Compile Include="Implementation\FormBL.cs" />
+    <Compile Include="Implementation\HubAttachmnetBL.cs" />
+    <Compile Include="Implementation\HubRecordBL.cs" />
+    <Compile Include="Implementation\HubRelatedPersonBL.cs" />
+    <Compile Include="Implementation\HubRQUIDBL.cs" />
+    <Compile Include="Implementation\HubTransactionBL.cs" />
+    <Compile Include="Implementation\InboundBL.cs" />
+    <Compile Include="Implementation\FollowUpPriorityTypeBL.cs" />
+    <Compile Include="Implementation\ReleaseNotesBL.cs" />
+    <Compile Include="Implementation\SpecificLevelBL.cs" />
+    <Compile Include="Implementation\LookupBL.cs" />
+    <Compile Include="Implementation\SurveyBL.cs" />
+    <Compile Include="Implementation\SystemDefaultValuesBL.cs" />
+    <Compile Include="Implementation\LetterTypeBL.cs" />
+    <Compile Include="Implementation\LinkBL.cs" />
+    <Compile Include="Implementation\TransactionLoggingBL.cs" />
+    <Compile Include="Implementation\Trays\ElcOutboundTrayBL.cs" />
+    <Compile Include="Implementation\UserPendingGroupBL.cs" />
+    <Compile Include="Implementation\PriorityExceptionBL.cs" />
+    <Compile Include="Implementation\SignedDeliveryReportBL.cs" />
+    <Compile Include="Implementation\ERPIntegrationBL.cs" />
+    <Compile Include="Implementation\Trays\WithdrawalTrayBL.cs" />
+    <Compile Include="Implementation\UserMobileBL.cs" />
+    <Compile Include="Implementation\NameBL.cs" />
+    <Compile Include="Implementation\NotificationBL.cs" />
+    <Compile Include="Implementation\OrgUnitBL.cs" />
+    <Compile Include="Implementation\OutboundDraftBL.cs" />
+    <Compile Include="Implementation\OutboundExternalBL.cs" />
+    <Compile Include="Implementation\OutboundInternalBL.cs" />
+    <Compile Include="Implementation\PermissionBL.cs" />
+    <Compile Include="Implementation\PriorityBL.cs" />
+    <Compile Include="Implementation\ReportBL.cs" />
+    <Compile Include="Implementation\ReporterBL.cs" />
+    <Compile Include="Implementation\SettingBL.cs" />
+    <Compile Include="Implementation\SubjectClassificationBL.cs" />
+    <Compile Include="Implementation\SuggestedTopicBL.cs" />
+    <Compile Include="Implementation\TenantBL.cs" />
+    <Compile Include="Implementation\TransactionAssignmentBL.cs" />
+    <Compile Include="Implementation\TransactionAssignmentHistoryBL.cs" />
+    <Compile Include="Implementation\TransactionAssignmentInfo.cs" />
+    <Compile Include="Implementation\TransactionBarcodesInfo.cs" />
+    <Compile Include="Implementation\TransactionBasicinfo.cs" />
+    <Compile Include="Implementation\TransactionBL.cs" />
+    <Compile Include="Implementation\TransactionDeliveryReportBL.cs" />
+    <Compile Include="Implementation\TransactionDetails.cs" />
+    <Compile Include="Implementation\TransactionDetailsInfo.cs" />
+    <Compile Include="Implementation\TransactionHistoryBL.cs" />
+    <Compile Include="Implementation\TransactionIndexLogBL.cs" />
+    <Compile Include="Implementation\TransactionReportInfo.cs" />
+    <Compile Include="Implementation\TransactionTypeBL.cs" />
+    <Compile Include="Implementation\TransactionTaskBL.cs" />
+    <Compile Include="Implementation\TransactionTicket.cs" />
+    <Compile Include="Implementation\TransactionTrayInfo.cs" />
+    <Compile Include="Implementation\TransactionVisitTicketInfo.cs" />
+    <Compile Include="Implementation\TrayDetailsInfo.cs" />
+    <Compile Include="Implementation\Trays\CopiesOutboundTrayBL.cs" />
+    <Compile Include="Implementation\Trays\CopiesTrayBL.cs" />
+    <Compile Include="Implementation\Trays\DraftOutboundTrayBL.cs" />
+    <Compile Include="Implementation\Trays\FollowUpTrayBL.cs" />
+    <Compile Include="Implementation\Trays\ManagerTrayBL.cs" />
+    <Compile Include="Implementation\Trays\MyTransactionsTrayBL.cs" />
+    <Compile Include="Implementation\Trays\OrgUnitTrayBL.cs" />
+    <Compile Include="Implementation\Trays\ReservationExternalOutboundTrayBL.cs" />
+    <Compile Include="Implementation\Trays\SavedTrayBL.cs" />
+    <Compile Include="Implementation\Trays\SentTransactionsTrayBL.cs" />
+    <Compile Include="Implementation\Trays\TrayBaseBL.cs" />
+    <Compile Include="Implementation\Trays\OutboundExternalTrayBL.cs" />
+    <Compile Include="Implementation\Trays\ReservationTrayBL.cs" />
+    <Compile Include="Implementation\Trays\YesserTrayBL.cs" />
+    <Compile Include="Implementation\UserManagementBL.cs" />
+    <Compile Include="Implementation\YesserMappingBL.cs" />
+    <Compile Include="Interfaces\IAuditLogBL.cs" />
+    <Compile Include="Interfaces\IWordAddInBL.cs" />
+    <Compile Include="Interfaces\IIC_SUBJECTBL.cs" />
+    <Compile Include="Interfaces\IActionBL.cs" />
+    <Compile Include="Interfaces\IConfidentialityAcknowledgmentsBL.cs" />
+    <Compile Include="Interfaces\IAttachmentTypeBL.cs" />
+    <Compile Include="Interfaces\IAuditingBL.cs" />
+    <Compile Include="Interfaces\IBarcodeBL.cs" />
+    <Compile Include="Interfaces\IChatBL.cs" />
+    <Compile Include="Interfaces\ICityBL.cs" />
+    <Compile Include="Interfaces\ICollaborationBL.cs" />
+    <Compile Include="Interfaces\ICommonBL.cs" />
+    <Compile Include="Interfaces\IConfidentialityBL.cs" />
+    <Compile Include="Interfaces\ICopiesOutboundTrayBL.cs" />
+    <Compile Include="Interfaces\ICopiesTrayBL.cs" />
+    <Compile Include="Interfaces\ICorrespondentBL.cs" />
+    <Compile Include="Interfaces\ICounterBL.cs" />
+    <Compile Include="Interfaces\IDashboardHomeBL.cs" />
+    <Compile Include="Interfaces\IDocumentAttributeBL.cs" />
+    <Compile Include="Interfaces\IDocumentBL.cs" />
+    <Compile Include="Interfaces\IDraftOutboundBL.cs" />
+    <Compile Include="Interfaces\IEditorBL.cs" />
+    <Compile Include="Interfaces\IEscalationBL.cs" />
+    <Compile Include="Interfaces\IExternalPartyBL.cs" />
+    <Compile Include="Interfaces\IFileBL.cs" />
+    <Compile Include="Interfaces\IFollowUpProccessBL.cs" />
+    <Compile Include="Interfaces\IFollowUpMethodBL.cs" />
+    <Compile Include="Interfaces\IFollowUpSourceBL.cs" />
+    <Compile Include="Interfaces\IFollowUpPriorityTypeBL.cs" />
+    <Compile Include="Interfaces\IFollowUpTrayBL.cs" />
+    <Compile Include="Interfaces\IFromBL.cs" />
+    <Compile Include="Interfaces\IHubAttachmentBL.cs" />
+    <Compile Include="Interfaces\IHubRecordBL.cs" />
+    <Compile Include="Interfaces\IHubRelatedPersonBL.cs" />
+    <Compile Include="Interfaces\IHubRQUIDBL.cs" />
+    <Compile Include="Interfaces\IHubTransactionBL.cs" />
+    <Compile Include="Interfaces\IInboundBL.cs" />
+    <Compile Include="Interfaces\IERPIntegrationBL.cs" />
+    <Compile Include="Interfaces\IElcOutboundTrayBL.cs" />
+    <Compile Include="Interfaces\IReleaseNotesBL.cs" />
+    <Compile Include="Interfaces\ISpecificLevelBL.cs" />
+    <Compile Include="Interfaces\ISurveyBL.cs" />
+    <Compile Include="Interfaces\IUserPendingGroupBL.cs" />
+    <Compile Include="Interfaces\IWithdrawalTrayBL.cs" />
+    <Compile Include="Interfaces\ISystemDefaultValuesBL.cs" />
+    <Compile Include="Interfaces\ILetterTypeBL.cs" />
+    <Compile Include="Interfaces\ILinkBL.cs" />
+    <Compile Include="Interfaces\ILookupBL.cs" />
+    <Compile Include="Interfaces\IManagerBL.cs" />
+    <Compile Include="Interfaces\IPriorityExceptionBL.cs" />
+    <Compile Include="Interfaces\ISignedDeliveryReportBL.cs" />
+    <Compile Include="Interfaces\IUserMobileBL.cs" />
+    <Compile Include="Interfaces\IMyTransactionsBL.cs" />
+    <Compile Include="Interfaces\INameBL.cs" />
+    <Compile Include="Interfaces\INotificationBL.cs" />
+    <Compile Include="Interfaces\IOrgUnitBL.cs" />
+    <Compile Include="Interfaces\IOrgUnitTrayBL.cs" />
+    <Compile Include="Interfaces\IOutboundDraftBL.cs" />
+    <Compile Include="Interfaces\IOutboundExternalBL.cs" />
+    <Compile Include="Interfaces\IOutboundInternalBL.cs" />
+    <Compile Include="Interfaces\IPermissionBL.cs" />
+    <Compile Include="Interfaces\IPriorityBL.cs" />
+    <Compile Include="Interfaces\IReportBL.cs" />
+    <Compile Include="Interfaces\IReporterBL.cs" />
+    <Compile Include="Interfaces\IReservationExternalOutboundTrayBL.cs" />
+    <Compile Include="Interfaces\ISavedTrayBL.cs" />
+    <Compile Include="Interfaces\ISentTransactionsTrayBL.cs" />
+    <Compile Include="Interfaces\ISettingBL.cs" />
+    <Compile Include="Interfaces\ISubjectClassificationBL.cs" />
+    <Compile Include="Interfaces\ISuggestedTopicBL.cs" />
+    <Compile Include="Interfaces\ITenantBL.cs" />
+    <Compile Include="Interfaces\ITransactionAssignmentBL.cs" />
+    <Compile Include="Interfaces\ITransactionAssignmentHistoryBL.cs" />
+    <Compile Include="Interfaces\ITransactionBL.cs" />
+    <Compile Include="Interfaces\ITransactionDeliveryReportBL.cs" />
+    <Compile Include="Interfaces\ITransactionHistoryBL.cs" />
+    <Compile Include="Interfaces\ITransactionIndexBL.cs" />
+    <Compile Include="Interfaces\ITransactionLoggingBL.cs" />
+    <Compile Include="Interfaces\ITransactionTypeBL.cs" />
+    <Compile Include="Interfaces\ITransactionTaskBL.cs" />
+    <Compile Include="Interfaces\IOutboundExternalTrayBL.cs" />
+    <Compile Include="Interfaces\ITrayBL.cs" />
+    <Compile Include="Interfaces\IUserManagementBL.cs" />
+    <Compile Include="Interfaces\IYesserMappingBL.cs" />
+    <Compile Include="Interfaces\IReservationTrayBL.cs" />
+    <Compile Include="Interfaces\IYesserTrayBL.cs" />
+    <Compile Include="LookupHelper.cs" />
+    <Compile Include="MigrationManager.cs" />
+    <Compile Include="MultiTenantUserManager.cs" />
+    <Compile Include="NotificationsManager.cs" />
+    <Compile Include="NotificationSubscriptionInfo.cs" />
+    <Compile Include="OutboundDraftCounter.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProviderModel\DocProviders.cs" />
+    <Compile Include="ProviderModel\ProviderBase.cs" />
+    <Compile Include="ProviderModel\ProviderConfiguration.cs" />
+    <Compile Include="ProviderModel\ProviderConfigurationHandler.cs" />
+    <Compile Include="SearchBL.cs" />
+    <Compile Include="SMSNotificationService.cs" />
+    <Compile Include="SolrTransactionInfoMapper.cs" />
+    <Compile Include="TransactionCounter.cs" />
+    <Compile Include="UserManager.cs" />
+    <Compile Include="UserPreferenceInfo.cs" />
+    <Compile Include="UserTrayPreferenceInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MCS.FRAMEWORK\MCS.Framework.csproj">
+      <Project>{5b5b0b7b-1a75-4a12-9cea-5b527af8b6e5}</Project>
+      <Name>MCS.Framework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MCS.Common\MCS.Common.csproj">
+      <Project>{dd463041-b635-4b24-b3e1-0a942ab358e0}</Project>
+      <Name>MCS.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MCS.DataAccess\MCS.DataAccess.csproj">
+      <Project>{8efbfbf5-b3f5-4fa3-91d4-4cba735cfa11}</Project>
+      <Name>MCS.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MCS.Domain\MCS.Domain.csproj">
+      <Project>{affe1dc1-c4bb-4219-9362-eed2d4f08ea9}</Project>
+      <Name>MCS.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MCS.DTO\MCS.DTO.csproj">
+      <Project>{dc0986f3-608b-43c7-a722-136283073f66}</Project>
+      <Name>MCS.DTO</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

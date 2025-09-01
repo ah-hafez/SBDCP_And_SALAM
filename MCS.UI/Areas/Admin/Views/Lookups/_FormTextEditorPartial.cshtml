@@ -1,0 +1,38 @@
+﻿@model FormContentVM
+@using MCS.Common;
+@using MCS.UI.Areas.Admin.Models.Lookups
+@{
+    /**/
+
+    Layout = null;
+}
+@{string officeHostUrl = SystemConfigurations.officeOnlineHost;}
+<script>
+    $(document).ready(function  () {
+        var officeIframeUrl = "@officeHostUrl" + "@Session["OfficeOnlineFileGuid"].ToString()" + ".docx&access_token=token&ui=ar-SA";
+        console.log(officeIframeUrl)
+        document.getElementById('officeIframe').src = officeIframeUrl;
+    });
+</script>
+<div class="row">
+    <div class="panel-group accordion accordion-dc">
+        <div class="form-group">
+            <div class="col-md-8">
+                <div class="">
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            @{string guid = ""; }
+            @*Guid.NewGuid().ToString();*@
+
+            <iframe id="officeIframe" style="width:100%;height:1000px">
+            </iframe>
+
+            @*@Html.TextEditor("txtEditor" + guid, "hdnContent" + guid, false, SessionInfo.CultureShortName.ToString(), Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(Model != null && Model.Content != null ? Model.Content : string.Empty, false)).ToString(), null, null, null, true)*@
+            @Html.StickyHiddenFor(model => model.Id)
+            @Html.HiddenFor(model => model.Content, new { id = "hdnContent" + guid })
+
+        </div>
+    </div>
+</div>

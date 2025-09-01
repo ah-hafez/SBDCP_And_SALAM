@@ -1,0 +1,48 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Lookups
+@using MCS.GridMvc.Helpers;
+@using MCS.GridMvc.Html;
+@using MCS.Common;
+
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<LookupVM>
+@{
+    ViewBag.Title = "_AttachmentTypeGridPartial";
+    Layout = null;
+}
+
+
+@Html.Grid(Model).Named("SaveReason").Columns(columns =>
+{
+    columns.Add(model => model.Id).Css("hidden_");
+    columns.Add(model => model.Text, "DescriptionAr").Titled(DbRes.TResource("Admin.Lookups.AttachmentType.Name.ar"));
+    columns.Add().Titled(DbRes.TResource("Admin.Link.Status")).RenderValueAs(model => MvcHtmlString.Create(model.IsActive ? DbRes.TResource("Admin.Link.Status.Active") : DbRes.TResource("Admin.Link.Status.Deactive")));
+    columns.Add().Encoded(false).Sanitized(false).Css("").RenderValueAs(model =>
+       MvcHtmlString.Create(
+           "<div class='table-icon d-flex align-items-center'>" +
+               ( !model.IsActive ?
+               @Html.ClientLinkTag(text: "", cssClass: "color-orange", title: DbRes.TResource("Admin.Lookups.Activate"), clientFunctionToCall: "ActiveDeactiveLookup(" + (int)LookupType.SaveReason + "," + (int)LookupOperationType.Active + " , " + model.Id + ")", innerHtml: "<i class='icon-tables-lamp'></i>") : MvcHtmlString.Empty) +
+               (model.IsActive ?
+               @Html.ClientLinkTag(text: "", cssClass: "color-grey", title: DbRes.TResource("Admin.Lookups.Deactivate"), clientFunctionToCall: "ActiveDeactiveLookup(" + (int)LookupType.SaveReason + "," + (int)LookupOperationType.Deactivate + " , " + model.Id + ")", innerHtml: "<i class='icon-tables-lamp-off'></i>") : MvcHtmlString.Empty) +
+              
+            "</div>"));
+}).WithPaging(GridHelper.PageSize)
+
+
+
+
+<script>
+    var token = $("#dvAdd input[name='__RequestVerificationToken']").val()
+    var SaveReasonGridEventHandler = '@Url.Action("UpdateSaveReasonGrid", "Lookups")';
+    function prepareSaveReasonGrid() {
+            $(".grid-mvc").gridmvc();
+        pageGrids.SaveReason.ajaxify({
+            getPagedData: SaveReasonGridEventHandler,
+                requestType: "GET",
+            getData: SaveReasonGridEventHandler
+            });
+        }
+
+        $(document).ready(function () {
+            prepareSaveReasonGrid();
+        });
+</script>

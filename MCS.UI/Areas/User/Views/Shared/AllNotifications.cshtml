@@ -1,0 +1,84 @@
+﻿@using MCS.Framework.Controls.Mvc
+@using MCS.UI.Areas.User.Models.Notifications
+
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<NotificationVM>
+
+@{
+    ViewBag.Title = DbRes.TResource("User.Home.AllNotifications");
+    Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
+}
+
+<div class="content_all">
+    @*<div class="row">
+            <div class="col-md-8">
+                <div class="">
+                    @DbRes.TResource("User.Home.AllNotifications")
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label">@DbRes.TResource("User.Home.DateBetween")</label>
+                    <div class="col-md-9">
+                        <div class="input-group">
+                            @Html.Hidden("hdnFromDateGreg", "", new { id = "hdnFromDateGreg" })
+                            @Html.Calendar("fromDateCal", "hdnFromDateGreg", "hdnFromDateUm", MCS.Framework.Controls.CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+                            <span class="input-group-addon add-on"> - </span>
+                            @Html.Hidden("hdnToDateGreg", "", new { id = "hdnToDateGreg" })
+                            @Html.Calendar("toDateCal", "hdnToDateGreg", "hdnToDateUm", MCS.Framework.Controls.CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group">
+                <div class="col-md-9">
+                    <div class="input-group">
+                        <label class="check">
+                        </label>
+                        <button type="button" id="btnSearch" class="btn" onclick="Search(1,@MCS.GridMvc.Helpers.GridHelper.PageSize);">@DbRes.TResource("User.Home.Search")</button>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+    <div id="dvGrid" class="row mt-4">
+        @Html.Partial("_AllNotificationsPartial", Model)
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#fromDateCal').attr('autocomplete', 'off');
+        $('#toDateCal').attr('autocomplete', 'off');
+    });
+    function DeleteNote(id) {
+        $.ajax({
+            type: 'Post',
+            url: '@Url.Action("DeleteNotifications","Home")',
+            data: { ids: id },
+            success:
+                function (data) {
+                    if (data.MessageType != 2) {
+                        $.each(data.ids, function (index, value) {
+                            $("#note_" + value).remove();
+                        });
+                    }
+                }
+        });
+    }
+
+    function MarkAsReadNotification(id) {
+        $.ajax({
+            type: 'get',
+            url: '@Url.Action("MarkAsReadNotification", "Home")',
+            data: { ids: id },
+            success:
+                function (data) {
+                    if (data.MessageType != 2) {
+                        $.each(data.ids, function (index, value) {
+                            $("#note_" + value).removeClass("bgchange new-notification");
+                        });
+                    }
+                }
+        });
+    }
+</script>
+

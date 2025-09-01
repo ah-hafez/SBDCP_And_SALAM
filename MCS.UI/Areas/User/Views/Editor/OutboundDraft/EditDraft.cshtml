@@ -1,0 +1,360 @@
+﻿@model MCS.UI.Areas.User.Models.Transaction.Outbound.Draft.EditOutboundDraftVM
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models;
+@using MCS.UI.Areas.User.Models.Transaction;
+@using MCS.UI.Areas.User.Models.Assignment;
+@using MCS.Common;
+@using MCS.Framework.Controls.DocumentViewer;
+
+@{
+    Layout = "~/Views/Shared/_EmptyLayout.cshtml";
+}
+
+@{string controller = TempData.Peek("ControllerName") != null ? TempData.Peek("ControllerName").ToString() : ViewContext.RouteData.Values["controller"].ToString();}
+
+<div class="panel-body editor">
+
+
+    <div class="col-md-12">
+        <div class="content_container site_border">
+            <div class="content_container content_container--header extra-padding">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <h3 class="title2 title2-padding">@DbRes.TResource("User.OutboundDraft.EditDraft")</h3>
+                    </div>
+                    <div class="col-xs-6 text-right">
+                        @*<a class="btn-site btn-inbox-up" href="#"><i class="uicon icon_copy"></i> نسخ بيانات أخر صادر</a>*@
+                        <a class="close-box hidden-xs" href="#"><i class="uicon icon_close"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="content_container content_container--body transparent-bg">
+                <div class="options-list row">
+
+                    <div class="col-xs-4 col-sm-2 text-center">
+                        <a href="#" class="boardered-circle-transparent active"><i class="uicon icon_folder1"></i></a>
+                        <a href="#"> البيانات الاساسية</a>
+                    </div>
+
+                    <div class="col-xs-4 col-sm-2 text-center">
+                        <a href="#" class="boardered-circle-transparent"><i class="uicon icon_folder2"></i></a>
+                        <a href="#"> ملحقات اصل المعاملة</a>
+                    </div>
+                    <div class="col-xs-4 col-sm-2 text-center">
+                        <a href="#" class="boardered-circle-transparent"><i class="uicon icon_folder3"></i></a>
+                        <a href="#">  @DbRes.TResource("User.Inbound.Names") </a>
+                    </div>
+                    <div class="col-xs-4 col-sm-2 text-center">
+                        <a href="#" class="boardered-circle-transparent"><i class="uicon icon_folder4"></i></a>
+                        <a href="#"> @DbRes.TResource("User.OutboundDraft.ElectronicCopies")</a>
+                    </div>
+                    <div class="col-xs-4 col-sm-2 text-center">
+                        <a href="#" class="boardered-circle-transparent"><i class="uicon icon_folder4"></i></a>
+                        <a href="#"> نسخ الكترونية لادارة خارجية</a>
+                    </div>
+                    <div class="col-xs-4 col-sm-2 text-center">
+                        <a href="#" class="boardered-circle-transparent"><i class="uicon icon_folder5"></i></a>
+                        <a href="#"> @DbRes.TResource("User.Inbound.Link")</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    @using (Html.BeginForm("EditOutboundDraft", "OutboundDraft", FormMethod.Post, new { id = "frmAddOutboundDraft" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.StickyHiddenFor(model => model.Id, new { id = "hdnOutboundDraftId" })
+        @Html.StickyHiddenFor(model => model.OutboundDraftBasicInfo.DraftNumber)
+        @Html.StickyHiddenFor(model => model.HijriRecordDate)
+        @Html.StickyHiddenFor(model => model.RecordDate)
+        @Html.StickyHiddenFor(model => model.StatusId)
+        @Html.StickyHiddenFor(model => model.IsSigned, new { id = "hdnIsSigned" })
+
+        <div class="page-content-wrap page-tabs-item active tabscontent" id="first-tab">
+            @{
+                Html.ViewData.TemplateInfo.HtmlFieldPrefix = "OutboundDraftBasicInfo";
+                Html.ViewData.Add("HijriDate", Model.HijriRecordDate);
+                Html.ViewData.Add("HijriDateTitle", DbRes.TResource("User.OutboundDraft.BasicInfo.RecordDate"));
+                Html.ViewData.Add("TransactionNumber", Model.OutboundDraftBasicInfo.DraftNumber);
+                Html.ViewData.Add("TransactionNumberTitle", DbRes.TResource("User.OutboundDraft.BasicInfo.DraftNumber"));
+            }
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-horizontal form-row">
+                        <div class="panel panel-default">
+                            <div id="dvBasicInfo">
+                                @Html.Partial("~/Areas/User/Views/Editor/OutboundDraft/_BasicInfoEditPartial.cshtml", Model.OutboundDraftBasicInfo, Html.ViewData)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="page-content-wrap page-tabs-item tabscontent" id="second-tab">
+            @{Html.ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+            @Html.Partial("~/Areas/User/Views/Transaction/_CopiesPartial.cshtml", new TransactionCopyVM(), Html.ViewData)
+
+            @{Html.ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+            @Html.Partial("~/Areas/User/Views/Transaction/_ExternalCopiesPartial.cshtml", new TransactionExternalCopyVM(), Html.ViewData)
+
+        </div>
+        <div class="page-content-wrap page-tabs-item" id="fourth-tab">
+            @{ Html.ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+            @Html.Partial("~/Areas/User/Views/Transaction/_AttachmentsPartial.cshtml", new TransactionAttachmentVM(), Html.ViewData)
+            @Html.Partial("~/Areas/User/Views/Transaction/_ArchivingPartial.cshtml", new TransactionArchiveVM(), Html.ViewData)
+        </div>
+        <div class="page-content-wrap page-tabs-item tabscontent" id="third-tab">
+            @{Html.ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+            @Html.Partial("~/Areas/User/Views/Transaction/_EditorPartial.cshtml", ViewData["EditorViewModel"], Html.ViewData)
+        </div>
+        <div class="page-content-wrap page-tabs-item tabscontent" id="fifth-tab">
+            @*@{Html.ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+            @Html.Partial("~/Areas/User/Views/Shared/_AssignmentsPartial.cshtml", new TransactionAssignmentVM(), Html.ViewData)*@
+        </div>
+        <div id="dvEditorPartialContainer" style="position:absolute; visibility:hidden; display:block;">
+            @{string sessionKey = ViewData["SessionMainDocumentKey"] as string;}
+            @Html.DocumentViewer("frameViewerEditor", AnnotationsMode.ReadWrite, sessionKey, true, "OnSign")
+        </div>
+        <div class="page-content-wrap">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-footer only">
+                            @{TransactionCategory transactionCategory = (ViewData["TransactionCategory"] != null) ? (TransactionCategory)(int)ViewData["TransactionCategory"] : TransactionCategory.DraftOutbound;}
+                            @{if (transactionCategory == TransactionCategory.DraftOutbound)
+                                {
+                                    @Html.ConfirmAction(OperationType.Update, "btnSaveOutboundExternal", DbRes.TResource("User.OutboundDraft.Edit"), Url.Action("EditOutboundDraft", "Editor"), null, null, null, "OnSuccess", null, null, "post", "frmAddOutboundDraft", "OutboundDraft", "btn btn-save pull-right", "SaveContent", UserClaims.Editor.Draft)
+                                }
+                                else
+                                {
+                                    @Html.ConfirmAction(OperationType.Update, "btnSaveOutboundExternal", DbRes.TResource("User.OutboundDraft.Edit"), Url.Action("EditOutboundDraftForInbound", "Editor"), null, null, null, "OnSuccess", null, null, "post", "frmAddOutboundDraft", "OutboundDraft", "btn btn-save pull-right", "SaveContent", UserClaims.Editor.Draft)
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<script>
+    var signedCount = 0;
+    function OnSign(actionType) {
+        if (actionType == "add") {
+            signedCount++;
+        }
+        else {
+            signedCount--;
+        }
+    }
+
+    $("ul.anchor a").click(function () {
+        $("ul.anchor a").removeClass("selected");
+        $("ul.anchor a").addClass("disabled");
+        $(this).addClass("selected");
+        $(".tabscontent").removeClass("active");
+
+        var divId = $(this).data("divid");
+        $("#" + divId).addClass("active");
+    });
+
+    function SetSuggestedTopic() {
+        $("#txtAreaSubject").val($("#divForm__dvSuggestedTopicTree .txtDepartmentName").val());
+    }
+
+    $('#dvArchivingRadioButtons').hide();
+    $("#ckMain").prop("checked", false);
+    $("#ckAttachment").prop("checked", true);
+
+    $("#dvAttchmentsTypeContainer").show();
+
+    $("#anchorEditor").click(function () {
+        if ($("#dvDocumentViewerEditorContainer iframe").length == 0) {
+            $("#dvDocumentViewerEditorContainer").html($("#dvEditorPartialContainer").html());
+            $("#dvEditorPartialContainer").html("");
+        }
+    });
+    $(document).ready(function () {
+        tinymce.execCommand('mceRemoveEditor', true, 'txtEditor');
+        tinyMCE.execCommand('mceAddEditor', true, "txtEditor");
+
+        $("#hdnTransactionId").val('@Model.Id');
+    })
+
+    function ShowPrintDialog() {
+        var params = { transactionId: $("#hdnOutboundDraftId").val() };
+        var newUrl = '@Url.Action("PrinttingBarcodes", controller)' + "?" + $.param(params);
+
+        ShowDialog(newUrl);
+    }
+
+
+    $(document).ready(function () {
+        @{TextEditorViewModel textEditorViewModel = ViewData["EditorViewModel"] as TextEditorViewModel;}
+
+        @if (textEditorViewModel.EditorType.ToString() != EditorType.TextEditor.ToString())
+        {
+
+        <text>
+        $('#dvTextEditor').hide();
+        $('#dvScanning').show();
+        </text>
+
+        }
+        else
+        {
+            <text>
+        $('#dvTextEditor').show();
+        $('#dvScanning').hide();
+        </text>
+        }
+    });
+
+    $(document).on('change', '#ddlTypeId', function () {
+
+        GetExternalPartisByLetterId(-1);
+    });
+
+
+
+    function GetExternalPartisByLetterId(selectedParty) {
+
+        $.ajax({
+            cache: false,
+            type: 'get',
+            url: '@Url.Action("GetExternalPartiesbyLetterId", controller)',
+            data: { LetterId: $("#hdnTypeId").val(), selectedParty: selectedParty },
+            success:
+           function (data) {
+
+               if ($('#divContainer__dvDestinationTree').css('display') == 'block') {
+
+                   ShowHideTree('#divContainer__dvDestinationTree');
+               }
+
+               $('#divContainer__dvDestinationTree').remove();
+
+               $("#divContainerDraftExternalParties").html("");
+
+               $("#divContainerDraftExternalParties").html(data);
+
+               GetUsersByPartyId();
+           }
+        });
+        return false;
+    }
+
+    function SaveContent() {
+        
+        var type = $('#hdnEditorType').val();
+
+        if (type == 'Scanning') {
+
+            var tokenValue = document.getElementById('frameViewerEditor').contentDocument.getElementById('_hdnToken').value;
+
+            $('#hdnContent').val(tokenValue);
+            $("#hdnIsSigned").val(signedCount > 0);
+        }
+        else {
+            $("#hdnIsSigned").val($("#txtEditor_ifr").contents().find('.imgSign').length > 0);
+        }
+
+        if ($('#dvHasDateContainer').css('display') == 'block' && $("#hdnHasDateGreg").val() == "") {
+
+            ShowErrorMessage('@Html.Raw(DbRes.TValidation("User.Inbound.RemindDateRequired"))');
+            return false;
+        }
+        if ($("#hdnHasDateGreg").val() != "") {
+            var dateNow = $.datepicker.formatDate('dd/mm/yy', new Date($.now()));
+            var currentDate = convertdate(dateNow);
+            var selectedDate = convertdate($("#hdnHasDateGreg").val());
+
+            if (selectedDate < currentDate) {
+                ShowErrorMessage('@Html.Raw(DbRes.TValidation("User.Inbound.RemindDateCompare"))');
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    function GetUsersByPartyId() {
+
+        if ($("#OutboundDraftBasicInfo_DestinationId").val() != "") {
+            $.ajax({
+                type: 'Get',
+                url: '@Url.Action("GetManagersByPartyId", controller)',
+                data: { id: $("#OutboundDraftBasicInfo_DestinationId").val() },
+                success:
+               function (data) {
+
+                   AutoCompleteChangeList("ddlDirectedToId", data);
+
+                   $("#ddlDirectedToId").trigger('change');
+                   $("#hdnDirectedToId").trigger('change');
+
+                   $("#ddlDirectedToId").prop('disabled', false);
+               }
+            });
+            return false;
+        }
+        else {
+
+            AutoCompleteChangeList("ddlDirectedToId", "[]");
+
+            $("#ddlDirectedToId").val('');
+            $("#hdnDirectedToId").val('');
+
+            $("#ddlDirectedToId").prop('disabled', true);
+        }
+    }
+
+    function GetUsersByPreparationEntityId() {
+     
+        if ($('#OutboundDraftBasicInfo_SignedByOrgUnitId').val() != '' && $('#OutboundDraftBasicInfo_SignedByOrgUnitId').val() != undefined) {
+
+            $.ajax({
+                type: 'Get',
+                url: '@Url.Action("GetUnitUsers", controller)',
+                data: { id: $('#OutboundDraftBasicInfo_SignedByOrgUnitId').val() },
+                success:
+               function (data) {
+
+                   AutoCompleteChangeList("ddlSignedById", data);
+
+                   $("#ddlSignedById").trigger('change');
+                   $("#hdnSignedById").trigger('change');
+
+                   $("#ddlSignedById").prop('disabled', false);
+               },
+            });
+            return false;
+        }
+        else {
+
+            AutoCompleteChangeList("ddlSignedById", "[]");
+
+            $("#ddlSignedById").val('');
+            $("#hdnSignedById").val('');
+
+            $("#ddlSignedById").prop('disabled', false);
+        }
+    }
+
+    function OnSuccess(data) {
+
+        if (data.MessageType != 2) {
+
+            ShowSuccesMessage(data.MessageText);
+        }
+        else {
+
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+</script>
+   

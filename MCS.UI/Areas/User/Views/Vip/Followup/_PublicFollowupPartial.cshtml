@@ -1,0 +1,95 @@
+﻿@model MCS.UI.Areas.User.Models.Transaction.PublicFollowupVM
+@using MCS.Framework.Localization
+@using MCS.Framework.Controls
+
+@{
+
+    ViewData.TemplateInfo.HtmlFieldPrefix = "PublicFollowUps";
+}
+
+
+
+<div class="form-horizontal form-row">
+
+
+    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+        <label class="w-100">@DbRes.TResource("User.Transaction.FollowUp.Proccess") <span class="stark">*</span></label>
+        @Html.AutoCompleteBuilder("ddlPublicFollowUpProccess", "hdnPublicFollowUpProccessId", ViewData["FollowUpProccess"].ToString(), null, true, "form-control", selectFirstIndex: true)
+        @Html.HiddenGroupFor(model => model.ProccessId, new { @Value = "", id = "hdnPublicFollowUpProccessId" }, "inboundGroup")
+    </div>
+
+    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+        <label class="w-100">@DbRes.TResource("User.Transaction.FollowUp.Period") <span class="stark">*</span></label>
+        @Html.AutoCompleteBuilder("ddlPublicFollowUpPeriod", "hdnPublicFollowUpPeriodId", ViewData["FollowUpPeriod"].ToString(), null, true, "form-control", selectFirstIndex: false)
+        @Html.HiddenGroupFor(model => model.PeriodId, new { @Value = "", id = "hdnPublicFollowUpPeriodId" }, "inboundGroup")
+    </div>
+
+    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3" id="divPublicFollowupDate" style="display:none">
+
+        <label class="w-100">@DbRes.TResource("User.Transaction.FollowUp.EndDate")<span class="stark NotIndividual">*</span></label>
+        <div class="with-icon">
+            @Html.CalendarCustom("PublicFollowUpDateCal", "hdnFolloupDateGreg", "hdnFollowUpDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), Model != null ? Model.DateToH : null, "form-control")
+            <a class=" date-icon2 " onclick="showCalender('FollowUpDateCal')"><img src="~/Content/User/lib/images/SystemIcon/main bar-08.svg" width="30" style="vertical-align:inherit" /></a>
+            @Html.HiddenGroupFor(model => model.DateTo, new { id = "hdnFolloupDateGreg", AutoComplete = "off" }, "inboundGroup")
+            @Html.HiddenGroupFor(model => model.DateToH, new { id = "hdnFollowUpDateUm", AutoComplete = "off" }, "inboundGroup")
+            <i id="PublicFollowUpMessage" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+            <span id="PublicFollowUpMessage" style="color:red"></span>
+        </div>
+
+
+    </div>
+
+    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mt-4">
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" id="hdnPublicIsImportant"/>
+                <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                <text for="hdnPublicIsImportant" style="color:black; font-weight:bold; font-size:16px;">@DbRes.TResource("هام")</text>
+            </label>
+        </div>
+        <label class="w-100"> </label>
+
+        @Html.HiddenGroupFor(x => x.IsImportant, "inboundGroup")
+    </div>
+
+
+
+
+</div>
+
+<script>
+    $(function ()
+    {
+        $('#ddlPublicFollowUpPeriod').change(function ()
+        {
+            debugger;
+            var selectedPeriod = $(this).val();
+
+            if (selectedPeriod == "أخرى")
+            {
+                $('#PublicFollowUpDateCal').attr('autocomplete', 'off');
+                $('#divPublicFollowupDate').show();
+            } else
+            {
+                $('#divPublicFollowupDate').hide();
+
+            }
+        });
+
+        $('#PublicFollowUpDateCal').attr('autocomplete', 'off');
+
+        var checkbox = document.querySelector("#hdnPublicIsImportant");
+        checkbox.addEventListener('change', function ()
+        {
+            if (this.checked)
+            {
+
+                $("#PublicFollowUps_IsImportant").val(true);
+            }
+            else
+            {
+                $("#PublicFollowUps_IsImportant").val(false);
+            }
+        });
+    });
+</script>

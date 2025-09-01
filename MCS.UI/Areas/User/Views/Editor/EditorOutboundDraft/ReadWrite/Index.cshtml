@@ -1,0 +1,393 @@
+﻿@using MCS.UI.Areas.User.Models.Transaction;
+@using MCS.UI.Areas.User.Models.Assignment;
+@using MCS.UI.Areas.User.Models.Transaction;
+@using MCS.UI.Areas.User.Models;
+@using MCS.UI.Areas.User.Models.Shared;
+@using MCS.Framework.Localization;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.UI.Common;
+@using MCS.Common;
+@model EditorViewModel
+@{
+    ViewBag.Title = "Index";
+
+    bool isVIP = (bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser);
+    if (!isVIP)
+    {
+        Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Areas/User/Views/Shared/_VIPLayout.cshtml";
+    }
+
+    var archivesVm = new TransactionArchiveVM { Archives = (MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<TransactionArchiveVM>)new MCS.GridMvc.Ajax.GridExtensions.AjaxGridFactory().CreateAjaxGrid(Model.Archives, 1, Model.Archives.Count, false) };
+    var linksVm = new TransactionLinkVM { Links = (MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<TransactionLinkVM>)new MCS.GridMvc.Ajax.GridExtensions.AjaxGridFactory().CreateAjaxGrid(Model.TransactionBasicInfoVM.Links, 1, Model.TransactionBasicInfoVM.Links.Count, false) };
+    var doconutIframeUrl = UIConfigurations.GetFullURl() + string.Format("{0}?sIncludedItemDoc=true&hidecontrols=true&hideAllcontrols=true&showwatermark={1}", SystemConfigurations.DoconutIframeUrl, "true");
+    bool isEditMode = false;
+    Session["IsEditMode"] = isEditMode;
+}
+@Html.RenderGridViewResources()
+<script src=@Url.Content("~/Content/User/lib/js/app.min.js")></script>
+<script src="~/Scripts/Transaction.js"></script>
+<script>
+    var archiveMode = '@isEditMode';
+</script>
+@Html.Hidden("hdnTransEditorId", ViewData["TransactionId"])
+@Html.Hidden("hdnOutboundDraftId", Model.TransactionBasicInfoVM.OutboundDraftId)
+@Html.Hidden("hdnEditorTransactionTypeId", Model.TransactionBasicInfoVM.TransactionTypeId)
+
+
+<div class="content_container content_container--header extra-padding">
+    <div class="row">
+        <div class="col-xs-6">
+            <h4 class="title2 title2-padding">@DbRes.TResource("User.Layout.EditOutbound")</h4>
+        </div>
+        <div class="col-xs-6 text-right" style="height: 29px;">
+            <a class="close-box " href="@Url.Action("MyTransactions","File")"><i class="uicon icon_close"></i></a>
+        </div>
+    </div>
+</div>
+<div class="expanded-container">
+    <div class="content_container content_container--body transparent-bg">
+        <div class="options-list row editoranchor">
+            <div class="multi-function-slider">
+                <div class="col-sm-2 text-center">
+                    <a href="#" class="boardered-circle-transparent active" id="EditorBasicInfo" data-divid="first-editor-tab"><i class="uicon icon_folder1"></i></a>
+                    <a href="#"> @DbRes.TResource("User.Inbound.DataInsertion")</a>
+                </div>
+                <div class="col-sm-2 text-center">
+                    <a href="#" class="boardered-circle-transparent" id="EditorExplanation" data-divid="second-editor-tab"><i class="uicon icon_folder5"></i></a>
+                    <a href="#"> @DbRes.TResource("User.Editor.Explanations")</a>
+                </div>
+                <div class="col-xs-4 col-sm-2 text-center" id="EditorAttachment">
+                    <a href="#" class="boardered-circle-transparent" data-divid="third-editor-tab"><i class="uicon icon_folder2"></i></a>
+                    <a href="#">  @DbRes.TResource("User.Transaction.Archiving")</a>
+
+                </div>
+                <div class="col-xs-4 col-sm-2 text-center" id="EditorNames">
+                    <a href="#" class="boardered-circle-transparent" data-divid="fourth-editor-tab"><i class="uicon icon_folder3"></i></a>
+                    <a href="#">  @DbRes.TResource("User.Inbound.Names") </a>
+                </div>
+                <div class="col-xs-4 col-sm-2 text-center" id="EditorelectronicCopies">
+                    <a href="#" class="boardered-circle-transparent" data-divid="fifth-editor-tab"><i class="uicon icon_folder4"></i></a>
+                    <a href="#"> @DbRes.TResource("User.OutboundDraft.ElectronicCopies")</a>
+                </div>
+                <div class="col-xs-4 col-sm-2 text-center" id="EditortransactionCopies">
+                    <a href="#" class="boardered-circle-transparent" data-divid="sixth-editor-tab"><i class="uicon icon_folder4"></i></a>
+                    <a href="#"> @DbRes.TResource("User.Transaction.ExternalCopies")</a>
+                </div>
+                <div class="col-xs-4 col-sm-2 text-center" id="EditorLinks">
+                    <a href="#" class="boardered-circle-transparent" data-divid="seventh-editor-tab"><i class="uicon icon_folder5"></i></a>
+                    <a href="#"> @DbRes.TResource("User.Inbound.Link")</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content_container">
+        <div class="tab_editor" id="first-editor-tab">
+            @{ViewData.TemplateInfo.HtmlFieldPrefix = "EditorBasicInfo";}
+            @Html.Partial("~/Areas/User/Views/Editor/EditorOutboundDraft/ReadWrite/_OutboundDraftBasicInfoPartial.cshtml", Model.TransactionBasicInfoVM)
+
+            @if (Model.TransactionBasicInfoVM.OutboundDraftEditorType.HasValue && (EditorType)Model.TransactionBasicInfoVM.OutboundDraftEditorType.Value == EditorType.Scanning)
+            {
+                <div class="panel panel-default panel-results">
+                    @{ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+                    @Html.Partial("~/Areas/User/Views/Editor/Archiving/_ArchivingReadWritePartial.cshtml", Model.DocumentVM != null ? Model.DocumentVM : new DocumentVM())
+                </div>
+            }
+            else if (Model.EditorType == EditorType.TextEditor)
+            {
+                @Html.Partial("~/Areas/User/Views/Transaction/_EditorPartial.cshtml", ViewData["EditorViewModel"], Html.ViewData)
+            }
+            <div id="dvScanningArchiving" style="display:none">
+                <div id="dvDocumentViewerEditorContainerArchiving" class="">
+
+                    <iframe src="@doconutIframeUrl" class="col-md-12" style="height:500px" id="frameViewerAttachmentForArchiving"></iframe>
+
+                </div>
+            </div>
+        </div>
+        <div class="tab_editor hidden_" id="second-editor-tab">
+            <div class="content_container content_container--header extra-padding">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h4 class="title4"> @DbRes.TResource("User.Editor.Explanations") </h4>
+                    </div>
+                </div>
+            </div>
+            <div class="content_container content_container--body white-bg">
+                @{ViewData.TemplateInfo.HtmlFieldPrefix = "EditorExplanations";}
+                @Html.Partial("~/Areas/User/Views/Editor/Explanations/_ExplanationReadWritePartial.cshtml", new ExplanationVM())
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="dvArchivingGrid" hidden>
+    @Html.Partial("~/Areas/User/Views/Transaction/_ArchivingGridPartial.cshtml", archivesVm.Archives)
+</div>
+<div id="dvLinksGrid" hidden>
+    @Html.Partial("~/Areas/User/Views/Shared/_LinksGridPartial.cshtml", linksVm.Links)
+</div>
+
+<script>
+    $(document).ready(function () {
+        debugger;
+        AppendArchives();
+    });
+    $("div.editoranchor a").click(function () {
+        $("div.editoranchor a").removeClass("active");
+        $("div.editoranchor a").addClass("disabled");
+        $(this).addClass("active");
+        $(".tab_editor").addClass("hidden_");
+
+        var divId = $(this).data("divid");
+        $("#" + divId).removeClass("hidden_");
+    });
+
+
+    @*$('.tab_editor').click(function () {
+        var url;
+        var data = new Array();
+
+        $('.tab_editorss').removeClass('active');
+        $(this).addClass('active');
+
+        $("._views").hide();
+
+        switch ($(this)[0].id) {
+
+            case "btnBasicInfo":
+                $("#dvEditorBasicInfo").show();
+                break;
+
+            case "btnAssignments":
+                $("#dvEditorAssignments").show();
+                break;
+
+            case "btnLinks":
+                $("#dvEditorLinks").show();
+                break;
+
+            case "btnExplanation":
+                $("#dvEditorExplanation").show();
+                break;
+
+            case "btnAddTask":
+                $("#dvEditorTaskContainer").show();
+                break;
+
+            case "btnAssignmentPaper":
+                $("#dvEditorAssignmentPaper").show();
+                break;
+
+            case "btnOutboundInternal":
+                $.ajax({
+                    type: 'Get',
+                    url: '@Url.Action("GetInternalOutboundById")',
+                    data: { id: $("#hdnTransEditorId").val() },
+                    success:
+                   function (data) {
+
+                       if (data.MessageType != 2) {
+                           $.confirm({
+                               title: false,
+                               content: function ($obj) {
+                                   return $.ajax({
+                                       url: '@Url.Action("EditInternal", "Editor")',
+                                       type: 'POST',
+                                       data: data,
+                                       cache: false,
+                                       success: function (data) {
+                                           $obj.setContent(data.Html);
+                                           jQuery.validator.unobtrusive.parse('#frmEditOutboundInternal');
+                                       },
+                                       error: function (a) {
+
+                                       }
+                                   });
+                               },
+                               icon: 'fa fa-info',
+                               animation: 'scale',
+                               columnClass: 'dialogbox col-md-12',
+                               backgroundDismiss: false,
+                               cancelButton: false,
+                               confirmButton: false,
+                               closeIcon: true,
+                               onOpen: function () {
+                                   //TODO:Revisit this code
+                                   $("#Loader").hide();
+                               },
+                           });
+                       }
+                       else {
+                           ShowErrorMessage(data.MessageText);
+                       }
+                   }
+                });
+                break;
+
+            case "btnOutboundDraft":
+
+                if ($("#hdnOutboundDraftId").val() != "") {
+                    $.ajax({
+                        type: 'Get',
+                        url: '@Url.Action("GetOutboundDraftById")',
+                        data: { id: $("#hdnOutboundDraftId").val(), transactionTypeId: $("#hdnEditorTransactionTypeId").val() },
+                        success:
+                       function (data) {
+
+                           if (data.MessageType != 2) {
+
+                               $.confirm({
+                                   title: false,
+                                   content: function ($obj) {
+                                       return $.ajax({
+                                           url: '@Url.Action("EditDraft","Editor")',
+                                           type: 'POST',
+                                           data: data,
+                                           cache: false,
+                                           success: function (data) {
+                                               $obj.setContent(data.Html);
+                                               jQuery.validator.unobtrusive.parse('#frmAddOutboundDraft');
+                                           },
+                                           error: function (a) {
+
+                                           }
+                                       });
+                                   },
+                                   icon: 'fa fa-info',
+                                   animation: 'scale',
+                                   columnClass: 'dialogbox col-md-12',
+                                   backgroundDismiss: false,
+                                   cancelButton: false,
+                                   confirmButton: false,
+                                   closeIcon: true,
+                                   onOpen: function () {
+                                       //TODO:Revisit this code
+                                       $("#Loader").hide();
+                                   },
+                               });
+                           }
+                           else {
+                               ShowErrorMessage(data.MessageText);
+                           }
+                       }
+                    });
+                }
+                else {
+
+                    $.confirm({
+                        title: false,
+                        content: function ($obj) {
+                            return $.ajax({
+                                url: '@Url.Action("AddDraft", "Editor")',
+                                type: 'Get',
+                                data: data,
+                                cache: false,
+                                success: function (data) {
+                                    $obj.setContent(data.Html);
+                                    jQuery.validator.unobtrusive.parse('#frmAddOutboundDraft');
+                                },
+                                error: function (a) {
+
+                                }
+                            });
+                        },
+                        icon: 'fa fa-info',
+                        animation: 'scale',
+                        columnClass: 'dialogbox col-md-12',
+                        backgroundDismiss: false,
+                        cancelButton: false,
+                        confirmButton: false,
+                        closeIcon: true,
+                        onOpen: function () {
+                            //TODO:Revisit this code
+                            $("#Loader").hide();
+                        },
+                    });
+                    @*OpenDialog('@Url.Action("AddDraft","Editor")');
+                }
+                break;
+
+            case "btnOutboundDraftEdit":
+
+                $.ajax({
+                    type: 'Get',
+                    url: '@Url.Action("GetOutboundDraftById")',
+                    data: { id: $("#hdnTransEditorId").val(), transactionTypeId: $("#hdnEditorTransactionTypeId").val() },
+                    success:
+                   function (data) {
+
+                       if (data.MessageType != 2) {
+
+                           $.confirm({
+                               title: false,
+                               content: function ($obj) {
+                                   return $.ajax({
+                                       url: '@Url.Action("EditDraft","Editor")',
+                                       type: 'POST',
+                                       data: data,
+                                       cache: false,
+                                       success: function (data) {
+                                           $obj.setContent(data.Html);
+                                           jQuery.validator.unobtrusive.parse('#frmAddOutboundDraft');
+                                       },
+                                       error: function (a) {
+
+                                       }
+                                   });
+                               },
+                               icon: 'fa fa-info',
+                               animation: 'scale',
+                               columnClass: 'dialogbox col-md-12',
+                               backgroundDismiss: false,
+                               cancelButton: false,
+                               confirmButton: false,
+                               closeIcon: true,
+                               onOpen: function () {
+                                   //TODO:Revisit this code
+                                   $("#Loader").hide();
+                               },
+                           });
+                       }
+                       else {
+                           ShowErrorMessage(data.MessageText);
+                       }
+                   }
+                });
+                break;
+        }
+        return false;
+    });*@
+
+
+    function OnSaveLinksSuccess(data, div) {
+        if (data.MessageType != 2) {
+            ShowSuccesMessage(data.MessageText)
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function OpenDialog(url) {
+        $.confirm({
+            title: false,
+            content: 'url:' + url,
+            icon: 'fa fa-info',
+            animation: 'scale',
+            columnClass: 'dialogbox col-md-12',
+            backgroundDismiss: false,
+            cancelButton: false,
+            confirmButton: false,
+            closeIcon: true,
+            onOpen: function () {
+                //TODO:Revisit this code
+                $("#Loader").hide();
+            },
+        });
+    }
+
+</script>

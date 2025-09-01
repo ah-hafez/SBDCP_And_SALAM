@@ -1,0 +1,608 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Common
+@using MCS.UI.Areas.User.Models.Shared;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.UI.Common;
+@{UserVM userVM = SessionInfo.CurrentUser;}
+@{
+    var controllerName = HttpContext.Current.Request.RequestContext.RouteData.Values["controller"].ToString();
+    var actionName = ViewContext.RouteData.GetRequiredString("action").ToString();
+
+    var tenantLogoSrc = MCS.UI.UrlHelper.GetBaseUri() + "/Content/Admin/lib/images/logo-morasalat.png";
+    if (Session["TenantLogo"] != null)
+    {
+        tenantLogoSrc = String.Format("data:image/png;base64,{0}", Session["TenantLogo"].ToString());
+    }
+}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="SSSiT">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="Content-Language" content="ar" />
+    <meta name="msapplication-TileColor" content="#F5F7FA">
+    <meta name="theme-color" content="#262B56">
+
+    <title>@ViewBag.Title</title>
+
+    <link type="image/x-icon" rel="shortcut icon" href="~/Content/Admin/lib/images/favicon.png">
+
+    <!-- Bootstrap RTL -->
+    <link href="~/Content/Admin/lib/bootstrap/css/bootstrap.min.rtl.css" rel="stylesheet">
+    <link href="~/Content/Admin/lib/bootstrap/css/bootstrap.form.rtl.css" rel="stylesheet">
+    <link href="~/Content/Admin/lib/bootstrap/css/bootstrap.grid.rtl.css" rel="stylesheet">
+
+    <!-- Main -->
+    <link href="~/Content/Admin/lib/css/main.css" rel="stylesheet">
+    <link href="~/Content/Admin/lib/css/jquery-ui.css" rel="stylesheet">
+    <link href="~/Content/Admin/lib/css/style.css" rel="stylesheet">
+
+    <!-- jquery Plugins Style -->
+    <link rel="stylesheet" type="text/css" href="~/Content/Admin/lib/plugins/vertical-menu/vertical-menu.min.css">
+    <link rel="stylesheet" type="text/css" href="~/Content/Admin/lib/plugins/vertical-menu/vertical-menu.min-source.css">
+    <link rel="stylesheet" type="text/css" href="~/Content/Admin/lib/plugins/confirm/jquery-confirm.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/Admin/lib/plugins/splitter/splitpanelscss.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/Admin/lib/plugins/calendar/jquery.calendars.picker.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/Admin/lib/plugins/calendar/ui.calendars.picker.css" />
+    <!-- RTL -->
+    <link href="~/Content/Admin/lib/css/d-rtl.css" rel="stylesheet">
+
+    @if (@Session["ThemePath"] != null)
+    {
+        <link href=@Url.Content("~/Content/Admin/lib/css/theme-" + @Session["ThemePath"] + ".css") rel="stylesheet">
+
+    }
+    else
+    {
+        <link href=@Url.Content("~/Content/Admin/lib/css/theme-Blue.css") rel="stylesheet">
+    }
+
+    <!-- jQuery -->
+    <script src="~/Content/Admin/lib/js/jquery/jquery.js"></script>
+    <script src="~/Content/Admin/lib/js/jquery/jquery-ui.js"></script>
+
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="~/Content/Admin/lib/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/Content/Admin/lib/js/aos.js"></script>
+    <script src="~/Content/Admin/lib/js/app.js"></script>
+    <script src="~/Content/Admin/lib/js/Common.js"></script>
+
+    <!-- jquery Plugins -->
+    <script type="text/javascript" src="~/Content/Admin/lib/plugins/jquery.plugin.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/plugins/splitter/jquery-resizable.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/plugins/confirm/jquery-confirm.min.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/plugins/resize-textarea/autosize.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/plugins/grid/gridmvc.min.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/plugins/grid/gridmvc-ext.min.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/plugins/sideBarControl/SideBarControl.min.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/plugins/AutoCompleteScript.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/plugins/URI.min.js"></script>
+
+    <script type="text/javascript" src="~/Content/Admin/lib/plugins/jquery.slimscroll.min.js"></script>
+
+    <script type="text/javascript" src="~/Content/Admin/lib/plugins/calendar/jquery.calendars.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/plugins/calendar/jquery.calendars.plus.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/plugins/calendar/jquery.calendars.picker.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/plugins/calendar/jquery.calendars.picker-ar.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/plugins/calendar/jquery.calendars.ummalqura.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/plugins/calendar/jquery.calendars.ummalqura-ar.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/plugins/calendar/CalendarScript.js"></script>
+
+    <script type="text/javascript" src="~/Content/Admin/lib/plugins/ActionButtonsHelper.js"></script>
+
+    <script type="text/javascript" src="~/Content/Admin/lib/js/jquery/jquery.validate.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/plugins/customValidation/jquery.validate.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/plugins/customValidation/CustomValidation.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/plugins/jquery.cookie.js"></script>
+
+    @Html.RenderTextEditorResources()
+    <script type="text/javascript" src="~/Content/Admin/lib/plugins/texteditor/TextEditorScript.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/plugins/texteditor/tinymce/tinymce.min.js"></script>
+
+
+    <script type="text/javascript" src="~/Views/Shared/Scripts/GridViewActions.js"></script>
+    <script src="~/Content/User/lib/plugins/Inline_tree/Tree_1.js"></script>
+    <script src="~/Content/User/lib/plugins/Inline_tree/jqueryFileTree_2.js"></script>
+    <script src="~/Content/User/lib/plugins/Inline_tree/jstree_3.min.js"></script>
+    <link href="~/Content/User/lib/plugins/Inline_tree/treeStyle.css" rel="stylesheet" />
+
+    @*<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.6.4/jquery.contextMenu.min.js"></script>*@
+
+    <script type="text/javascript">
+            var AllowSend=false;
+            var __dateformat = '@System.Web.Configuration.WebConfigurationManager.AppSettings["CalendarDateFormat"]';
+            var __dialogNoText = '@Html.Raw(DbRes.TResource("Global.Dialog.No"))';
+            var __dialogYesText = '@Html.Raw(DbRes.TResource("Global.Dialog.Yes"))';
+            var __dialogCloseText = '@Html.Raw(DbRes.TResource("Global.Dialog.Close"))';
+            var __dialogCancelText = '@Html.Raw(DbRes.TResource("Global.Dialog.Cancel"))';
+            var __cultureName = '@SessionInfo.CultureShortName';
+
+            var __ExternalPartyDataByIdAction = '@Url.Action("GetExternalPartyNodeById")';
+            var __ExternalPartyAutoCompleteAction = '@Url.Action("GetExternalPartyNodesAutoComplete")';
+
+            var __OrgUnitDataByIdAction = '@Url.Action("GetOrgUnitNodeById")';
+            var __OrgUnitsDataByIdsAction = '@Url.Action("GetOrgUnitsNodesByIds")';
+            var __OrgUnitsAutoCompleteAction = '@Url.Action("GetOrgUnitsAutoComplete")';
+
+            var DeliveryMethodType = { Paper: @(DeliveryMethodType.Paper.LookupIdentity(LookupCategory.DeliveryMethod,SessionInfo.CultureShortName)), Electronic: @(DeliveryMethodType.Electronic.LookupIdentity(LookupCategory.DeliveryMethod,SessionInfo.CultureShortName)), ElectronicPaper: @(DeliveryMethodType.ElectronicPaper.LookupIdentity(LookupCategory.DeliveryMethod,SessionInfo.CultureShortName)) };
+            var TransactionCategory = { None: @((int)TransactionCategory.None), Inbound: @(TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName)), ExternalOutbound: @(TransactionCategory.ExternalOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName)), InternalOutbound: @(TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName)), DraftOutbound: @(TransactionCategory.DraftOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName)) };
+
+
+     $(document).on("click", "span[data-node-id]", function () {
+
+        var elemnt = $(this);
+
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('LoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetExternalPartyNodes")',
+                data: { parentId: $(this).data("node-id"), letterId: $("#hdnInboundDocumentType").val(), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+                success:
+               function (data) {
+
+                   $(elemnt).closest('li').children('ul').last().empty()
+
+                   $(elemnt).closest('li').children('ul').last().append(data);
+
+                   if ($(elemnt).attr('data-isRefreshEnabled').toLowerCase() == 'false') {
+
+                       $(elemnt).removeClass("LoadedData")
+
+                   }
+
+               }
+            });
+            }
+            if ($(this).hasClass('fa-plus') && $(this).hasClass('InternalLoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetOrgUnitsNodes")',
+                data: { parentId: $(this).data("node-id"), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+                success:
+               function (data) {
+
+                   $(elemnt).closest('li').children('ul').last().empty()
+
+                   $(elemnt).closest('li').children('ul').last().append(data);
+
+                   $(elemnt).removeClass("InternalLoadedData");
+               }
+            });
+        }
+    });
+            $.validator.setDefaults({ ignore: ".data-val-ignore" });
+
+            $(document).ajaxStart(function () {
+                $("#Loader").show();
+                AllowSend=false;
+
+            });
+
+            $(document).ajaxComplete(function () {
+                $("#Loader").hide();
+
+            });
+        window.onbeforeunload = function (e) {
+            $("#Loader").show();
+        };
+            function PostTransactionLog(actionCode, transactionId) {
+
+                $.ajax({
+                    type: 'post',
+                    url: '@Url.Action("LogTransactionAction")',
+                    data: { auditingActionCode: actionCode, transactionId: transactionId },
+                    success:
+                   function (data) {
+
+                   }
+                })
+            }
+
+            @*var signalROptions = {
+                WebApiUrl: '@( SystemConfigurations.EnableSSL? MCS.UI.UrlHelper.GetBaseUri().ToString().Replace("http://","https://") : MCS.UI.UrlHelper.GetBaseUri().ToString())   '+'-SERVICE',
+                BaseUri: '@MCS.UI.UrlHelper.GetBaseUri()',
+                GetNotificationsUrl: '@Url.Action("GetNotifications", "Shared")',
+                UserId: '@userVM.Id',
+                UserName: '@userVM.LoclizationName.Where(l => l.CultureName == SessionInfo.CultureShortName).FirstOrDefault().Text',
+                OrgUnitId: '@SessionInfo.OrgUnitId',
+                LocalDateTime: new Date().toLocaleString(),
+                NotificationPageSize: 5,
+                PageIndex: 1,
+                MarkAsReadMessage: '@DbRes.TResource("User.Home.MarkAsRead")',
+                ChatTokenUrl: '@Url.Action("GetUserToken", "Chat")',
+                CultureShortName: '@SessionInfo.CultureShortName'
+            };*@
+
+    autosize(document.querySelectorAll('textarea'));
+
+     // confirmation
+        $('.dialog-dashoard').on('click', function () {
+            $.confirm({
+                title: false,
+                theme: 'yasser-theme',
+                content: 'url:callback.html',
+                rtl: true,
+                //icon: 'fa fa-question-circle',
+                animation: 'scale',
+                closeAnimation: 'scale',
+                opacity: 1.0,
+                draggable: true,
+                //type: 'red',
+                closeIcon: true,
+                columnClass: 'col-md-12 col-md-offset-0 col-xs-12 col-xs-offset-0',
+                buttons: {
+                    info: {
+                        text: 'info else',
+                        btnClass: 'btn btn-primary btn-lg mx-1',
+                        keys: ['enter', 'space'],
+                        action: function () { }
+                    },
+                }
+            });
+        });
+
+    $(document).ready(function () {
+       $(".chatbtn").click(function () {
+        $(".carddiv").css("display", "flex");
+        $(".firstcard").fadeIn();
+        $(this).addClass("active_notification");
+    });
+
+    $(".showpopchat").click(function () {
+        if ((screen.width >= 768)) {
+            $(".carddiv").css("width", "50%");
+            $(".sendfield").css("display", "flex");
+            $(".firstcard").css("width", "50%");
+            $(".popchat").fadeIn();
+            $(".purple").css("width", "200%");
+            $(".showpopchat").removeClass("highlight");
+            $(this).toggleClass("highlight");
+            $(".purple .la-close").css("left", "5px");
+        }
+    });
+    $(".purple .la-close").click(function () {
+        if ($(".popchat").css('display') == 'block') {
+            $(".popchat").css("display", "none");
+            $(".carddiv").css("width", "25%");
+            $(".firstcard").css("width", "100%");
+            $(".purple").css("width", "100%");
+            $(".showpopchat").removeClass("highlight");
+
+
+        }
+        else {
+            $(".carddiv").css("display", "none");
+            $("a.chatbtn").removeClass("active_notification");
+        }
+
+    });
+    $(".showpopchat").click(function () {
+        if ((screen.width < 768)) {
+            $(".carddiv").css("width", "100%");
+            $(".sendfield").css("display", "flex");
+            $(".firstcard").css("display", "none");
+            $(".popchat").css("width", "100%");
+            $(".popchat").css("top", "0");
+            $(".popchat").fadeIn();
+            $(".showpopchat").removeClass("highlight");
+            $(this).toggleClass("highlight");
+            $(".card-header2").css("display", "block");
+        }
+    });
+
+        $(".purple2 .fa-times").click(function () {
+            if ($(".popchat").css('display') == 'block') {
+                $(".popchat").css("display", "none");
+                $(".firstcard").css("display", "block");
+                $(".showpopchat").removeClass("highlight");
+
+            }
+            else {
+                $(".carddiv").css("display", "none");
+                $("a.chatbtn").removeClass("active_notification");
+            }
+        });
+
+         $(".help").click(function () {
+        $(".split").toggleClass("appear");
+        $(".panel-left").resizable({
+            resizeHeight: false,
+            handleSelector: ".splitter",
+        });
+         });
+
+    $(".help2").click(function () {
+        $(".split").toggleClass("appear");
+
+    });
+
+    $(".exit").click(function () {
+        $(".split").toggleClass("appear");
+    });
+        $(".full-screen").click(function () {
+            window.open("help.html", "help");
+            $(".split").toggleClass("appear");
+        });
+
+        $(".right-arrow").click(function () {
+    $("div .top-icons").toggleClass("show-icons");
+    $(".right-arrow").toggleClass("la-rotate");
+    $(".right-arrow").toggleClass("left-arrow");
+    $(".la-angle-right").toggleClass("pl-2");
+
+        });
+
+    });
+
+
+
+        function setMenuState() {
+            if ($("body").hasClass("menu-expanded")) {
+                $.cookie('currentMenuState', 'invisible', { path: '/' });
+            }
+            else {
+                $.cookie('currentMenuState', 'visible', { path: '/' });
+            }
+        }
+
+        function getMenuState() {
+            if ($.cookie('currentMenuState') === 'invisible') {
+                $.app.menu.collapse();
+            }
+            else {
+                $.app.menu.expand();
+            }
+        }
+
+    function CallHomePage(id) {
+        var token = $("#frmOrgUnitsList").find("input[name='__RequestVerificationToken']").val();
+        $.ajax({
+            url: '@Url.Action("SetOrgUnit", "Home")',
+            type: 'POST',
+            data: { 'orgUnitId': id, __RequestVerificationToken: token },
+            success: function (data) {
+                location.reload();
+            },
+            error: function (a) {
+            }
+        });
+    }
+
+    function ChangeCulture(name) {
+        $.ajax({
+            url: '@Url.Action("SetCultureName", "Home")',
+            type: 'POST',
+            data: { 'cultureName': name },
+            success: function (data) {
+                window.location.href = data.ReturnUrl;
+            },
+            error: function (a) {
+            }
+        });
+    }
+    function OpenUrlMenu(Url) {
+        window.location.href = Url;
+    }
+    </script>
+</head>
+
+
+<body onload="getMenuState()" class="@(IsSectionDefined("Header") ? "" : "vertical-menu 2-columns menu-flipped fixed-navbar") @(IsSectionDefined("Menu") ? "vertical-layout"  :  "menu-expanded")" data-open="click" data-menu="vertical-menu" data-col="2-columns" dir="rtl">
+
+    @*<body class="vertical-menu 2-columns menu-flipped fixed-navbar @(IsSectionDefined("Menu") ? "vertical-layout menu-collapsed" :  "menu-expanded")" data-open="click" data-menu="vertical-menu" data-col="2-columns" dir="rtl">*@
+    @*<div class="all-panel-container appear split">
+            <div class="panel-container">
+                <div class="panel-right">
+                </div>
+                <div class=" splitter pointer-events: all">
+                </div>
+                <div class="panel-left">
+                    <div class="d-flex m-2">
+                        <i class="la la-close exit align-self-center" data-bs-toggle="tooltip" data-placement="bottom" title="خروج"></i>
+                        <i class="la la-external-link full-screen align-self-center px-2" data-bs-toggle="tooltip" data-placement="bottom" title="فتح في صفحة جديدة"></i>
+                    </div>
+                    <hr>
+                    <div class="help-text ml-3 mr-2">
+                    </div>
+                </div>
+            </div>
+        </div>*@
+
+    @if (IsSectionDefined("Header"))
+    {
+        @RenderSection("Header", false)
+    }
+    else
+    {
+        <div class="fixed-top @(IsSectionDefined("Menu") ? "" :  "no-menu")">
+            <div class="top-header">
+                <div class="mx-3 mx-md-5">
+                    @*<a class="main_logo" href="/GSCSM.UI/User/File/MyTransactions">
+                            <img src="~/Content/User/lib/images/GAMI_Logo_Color-01.svg" />
+                        </a>*@
+                    <div class="d-flex flex-row">
+
+                        <!--<div class="my-3 mx-3 d-flex logo_div">
+                        <a class="main_logo" href="/GSCSM.UI/User/File/MyTransactions">
+                            <img src="~/Content/User/lib/images/GAMI_Logo_Color-01.svg" />-->
+                        <!--</a>
+                        </div>-->
+                        @if (!IsSectionDefined("Menu"))
+                        {
+                            @*<img src="~/Content/Admin/lib/images/logo-white.png" style="max-height:47px" title="" alt="" class="logo-mobile">*@
+                        }
+                        <div class="ml-auto mr-0 align-content-around h-side d-flex flex-nowrap align-content-center align-items-center">
+
+                            <img src="~/Content/User/lib/images/GAMI_Logo_Color-01.svg" class="pb-4 nav-button" width="140" style="position:fixed; right:10px; top:6px;">
+                            @*<a href="@Url.Action("MyTransactions","File")">
+                                    <img src="~/Content/User/lib/images/logo-01.svg" class="pb-4" width="150" style=" position: fixed; right: 270px; top: -9px;">
+                                </a>*@
+                            @*<a href="@Url.Action("MyTransactions","File")">
+                                    <img src="~/Content/User/lib/images/GAMI_Logo_Color-01.svg2.png" class="pb-4" width="150" style=" position: fixed; right: 225px; top: 14px;">
+                                </a>*@
+
+                            @{UserVM user = SessionInfo.CurrentUser;}
+
+
+
+                            <div class="top-icons new-view" style="position:fixed; left:20px; top:25px;">
+                                <div class="d-flex flex-nowrap">
+                                    <div class="px-2">
+                                        <a href="@Url.Action("ConvertLanguage", "Common")" data-bs-toggle="tooltip" data-placement="bottom" title="@DbRes.TResource("User.ConvertLanguage")">
+                                            <i class="la la-globe"></i>
+                                        </a>
+                                    </div>
+                                    @if (SessionInfo.CurrentUser != null)
+                                    {
+                                        <div class="pl-0 pr-0">
+                                            <a href="@Url.Action("Logout", "Login", new { area = "User" })" data-bs-toggle="tooltip" data-placement="bottom" title="@DbRes.TResource("Global.Logout")">
+                                                <i class="la la-power-off"></i>
+                                            </a>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="right-arrow mr-auto">
+                                <i class="la la-angle-right pl-2"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- start of fixed header -->
+
+            @if (SessionInfo.CurrentUser != null)
+            {
+                <nav class="navbar navbar-default navbar-second px-0 px-md-5">
+                    <div class="container-fluid">
+                        <div class="row row-custom">
+                            <div class="navbar-header d-flex">
+                                <div class="ml-auto d-flex">
+                                    <div class="mobile-menu d-md-none ml-auto">
+                                        <a class="nav-link nav-menu-main menu-toggle" href="#">
+                                            <i class="la la-ellipsis-h"></i>
+                                        </a>
+                                    </div>
+                                    <button id="btnTopMenuToggle" type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-expanded="false" aria-controls="navbar">
+                                        <span class="sr-only">Toggle navigation</span>
+                                        <span class="icon-bar"></span>
+                                        <span class="icon-bar"></span>
+                                        <span class="icon-bar"></span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="navbarToggleExternalContent" class="navbar-collapse collapse px-0">
+                                <div id="navbarTopIcons">
+                                    <div class="d-flex top-icons2 h-side">
+                                    </div>
+                                </div>
+                                <ul class="nav navbar-nav header-nav d-md-flex flex-md-nowrap">
+                                    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Admin.AdminOrgUnitStructure) || SessionInfo.CurrentUser.Claims.Contains(UserClaims.Admin.SuperAdministrator))
+                                    {
+                                        <li id="OrgUnitStructure" class="@(controllerName == "OrgUnitStructure" && actionName == "Index" ? "active" : "")">
+                                            <a href='@Url.Action("Index", "OrgUnitStructure")'>@DbRes.TResource("Admin.Layout.OrgStructure")</a>
+                                        </li>
+                                    }
+                                    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Admin.AdminGeneralSettings) || SessionInfo.CurrentUser.Claims.Contains(UserClaims.Admin.SuperAdministrator))
+                                    {
+                                        <li id="SystemSettings" class="@(controllerName == "SystemSettings" && actionName == "GeneralSettings" ? "active" : "")">
+                                            <a href='@Url.Action("GeneralSettings", "SystemSettings")'>@DbRes.TResource("Admin.SystemSetting")</a>
+                                        </li>
+                                    }
+                                    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Admin.AdminLookups) || SessionInfo.CurrentUser.Claims.Contains(UserClaims.Admin.SuperAdministrator))
+                                    {
+                                        <li id="Lookups" class="@(controllerName == "Lookups" && actionName == "AttachmentType" ? "active" : "")">
+                                            <a href='@Url.Action("AttachmentType", "Lookups")'>@DbRes.TResource("Admin.Layout.Lookup")</a>
+                                        </li>
+                                    }
+                                    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Admin.MoveManagement) || SessionInfo.CurrentUser.Claims.Contains(UserClaims.Admin.SuperAdministrator))
+                                    {
+                                        <li id="Actions" class="@(controllerName == "Actions" && actionName == "MoveUser" ? "active" : "")">
+                                            <a href='@Url.Action("MoveUser", "Actions")'>@DbRes.TResource("Admin.Layout.TransfersAction")</a>
+                                        </li>
+                                    }
+                                    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Admin.ManageUsers) || SessionInfo.CurrentUser.Claims.Contains(UserClaims.Admin.SuperAdministrator))
+                                    {
+                                        <li id="User" class="@(controllerName == "User" && actionName == "Index" ? "active" : "")">
+                                            <a href='@Url.Action("Index", "User")'>@DbRes.TResource("Admin.UsersTrays.usersTrays")</a>
+                                        </li>
+                                    }
+                                    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Admin.AdminExternalParties) || SessionInfo.CurrentUser.Claims.Contains(UserClaims.Admin.SuperAdministrator))
+                                    {
+                                        <li id="ExternalParties" class="@(controllerName == "ExternalParties" && actionName == "Index" ? "active" : "")">
+                                            <a href='@Url.Action("Index", "ExternalParties")'>@DbRes.TResource("Admin.ExternalParty.ExternalParty")</a>
+                                        </li>
+                                    }
+                                    @*<li id="Paths" class="@(controllerName == "Paths" && actionName == "Index" ? "active" : "")">
+                                            <a href='@Url.Action("Index" ,"Paths")'>@DbRes.TResource("User.Transaction.Path")</a>
+                                        </li>*@
+                                    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Admin.AdminReleaseNotes) || SessionInfo.CurrentUser.Claims.Contains(UserClaims.Admin.SuperAdministrator))
+                                    {
+                                        <li id="ReleaseNotes" class="@(controllerName == "ReleaseNotes" && actionName == "Index" ? "active" : "")">
+                                            <a href='@Url.Action("Index", "ReleaseNotes")'>@DbRes.TResource("Admin.ReleaseNotes.Title")</a>
+                                        </li>
+                                    }
+                                    @*<li id="ReleaseNotes" class="@(controllerName == "AdminAudit" && actionName == "Index" ? "active" : "")">
+                                            <a href='@Url.Action("Index", "AdminAudit")'>سجل مدير النظام</a>
+                                        </li>*@
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+            }
+
+        </div>
+    }
+
+    @RenderSection("Menu", false)
+
+    <div class="app-content content">
+        @RenderSection("Body", false)
+    </div>
+
+    @*@Html.Partial("~/Areas/User/Views/Shared/_ChatCollaboration.cshtml")*@
+    <style>
+
+
+
+        .d-flex-responsive {
+            position: relative;
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-wrap: wrap;
+            flex-wrap: wrap;
+            -ms-flex-align: stretch;
+            align-items: stretch;
+            width: 100%;
+        }
+
+            .d-flex-responsive .stretch-side {
+                position: relative;
+                -ms-flex: 1 1 0%;
+                flex: 1 1 0%;
+                min-width: 0;
+            }
+    </style>
+    <script type="text/javascript" src="~/Content/Admin/lib/plugins/vertical-menu/vendors.min.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/plugins/vertical-menu/app-menu.min.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/plugins/vertical-menu/app.min.js"></script>
+    @if (!string.IsNullOrWhiteSpace(ViewBag.MessageToShow))
+    {
+        @:ShowErrorMessage(@ViewBag.MessageToShow);
+    }
+    <script>
+
+
+    </script>
+</body>
+</html>
+

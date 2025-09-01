@@ -1,0 +1,375 @@
+﻿@using MCS.UI.Areas.User.Models;
+@using MCS.UI.Areas.User.Models.Transaction;
+@using MCS.Framework.Localization;
+@using MCS.Common;
+@using MCS.UI.Common
+@using MCS.UI.Areas.User.Models.Assignment;
+@using MCS.UI.Helpers
+
+
+@model EditorViewModel
+@{
+    bool isExternal = TransactionCategory.ExternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, null) == Model.TransactionBasicInfoVM.TransactionCategoryId;
+    bool isVIP = (bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser);
+    ViewBag.Title = "Index";
+    if (!isVIP)
+    {
+        Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Areas/User/Views/Shared/_VIPLayout.cshtml";
+    }
+
+
+    var copyVM = new TransactionCopyVM
+    {
+        Copies = (AjaxGrid<TransactionCopyVM>)new AjaxGridFactory().CreateAjaxGrid(Model.TransactionCopyVM.Copies, 1, Model.TransactionCopyVM.Copies.Count, false)
+    };
+    var followUpVM = new TransactionFollowUpVM() { FollowUps = (AjaxGrid<TransactionFollowUpVM>)new AjaxGridFactory().CreateAjaxGrid(Model.FollowUps, 1, Model.FollowUps.Count, false) };
+    followUpVM.IsCopy = true;
+    string transactionId = ViewData["TransactionId"].ToString();
+    var archivesVm = new TransactionArchiveVM { Archives = (AjaxGrid<TransactionArchiveVM>)new AjaxGridFactory().CreateAjaxGrid(Model.Archives, 1, Model.Archives.Count, false) };
+    var linksVm = new TransactionLinkVM { Links = (AjaxGrid<TransactionLinkVM>)new AjaxGridFactory().CreateAjaxGrid(Model.TransactionBasicInfoVM.Links, 1, Model.TransactionBasicInfoVM.Links.Count, false) };
+
+    var doconutIframeUrl = UIConfigurations.GetFullURl() + string.Format("{0}?sIncludedItemDoc=true&hidecontrols=true&hideAllcontrols=true&showwatermark={1}", SystemConfigurations.DoconutIframeUrl, "true");
+        bool isEditMode = false;
+    Session["IsEditMode"] = isEditMode;
+}
+<script src="~/Scripts/grid/gridmvc.js"></script>
+<script src="~/Scripts/grid/gridmvc-ext.js"></script>
+<script src="~/Scripts/Transaction.js"></script>
+
+<script>
+    var archiveMode = '@isEditMode';
+</script>
+<div style="direction:ltr; padding-left:3rem;padding-top:3rem;">
+    <a href="#" onclick="NavigateToCopy(@transactionId, true)" data-bs-toggle="tooltip" data-placement="bottom" title="التالي">
+        <input class="btn-site" type="button" value="التالي">
+    </a>
+    <a href="#" onclick="NavigateToCopy(@transactionId, false)" data-bs-toggle="tooltip" data-placement="bottom" title="السابق">
+        <input class="btn-site" type="button" value="السابق">
+    </a>
+</div>
+<div class="white-container mx-md-5 mx-3">
+    @*<div class="content_container content_container--body transparent-bg mt-5">
+            <div class="options-list row anchor">
+                <a class="close-box close-box--sticky" href="@Url.Action("Copies" , "File")"><i class="uicon icon_close"></i></a>
+                <div class="col-xs-4 col-sm-2 text-center" id="basicInfor">
+                    <a href="#" id="first" class="boardered-circle-transparent active" data-divid="first-tab"><i class="uicon icon_folder1"></i></a>
+                    <a href="#" data-id="first" data-divid="first-tab">  @DbRes.TResource("User.Editor.BasicInfo")</a>
+                </div>
+
+                <div class="col-xs-4 col-sm-2 text-center" id="transactionAttachment">
+                    <a href="#" id="second" class="boardered-circle-transparent" data-divid="second-tab"><i class="uicon icon_folder2"></i></a>
+                    <a href="#" data-id="second" data-divid="second-tab"> @DbRes.TResource("User.Editor.Explanations")</a>
+                </div>
+
+                <div class="col-xs-4 col-sm-2 text-center" id="electronicCopies">
+                    <a href="#" id="third" class="boardered-circle-transparent" data-divid="third-tab"><i class="uicon icon_folder4"></i></a>
+                    <a href="#" data-id="third" data-divid="third-tab"> @DbRes.TResource("النسخ الالكترونية")</a>
+                </div>
+                <div class="col-xs-4 col-sm-2 text-center" id="assigmentpaper">
+                    <a href="#" id="third" class="boardered-circle-transparent" data-divid="forth-tab"><i class="uicon icon_folder3"></i></a>
+                    <a href="#" data-id="third" data-divid="third-tab"> @DbRes.TResource("User.File.AssignmentPaper")</a>
+                </div>
+                <div class="col-xs-4 col-sm-2 text-center" id="followup">
+                    <a href="#" id="sixth" class="boardered-circle-transparent" data-divid="sixth-tab"><i class="uicon icon_folder3"></i></a>
+                    <a href="#" data-id="sixth" data-divid="sixth-tab"> @DbRes.TResource("User.Inbound.FollowUp")</a>
+                </div>
+            </div>
+        </div>*@
+
+    @Html.Hidden("hdnCurrentTransactionId", ViewData["TransactionId"], new { @id = "hdnTransactionId" })
+    <div class="" id="ArchivingPartial">
+        @Html.Partial("~/Areas/User/Views/Editor/EditorInbound/_InboundBasicInfoPartial.cshtml", Model.TransactionBasicInfoVM)
+        <hr />
+        @if (Model.EditorType == EditorType.Scanning)
+        {
+            Html.ViewData.TemplateInfo.HtmlFieldPrefix = null;
+            @Html.Partial("~/Areas/User/Views/Transaction/_ArchivingPartialMainDocument.cshtml", new TransactionArchiveVM(TransactionAttachmentType.Main, true, false, true, bReadOnly: true), Html.ViewData)
+        }
+        else if (Model.EditorType == EditorType.TextEditor)
+        {
+            @Html.Partial("~/Areas/User/Views/Transaction/_EditorPartial.cshtml", ViewData["EditorViewModel"], Html.ViewData)
+        }
+
+        <div id="dvScanningArchiving" style="display:none">
+            <div id="dvDocumentViewerEditorContainerArchiving" class="">
+
+                <iframe src="@doconutIframeUrl" class="col-md-12" style="height:500px" id="frameViewerAttachmentForArchiving"></iframe>
+
+            </div>
+        </div>
+    </div>
+    @if (@Model.TransactionCopyVM.OprEntityName != null)
+    {
+
+        <div class="pl-5 Editor-div">
+            <div class="gray3">@DbRes.TResource("User.Editor.BasicInfo.Inbound.Destination") </div>
+            <div class="date-value Editor-lable">
+                @Model.TransactionCopyVM.OprEntityName
+            </div>
+        </div>
+    }
+    @if (!isExternal)
+    {
+        <div class="extraOption col-lg-12 c0l-md-6 col-xs-12 m-3">
+            <h4>
+                <a role="button" style="display:flex">
+                    <span onclick="CollapseDiv('transactionAttachment'); return false;" style="cursor: pointer;">
+                        <img src="~/Content/User/lib/images/plus-icon.svg" id="transactionAttachmentPlusIcon" width="25" />
+                        <img src="~/Content/User/lib/images/Dash-icon.svg" id="transactionAttachmentDashIcon" width="25" style="display: none;" />
+                    </span>
+                    <span class="ml-3 mt-1">@DbRes.TResource("User.Editor.Explanations")</span>
+                </a>
+            </h4>
+            <div role="tabpanel" class="tab-pane" id="transactionAttachment" style="display:none">
+                <div>
+                    @{Html.ViewData.TemplateInfo.HtmlFieldPrefix = "EditorExplanations";}
+                    @Html.Partial("~/Areas/User/Views/Editor/Explanations/_ExplanationReadWritePartial.cshtml", new ExplanationVM() { isCopies = true }, Html.ViewData)
+                </div>
+            </div>
+        </div>
+    }
+
+
+    <div class="extraOption col-lg-12 c0l-md-6 col-xs-12 m-3">
+        <h4>
+            <a role="button" style="display:flex">
+                <span onclick="CollapseDiv('electronicCopies'); return false;" style="cursor: pointer;">
+                    <img src="~/Content/User/lib/images/plus-icon.svg" id="electronicCopiesPlusIcon" width="25" />
+                    <img src="~/Content/User/lib/images/Dash-icon.svg" id="electronicCopiesDashIcon" width="25" style="display: none;" />
+                </span>
+                <span class="ml-3 mt-1">@DbRes.TResource("User.Trays.ElecCopies")</span>
+            </a>
+        </h4>
+        @using (Html.BeginForm("AddTransactionCopy", "Editor", FormMethod.Post, new { id = "CopiesEditorForm" }))
+        {
+            @Html.AntiForgeryToken()
+            <div role="tabpanel" class="tab-pane" id="electronicCopies" style="display:none">
+                <div>
+                    @Html.Partial("~/Areas/User/Views/Editor/Copies/_CopiesPartial.cshtml", copyVM, Html.ViewData)
+                </div>
+                <div class="content_container content_container--footer">
+                    <div class="row">
+                        <div class="col-xs-12 text-center">
+                            @Html.ConfirmAction(OperationType.Save, "btnSaveCopies", DbRes.TResource("User.Inbound.Edit"), Url.Action("AddTransactionCopy", "Editor"), null, null, null, "OnSuccess", null, DbRes.TResource("User.Inbound.SaveMessage"), "post", "CopiesEditorForm", "CopiesEditor", "btn btn-save btn-site", "", UserClaims.Inbound.EditInbound)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @Html.StickyHidden("hdntransactionId", ViewData["TransactionId"].ToString())
+            @Html.Hidden("hdnTrayId", (int)TrayType.Copies, new { id = "hdnTrayId" })
+        }
+    </div>
+
+    @*<div class="extraOption col-lg-12 c0l-md-6 col-xs-12 m-3">
+        <h4>
+            <a role="button" style="display:flex">
+                <span onclick="CollapseDiv('assigmentpaper'); return false;" style="cursor: pointer;">
+                    <img src="~/Content/User/lib/images/plus-icon.svg" id="assigmentpaperPlusIcon" width="25" />
+                    <img src="~/Content/User/lib/images/Dash-icon.svg" id="assigmentpaperDashIcon" width="25" style="display: none;" />
+                </span>
+                <span class="ml-3 mt-1">@DbRes.TResource("User.File.AssignmentPaper")</span>
+            </a>
+        </h4>
+        <div role="tabpanel" class="tab-pane" id="assigmentpaper" style="display:none">
+            <div>
+                @{ViewData.TemplateInfo.HtmlFieldPrefix = "EditorAssignmentPaper";}
+                @if (SessionInfo.CurrentUser.DefaultAssignmentPaper == false)
+                {
+                    @Html.Partial("~/Areas/User/Views/Editor/AssignmentPaper/_AssignmentPaperCopisOnlyPartialNew.cshtml", new TransactionAssignmentVM(), Html.ViewData)
+                }
+                else
+                {
+                    @Html.Partial("~/Areas/User/Views/Editor/AssignmentPaper/_AssignmentPaperPartialNewCopis.cshtml", new TransactionAssignmentVM { ToOrgUnitId = SessionInfo.OrgUnitId }, Html.ViewData)
+                }
+            </div>
+        </div>
+    </div>*@
+    @if (!isExternal)
+    {
+        <div class="extraOption col-lg-12 c0l-md-6 col-xs-12 m-3">
+            <h4>
+                <a role="button" style="display:flex">
+                    <span onclick="CollapseDiv('followup'); return false;" style="cursor: pointer;">
+                        <img src="~/Content/User/lib/images/plus-icon.svg" id="followupPlusIcon" width="25" />
+                        <img src="~/Content/User/lib/images/Dash-icon.svg" id="followupDashIcon" width="25" style="display: none;" />
+                    </span>
+                    <span class="ml-3 mt-1">@DbRes.TResource("User.Inbound.FollowUp")</span>
+                </a>
+            </h4>
+            <div id="followup" style="display:none">
+                @using (Html.BeginForm("AddFollowUp", "Editor", FormMethod.Post, new { id = "EditorFollowUpForm", role = "tabpanel", @class = "tab-pane" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div>
+                        @Html.Partial("~/Areas/User/Views/Editor/FollowUp/_FollowUpPartial.cshtml", followUpVM)
+                    </div>
+                }
+            </div>
+        </div>
+    }
+    <div id="dvArchivingGrid" hidden>
+        @Html.Partial("~/Areas/User/Views/Transaction/_ArchivingGridPartial.cshtml", archivesVm.Archives)
+    </div>
+    <div id="dvLinksGrid" hidden>
+        @Html.Partial("~/Areas/User/Views/Shared/_LinksGridPartial.cshtml", linksVm.Links)
+    </div>
+
+    @*<div class="tabscontent" id="second-tab">
+            <div class="content_container content_container--body white-bg panel-body">
+                @{Html.ViewData.TemplateInfo.HtmlFieldPrefix = "EditorExplanations";}
+                @Html.Partial("~/Areas/User/Views/Editor/Explanations/_ExplanationReadWritePartial.cshtml", new ExplanationVM() { isCopies = true }, Html.ViewData)
+            </div>
+        </div>*@
+    @*@using (Html.BeginForm("AddTransactionCopy", "Editor", FormMethod.Post, new { id = "CopiesEditorForm" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="tabscontent" id="third-tab">
+                <div class="content_container content_container--body white-bg">
+                    @Html.Partial("~/Areas/User/Views/Editor/Copies/_CopiesPartial.cshtml", copyVM, Html.ViewData)
+                </div>
+                <div class="content_container content_container--footer">
+                    <div class="row">
+                        <div class="col-xs-12 text-center">
+                            @Html.ConfirmAction(OperationType.Save, "btnSaveCopies", DbRes.TResource("User.Inbound.Edit"), Url.Action("AddTransactionCopy", "Editor"), null, null, null, "OnSuccess", null, DbRes.TResource("User.Inbound.SaveMessage"), "post", "CopiesEditorForm", "CopiesEditor", "btn btn-save btn-site", "", UserClaims.Inbound.EditInbound)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @Html.StickyHidden("hdntransactionId", ViewData["TransactionId"].ToString())
+            @Html.Hidden("hdnTrayId", (int)TrayType.Copies, new { id = "hdnTrayId" })
+        }*@
+    @*<div class="tabscontent" id="forth-tab">
+
+            <div class="content_container content_container--body white-bg">
+                @{ViewData.TemplateInfo.HtmlFieldPrefix = "EditorAssignmentPaper";}
+                @Html.Partial("~/Areas/User/Views/Editor/AssignmentPaper/_AssignmentPaperCopisOnlyPartialNew.cshtml", new TransactionAssignmentVM(), Html.ViewData)
+
+            </div>
+        </div>*@
+    @*<div class="tabscontent" id="sixth-tab">
+
+            <div class="content_container content_container--body white-bg">
+                @using (Html.BeginForm("AddFollowUp", "Editor", FormMethod.Post, new { id = "EditorFollowUpForm", role = "tabpanel", @class = "tab-pane" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div>
+                        @Html.Partial("~/Areas/User/Views/Editor/FollowUp/_FollowUpPartial.cshtml", followUpVM)
+                    </div>
+                }
+            </div>
+        </div>*@
+</div>
+
+<script>
+    $(document).ready(function () {
+        debugger;
+        AppendArchives();
+    });
+
+
+    function ViewedTransaction()
+    {
+
+        var trayid = parseInt($("#hdnTrayId").val());
+        var page = $("#hdnCurrentPage").val();
+        var orderBy = $("#hdnOrderBy").val();
+        var dir = $("#hdnDirection").val();
+        var filter = $("#hdnFilter").val();
+        var fromDate = $("#hdnFromDateValue").val();
+        var toDate = $("#hdnToDateValue").val();
+        var number = $("#hdnSearchTransactionNumberValue").val();
+        var viewType = $("#hdnViewFile").val();
+        var dateType = $("#hdnFilterDateType").val();
+        var transactionId = $(_this).data("id");
+        var transactionTypeId = $(_this).data("tray");
+        var trayActionType = $(_this).data("type");
+        var PageSize = $("#ddlPaging").val();
+          var url2 = '@Url.Action("MoveTransaction","File")';
+        var copyType = 0;
+
+        if (transactionTypeId == @(TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName))|| transactionTypeId == @(TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName))) {
+            copyType = @((int)TrayType.Copies);
+        }
+        else if ((transactionTypeId == @(TransactionCategory.DraftOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName)) || transactionTypeId == @(TransactionCategory.ExternalOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName)))) {
+            copyType = @((int)TrayType.CopiesOutbound);
+        }
+
+        var data = {
+            trayId: trayid, page: page, gridColumn: orderBy, dir: dir, filter: filter, fromDate: fromDate,
+            toDate: toDate, searchColumn: number, viewType: viewType, transactionId: transactionId, trayActionType: trayActionType,
+            dateType: dateType, pageSize: PageSize
+        };
+        $.ajax({
+            url: url2,
+            type: 'post',
+            data: data,
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    UpdateMenuFileInformation('@Url.Action("GetMenuFile", "Shared")');
+                    window.location.href = '@Url.Action("Copies", "File")';
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+
+            },
+            error: function (a) {
+
+                alert(a)
+            }
+        });
+
+    }
+
+
+    $(".aMarkSeen").unbind('click').click(function (e) {
+        e.preventDefault();
+        _this = this;
+        ShowConfirmMessage('@(DbRes.TResource("User.File.View"))', "ViewedTransaction");
+    });
+
+
+
+    $("div.anchor a").click(function () {
+        $("div.anchor a").removeClass("active");
+        $("div.anchor a").addClass("disabled");
+        $(this).addClass("active");
+        var id = $(this).data("id");
+        $("#" + id).addClass("active");
+        $(".tabscontent").addClass("hidden_");
+
+        var divId = $(this).data("divid");
+        $("#" + divId).removeClass("hidden_");
+    });
+
+    function OnSuccess(data) {
+        if (data.MessageType != 2) {
+            ShowSuccesMessage(data.MessageText);
+        }
+    }
+
+     function GetAllReporter() {
+        $.ajax({
+            cache: false,
+            type: 'get',
+            url: '@Url.Action("GetReporters")',
+            success: function (data) {
+                AutoCompleteChangeList("ddlBasicReporter", data);
+                AutoCompleteChangeList("ddlBasicReporterAssinment", data);
+                AutoCompleteChangeList("ddlAssignmentPaperReporter", data);
+                AutoCompleteChangeList("ddlRejectBasicReporter", data);
+                var newItems = $.parseJSON(data);
+                var lastItem = newItems.slice(-1)[0].value;
+                $('#hdnBasicReporter').val(lastItem);
+                $('#hdnBasicReporter').trigger('change')
+            }
+        });
+        }
+
+
+
+</script>

@@ -1,0 +1,17 @@
+﻿@model AjaxGrid<MCS.UI.Areas.User.Models.Assignment.TransactionAssignmentVM>
+
+@{string controller = ViewData["ControllerName"] != null ? ViewData["ControllerName"].ToString() : ViewContext.RouteData.Values["controller"].ToString();}
+@{int index = 0;}
+@Html.Grid(Model).Named("grdEditorAssignmentIndividual").Columns(columns =>
+{
+columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").Titled("", "<input type='checkbox' id='chkall'></input>").RenderValueAs(o =>@<div class="chkCol" id="spanCheckBox"><input id="AssigneeSelectorcheckbox" type="checkbox" />  </div>);
+columns.Add(true).RenderValueAs(m => (index++).ToString());
+columns.Add(model => model.ToOrgUnitName).Titled(DbRes.TResource("User.Transaction.Assignment.ToOrgUnitId"));
+columns.Add(model => model.ToUserName).Titled(DbRes.TResource("User.Transaction.Assignment.ToUserId"));
+columns.Add(model => model.ActionName).Titled(DbRes.TResource("User.Transaction.Assignment.ActionId"));
+columns.Add(model => model.DeliveryMethod).Titled("طريقة التسليم");
+columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => @Html.GridImageButton(Url.Action("GetEditorAssignmentIndividual", controller), "grdEditorAssignmentIndividual", 1, OperationType.Update, "dvEditorAssignmentIndividualBody", "dvEditorAssignmentIndividual :input", null, "OnGetEditorIndividualSuccess", "", "post")).Titled(DbRes.TResource("Grid.Edit"));
+columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => Html.ConfirmImageButton(Url.Action("DeleteEditorAssignmentIndividuals", controller), "grdEditorAssignmentIndividual", 1, "dvEditorAssignmentIndividualGrid", "dvEditorAssignmentIndividual :input", null, "OnDeleteEditorIndividualSuccess", null, "post", DbRes.TResource("Grid.DeleteMassage"))).Titled(DbRes.TResource("Grid.Delete"));
+}).WithPaging(GridHelper.PageSize).Sortable().Filterable().WithMultipleFilters().UpdateActionUrl(Url.Action("UpdateGridEditorAssignmentIndividual", controller)).RenderDeleteButton(Url.Action("DeleteEditorAssignmentIndividuals", controller), 1, "dvEditorAssignmentIndividual :input", "dvEditorAssignmentIndividualGrid", "OnDeleteEditorIndividualSuccess")
+
+

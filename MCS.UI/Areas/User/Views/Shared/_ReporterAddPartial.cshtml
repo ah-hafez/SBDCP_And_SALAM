@@ -1,0 +1,67 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models
+@using MCS.UI.Areas.User.Models.Lookups
+@{
+    Layout = "~/Views/Shared/_DialogLayout.cshtml";
+}
+@model ReporterVM
+<div class="content-rtl panel panel-default dialogbox_panel">
+    <div class="panel-heading">
+        <h3 class="title2">@DbRes.TResource("User.Transaction.Outbound.Reporter")</h3>
+    </div>
+    <div class="modal-body">
+        <div class="panel-body">
+            <div class="row">
+                @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmAddReporter", @class = "form-horizontal" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                @{List<CultureVM> cultureVMs = ViewData["Culture"] as List<CultureVM>;}
+                                @if (cultureVMs != null)
+                                {
+                                    for (int i = 0; i < cultureVMs.Count; i++)
+                                    {
+                                        <div class="form-group">
+                                            @Html.CustomLabelFor(model => model.Names[i].CultureName, new { @class = "m-100", @maxlength = "100" }, DbRes.TResource("Admin.UserCategory.Categories." + cultureVMs[i].ShortName))<span class="stark">*</span>
+                                            @Html.StickyHiddenFor(model => model.Names[i].CultureId, new { Value = cultureVMs[i].Id })
+                                            <div>
+                                                @Html.TextBoxGroupFor(model => model.Names[i].Text, "ValidationReporterForm", new { @class = "Name form-control" }, DbRes.TValidation("Admin.UserCategory.NameRequired." + cultureVMs[i].ShortName))
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                                <div class="form-group mb-3">
+
+                                    @Html.Label(DbRes.TResource("User.InboundAdvancedSearch.Department"), new { @class = "col-md-4 m-100" })
+                                    <div>
+                                        @Html.TextBox("txtDepartment", SessionInfo.OrgUnitInfo.Name, new { @class = "form-control", maxlength = "12", @disabled = "disabled" })
+                                        @Html.HiddenGroupFor(model => model.LocalName, new { @Value = SessionInfo.OrgUnitInfo.Name, id = "hdnLocalName" }, "")
+                                        @Html.StickyHidden("StickyHiddenLocalName", SessionInfo.OrgUnitInfo.Name)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-xs-12">
+                                <div class="mt-2 text-danger pull-left">
+                                    <p class="stark">@DbRes.TResource("Admin.User.MustFill") * </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-footer middle">
+                        @Html.ActionButton(DbRes.TResource("Admin.UserCategory.Save"), Url.Action("AddReporter", "Shared").ToString(), "dvGrid", null, null, "OnAddReporterSuccess", null, "post", "ValidationReporterForm", "btnAddUserCategory", "frmAddReporter", "btn-site pull-right")
+                        <a class="btn-site " id="aCancelReporter" onclick="CancelAdd(); return false;">@DbRes.TResource("Global.ResetButton")</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function CancelAdd() {
+        $("#Names_1__Text").val("");
+        $("#Names_0__Text").val("");
+        $("#txtDepartment").val($("#StickyHiddenLocalName").val());
+    }
+</script>

@@ -1,0 +1,88 @@
+﻿@using MCS.UI.Areas.User.Models.Report;
+@model SentTransactionReportResult
+<div class="content_container">
+    <div class="content_container content_container--header">
+        <div class="d-flex flex-column flex-lg-row">
+            <div class="mr-auto filter-link">
+                <h3 class="site-color ml-3">@DbRes.TResource("User.Reports.ReportsResualt")</h3>
+            </div>
+        </div>
+        <div class="white-container">
+            @Html.Partial("_TransactionBasicResultPartial", Model.TransactionBasicResultVM)
+            <div class="row m-0">
+                <div class="col-xs-12">
+                    @Html.Partial("_SentTransactionStatusGridResultPartial", Model.TransactionGridResultVMs, ViewData)
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="text-right panel-body">
+        @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Reports.PrintReports))
+        {
+            <button id="TransactionPrint" class="btn btn-st1 btn-lg" onclick="PrintTransactionReport()"><i class="la la-print"></i> @DbRes.TResource("User.Transaction.Reports.Prints")</button>
+        }
+        @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Reports.SaveReports))
+        {
+            <button class="btn btn-st1 btn-lg" onclick="ExportTransactionReportToPdf()"><i class="la la-file-pdf-o"></i> @DbRes.TResource("User.Transaction.Reports.Export")</button>
+        }
+    </div>
+</div>
+<script>
+
+    var token = $("#FormTransactionSearch").find("input[name='__RequestVerificationToken']").val();
+    function PrintTransactionReport() {
+        event.preventDefault();
+        var searchCriteriaData = JSON.parse(JSON.stringify(searchCriteria.data));
+        searchCriteriaData.push({ name: 'TotalCount', value: $('#TotalCount').val() });
+        searchCriteriaData.push({ name: 'IsPrint', value: true });
+        searchCriteriaData.push({ name: '__RequestVerificationToken', value: token });
+
+        $.ajax({
+            type: "post",
+            url: '@Url.Action("SentTransactionStatusSearch", "Reports")',
+            data: searchCriteriaData,
+            cache: false,
+            success:
+                function (data) {
+                    if (data.MessageType != 2) {
+                        var TransactionReportWindow = window.open('', '_blank', 'width=900,height=500');
+
+                        TransactionReportWindow.document.write(data.Html);
+                        TransactionReportWindow.document.close();
+                        TransactionReportWindow.focus();
+
+                        setTimeout(function () {
+                            TransactionReportWindow.print();
+                            TransactionReportWindow.close();
+                        }, 2000);
+                    }
+                    else {
+                        ShowErrorMessage(data.MessageText);
+                    }
+                }
+        });
+    }
+    function ExportTransactionReportToPdf() {
+        event.preventDefault();
+        var searchCriteriaData = searchCriteria.data;
+        searchCriteriaData.push({ name: 'TotalCount', value: $('#TotalCount').val() });
+        searchCriteriaData.push({ name: '__RequestVerificationToken', value: token });
+        $.ajax({
+            type: "post",
+            url: '@Url.Action("SentTransactionExportToPdf", "Reports")',
+            data: searchCriteriaData,
+            cache: false,
+            success: function (data) {
+                if (data) {
+                    if (data.MessageType != 2) {
+                        var url = '@Url.Action("Download", "Reports")';
+                        window.location.href = url + '?fileGuid=' + data.FileGuid + '&filename=' + data.FileName;
+                    }
+                    else {
+                        ShowErrorMessage(data.MessageText);
+                    }
+                }
+            }
+        });
+    }
+</script>

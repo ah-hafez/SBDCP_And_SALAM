@@ -1,0 +1,48 @@
+﻿@using MCS.Framework.Localization
+@model MCS.UI.Areas.Admin.Models.OrgUnit.AssignmentPaperActionVM
+
+<script>
+    $(document).on('focusout', '#ddlAssignmentPaperAction', function () {
+
+        $('#hdnAssignmentPaperActionsText').val($('#ddlAssignmentPaperAction').val());
+    });
+</script>
+
+@using (Html.BeginForm("OrgUnitAddAction", "OrgUnitStructure", FormMethod.Post, new { id = "frmAssignmentPaperActions" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.StickyHidden("orgUnitKey", ViewData["OrgUnitKey"].ToString());
+    @Html.StickyHidden("departmentsStructure", null, new { id = "hdnActionsDepartmentsStructure" });
+    <script>
+        $('#hdnActionsDepartmentsStructure').val($('#hdnSaveDepartmentsData').val());
+    </script>
+    <legend>@DbRes.TResource("Admin.AssignmentPaperActions.Actions")</legend>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label class="col-md-2 control-label">@DbRes.TResource("Admin.AssignmentPaperActions.Action")</label>
+                    <div class="col-md-10">
+                        @Html.AutoCompleteBuilder("ddlAssignmentPaperAction", "hdnAssignmentPaperActions", Newtonsoft.Json.JsonConvert.SerializeObject(ViewData["ActionData"]).ToString(), null, true, "form-control")
+                        @Html.Hidden("descriptionText", null, new { id = "hdnAssignmentPaperActionsText" })
+                        @Html.HiddenGroupFor(model => model.ActionId, new { id = "hdnAssignmentPaperActions", @Value = "" }, "AssignmentPaperActions")
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel-footer middle">
+        @Html.ActionButton(DbRes.TResource("Admin.AssignmentPaperActions.Add"), "AssignmentPaperAddAction", null, null, null, "ActionsSuccess", null, "post", "AssignmentPaperActions", "btnAddAction", "frmAssignmentPaperActions", "btn btn-permissions pull-right")
+    </div>
+}
+
+
+
+
+
+
+
+
+
+

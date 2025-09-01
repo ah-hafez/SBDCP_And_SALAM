@@ -1,0 +1,23 @@
+﻿@using MCS.Framework.Controls.Mvc
+@using MCS.Framework.Localization
+@model AjaxGrid<MCS.UI.Areas.Admin.Models.Groups.GroupVM>
+
+@{
+    ViewBag.Title = "_ActionGridPartial";
+    Layout = null;
+}
+@Html.Grid(Model, "_Grid").Named("Groups").Columns(columns =>
+    {
+        columns.Add().Encoded(false).Sanitized(false).Css("fixed_col")
+                     .Titled("", "<input type='checkbox' id='chkall'></input>")
+                     .RenderValueAs(o =>
+                        @<div class="chkCol" id="spanCheckBox">
+                            <input id="AssigneeSelectorcheckbox" type="checkbox" />
+                        </div>);
+        columns.Add(model => model.Id, true);
+        columns.Add(model => model.LocalName, "GroupName").Titled(DbRes.TResource("Admin.Permissions.GroupName"));
+
+        columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => @Html.GridImageButton("GetGroup", "Groups", 1, OperationType.Update, "divEdit", null, null, "ShowEditDiv", "", "get"));
+        columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => @Html.GridImageButton("DeleteGroup", "Groups", 1, OperationType.Delete, "divGrid", null, null, "OnEditSuccess", "", "post"));
+
+    }).WithPaging(GridHelper.PageSize).Sortable().Selectable(false).Filterable().UpdateActionUrl(Url.Action("UpdateGroupsGrid", "Permissions")).RenderDeleteButton("DeleteGroup", 1, "", "divGrid", "OnEditSuccess")

@@ -1,0 +1,30 @@
+﻿@{
+    Layout = null;
+}
+@model MCS.Common.TreeViewModel
+
+@{
+    string containerName = "treeDirectedToOrgUnit";
+    string checkboxFunction = "CheckboxChange";
+    string additionalClass = "";
+    if (ViewData["containerName"] != null)
+    {
+        containerName = ViewData["containerName"].ToString();
+    }
+    if (ViewData["checkboxFunction"] != null)
+    {
+        checkboxFunction = ViewData["checkboxFunction"].ToString();
+    }
+    if (ViewData["additionalClass"] != null)
+    {
+        additionalClass = ViewData["additionalClass"].ToString();
+    }
+
+    string onClickFunc = "GetDirectedToUsersByOrgUnitId";
+    if (ViewData["onClickFunc"] != null)
+    {
+        onClickFunc = ViewData["onClickFunc"].ToString();
+    }
+}
+
+@Html.DepartmentsTreeNodeCheckbox(Model.RootNode, "DirectedToOrgUnitId", Model.Mode, containerName, onClickFunc, checkboxFunction, additionalClass)

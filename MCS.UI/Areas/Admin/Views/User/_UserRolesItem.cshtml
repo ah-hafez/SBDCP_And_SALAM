@@ -1,0 +1,19 @@
+﻿@model MCS.DTO.UserGroupDTO
+@using (Html.BeginCollectionItem("UserGroups"))
+{
+    <div class='added_item mr-4 mb-3' id='RoleBox_@Model.GroupId'>
+        <span class='added-class d-flex'>
+            <span> @Model.UserName </span>
+            <a onclick='deleteRoleBox(@Model.GroupId)' class='color-burgundy ml-2'><i class='icon-tables-delete'></i></a>
+        </span>
+    </div>
+
+    @Html.HiddenFor(m => m.GroupId)
+}
+<script>
+    $(document).ready(function () {
+       
+        selectedRoles.push("@Model.GroupId");
+        $("#selectedRoles").val(selectedRoles.join(','));
+    });
+</script>

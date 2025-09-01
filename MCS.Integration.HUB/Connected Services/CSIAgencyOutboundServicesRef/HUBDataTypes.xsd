@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns="http://yefi.gov.sa/CSIHUBDataTypes/xml/schemas/version1.0" xmlns:b="http://schemas.microsoft.com/BizTalk/2003" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://yefi.gov.sa/CSIHUBDataTypes/xml/schemas/version1.0" id="HUBDataTypes" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:simpleType name="MsgType_Enum">
+    <xs:annotation>
+      <xs:documentation>Defines the known values for the Msg Type Enum</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="NC32_Type">
+      <xs:enumeration value="OUTBOUND" />
+      <xs:enumeration value="STATUSINQUIRY" />
+      <xs:enumeration value="REJECT" />
+      <xs:enumeration value="OUTBOUNDCONFIRM" />
+      <xs:enumeration value="PKUPDATE" />
+      <xs:enumeration value="OSUPDATE" />
+      <xs:enumeration value="ACTUPDATE" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="Msg_Type">
+    <xs:annotation>
+      <xs:documentation>Msg_Type enum represents the business type of the message</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="MsgType_Enum" />
+  </xs:simpleType>
+  <xs:simpleType name="MsgPriority_Enum">
+    <xs:annotation>
+      <xs:documentation>Defines the known values for the Msg Priority Enum, these should be provided by NCDA; the below are just samples</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="NC32_Type">
+      <xs:enumeration value="L" />
+      <xs:enumeration value="N" />
+      <xs:enumeration value="H" />
+      <xs:enumeration value="C" />
+      <xs:enumeration value="I" />
+      <xs:enumeration value="BH" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="Msg_Priority">
+    <xs:annotation>
+      <xs:documentation>Msg_Type enum represents the priority of the message</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="MsgPriority_Enum" />
+  </xs:simpleType>
+  <xs:simpleType name="MsgSecrecy_Enum">
+    <xs:annotation>
+      <xs:documentation>Defines the known values for the Msg Secrecy Enum, these should be provided by NCDA; the below are just samples</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="NC32_Type">
+      <xs:enumeration value="S" />
+      <xs:enumeration value="TS" />
+      <xs:enumeration value="N" />
+      <xs:enumeration value="NN" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="Msg_Secrecy">
+    <xs:annotation>
+      <xs:documentation>Msg_Secrecy enum represents the secrecy level of the message</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="MsgSecrecy_Enum" />
+  </xs:simpleType>
+  <xs:simpleType name="MsgSubject_Enum">
+    <xs:annotation>
+      <xs:documentation>Defines the known values for the Msg Subject Enum, these should be provided by NCDA; the below are just samples</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="NC32_Type">
+      <xs:enumeration value="01" />
+      <xs:enumeration value="02" />
+      <xs:enumeration value="03" />
+      <xs:enumeration value="04" />
+      <xs:enumeration value="05" />
+      <xs:enumeration value="06" />
+      <xs:enumeration value="07" />
+      <xs:enumeration value="08" />
+      <xs:enumeration value="09" />
+      <xs:enumeration value="10" />
+      <xs:enumeration value="11" />
+      <xs:enumeration value="12" />
+      <xs:enumeration value="13" />
+      <xs:enumeration value="14" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="Msg_Subject">
+    <xs:annotation>
+      <xs:documentation>Msg_Secrecy enum represents the secrecy level of the message</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="MsgSubject_Enum" />
+  </xs:simpleType>
+  <xs:simpleType name="Status_Enum">
+    <xs:annotation>
+      <xs:documentation>Defines the known values for the Msg Subject Enum, these should be provided by NCDA; the below are just samples</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="NC32_Type">
+      <xs:enumeration value="Success" />
+      <xs:enumeration value="Failed" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="Status_Type">
+    <xs:annotation>
+      <xs:documentation>Msg_Secrecy enum represents the secrecy level of the message</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="Status_Enum" />
+  </xs:simpleType>
+  <xs:simpleType name="IntegratorType_Enum">
+    <xs:annotation>
+      <xs:documentation>Defines the known values for the Integrator Type Enum</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="NC32_Type">
+      <xs:enumeration value="A" />
+      <xs:enumeration value="C" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="Integrator_Type">
+    <xs:annotation>
+      <xs:documentation>Integrator_Type enum represents the integrator type used to integrate with the HUB</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="IntegratorType_Enum" />
+  </xs:simpleType>
+  <xs:simpleType name="MsgStatus_Enum">
+    <xs:annotation>
+      <xs:documentation>Defines the known values for the Msg Status Type Enum</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="NC32_Type">
+      <xs:enumeration value="Pending" />
+      <xs:enumeration value="Accepted" />
+      <xs:enumeration value="Rejected" />
+      <xs:enumeration value="NotFound" />
+      <xs:enumeration value="Failed" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="MsgStatus_Type">
+    <xs:annotation>
+      <xs:documentation>MsgStatus_Type enum represents the allowed values for the message status response in the Status Inquiry Service</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="MsgStatus_Enum" />
+  </xs:simpleType>
+  <xs:simpleType name="DeliveryStatus_Type">
+    <xs:annotation>
+      <xs:documentation>DeliveryStatus_Type enum represents the allowed values for the message delivery status response in the Confirm Service</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="DeliveryStatus_Enum" />
+  </xs:simpleType>
+  <xs:simpleType name="DeliveryStatus_Enum">
+    <xs:annotation>
+      <xs:documentation>Defines the known values for the Delivery Status Type Enum</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="NC32_Type">
+      <xs:enumeration value="Delivered" />
+      <xs:enumeration value="UnableToDeliver" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="Identifier_Type">
+    <xs:annotation>
+      <xs:documentation>Sender or Receiver identifier</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="Id_Structure" />
+  </xs:simpleType>
+  <xs:simpleType name="Id_Structure">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9][0-9][0-9][0-9][0-9][0-9]" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="UUID_Type">
+    <xs:annotation>
+      <xs:documentation>A UUID is an identifier that is unique across both space and time, with respect to the space of all UUIDs.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value=".{8}-.{4}-.{4}-.{4}-.{12}" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="NC32_Type">
+    <xs:annotation>
+      <xs:documentation>32 character ISO Latin-1 string</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1" />
+      <xs:maxLength value="32" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="OSId_Type">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9][0-9][0-9]" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="HUB.DateTime">
+    <xs:annotation>
+      <xs:documentation>A Custom Data Time Type</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:dateTime">
+      <xs:pattern value="\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="HDate_Type">
+    <xs:annotation>
+      <xs:documentation>Hijri date type</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="Hijri_Structure" />
+  </xs:simpleType>
+  <xs:simpleType name="Hijri_Structure">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[1-1][4-4][0-9][0-9]/.[1-12]/.[1-30]" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="OutboundCategory_Type">
+    <xs:annotation>
+      <xs:documentation>Category of the outbound message based on NCAR categorization: example (, Managment)</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="OutboundCategory_Enum" />
+  </xs:simpleType>
+  <xs:simpleType name="OutboundCategory_Enum">
+    <xs:restriction base="NC32_Type">
+      <xs:enumeration value="Financial" />
+      <xs:enumeration value="Management" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="OutboundClassification_Type">
+    <xs:annotation>
+      <xs:documentation>Classification of the outbound message based on NCAR categorization: example (Original, Copy)</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="OutboundClassification_Enum" />
+  </xs:simpleType>
+  <xs:simpleType name="OutboundClassification_Enum">
+    <xs:restriction base="NC32_Type">
+      <xs:enumeration value="Original" />
+      <xs:enumeration value="Copy" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="OutboundDelivery_Type">
+    <xs:annotation>
+      <xs:documentation>Delivery Type for the outbound: M (Manual), E (Electronic)</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="OutboundDelivery_Enum" />
+  </xs:simpleType>
+  <xs:simpleType name="OutboundDelivery_Enum">
+    <xs:restriction base="NC32_Type">
+      <xs:enumeration value="M" />
+      <xs:enumeration value="E" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="OutboundSender_Type">
+    <xs:annotation>
+      <xs:documentation>Sender Type for the outbound: GOVT (Government)</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="OutboundSender_Enum" />
+  </xs:simpleType>
+  <xs:simpleType name="OutboundSender_Enum">
+    <xs:restriction base="NC32_Type">
+      <xs:enumeration value="GOVT" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="Attachment_Type">
+    <xs:annotation>
+      <xs:documentation>Attachement Type based on NCAR classification: example (Original, Copy)</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="AttachementType_Enum" />
+  </xs:simpleType>
+  <xs:simpleType name="AttachementType_Enum">
+    <xs:restriction base="NC32_Type">
+      <xs:enumeration value="ORIGINAL" />
+      <xs:enumeration value="COPY" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="Content_Classification">
+    <xs:annotation>
+      <xs:documentation>Attachement Content Classification based on NCAR classification: example (00000)</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="ContentClassification_Enum" />
+  </xs:simpleType>
+  <xs:simpleType name="ContentClassification_Enum">
+    <xs:restriction base="NC32_Type">
+      <xs:enumeration value="01" />
+      <xs:enumeration value="02" />
+      <xs:enumeration value="03" />
+      <xs:enumeration value="04" />
+      <xs:enumeration value="05" />
+      <xs:enumeration value="06" />
+      <xs:enumeration value="07" />
+      <xs:enumeration value="08" />
+      <xs:enumeration value="09" />
+      <xs:enumeration value="10" />
+      <xs:enumeration value="11" />
+      <xs:enumeration value="12" />
+      <xs:enumeration value="13" />
+      <xs:enumeration value="14" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="AttachmentContent_Type">
+    <xs:annotation>
+      <xs:documentation>Attachement Content Type: example (PDF, TIF)</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="AttachementContent_Enum" />
+  </xs:simpleType>
+  <xs:simpleType name="AttachementContent_Enum">
+    <xs:restriction base="NC32_Type">
+      <xs:enumeration value="PDF" />
+      <xs:enumeration value="TIF" />
+      <xs:enumeration value="JPG" />
+      <xs:enumeration value="BMP" />
+      <xs:enumeration value="MP3" />
+      <xs:enumeration value="MP4" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="Object_Type">
+    <xs:annotation>
+      <xs:documentation>Attachement Object Type: example (Physical, Electronic)</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="ObjectType_Enum" />
+  </xs:simpleType>
+  <xs:simpleType name="ObjectType_Enum">
+    <xs:restriction base="NC32_Type">
+      <xs:enumeration value="Physical" />
+      <xs:enumeration value="Electronic" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="OSOperation_Type">
+    <xs:annotation>
+      <xs:documentation>OS Operation Type: (A: Add, E: Edit, D: Delete)</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="OSOperation_Enum" />
+  </xs:simpleType>
+  <xs:simpleType name="OSOperation_Enum">
+    <xs:restriction base="NC32_Type">
+      <xs:enumeration value="A" />
+      <xs:enumeration value="E" />
+      <xs:enumeration value="D" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="OSRole_Type">
+    <xs:annotation>
+      <xs:documentation>OS Role Type: (R: Allowed to Receive, S: Allowed to Send, RS: Allowed to Receive and Send)</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="OSRole_Enum" />
+  </xs:simpleType>
+  <xs:simpleType name="OSRole_Enum">
+    <xs:restriction base="NC32_Type">
+      <xs:enumeration value="R" />
+      <xs:enumeration value="S" />
+      <xs:enumeration value="RS" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="AgencyIntegration_Type">
+    <xs:annotation>
+      <xs:documentation>Agency Integration Type: (A: Adapter, C: Cloud)</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="AgencyIntegration_Enum" />
+  </xs:simpleType>
+  <xs:simpleType name="AgencyIntegration_Enum">
+    <xs:restriction base="NC32_Type">
+      <xs:enumeration value="A" />
+      <xs:enumeration value="C" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="AgencyStatus_Type">
+    <xs:annotation>
+      <xs:documentation>Agency Status Type: (A: Active, I: Inactive)</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="AgencyStatus_Enum" />
+  </xs:simpleType>
+  <xs:simpleType name="AgencyStatus_Enum">
+    <xs:restriction base="NC32_Type">
+      <xs:enumeration value="A" />
+      <xs:enumeration value="I" />
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

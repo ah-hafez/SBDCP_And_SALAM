@@ -1,0 +1,108 @@
+﻿@using MCS.Common
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.File
+@model IList<TransactionTrayInfoVM>
+
+<div class="col-xs-12">
+    <div class="boxes">
+        <div class="row">
+            @foreach (TransactionTrayInfoVM transactionTrayInfo in Model)
+            {
+                <!-- #Start# BOX -->
+                <div class="col-sm-6 col-md-6 col-lg-3 col-xlg-2">
+                    <div class="box animated zoomIn">
+                        <div class="row">
+                            <div class="col-xs-8">
+                                <span class="indent-text indent-title bold">@transactionTrayInfo.TransactionDetailsInfoVM.EntityName</span>
+                            </div>
+                            <div class="col-xs-4 text-right">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" value="">
+                                        <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-8">
+                                <span class="light-text">@transactionTrayInfo.TransactionDetailsInfoVM.DateH @transactionTrayInfo.TransactionDetailsInfoVM.Date.ToShortTimeString()</span>
+                            </div>
+                            <div class="col-xs-4 text-right">
+                                <span class="light-count">@transactionTrayInfo.TransactionDetailsInfoVM.Number</span>
+                            </div>
+                        </div>
+
+                        <hr class="seperator" />
+                        <div class="row row-multi-fields">
+                            <div class="col-xs-12" style="height: 52px;">
+                                <div class="light-text">
+                                    @DbRes.TResource("User.File.Subject")
+                                </div>
+                            </div>
+                            <div class="indent-text">
+                                @if (transactionTrayInfo.TransactionDetailsInfoVM.Subject != null && transactionTrayInfo.TransactionDetailsInfoVM.Subject.Length > 30)
+                                {
+                                    <a id="example" class=" ui-tooltip ui-corner-all ui-widget-shadow"  data-bs-toggle="tooltip" data-placement="bottom" title="@transactionTrayInfo.TransactionDetailsInfoVM.Subject">
+                                        @transactionTrayInfo.TransactionDetailsInfoVM.Subject
+                                    </a>
+                                }
+                                {
+                                @transactionTrayInfo.TransactionDetailsInfoVM.Subject
+                                }
+                            </div>
+                        </div>
+
+                        <div class="col-xs-6" style="height: 42px;">
+                            <div class="light-text">
+                                @DbRes.TResource("User.File.Priority")
+                            </div>
+                            <div class="indent-text">
+                                @transactionTrayInfo.TransactionDetailsInfoVM.PriorityName
+                            </div>
+                        </div>
+
+                        <div class="col-xs-6" style="height: 42px;">
+                            <div class="light-text">
+                                @DbRes.TResource("User.GeneralSearch.Type")
+                            </div>
+                            <div class="indent-text">
+                                @transactionTrayInfo.TransactionDetailsInfoVM.LetterTypeName
+                            </div>
+                        </div>
+
+                        <div class="col-xs-6" style="height: 42px;">
+                            <div class="light-text">
+                                @DbRes.TResource("User.File.Confidentiality")
+                            </div>
+                            <div class="indent-text">
+                                @transactionTrayInfo.TransactionDetailsInfoVM.ConfidentialityName
+
+                            </div>
+                        </div>
+
+                        <div class="col-xs-6" style="height: 42px;">
+                            <div class="indent-text">
+                                التصنيف 
+                            </div>
+                            <div class="indent-text">
+                                إجازة
+                            </div>
+                        </div>
+
+                        <hr class="seperator" />
+                        <div class="row box-icons">
+                            <div class="col-xs-6 text-left">
+                                <a href="#" title="@DbRes.TResource("User.File.Assign")" data-id="@transactionTrayInfo.TransactionDetailsInfoVM.Id" data-copyId="@transactionTrayInfo.TransactionDetailsInfoVM.TransactionCopyId" class="aViewed referral" data-type="@TrayActionType.Viewed">
+                                    <i class="uicon icon_recycle site-color"></i>
+                                    <span>@DbRes.TResource("User.File.Assign")> </span>
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

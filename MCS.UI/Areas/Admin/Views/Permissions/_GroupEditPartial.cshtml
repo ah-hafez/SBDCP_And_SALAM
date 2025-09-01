@@ -1,0 +1,95 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Common;
+@using MCS.UI.Areas.User.Models.Lookups
+@model MCS.UI.Areas.Admin.Models.Groups.EditGroupVM
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmEditGroup", @class = "content_container" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="mx-3 mx-md-5 header-container d-flex flex-row align-items-center">
+        <div class="d-flex flex-column flex-lg-row align-items-lg-center flex-grow-1 mb-3 mb-lg-0">
+            <h3 class="site-color mb-2 mb-lg-4">@DbRes.TResource("Admin.Permissions.EditPermission") </h3>
+        </div>
+        <div class="close-icon pl-2 mt-0 ml-auto" onclick="window.location.reload();">
+            <a class="circle-icon color-white" href="@Url.Action("Index" , "Permissions")" data-bs-toggle="tooltip" data-placement="bottom" title="إغلاق"><i class="la la-close"></i></a>
+        </div>
+    </div>
+    <div id="EditGroupContent" class="row white-container mx-3 mx-md-5">
+        <div class="form-row">
+            @{List<CultureVM> Culture = (List<CultureVM>)ViewData["Culture"];}
+            @for (int i = 0; i < Culture.Count; i++)
+            {
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                    @Html.CustomLabelFor(model => model.Name.Localizations[i].CultureName, new { @class = "" }, DbRes.TResource("Admin.Permissions.GroupName." + Culture[i].ShortName))
+                    @Html.StickyHiddenFor(model => model.Name.Localizations[i].CultureId, new { Value = Culture[i].Id })
+                    @Html.HiddenFor(model => model.Name.Localizations[i].Id)
+                    @Html.HiddenFor(model => model.Name.IsActive)
+                    @Html.HiddenFor(model => model.Name.CategoryId)
+                    <div class="">
+                        @Html.TextBoxGroupFor(model => model.Name.Localizations[i].Text, null, new { @class = "form-control empty" }, DbRes.TValidation("Admin.Permissions.NameRequired." + Culture[i].ShortName))
+                    </div>
+                </div>
+
+                @*<div class="col-md-6">
+                        <div class="form-group">
+                            @Html.CustomLabelFor(model => model.Name.Localizations[i].CultureName, new { @class = "col-md-4 control-label" }, DbRes.TResource("Admin.Permissions.GroupName." + Culture[i].ShortName))
+                            @Html.StickyHiddenFor(model => model.Name.Localizations[i].CultureId, new { Value = Culture[i].Id })
+                            @Html.HiddenFor(model => model.Name.Localizations[i].Id)
+                            @Html.HiddenFor(model => model.Name.IsActive)
+                            @Html.HiddenFor(model => model.Name.CategoryId)
+                            <div class="col-md-8">
+                                <div class="">
+                                    @Html.TextBoxGroupFor(model => model.Name.Localizations[i].Text, null, new { @class = "form-control empty" }, DbRes.TValidation("Admin.Permissions.NameRequired." + Culture[i].ShortName))
+                                </div>
+                                <span class="help-block"></span>
+                            </div>
+                        </div>
+                    </div>*@
+            }
+                <div class="col-xs-12">
+                    <p class="stark">@DbRes.TResource("Admin.User.MustFill") * </p>
+                </div>
+            <hr class="mb-3 mt-2">
+            <div id="EditTree" style="width :100%">
+                @Html.PermissionsTree(ViewData["PermissionsGroups"] as TreeViewModel, model => model.Permissions, TreeMode.Multiple, "frmEditGroup", Request.IsAjaxRequest())
+            </div>
+        </div>
+    </div>
+    <div class="mx-3 mx-md-5 mb-4 d-flex">
+        @Html.ActionButton(DbRes.TResource("Admin.Permissions.Edit"), "EditGroup", "divGrid", null, null, "OnEditSuccess", null, "post", null, "btnEditGroup", "frmEditGroup", "btn btn-lg btn-st3 ml-auto")
+        <a class="btn btn-lg btn-st3 mx-1" id="btnCancel" href="@Url.Action("Index", "Permissions")">@DbRes.TResource("Admin.User.Cancel")</a>
+
+    </div>
+    @Html.HiddenFor(model => model.Id)
+}
+
+
+
+<script>
+    $(document).ready(function () {
+        TagsPopulation("frmEditGroup");
+    });
+    
+    function redirect()
+    {
+          setTimeout(function () {
+            window.location.href = '@Url.Action("Index", "Permissions", new { area="Admin"})';
+        }, 2000);
+    }
+    function OnEditSuccess(data, div)
+    {
+        if (data.MessageType != 2) {
+            $("#" + div).html("");
+            $("#" + div).html(data.Html);
+            //jQuery.validator.unobtrusive.parse('#' + div);
+            ShowSuccesMessage(data.MessageText, redirect());
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+</script>

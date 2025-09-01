@@ -1,0 +1,736 @@
+﻿@*https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_treeview*@
+@*https://iamkate.com/code/tree-views/*@
+<style>
+    ul, #myUL {
+        list-style-type: none;
+    }
+
+    #myUL {
+        /*margin:100px;*/
+        margin-top: -100px;
+        /*margin-left: 300px;*/
+        padding: 80px;
+    }
+
+    .caretNode {
+        cursor: pointer;
+        -webkit-user-select: none; /* Safari 3.1+ */
+        -moz-user-select: none; /* Firefox 2+ */
+        -ms-user-select: none; /* IE 10+ */
+        user-select: none;
+    }
+
+        .caretNode::before {
+            content: "\25B6";
+            color: black;
+            display: inline-block;
+            margin-right: 15px !important;
+        }
+
+    .caretNode-down::before {
+        -ms-transform: rotate(90deg); /* IE 9 */
+        -webkit-transform: rotate(90deg); /* Safari */
+        ' transform: rotate(90deg);
+    }
+
+    .nested {
+        display: none;
+    }
+
+    .active {
+        display: block;
+    }
+
+
+
+    .menu {
+        position: absolute;
+        width: 200px;
+        padding: 2px;
+        margin: 0;
+        border: 1px solid #bbb;
+        background: #eee;
+        background: -webkit-linear-gradient(to bottom, #fff 0%, #e5e5e5 100px, #e5e5e5 100%);
+        background: linear-gradient(to bottom, #fff 0%, #e5e5e5 100px, #e5e5e5 100%);
+        z-index: 9999999999999;
+        border-radius: 3px;
+        box-shadow: 1px 1px 4px rgba(0,0,0,.2);
+        opacity: 0;
+        -webkit-transform: translate(0, 15px) scale(.95);
+        transform: translate(0, 15px) scale(.95);
+        transition: transform 0.1s ease-out, opacity 0.1s ease-out;
+        pointer-events: none;
+    }
+
+    .menu-item {
+        display: block;
+        position: relative;
+        margin: 0;
+        padding: 0;
+        white-space: nowrap;
+    }
+
+    .menu-btn {
+        background: none;
+        line-height: normal;
+        overflow: visible;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        display: block;
+        width: 100%;
+        color: #444;
+        font-family: 'Roboto', sans-serif;
+        font-size: 13px;
+        text-align: left;
+        cursor: pointer;
+        border: 1px solid transparent;
+        white-space: nowrap;
+        padding: 6px 8px;
+        border-radius: 3px;
+    }
+
+        .menu-btn::-moz-focus-inner, .menu-btn::-moz-focus-inner {
+            border: 0;
+            padding: 0;
+        }
+
+    .menu-text {
+        margin-left: 25px;
+    }
+
+    .menu-btn .fa {
+        position: absolute;
+        left: 8px;
+        top: 50%;
+        -webkit-transform: translateY(-50%);
+        transform: translateY(-50%);
+    }
+
+    .menu-item:hover > .menu-btn {
+        color: #fff;
+        outline: none;
+        background-color: #2E3940;
+        background: -webkit-linear-gradient(to bottom, #5D6D79, #2E3940);
+        background: linear-gradient(to bottom, #5D6D79, #2E3940);
+        border: 1px solid #2E3940;
+    }
+
+    .menu-item.disabled {
+        opacity: .5;
+        pointer-events: none;
+    }
+
+        .menu-item.disabled .menu-btn {
+            cursor: default;
+        }
+
+    .menu-separator {
+        display: block;
+        margin: 7px 5px;
+        height: 1px;
+        border-bottom: 1px solid #fff;
+        background-color: #aaa;
+    }
+
+    .menu-item.submenu::after {
+        content: "";
+        position: absolute;
+        right: 6px;
+        top: 50%;
+        -webkit-transform: translateY(-50%);
+        transform: translateY(-50%);
+        border: 5px solid transparent;
+        border-left-color: #808080;
+    }
+
+    .menu-item.submenu:hover::after {
+        border-left-color: #fff;
+    }
+
+    .menu .menu {
+        top: 4px;
+        left: 99%;
+    }
+
+    .show-menu, .menu-item:hover > .menu {
+        opacity: 1;
+        -webkit-transform: translate(0, 0) scale(1);
+        transform: translate(0, 0) scale(1);
+        pointer-events: auto;
+    }
+
+    .menu-item:hover > .menu {
+        -webkit-transition-delay: 100ms;
+        transition-delay: 300ms;
+    }
+
+    .tree {
+        --spacing: 1.5rem;
+        --radius: 10px;
+    }
+
+        .tree li {
+            display: block;
+            position: relative;
+            padding-right: calc(2 * var(--spacing) - var(--radius) - 2px);
+        }
+
+        .tree ul {
+            margin-right: calc(var(--radius) - var(--spacing));
+            padding-right: 0;
+        }
+
+            .tree ul li {
+                border-right: 2px solid #ddd;
+            }
+
+                .tree ul li:last-child {
+                    border-color: transparent;
+                }
+
+                .tree ul li::before {
+                    content: '';
+                    display: block;
+                    position: absolute;
+                    top: calc(var(--spacing) / -2);
+                    right: -2px;
+                    width: calc(var(--spacing) + 2px);
+                    height: calc(var(--spacing) + 1px);
+                    border: solid #ddd;
+                    border-width: 0 0 2px 2px;
+                }
+
+        .tree summary {
+            display: block;
+            cursor: pointer;
+        }
+
+            .tree summary::marker,
+            .tree summary::-webkit-details-marker {
+                display: none;
+            }
+
+            .tree summary:focus {
+                outline: none;
+            }
+
+            .tree summary:focus-visible {
+                outline: 1px dotted #000;
+            }
+
+            .tree li::after,
+            .tree summary::before {
+                content: '';
+                display: block;
+                position: absolute;
+                top: calc(var(--spacing) / 2 - var(--radius));
+                right: calc(var(--spacing) - var(--radius) - 1px);
+                width: calc(2 * var(--radius));
+                height: calc(2 * var(--radius));
+                border-radius: 50%;
+                background: #ddd;
+            }
+
+            .tree summary::before {
+                content: '+';
+                z-index: 1;
+                background: #696;
+                color: #fff;
+                line-height: calc(2 * var(--radius) - 2px);
+                text-align: center;
+            }
+
+        .tree details[open] > summary::before {
+            content: '−';
+        }
+
+
+    .selectedDataItem {
+        background-color: darkgray
+    }
+</style>
+
+@*<ul id="myUL" class="tree">
+        <li>
+            <span class="caretNode">الارشيف</span>
+            <ul class="nested">
+                <li>Water</li>
+                <li>Coffee</li>
+                <li>
+                    <span class="caretNode">Tea</span>
+                    <ul class="nested">
+                        <li>Black Tea</li>
+                        <li>White Tea</li>
+                        <li>
+                            <span class="caretNode">Green Tea</span>
+                            <ul class="nested">
+                                <li>Sencha</li>
+                                <li>Gyokuro</li>
+                                <li>Matcha</li>
+                                <li>Pi Lo Chun</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>*@
+
+
+<menu class="menu" style="z-index: 999999999999999 !important;  ">
+    @*<li class="menu-item">
+            <button type="button" class="menu-btn"> <i class="fa fa-folder-open"></i> <span class="menu-text">Open</span> </button>
+        </li>
+        <li class="menu-item disabled">
+            <button type="button" class="menu-btn"> <span class="menu-text">Open in New Window</span> </button>
+        </li>
+        <li class="menu-separator"></li>
+        <li class="menu-item">
+            <button type="button" class="menu-btn"> <i class="fa fa-reply"></i> <span class="menu-text">Reply</span> </button>
+        </li>
+        <li class="menu-item">
+            <button type="button" class="menu-btn"> <i class="fa fa-star"></i> <span class="menu-text">Favorite</span> </button>
+        </li>
+        <li class="menu-item submenu">
+            <button type="button" class="menu-btn"> <i class="fa fa-users"></i> <span class="menu-text">Social</span> </button>
+            <menu class="menu">
+                <li class="menu-item">
+                    <button type="button" class="menu-btn"> <i class="fa fa-comment"></i> <span class="menu-text">Comment</span> </button>
+                </li>
+                <li class="menu-item submenu">
+                    <button type="button" class="menu-btn"> <i class="fa fa-share"></i> <span class="menu-text">Share</span> </button>
+                    <menu class="menu">
+                        <li class="menu-item">
+                            <button type="button" class="menu-btn"> <i class="fa fa-twitter"></i> <span class="menu-text">Twitter</span> </button>
+                        </li>
+                        <li class="menu-item">
+                            <button type="button" class="menu-btn"> <i class="fa fa-facebook-official"></i> <span class="menu-text">Facebook</span> </button>
+                        </li>
+                        <li class="menu-item">
+                            <button type="button" class="menu-btn"> <i class="fa fa-google-plus"></i> <span class="menu-text">Google Plus</span> </button>
+                        </li>
+                        <li class="menu-item">
+                            <button type="button" class="menu-btn"> <i class="fa fa-envelope"></i> <span class="menu-text">Email</span> </button>
+                        </li>
+                    </menu>
+                </li>
+            </menu>
+        </li>
+        <li class="menu-separator"></li>*@
+
+    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.IC.ICAdd))
+    {
+        <li class="menu-item">
+            <button type="button" class="menu-btn" onclick="CreateICView()"> <i class="fa fa-download"></i> <span class="menu-text">انشاء دليل </span> </button>
+        </li>
+    }
+
+
+    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.IC.ICUpdate))
+    {
+        <li class="menu-item">
+            <button type="button" class="menu-btn" onclick="UpdateICView()"> <i class="fa fa-edit"></i> <span class="menu-text">تعديل الدليل</span> </button>
+        </li>
+    }
+
+    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.IC.ICDelete))
+    {
+        <li class="menu-item">
+            <button type="button" class="menu-btn" onclick="DeleteIC()"> <i class="fa fa-trash"></i> <span class="menu-text">حذف الدليل</span> </button>
+        </li>
+    }
+
+
+</menu>
+<div class="row">
+    <div class="form-group col-lg-1 col-md-12 col-sm-12 col-xs-12 mb-3">
+    </div>
+    <div class="form-group col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">
+        <label class="col-lg-1">بحث</label>
+        <input id="searchControl" type="text" class="form-control" />
+
+    </div>
+    <br />
+
+
+</div>
+
+<br />
+
+<ul id="myUL" class="tree">
+</ul>
+
+<script>
+
+    var IsShowMenu = false;
+    var PublishId = 0;
+    var toggler = document.getElementsByClassName("caretNode");
+    var i;
+
+    for (i = 0; i < toggler.length; i++) {
+        toggler[i].addEventListener("click", function () {
+            this.parentElement.querySelector(".nested").classList.toggle("active");
+            this.classList.toggle("caretNode-down");
+        });
+    }
+
+    $('#searchControl').on('keyup', function (keyEvent)
+    {
+        debugger;
+        if (keyEvent.keyCode == 13)
+        {
+            CallMainNode();
+
+        } else
+        {
+            var query = $("#searchControl").val();
+            //if (query.length > 0)
+            //{
+                CallMainNode();
+            //}
+        }
+
+
+
+
+    });
+
+    CallMainNode();
+
+
+    function CreateICView() {
+
+         var url = '@Url.Action("AddIcSubjectView", "IC")'
+
+        ShowDialog(url);
+
+    }
+
+    function AddIC() {
+
+        var code = $("#Code").val().trim();
+        var itemDisplay = $("#txtAreaSubject").val().trim();
+        var icNumber = $("#DirectoryNum").val().trim();
+      /*  var classificationId = $("#hdnClassificationId").val();*/
+        if (icNumber == "") {
+            ShowSuccesMessage("ادخل رقم الدليل  ")
+
+            return;
+        }
+
+        if (itemDisplay == "") {
+            ShowSuccesMessage("ادخل اسم الدليل   ")
+
+            return;
+        }
+
+        if (code == "") {
+            ShowSuccesMessage("ادخل كود الدليل   ")
+
+            return;
+        }
+        //if (classificationId == "")
+        //{
+        //    ShowSuccesMessage("اختر التصنيف    ")
+
+        //    return;
+        //}
+
+        var activeId = PublishId;
+
+        $.ajax({
+            url: '@Url.Action("AddIcSubject", "IC")',
+            type: 'GET',
+            data: { ITEM_CODE: code, ITEM_DISPLAY: itemDisplay, PARENT_ID: PublishId, DirectoryNum: icNumber, classificationId: 0 } ,
+            cache: false,
+            success: function (data) {
+
+                if (data.NewIC == -1) {
+
+                    ShowSuccesMessage("لم تتم عملية الاضافة بنجاح , رمز الكود موجود مسبقا  ")
+
+                }
+
+                if (data.NewIC == -2) {
+
+                    ShowSuccesMessage("لم تتم عملية الاضافة بنجاح , رقم الدليل موجود مسبقا  ")
+
+                }
+
+                if (data.NewIC > 0) {
+
+                    ShowSuccesMessage("تمت عملية الاضافة بنجاح")
+
+                    __dialog.close();
+
+                    if ($("#icSpanText_" + activeId).hasClass("caretNode")) {
+                    } else {
+                        $("#icSpanText_" + activeId).addClass("caretNode")
+                    }
+
+                    GetChild(activeId);
+                }
+            }
+        });
+
+    }
+
+
+     function UpdateIC() {
+         var code = $("#Code").val().trim();
+         var itemDisplay = $("#txtAreaSubject").val().trim();
+         var icNumber = $("#DirectoryNum").val().trim();
+         var classificationId = $("#hdnClassificationId").val();
+         if (icNumber == "") {
+             ShowSuccesMessage("ادخل رقم الدليل  ")
+
+             return;
+         }
+
+         if (itemDisplay == "") {
+             ShowSuccesMessage("ادخل اسم الدليل   ")
+
+             return;
+         }
+
+         if (code == "") {
+             ShowSuccesMessage("ادخل كود الدليل   ")
+
+             return;
+         }
+
+         if (classificationId == "")
+         {
+             ShowSuccesMessage("اختر التصنيف    ")
+
+             return;
+         }
+
+
+         var activeId = PublishId;
+        $.ajax({
+            url: '@Url.Action("UpdateIC_SUBJECT", "IC")',
+            type: 'GET',
+            data: { id: PublishId, ITEM_CODE: code, ITEM_DISPLAY: itemDisplay, DirectoryNum: icNumber, classificationId: classificationId } ,
+            cache: false,
+            success: function (data) {
+
+                if (data.Result == -1) {
+
+                    ShowSuccesMessage("لم تتم عملية الاضافة بنجاح , رمز الكود موجود مسبقا  ")
+
+                }
+
+                if (data.Result == -2) {
+
+                    ShowSuccesMessage("لم تتم عملية الاضافة بنجاح , رقم الدليل موجود مسبقا  ")
+
+                }
+
+
+                if (data.Result > 0) {
+                    ShowSuccesMessage("تمت عملية التعديل  بنجاح")
+
+                    __dialog.close();
+
+                    $("#icSpanText_" + PublishId).text(itemDisplay);
+                }
+            }
+        });
+
+    }
+
+    function UpdateICView() {
+
+
+        if ($("#ic_li_" + PublishId).hasClass('mainNode')) {
+
+            ShowSuccesMessage("لا يمكن التعديل على الدليل الرئيسي ");
+
+            return
+        }
+
+
+        var url = '@Url.Action("UpdateIC_SUBJECTView", "IC")'
+
+        ShowDialog(url + "?id=" + PublishId);
+    }
+
+    function DeleteIC() {
+
+        var activeId = PublishId;
+
+        if ($("#ic_li_" + PublishId).hasClass('mainNode')) {
+
+            ShowSuccesMessage("لا يمكن حذف الدليل الرئيسي ");
+
+            return
+        }
+
+        $.ajax({
+            url: '@Url.Action("DeleteIC_SUBJECT", "IC")',
+            type: 'GET',
+            cache: false,
+            data: { id: PublishId},
+            success: function (data) {
+                console.log(data);
+
+                debugger;
+
+                ShowSuccesMessage(data.MessageText);
+
+                if (data.MessageType == 0 || data.MessageType == "0") {
+
+                    var parentId = $("#ic_li_" + activeId).attr('data-parentID');
+
+                    GetChild(parentId);
+
+                }
+
+            }
+        });
+
+    }
+
+
+    function CallMainNode()
+    {
+        var query = $("#searchControl").val();
+        $.ajax({
+            url: '@Url.Action("GetIC_SUBJECTByParentId", "IC")',
+            type: 'GET',
+            data: { query: query},
+            cache: false,
+            success: function (data) {
+                console.log(data);
+                debugger
+                if (data.Node.length > 0)
+                {
+                    $('#myUL li').each(function (i) {
+                        $(this).hide();
+                    });
+                    var innerhtml = '';
+                    for (let i = 0; i < data.Node.length; i++) {
+
+                        $('#ic_li_' + data.Node[i].Id).show();
+
+                        if (data.Node[i].HasChilds) {
+                                innerhtml += "<li class='mainNode' id='ic_li_" + data.Node[i].Id + "'data-storeID=" + data.Node[i].Id + " id='ic_li_" + data.Node[i].Id + "' data-parentID='" + data.Node[i].Id + "' > <span  id='icSpanText_" + data.Node[i].Id + "' class='caretNode' onclick=GetChild(" + data.Node[i].Id + ")>" + data.Node[i].ITEM_DESCRIPTION_AR + "</span>  <ul class='nested' id='icNode_" + data.Node[i].Id + "'" + ">   </ul>  </li>";
+                            
+                        }
+                        else {
+                            if (data.Node.filter(a => a.Id == data.Node[i].PARENT_ID).length == 0) {
+                                innerhtml += "<li data-storeid=" + data.Node[i].Id + " id='ic_li_" + data.Node[i].Id + "' data-parentid='" + data.Node[i].parentId + "'> <span id='icSpanText_" + data.Node[i].Id + "' class='' onclick='GetChild(" + data.Node[i].Id + ")'>" + data.Node[i].ITEM_DESCRIPTION_AR + "</span> <ul class='nested' id='icNode_" + data.Node[i].id + "'> </ul> </li>";
+                            }
+
+                        }
+
+
+                    }
+                    $("#myUL").html(innerhtml);
+
+
+                }
+
+               /* $("#myUL").html("<li class='mainNode' id='ic_li_" + data.Node[0].Id + "' data-parentID='" + data.Node[0].Id + "' > <span  id='icSpanText_" + data.Node[0].Id + "' class='caretNode' onclick=GetChild(" + data.Node[0].Id + ")></span>  <ul class='nested' id='icNode_" + data.Node[0].Id + "'" + ">   </ul> " + data.Node[0].ITEM_DESCRIPTION_AR +"  </li>");*/
+
+            }
+        });
+    }
+
+
+
+    function GetChild(id) {
+        var query = $("#searchControl").val();
+         $.ajax({
+            url: '@Url.Action("GetIC_SUBJECTChildByParentId", "IC")',
+            type: 'GET',
+             data: { query:query,id:id},
+            cache: false,
+             success: function (data) {
+                 debugger;
+                console.log(data);
+                 if (data.Node.length <= 0) { return; }
+
+                 $("#icNode_" + id).html("");
+
+                 for (i = 0; i < data.Node.length; i++) {
+
+                     if (data.Node[i].HasChilds == true || data.Node[i].HasChilds == 'true' || data.Node[i].HasChilds == '1' || data.Node[i].IsLeaf == 1) {
+
+                         $("#icNode_" + id).append("<li  data-storeID=" + data.Node[i].Id +" id='ic_li_" + data.Node[i].Id + "'  data-parentID='" + id + "'> <span  id='icSpanText_" + data.Node[i].Id + "' class='caretNode' onclick=GetChild(" + data.Node[i].Id + ") >" + data.Node[i].ITEM_DESCRIPTION_AR + "</span> <ul class='nested'  id='icNode_" + data.Node[i].Id + "'> </ul> </li>");
+
+                     } else {
+
+                         $("#icNode_" + id).append("<li data-storeID=" + data.Node[i].Id + " id='ic_li_" + data.Node[i].Id + "'   data-parentID='" + data.Node[i].PARENT_ID + "'> <span  id='icSpanText_" + data.Node[i].Id + "' class='' onclick=GetChild(" + data.Node[i].Id + ") >" + data.Node[i].ITEM_DESCRIPTION_AR + "</span> <ul class='nested'  id='icNode_" + data.Node[i].Id + "'> </ul> </li>");
+
+                     }
+                 }
+
+
+                 if (data.Node.length == 0) {
+                     $("#icSpanText_" + id).removeClass("caretNode-down");
+                     $("#icSpanText_" + id).removeClass("caretNode");
+                     $("#icNode_" + id).removeClass("active");
+
+
+                 }
+
+
+                 if ($("#icSpanText_" + id).hasClass("caretNode-down")) {
+                     $("#icSpanText_" + id).removeClass("caretNode-down");
+                    $("#icNode_" + id).removeClass("active");
+
+                    return;
+                 }
+                 $("#icSpanText_" + id).addClass("caretNode-down");
+                 $("#icNode_" + id).addClass("active");
+
+
+            }
+         });
+
+        $(".selectedDataItem").removeClass("selectedDataItem")
+
+        $("#ic_li_" + id).addClass("selectedDataItem");
+    }
+
+    $('#myUL').mousedown(function (event) {
+        if ((event.which == 3) && (event.target.nodeName == 'SPAN')) {
+            IsShowMenu = true;
+
+            let text = $(event.target).attr("id");
+            const myArray = text.split("_");
+            PublishId = myArray[1];
+            event.preventDefault();
+        }
+    });
+
+    var menu = document.querySelector('.menu');
+    function showMenu(x, y) {
+        if (IsShowMenu == true) {
+            menu.style.left = x + 'px';
+            menu.style.top = y + 'px';
+            menu.classList.add('show-menu');
+            IsShowMenu == false;
+        }
+    }
+    function hideMenu() {
+        menu.classList.remove('show-menu');
+    }
+    function onContextMenu(e) {
+        e.preventDefault();
+        showMenu(e.pageX, e.pageY);
+        document.addEventListener('click', onClick, false);
+    }
+    function onClick(e) {
+        hideMenu();
+        document.removeEventListener('click', onClick);
+        IsShowMenu = false;
+    }
+    document.addEventListener('contextmenu', onContextMenu, false);
+
+
+</script>
+

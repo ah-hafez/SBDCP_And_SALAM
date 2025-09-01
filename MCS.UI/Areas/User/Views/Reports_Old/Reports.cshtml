@@ -1,0 +1,52 @@
+﻿
+<div class="col9 noRowColor noMarginLeft noMarginRight" style="vertical-align:top;" id="mainSide">
+    <h2 style="margin-top:10px; color:#FFF;">التقارير</h2>
+    <hr>
+    <div class="grid formAction noBorder noMarginTop noPadding">
+        <div class="rowF noRowColor noPaddingBottom noMarginBottom topSide">
+            <div class="colWide100 noPaddingBottom noMarginBottom">
+                <!--tiles-->
+                <ul class="thumbnailsSmall marginRight noPaddingBottom noMarginBottom" style="left: 2px; opacity: 1; margin-top: 5px !important;">
+                    <li class="tileSmall text-center bottom" id="purple" data-contentdivtile="divReportsInboundTransactions" title="يتمكن المستخدم في هذه العملية من إنشاء صادر خارجي جديد وحفظه في النظام مع إصدار تذكرة مراجعة ورمز تشفير خاص به">
+                        <a href="#test">
+                            <img src="~/Images/newIncoming.png">
+                            <h2> تقارير المعاملات الوارد</h2>
+                        </a>
+                    </li>
+                    <li class="tileSmall text-center bottom" id="lightBlue" data-contentdivtile="divReportsOutboundTransactions" title=" يوفر النظام هذه الخاصية لتمكين المستخدمين من انشاء صادر داخلي جديد ">
+                        <a href="#">
+                            <img src="~/Images/editIncoming.png">
+                            <h2>تقارير المعاملات الصادرة</h2>
+                        </a>
+                    </li>
+                    <li class="tileSmall text-center bottom" id="orango" data-contentdivtile="divReportsStatistically" title=" يوفر النظام هذه الخاصية لتمكين المستخدمين من انشاء مشروع صادر">
+                        <a href="#">
+                            <img src="~/Images/editIncoming.png">
+                            <h2>تقارير احصائيات المعاملات</h2>
+                        </a>
+                    </li>
+                    <li class="tileSmall text-center bottom" id="darkMove" data-contentdivtile="divReportsUsersAccomplishments" title=" يوفر النظام هذه الخاصية لتمكين المستخدمين من التعديل على معاملة الصادر يمكن للمستخدم أن يقوم بالدخول على معاملة الصادر من خلال شاشة الدخول للصادر والتي تحتوي على حقول تمكن المستخدم من البحث عن الصادر حسب رقم القيد والسنة ونوع الوارد والوحدة">
+                        <a href="#">
+                            <img src="~/Images/editIncoming.png">
+                            <h2>تقارير انجازات  الموظفين</h2>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="rowF noRowColor" id="divReportsInboundTransactions">
+            @Html.Partial("~/Areas/User/Views/Reports/_InboundTransactions.cshtml", null)
+        </div>
+        <div class="rowF noRowColor" id="divReportsOutboundTransactions" style="display:none;">
+            @Html.Partial("~/Areas/User/Views/Reports/_OutboundTransactions.cshtml", null)
+        </div>
+        <div class="rowF noRowColor" id="divReportsStatistically" style="display:none;">
+            @Html.Partial("~/Areas/User/Views/Reports/_StatisticallyReports.cshtml", null)
+        </div>
+        <div class="rowF noRowColor" id="divReportsUsersAccomplishments" style="display:none;">
+            @Html.Partial("~/Areas/User/Views/Reports/_UsersAccomplishments.cshtml", null)
+        </div>
+    </div>
+</div>
+
+

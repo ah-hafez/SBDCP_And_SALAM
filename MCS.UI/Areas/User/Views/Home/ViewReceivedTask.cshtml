@@ -1,0 +1,45 @@
+﻿
+@using MCS.UI.Areas.User.Models.Transaction
+@using MCS.Framework.Localization
+@model ReceivedTaskVM
+
+@{
+    Layout = null;
+}
+
+<div class="content-rtl panel panel-default dialogbox_panel">
+    <div class="panel-heading">
+        <h3 class="panel-title"> @DbRes.TResource("User.Task.ViewReceivedTask.TaskDetails")</h3>
+    </div>
+    <div class="panel-body editor">
+        <div class="row just_read">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="col-md-5 control-label definition"> @DbRes.TResource("User.Task.ViewReceivedTask.TaskNumber") </label>
+                    <label class="col-md-7 control-label">@Model.Id</label>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="col-md-5 control-label definition"> @DbRes.TResource("User.Task.ViewReceivedTask.FromOrgUnit")</label>
+                    <label class="col-md-7 control-label">@Model.FromOrgUnit</label>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="col-md-5 control-label definition"> @DbRes.TResource("User.Task.ViewReceivedTask.DeliveryDate")</label>
+                    <label class="col-md-7 control-label">@Model.DeliveryDateH</label>
+                </div>
+            </div>
+
+        </div>
+        <div class="row just_read group push-bottom">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="col-md-4 control-label definition"> @DbRes.TResource("User.Task.ViewReceivedTask.TaskDescription")</label>
+                    <label class="col-md-8 control-label">@Model.TaskDescription </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

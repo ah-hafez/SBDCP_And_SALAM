@@ -1,0 +1,49 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.File
+@using MCS.Common
+@model List<TransactionTrayInfoVM>
+
+
+<div class="ads_informal">
+    <div class="row">
+        <div class="row"><h4>@DbRes.TResource("User.Home.LastNews")</h4></div>
+        @*<div class="all_ads"><a class="" href="#">الكل</a></div>*@
+        @if (Model != null && Model.Count > 0)
+        {
+            <div class="owl-carousel1 owl-text">
+                @foreach (TransactionTrayInfoVM transactionTrayInfoVM in Model)
+                {
+                    <div class="item">
+                        <div class="widget-subtitle">
+                            <span>
+                                @transactionTrayInfoVM.TransactionDetailsInfoVM.Subject
+                            </span>
+                            @*... <a class="read_more" href="#">المزيد</a>*@
+                        </div>
+                    </div>
+                }
+
+
+            </div>
+        }
+        else
+        {
+            <div class="no_ads">@DbRes.TResource("User.Home.NoNews")</div>
+        }
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var owl = $('.owl-carousel1');
+        owl.owlCarousel({
+            rtl: true,
+            margin: 0,
+            nav: true,
+            loop: false,
+            responsive: {
+                0: { items: 1 },
+            },
+        });
+    })
+</script>

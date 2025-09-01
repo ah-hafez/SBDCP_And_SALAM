@@ -1,0 +1,28 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Framework.Controls.Mvc
+@model AjaxGrid<MCS.UI.Areas.Admin.Models.OrgUnit.OrgUnitLinkVM>
+
+@{
+    Layout = null;
+}
+
+@Html.Grid(Model, "_Grid").Named("grdOrgUnitLinks").Columns(columns =>
+    {
+        columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").Titled("", "<input type='checkbox' id='chkall'></input>")
+                                                  .RenderValueAs(o =>
+                                                    @<div class="chkCol" id="spanCheckBox">
+                                                        <input id="AssigneeSelectorcheckbox" type="checkbox" />
+                                                    </div>);
+
+        columns.Add(model => model.Key, true);
+        columns.Add(model => model.OrgUnitName).Titled(DbRes.TResource("Admin.OrgUnitLinks.OrgUnitName"));
+        columns.Add().Encoded(false).Sanitized(false).Css("hidden_").RenderValueAs(model => @Html.Hidden("departmentsStructureGrid", null, new { id = "hdnDepartmentsStructureGrid" }));
+        columns.Add().Encoded(false).Sanitized(false).Css("hidden_").RenderValueAs(model => @Html.Hidden("orgUnitKeyGrid", null, new { id = "hdnOrgUnitKeyGrid" }));
+        columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => @Html.ConfirmImageButton("DeleteOrgUnitLinks", "grdOrgUnitLinks", 1, "dvOrgUnitLinksGrid", "dvOrgUnitLinksGrid :input", null, "DeleteLinkSuccess", "", "post", "", "", ""));
+
+    }).WithPaging(GridHelper.PageSize).Sortable().Filterable().WithMultipleFilters().UpdateActionUrl(Url.Action("UpdateGridOrgUnitLink", "OrgUnitStructure")).RenderDeleteButton("DeleteOrgUnitLinks", 1, "dvOrgUnitLinksGrid :input", "dvOrgUnitLinksGrid", "DeleteLinkSuccess")
+
+<script>
+    $('#hdnDepartmentsStructureGrid').val($('#hdnSaveDepartmentsData').val());
+    $('#hdnOrgUnitKeyGrid').val($('#hdnOrgUnitKey').val());
+</script>

@@ -1,0 +1,10 @@
+﻿
+.Signature {
+    border-style: solid;
+    border-color: #d4d4d4;
+}
+
+.Signature button img{
+    width: 10px;
+    height: 20px;
+}

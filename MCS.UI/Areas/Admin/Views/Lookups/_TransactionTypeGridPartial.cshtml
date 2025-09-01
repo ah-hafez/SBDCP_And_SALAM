@@ -1,0 +1,37 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.Lookups
+@using MCS.GridMvc.Helpers;
+@using MCS.GridMvc.Html;
+@using MCS.Common;
+
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<TransactionTypeVM>
+@{
+    ViewBag.Title = "_TransactionSourceLookupGridPartial";
+}
+
+    @Html.Grid(Model).Named("TransactionType").Columns(columns =>
+    {
+        columns.Add(model => model.Id).Titled(DbRes.TResource("Admin.TransactionType.Id")).Css("hidden_");
+        columns.Add(model => model.Description[0].Text, "DescriptionAr").Titled(DbRes.TResource("Admin.Grid.TransactionType.ar"));
+        columns.Add(model => model.Description[1].Text, "DescriptionEn").Titled(DbRes.TResource("Admin.Grid.TransactionType.en"));
+
+    }).WithPaging(GridHelper.PageSize)
+
+<script>
+    var token = $("#dvAdd input[name='__RequestVerificationToken']").val()
+    var transactionTypeGridEventHandler = "@Url.Action("UpdateTransactionTypeGrid", "Lookups")?__RequestVerificationToken=" + token;
+    function prepareTransactionTypeGrid() {
+            $(".grid-mvc").gridmvc();
+            pageGrids.TransactionType.ajaxify({
+                getPagedData: transactionTypeGridEventHandler,
+                requestType: "get",
+                getData: transactionTypeGridEventHandler
+            });
+        }
+
+        $(document).ready(function () {
+            prepareTransactionTypeGrid();
+        });
+</script>
+
+

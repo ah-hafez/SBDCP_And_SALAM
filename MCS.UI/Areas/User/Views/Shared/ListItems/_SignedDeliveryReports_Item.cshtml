@@ -1,0 +1,53 @@
+﻿@using MCS.UI.Helpers
+@model MCS.UI.Areas.User.Models.Report.SignedDeliveryReportVM
+
+
+
+
+
+
+<div class="box-grid" data-id="@Model.Id">
+    <div class="box animated zoomIn buttons-action reddark">
+
+        <div class="correspondence-t">
+            <div class="d-flex">
+                @DbRes.TResource("Report.Number") 
+                <div class="mr-auto d-flex">
+                    <div class="pr-1" id="Number_@Model.Id">&nbsp; @Model.Number</div>
+
+                </div>
+            </div>
+        </div>
+        <div class="hover-area">
+            <div class="correspondence-h">
+                @DbRes.TResource("Report.Date")
+                <div class="title">
+                    @Model.DateH
+
+                </div>
+                <div>
+
+                </div>
+                @DbRes.TResource("Report.Time")
+                <div class="date">@Model.CreatedOn.TimeOfDay.ToString().Substring(0,5)</div>
+            </div>
+
+        </div>
+
+        <div class="correspondence-icon d-flex">
+            <div>
+                <a  title="@DbRes.TResource("User.UploadDeliveryReports.Name")" data-viewed="True" data-deliverymethodid="230" onclick="ShowDocumentViewer('@Model.DocumentId','@ViewData["DocumentSessionKey"]'); return false;">
+                    <img src="~/Content/User/lib/images/SystemIcon/main bar-14.svg" width="40" />
+                </a>
+
+
+            </div>
+
+
+
+        </div>
+       
+    </div>
+</div>
+
+

@@ -1,0 +1,104 @@
+﻿@model MCS.UI.TenantsAdmin.Models.Account.LoginInfoVM
+    @using MCS.Framework.Localization
+    @using MCS.UI.TenantsAdmin
+
+    @{
+        ViewBag.Title = DbRes.TResource("Tenant.Login.Title");
+        Layout = "~/Views/Shared/_EmptyLayout.cshtml";
+    }
+
+    <div id="dvUserLoginContainer" class="login-container">
+        <div class="login-box animated fadeInDown">
+            <div class="login-logo"></div>
+            <div class="login-body">
+                <div class="login-title"><strong>@DbRes.TResource("Tenant.Login.Welcome")</strong>@DbRes.TResource("Tenant.Login.PleaseEnter")</div>
+                @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmLogin", @class = "form-horizontal" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.Hidden("returnUrl", Request.QueryString["returnUrl"]);
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            @Html.TextBoxGroupFor(model => model.UserName, "Login", new { placeholder = DbRes.TResource("Tenant.Login.UserName"), @class = "form-control", autofocus = "autofocus" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            @Html.PasswordGroupFor(model => model.Password, "Login", new { placeholder = DbRes.TResource("Tenant.Login.Password"), @class = "form-control", @Value = Model.Password, @autocomplete = "off" })
+                            @Html.ValidationMessage("LoginInfoDTO", new { id = "spnValidationUserAndPassword" })
+                        </div>
+                    </div>
+                    <div class="checkbox">
+                        <div class="col-md-6">
+                            <label>
+                                @Html.CheckBoxFor(model => model.RememberMe, new { })
+                                @DbRes.TResource("Tenant.Login.RememberMe")
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            <a href="@Url.Action("ResetPassword")" class="btn btn-link btn-block">@DbRes.TResource("Tenant.Login.ForgetPassword")</a>
+                        </div>
+                        <div class="col-md-6">
+                            @Html.ActionButton(DbRes.TResource("Tenant.Login.Enter"), "Login", null, null, null, "OnSuccess", null, "post", "Login", "btnEnter", "frmLogin", "btn btn-info btn-block", clientFunctionToCall:"RemoveValidation")
+                        </div>
+                    </div>
+
+                }
+            </div>
+
+        </div>
+    </div>
+
+
+    <script>
+    $("#Password").keyup(function () {
+        if ($(this).val() == "") {
+            if (!$("#spnValidationUserAndPassword").hasClass("field-validation-valid")) {
+                $("#spnValidationUserAndPassword").addClass("field-validation-valid");
+            }
+        }
+    });
+
+    function RemoveValidation() {
+        $("#spnValidationUserAndPassword").html('');
+        $("#spnValidationUserAndPassword").removeClass("field-validation-error");
+
+        if (!$("#spnValidationUserAndPassword").hasClass("field-validation-valid")) {
+            $("#spnValidationUserAndPassword").addClass("field-validation-valid");
+        }
+        return true;
+    }
+
+    function OnSuccess(data) {
+
+        if (data.MessageType == 0) {
+            if (data.ReturnUrl) {
+                window.location.href = data.ReturnUrl;
+            }
+            else {
+              window.location.href = '@(MCS.UI.TenantsAdmin.UrlHelper.GetBaseUri() + "/Tenant/Index")';
+            }
+        }
+
+        if (data.MessageType == 2) {
+
+            $("#spnValidationUserAndPassword").html(data.MessageText);
+            $("#spnValidationUserAndPassword").removeClass("field-validation-valid");
+
+            if (!$("#spnValidationUserAndPassword").hasClass("field-validation-error")) {
+                $("#spnValidationUserAndPassword").addClass("field-validation-error");
+
+            }
+        }
+    }
+
+
+    $(document).on('keypress', function (e) {
+        if (e.keyCode == 13 || e.which == 13) {
+            $('#btnEnter').click();
+        }
+    });
+
+    </script>
+

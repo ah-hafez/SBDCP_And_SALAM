@@ -1,0 +1,50 @@
+﻿@using MCS.UI.Areas.User.Models.Notifications
+@model NotificationVM
+@{
+    string ClassValue = Model.IsRead ? string.Empty : " new-notification p-2";
+    string body = Model.Body.Replace("{BaseUrl}", MCS.UI.UrlHelper.GetBaseUri().ToString()).
+                             Replace("{sender}", Model.Sender).
+                             Replace("{Date}", Model.Date);
+    string iconHtml = string.Empty;
+    string valueIconDictionary;
+    bool hasValue = Constants.NotificationIcons.NotificationDetails.TryGetValue(((NotificationTemplateType)Model.NotificationTemplateTypeId).ToString(), out valueIconDictionary);
+    if (hasValue)
+    {
+        iconHtml = valueIconDictionary;
+    }
+}
+<div id="note_(@Model.Id)" onclick="MarkAsReadNotification(@Model.Id)" class="notification-row p-2@(ClassValue)">
+    @if (string.IsNullOrEmpty(Model.Link))
+    {
+        <div class="d-flex flex-wrap">
+            <div class="notif-col d-flex w-100 mx-4">
+                @Html.Raw(iconHtml)@*Icon*@
+                <div class=" flex-grow-1 mt-2">
+                    <h4 class="dark-color d-inline-block  m-0">@Model.Subject</h4>
+                    <div class="flex-column light-gray">
+                        @Model.Subject
+                        <div>@Model.Sender<span>@Model.Date</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    var link = Model.Link.Replace("{BaseUrl}", MCS.UI.UrlHelper.GetBaseUri().ToString());
+    <a href="">
+        <div class="d-flex flex-wrap">
+            <div class="notif-col d-flex w-100 mx-4">
+                @Html.Raw(iconHtml)@*Icon*@
+                <div class=" flex-grow-1 mt-2">
+                    <h4 class="dark-color d-inline-block  m-0">@Model.Subject</h4>
+                    <div class="flex-column light-gray">
+                        @Model.Subject
+                        <div>@Model.Sender <span>@Model.Date</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </a>
+}
+</div>

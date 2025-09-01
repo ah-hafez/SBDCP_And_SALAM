@@ -1,0 +1,106 @@
+﻿@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.Framework.Localization
+@model MCS.UI.Areas.User.Models.Transaction.SubTaskAddVM
+@using MCS.Common;
+
+@{
+    Layout = "~/Views/Shared/_DialogLayout.cshtml";
+
+}
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmAddSubTask" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("taskId", ViewData["taskId"])
+
+    @Html.Hidden("pageIndex", ViewData["pageIndex"])
+
+    @Html.Hidden("sentTasksPageIndex", ViewData["sentTasksPageIndex"])
+
+    @Html.Hidden("TransactionId", Model.TransactionId)
+
+    @Html.Partial("~/Areas/User/Views/Home/_AddSubTaskBody.cshtml", Model, new ViewDataDictionary { { "DepartmentsData", ViewData["DepartmentsData"] }, { "SelectedOrgUnitName", ViewData["SelectedOrgUnitName"] }, { "hdnTaskArray", ViewData["hdnTaskArray"] } });
+
+
+    <div class="panel-footer middle">
+        @Html.ActionButton(DbRes.TResource("User.Task.SubTaskAdd.Add"), "AddSubTask", null, null, null, "OnAppendSubTaskSuccess", null, "post", "AddSubTask", null, "frmAddSubTask", "btn btn-permissions pull-right", "CheckDeliveryDate")
+    </div>
+    <div id="dvGridContainer" class="row">
+        @Html.Partial("~/Areas/User/Views/Home/_SubTasksGridPartial.cshtml", ViewData["Grid"])
+    </div>
+    <div class="panel-footer">
+        <div class="row">
+            @Html.ActionButton(DbRes.TResource("User.Task.SubTaskAdd.Save"), "PostSubTasks", null, null, null, "OnAddSubTasksSuccess", null, "post", "", null, "frmAddSubTask", "btn btn-permissions pull-right", null, UserClaims.Tasks.Sub)
+        </div>
+    </div>
+}
+
+<script>
+    $(document).ready(function () {
+
+        $('#ddlToUser').change(function () {
+            $('#hdnTaskToUserName').val($('#ddlToUser').val());
+        });
+    });
+
+    function CheckDeliveryDate() {
+
+        if ($("#hdnToDateGreg").val() != "") {
+            var dateNow = $.datepicker.formatDate('dd/mm/yy', new Date($.now()));
+            var currentDate = convertdate(dateNow);
+            var selectedDate = convertdate($("#hdnToDateGreg").val());
+
+            if (selectedDate < currentDate) {
+                ShowErrorMessage('@Html.Raw(DbRes.TValidation("User.Inbound.RemindDateCompare"))');
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function GetUsersByOrgUnitId() {
+
+        if ($('input[data-container="treeToOrgUnit"].hdnDepartmentId').val() != "") {
+
+            $("#hdnTaskToOrgUnitName").val($('input[data-container="treeToOrgUnit"].txtDepartmentName').val());
+
+            var taskId = $("#taskId").val();
+
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("GetUsersByOrgUnitId")',
+                data: { ToOrgUnitId: $('input[data-container="treeToOrgUnit"].hdnDepartmentId').val(), taskId: taskId },
+                success:
+               function (data) {
+                   $("#ddlToUser").val("");
+                   $("#hdnToUser").val("");
+                   AutoCompleteChangeList("ddlToUser", data);
+                   $("#ddlToUser").prop('disabled', false);
+               }
+            });
+            return false;
+        }
+        else {
+            $("#ddlToUser").prop('disabled', true);
+            $("#ddlToUser").val("");
+            $("#hdnToUser").val("");
+            AutoCompleteChangeList("ddlToUser", "[]");
+        }
+    }
+
+    function OnAppendSubTaskSuccess(data) {
+        $("#hdnTaskArray").val(data.hdnValue);
+        $('#dvGridContainer').html(data.Html);
+    }
+
+
+    function OnDeleteTasksSuccess(data, div) {
+
+
+        $("#hdnTaskArray").val(data.hdnValue);
+        $('#dvGridContainer').html(data.Html);
+    }
+</script>
+
+

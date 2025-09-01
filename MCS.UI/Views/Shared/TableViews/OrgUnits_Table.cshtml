@@ -1,0 +1,71 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.File
+@using MCS.Common
+
+<div id="TransactionTable" class="d-flex flex-wrap mx-auto mx-md-4">
+    <table class="table tbody-shadow tables-view">
+        <thead class="thead-light">
+            <tr>
+                <th class="text-primary"></th>
+
+                <th scope="col" class="text-primary">الرقم</th>
+                @*<th class="text-primary" scope="col">نوع المعاملة</th>*@
+                <th class="text-primary">الإدارة المنشأة/واردة من</th>
+                <th class="text-primary" scope="col">الموضوع</th>
+                <th class="text-primary" style="width:150px">التاريخ</th>
+                @*<th class="text-primary" scope="col">@DbRes.TResource("User.Transaction.Assignment.DeliveryMethod")</th>*@
+                <th class="text-primary" scope="col">@DbRes.TResource("User.File.Priority")</th>
+                <th class="text-primary" scope="col">@DbRes.TResource("User.File.Confidentiality")</th>
+                @*<th class="text-primary" scope="col"> @DbRes.TResource("Admin.AssignmentPaperActions.Action")</th>*@
+                <th class="text-primary">
+                    @DbRes.TResource("User.Transaction.AssigmentFrom")
+                    @*@DbRes.TResource("User.File.AssignDate")*@
+                </th>
+                <th class="text-primary">
+                    @DbRes.TResource("User.File.AssignDate")
+                </th>
+                @*<th class="text-primary">
+            @DbRes.TResource("User.Transaction.AssignmentFromEntity")
+        </th>
+        <th class="text-primary">
+            @DbRes.TResource("User.TransactionCertificate.SenderName")
+        </th>*@
+                @*<th class="text-primary" scope="col">المرفقات</th>*@
+                <th class="text-primary" scope="col">اجراءات</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (TransactionTrayInfoVM transaction in (List<TransactionTrayInfoVM>)Session["tableGridItems"])
+            {
+                {
+                    string className = "result";
+                    string classNameTo = "result";
+                    if (transaction.TransactionDetailsInfoVM.ConfidentialityId == 28 || transaction.TransactionDetailsInfoVM.ConfidentialityId == 29)
+                    {
+                        className = "resultReed";
+                    }
+                    if (transaction.TransactionDetailsInfoVM.TransactionTypeId == 2)
+                    {
+                        classNameTo = "resultReed";
+                    }
+                    ViewData["className"] = className;
+                    ViewData["classNameTo"] = classNameTo;
+                }
+
+                bool isViewed = false;
+                string isViewedHeaderClass = "correspondence-t";
+                if (transaction.TransactionAssignmentInfoVMs != null && transaction.TransactionAssignmentInfoVMs.Count > 0)
+                {
+                    isViewed = transaction.TransactionAssignmentInfoVMs.FirstOrDefault().Viewed;
+                }
+                isViewedHeaderClass = isViewed ? "correspondence-t" : "correspondence-t correspondence-t-notviewed bold ";
+
+                ViewData["isViewed"] = isViewed;
+                ViewData["isViewedHeaderClass"] = isViewedHeaderClass;
+
+                @Html.Partial("~/Areas/User/Views/Shared/ListItems/_OrgunitTableItem.cshtml", transaction)
+            }
+        </tbody>
+    </table>
+</div>
+

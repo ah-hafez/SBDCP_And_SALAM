@@ -1,0 +1,81 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Report;
+@using MCS.Framework.Encryption;
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<SentTransactionGridResultVM>
+@using MCS.UI.Helpers
+
+@{
+    List<int> columnsToGrid = ViewData["ColumnsToGrid"] == null ? new List<int>() : (List<int>)ViewData["ColumnsToGrid"];
+}
+
+@Html.Grid(Model).Named("GridTransactionReportStatus").CollectionName("TransactionResults").Columns(columns =>
+{
+    columns.Add(model => model.NumberWithDate, false).Titled(DbRes.TResource("User.SubjectSearch.Number"));
+    columns.Add(model => model.TransactionCategoryText, false).Titled(DbRes.TResource("User.OutboundExternal.BasicInfo.Type"));
+    columns.Add(model => model.FromEntityText, false).Titled(DbRes.TResource("User.TransactionCertificate.SenderDepartmentName"));
+    columns.Add(model => model.ToEntityText, false).Titled(DbRes.TResource("User.TransactionCertificate.ReceiverDepartmentName"));
+    columns.Add(model => model.AssignedDate, false).Titled(DbRes.TResource("User.File.AssignDate"));
+    columns.Add(model => model.ConfidentialityText, false).Titled(DbRes.TResource("User.Transaction.ConfidentialityLevel"));
+    columns.Add(model => model.TransactionStatus, false).Titled(DbRes.TResource("User.SubjectSearch.TransactionStatus"));
+    columns.Add(model => model.PriorityText, false).Titled(DbRes.TResource("User.Transaction.PriorityLevel"));
+    columns.Add(model => model.TransactionPhysicalOwner, false).Titled(DbRes.TResource("User.Transaction.PhysicalOwner"));
+    columns.Add(model => model.TransactionElcOwner, false).Titled(DbRes.TResource("User.Transaction.ElcOwner"));
+    columns.Add(model => model.SentStatus, false).Titled(DbRes.TResource("User.Transaction.SentStatus"));
+
+
+
+
+}).WithPaging(UIHelper.PageSize)
+<style>
+    .correspondence-icon {
+        background-color: transparent;
+        padding: 0px;
+    }
+</style>
+
+<script>
+    var isHubEditable = '@AESEncrytDecry.Base64Encode("false")';
+    var myManagerGridEventHandler = "@Url.Action("SentTransactionStatusSearch", "Reports")";
+    function prepareTransactionReportGrid() {
+        $(".grid-mvc").gridmvc();
+        var token = $("#FormTransactionSearch").find("input[name='__RequestVerificationToken']").val();
+        var searchCriteriaData = JSON.parse(JSON.stringify(searchCriteria.data));
+        searchCriteriaData.push({ name: '__RequestVerificationToken', value: token });
+        pageGrids.GridTransactionReportStatus.ajaxify({
+            getPagedData: myManagerGridEventHandler,
+            requestType: "post",
+            getData: myManagerGridEventHandler,
+            optionalData: searchCriteriaData
+        });
+    }
+
+    $(document).ready(function () {
+        prepareTransactionReportGrid();
+
+    });
+
+
+
+
+
+
+    function ShowPrintDialog(id) {
+        var params = { transactionId: id };
+        ShowDialogAjaxPrintingBarcodes('@Url.Action("PrinttingBarcodes","Shared")' + "?" + $.param(params), {}, 'OpenPrintDialogSuccess', 'dialogbox col-md-12 ');
+    }
+
+    function OpenPrintDialogSuccess(data, $obj) {
+        if (data.MessageType != 2) {
+            $obj.setContent(data.Html);
+        }
+        else {
+            __dialog.close();
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function ShowVisitTickect(id) {
+        var actionUrl = '@Url.Action("PrintTicket", "Shared")' + "?transactionId=" + id;
+        PrintButton(actionUrl);
+    }
+</script>

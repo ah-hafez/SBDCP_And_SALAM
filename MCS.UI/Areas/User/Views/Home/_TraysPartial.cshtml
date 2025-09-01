@@ -1,0 +1,153 @@
+﻿@using MCS.UI.Areas.User.Models.File
+@using MCS.Common
+@using MCS.UI.TraysUISettings
+@using MCS.Framework.Localization
+@model List<TrayDetailsVM>
+
+@{int count = 0; }
+@if (Model == null)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <div class="index_none">
+                <div class="none_icon">
+                    <img src="~/Content/User/theme/images/index_none.png" class="">
+                </div>
+                <div class="none_main_text">
+                    @DbRes.TResource("User.Home.NoTraysForUserCategory")
+                </div>
+                <div class="none_sub_text">
+                    @DbRes.TResource("User.Home.ForMoreInformationBackToAdmin")
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+
+    if (Model.Count == 0 || !SessionInfo.CurrentUser.Claims.Contains(UserClaims.Files.File))
+    {
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="index_none">
+                    <div class="none_icon">
+                        <img src="~/Content/User/lib/images/morasalat/index_none.png" class="">
+                    </div>
+                    <div class="none_main_text">
+                        @DbRes.TResource("User.Home.NoTraysForUserCategory")
+                    </div>
+                    <div class="none_sub_text">
+                        @DbRes.TResource("User.Home.ForMoreInformationBackToAdmin")
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    }
+    else
+    {
+        <div class="row owl">
+            <div id="owl-demo" class="owl-carousel owl-theme owl-box">
+                @{List<Tray> styles = (List<Tray>)ViewData["trayStyle"];}
+                @foreach (TrayDetailsVM trayDetailsVM in Model)
+                {
+                    if (!trayDetailsVM.IsExcluded)
+                    {
+                        count++;
+
+                        Tray trayStyle = styles.Where(s => s.Id == trayDetailsVM.Id).FirstOrDefault();
+                        //Nasser
+                        if (trayStyle == null)
+                        {
+                            trayStyle = styles[0];
+                        }
+                        string imageUrl = trayStyle.ImageURL.Replace("{CultureName}", SessionInfo.CultureShortName);
+                        <div class="item">
+                            <div class="widget boxes @trayStyle.Color">
+                                <a href="@GetTrayUrl(trayDetailsVM.Id)">
+                                    <div class="number_of-box">@trayDetailsVM.AllTransactionCount</div>
+                                    <div class="title_box">
+                                        <span>@trayDetailsVM.Name</span>
+                                    </div>
+                                    <div class="for_this_day"><em>@trayDetailsVM.TodayTransactionCount</em>@DbRes.TResource("User.Home.ForThisDay")</div>
+                                    <div class="icon-box"><img src="@imageUrl"></div>
+                                </a>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+
+            <script>
+
+                $(document).ready(function () {
+
+                    var __dirOwl = true;
+                    if (__cultureName == "en") {
+                        __dirOwl = false;
+                    }
+
+                    var trayCount = '@count';
+                    var size1000 = 5;
+                    var size700 = 4;
+                    var size500 = 3;
+
+                    if (trayCount < size1000) {
+                        size1000 = trayCount;
+                    }
+                    if (trayCount < size700) {
+                        size700 = trayCount;
+                    }
+                    if (trayCount < size500) {
+                        size500 = trayCount;
+                    }
+
+                    $('#owl-demo').owlCarousel({
+                        rtl: __dirOwl,
+                        margin: 0,
+                        nav: true,
+                        loop: false,
+                        responsive: {
+                            0: { items: 1 },
+                            500: { items: size500 },
+                            700: { items: size700 },
+                            1000: { items: size1000 }
+                        },
+                    });
+                });
+
+
+            </script>
+        </div>
+    }
+}
+@helper GetTrayUrl(int trayId)
+{
+    switch ((TrayType)trayId)
+    {
+        case TrayType.MyTransactions:
+            @(Url.Action("MyTransactions", "File"));
+            break;
+        case TrayType.DraftOutbound:
+            @(Url.Action("DraftOutbound", "File"));
+            break;
+        case TrayType.SentTransactions:
+            @(Url.Action("SentTransactions", "File"));
+            break;
+        case TrayType.Saved:
+            @(Url.Action("Saved", "File"));
+            break;
+        case TrayType.OrgUnit:
+            @(Url.Action("OrgUnit", "File"));
+            break;
+        case TrayType.Manager:
+            @(Url.Action("Manager", "File"));
+            break;
+        case TrayType.Copies:
+            @(Url.Action("Copies", "File"));
+            break;
+    }
+
+}

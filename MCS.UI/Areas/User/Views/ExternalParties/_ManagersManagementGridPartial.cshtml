@@ -1,0 +1,11 @@
+﻿@model AjaxGrid<MCS.UI.Areas.User.Models.ExternalParties.ManagerVM>
+@{
+    Layout = null;
+}
+@Html.Grid(Model).Named("Managers").Columns(columns =>
+    {
+        columns.Add(model => model.Id).Titled(DbRes.TResource("User.ExternalParty.Id"));
+        columns.Add(model => model.LocalName, "Name").Titled(DbRes.TResource("User.ExternalParty.Name"));
+        columns.Add().Encoded(false).Sanitized(false).Css("fixed_col text-right site-danger action-icon").RenderValueAs(model => @Html.GridImageButton("GetManager", "Managers", 0, OperationType.Update, "EditDiv", "", null, "ShowEditDiv", "", "get"));
+
+    }).WithPaging(GridHelper.PageSize).UpdateActionUrl(Url.Action("UpdateManagersGrid"))

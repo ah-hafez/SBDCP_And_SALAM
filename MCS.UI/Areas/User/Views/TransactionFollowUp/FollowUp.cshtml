@@ -1,0 +1,38 @@
+﻿@model MCS.UI.Areas.User.Models.Transaction.FollowUpCertificateVM
+@using MCS.UI.Areas.User.Models.Transaction;
+@using MCS.UI.Areas.User.Models.Assignment;
+@using MCS.Framework.Localization
+@using MCS.Common
+@using MCS.UI.Helpers
+
+
+@{
+
+    Layout = "~/Areas/User/Views/Shared/_SearchLayout.cshtml";
+    var followUpVM = new TransactionFollowUpVM() { FollowUps = (AjaxGrid<TransactionFollowUpVM>)new AjaxGridFactory().CreateAjaxGrid(Model.FollowUps, 1, Model.FollowUps.Count, false) };
+
+}
+<script src=@Url.Content("~/Content/User/lib/js/app.min.js")></script>
+<script src="~/Scripts/Transaction.js"></script>  @Html.Hidden("hdnTransactionID", Model.TransactionId)
+@Html.Hidden("hdnFollowUpID", Model.FollowUpId)
+
+@using (Html.BeginForm("SaveFollowUp", "TransactionFollowUp", FormMethod.Post, new { id = "FollowUpFollowUpForm" }))
+{
+
+
+    @Html.AntiForgeryToken()
+    <div class="mb-5">
+        <br/>
+        <div>
+            <a href='@Url.Action("FollowUp", "File", new { area = "user" })'>
+                <i class="fa fa-arrow-left" style="font-size:25px; position:absolute; left:27px;" title="@DbRes.TResource("User.Internalinbound.Back")"></i>
+            </a>
+        </div>
+    </div>
+    <div role="tabpanel" class="white-container mx-5 mx-xs-3">
+        <div class="">
+            @Html.Partial("~/Areas/User/Views/TransactionFollowUp/_FollowUpCertificate.cshtml", Model)
+
+        </div>
+    </div>
+}

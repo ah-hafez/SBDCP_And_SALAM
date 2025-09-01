@@ -1,0 +1,19 @@
+﻿@model AjaxGrid<MCS.UI.Areas.User.Models.AssignmentGroupDetailVM>
+
+@{int index = 0;}
+@{string controller = ViewData["ControllerName"] != null ? ViewData["ControllerName"].ToString() : ViewContext.RouteData.Values["controller"].ToString();}
+
+@Html.Grid(Model).Named("grdAssignmentDetails").Columns(columns =>
+ {
+        columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").Titled("", "<input type='checkbox' id='chkall'></input>")
+                                          .RenderValueAs(o =>
+                                            @<div class="chkCol" id="spanCheckBox">
+                                                <input id="AssigneeSelectorcheckbox" type="checkbox" />
+                                            </div>);
+
+                columns.Add(true).RenderValueAs(m => (index++).ToString());
+                columns.Add(model => model.OrgUnitName).Titled(DbRes.TResource("User.Transaction.AssignmentDetail.OrgUnitId"));
+                columns.Add(model => model.UserProfileName).Titled(DbRes.TResource("User.Transaction.AssignmentDetail.UserProfileId"));
+
+                columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => Html.ConfirmImageButton(Url.Action("DeleteEditorAssignmentDetails", controller), "grdAssignmentDetails", 1, "dvAssignmentDetailsGrid", "dvAssignmentDetailBody :input", null, "OnDeleteAssignmentDetailsSuccess", null, "post", DbRes.TResource("Grid.DeleteMassage"))).Titled(DbRes.TResource("Grid.Delete"));
+}).WithPaging(GridHelper.PageSize).Sortable().Filterable().WithMultipleFilters().UpdateActionUrl(Url.Action("UpdateGridEditorAssignmentDetails", controller)).RenderDeleteButton(Url.Action("DeleteEditorAssignmentDetails", controller), 1, "dvAssignmentDetailBody :input", "dvAssignmentDetailsGrid", "OnDeleteAssignmentDetailsSuccess")

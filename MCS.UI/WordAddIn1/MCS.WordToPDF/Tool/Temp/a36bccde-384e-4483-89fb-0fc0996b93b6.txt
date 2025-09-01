@@ -1,0 +1,1 @@
+Class not registered (Exception from HRESULT: 0x80040154 (REGDB_E_CLASSNOTREG))

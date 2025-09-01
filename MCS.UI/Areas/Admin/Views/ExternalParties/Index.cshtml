@@ -1,0 +1,400 @@
+﻿@*@using MCS.Framework.Localization
+    @using MCS.UI.Areas.User.Models.ExternalParties
+    @model ExternalPartyViewModel
+
+    @{
+        ViewBag.Title = DbRes.TResource("Admin.ExternalParty.ExternalParty");
+        Layout = "~/Areas/Admin/Views/Shared/_OrgUnitStructureLayout.cshtml";//comment out with ajax call
+    }
+    <script src="~/Content/Admin/lib/js/plugins/jstree/jstree.search.js"></script>
+    <script>
+        var node;
+        var selectedNodeId;
+    </script>
+    <div class="page-title">
+        <h2><span class="fa fa-arrow-circle-o-left"></span>@DbRes.TResource("Admin.ExternalParty.ExternalParty")</h2>
+    </div>
+    <div class="page-content-wrap">
+        <div class="row">
+            <div id="TreeDiv" class="col-md-3">
+                @Html.Partial("_ExternalPartiesTreePartial", new MCS.Common.TreeViewModel())
+            </div>
+            <div class="col-md-9">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">@DbRes.TResource("Admin.ExternalParty.PartyInformation")</h3>
+                    </div>
+                    <div class="panel-body">
+                        <p>@DbRes.TResource("Global.Forms.MandatoryFields")</p>
+                        <div class="row" id="AddExternalParty">
+                            @Html.Partial("_ExternalPartiesAddPartial", Model.AddExternalParty)
+                        </div>
+                        <div class="row" id="EditExternalParty" style="display:none;">
+                            @Html.Partial("_ExternalPartiesEditPartial", Model.EditExternalParty)
+                        </div>
+                    </div>
+                    <div class="panel-body" id="AddManager" style="display:none;">
+                        @Html.Partial("ManagersManagement", new ManagersManagementViewModel())
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+
+
+        function AddNewNode(node) {
+            var parent = $('#jstree_default').jstree('get_node', node.parent);
+            if ((parent && parent.state && parent.state.opened == true) || $("#" + parent.id).hasClass("jstree-leaf")) {
+                $('#jstree_default').jstree().create_node(node.parent, { "id": node.id, "text": node.text, "state": { "opened": true, "selected": true }, }, "inside", function (data) {
+                    $('#jstree_default').jstree('open_node', $("li#" + data.parent));
+                    $('#jstree_default').jstree('deselect_node', $("li#" + data.parent));
+                });
+            }
+        }
+
+        $(function () {
+
+            $('#jstree_default').jstree({
+
+                "plugins": ["search"],
+                'core': {
+                    'data': {
+                        'url': function (node) {
+
+                            return node.id === '#' ? "@Url.Action("GetExternalPartyRoot", "ExternalParties")" : "@Url.Action("GetExternalPartyChilds", "ExternalParties")" + "?id=" + node.id;
+
+                        },
+                        'data': function (node) {
+                            return { 'id': node.id };
+                        }
+                    },
+                    check_callback: true
+                },
+                'search': {
+                    'fuzzy': false,
+                    'ajax': {
+                        'url': "@Url.Action("GetExternalParties", "ExternalParties")",
+                        'data': function (str) {
+                            return { "search_str": str };
+                        },
+                        "success": function (data) {
+
+                        }
+                    },
+                    "show_only_matches": true,
+                },
+            });
+
+            var to = false;
+            $('#cctreesearchBtn').click(function (event) {
+                doJstreeSearch();
+            });
+            $('#treeSearch').keyup(function (event) {
+                var keypressed = event.keyCode || event.which;
+                if (keypressed == 13) {
+                    doJstreeSearch();
+                }
+            });
+            function doJstreeSearch() {
+                if (to) {
+                    clearTimeout(to);
+                }
+                to = setTimeout(function () {
+                    var v = $('#treeSearch').val();
+                    $('#jstree_default').jstree(true).search(v);
+
+                });
+            }
+
+        });
+
+        $(document).on('click', '.jstree-anchor', function (e) {
+            e.stopPropagation();
+            node = $(this).parent();
+            var nodeId = $(this).jstree('get_selected')[0];
+            if (nodeId != "root") {
+                OpenEditView(nodeId)
+            }
+        });
+
+        function OpenEditView(nodeId) {
+
+            $.ajax({
+                cache: false,
+                type: "GET",
+                url: '@Url.Action("GetPartyById", "ExternalParties")',
+                data: { "id": nodeId },
+                success: function (response) {
+
+                    $('#EditExternalParty').html('');
+                    $('#EditExternalParty').html(response.EditHtml);
+                    $("#AddManager").html('');
+                    $("#AddManager").html(response.ManagersHtml);
+
+                    jQuery.validator.unobtrusive.parse('#EditExternalParty');
+                    jQuery.validator.unobtrusive.parse('#AddManager');
+                }
+            });
+
+            $("#AddExternalParty").css("display", "none");
+            $("#EditExternalParty").css("display", "block");
+            $("#AddManager").css("display", "block");
+        }
+
+        function RefreshJsTree(div) {
+            var trees = $("#" + div).find('.tree');
+            for (var i = 0; i < trees.length; i++)
+                $("#" + trees[i].id).jstree({
+                    "search": {
+                        "case_insensitive": true,
+                        "show_only_matches": true
+                    },
+                    "plugins": ["search"]
+                });
+        }
+
+        function AddUnit(action) {
+
+            var parentId = null;
+
+            if (action == 1)
+                parentId = $('#jstree_default').jstree('get_node', $('#jstree_default').jstree('get_selected')[0]).id;
+
+            if ((action == 0) && ($('#jstree_default').jstree('get_selected')[0] != "root"))
+                parentId = $('#jstree_default').jstree('get_selected')[0];
+
+            $(".empty").val("")
+            $("#hdnParentId").val(parentId);
+
+            $("#AddExternalParty").css("display", "block");
+            $("#EditExternalParty").css("display", "none");
+            $("#AddManager").css("display", "none");
+            $("#Addfooter").removeClass("middle");
+
+            GeneratePartyNumber(parentId);
+        }
+        function DeleteNode() {
+
+            var nodeId = $('#jstree_default').jstree('get_selected')[0];
+
+            if (nodeId != null && nodeId != "root") {
+
+                if (nodeId.length != 0) {
+                    $.ajax({
+                        cache: false,
+                        type: "Post",
+                        url: '@Url.Action("DeleteExternalParty", "ExternalParties")',
+                        data: { "ids": nodeId },
+                        success: function (data) {
+
+                            if (data.MessageType != 2) {
+
+                                if (data.ExteralPartyUsedList.length == 0) {
+                                    $('#jstree_default').jstree(true).delete_node($('#jstree_default').jstree('get_selected'));
+
+                                    jQuery.validator.unobtrusive.parse('#TreeDiv');
+
+
+                                    AddUnit(0)
+
+                                    ShowSuccesMessage(data.MessageText);
+                                }
+                                else {
+
+                                    var treeData = data.ExteralPartyList;
+
+                                    var msg = '';
+
+                                    for (var i = 0; i < data.ExteralPartyUsedList.length; i++) {
+
+                                        for (var y = 0; y < treeData.length; y++) {
+
+                                            if (treeData[y].Id == data.ExteralPartyUsedList[i]) {
+
+                                                if (msg == '')
+                                                    msg = treeData[y].LocalName;
+                                                else
+                                                    msg = msg + '</br>' + treeData[y].LocalName;
+                                            }
+                                        }
+                                    }
+
+                                    msg = '@DbRes.TResource("Admin.ExternalParty.DeleteExternalPartiesErrorMsg")' + '</br>' + msg;
+
+                                    ShowErrorMessage(msg);
+                                }
+                            }
+                        }
+                    });
+
+                    $("#AddExternalParty").css("display", "block");
+                    $("#EditExternalParty").css("display", "none");
+                    $("#AddManager").css("display", "none");
+                }
+            }
+        }
+
+        function OpenTreeNode(id) {
+            $('#jstree_default').find("[id=" + id + "]").parent().parent().removeClass('jstree-closed');
+            $('#jstree_default').find("[id=" + id + "]").parent().parent().addClass('jstree-open');
+
+            var parentNode = $('*[node=' + id + ']').parent().parent().attr('node');
+
+            if (parentNode != 0)
+                OpenTreeNode(parentNode);
+        }
+
+        function GeneratePartyNumber(parentId) {
+            if (parentId != undefined && parentId == "root") {
+                parentId = null;
+            }
+
+            $.ajax({
+                cache: false,
+                type: "GET",
+                url: '@Url.Action("GenerateExternalPartyNumber", "ExternalParties")',
+                data: { "id": parentId },
+                success: function (response) {
+                    $('#frmAddParty #PartyNumber').val(response);
+                }
+            });
+        }
+
+    </script>*@
+
+
+
+@using MCS.Framework.Localization
+@using MCS.Common
+@{
+    ViewBag.Title = DbRes.TResource("Admin.ExternalParty.ExternalParty");
+    Layout = "~/Areas/Admin/Views/Shared/_OrgUnitStructureLayout.cshtml";
+}
+
+<body class="vertical-menu 2-columns   menu-flipped fixed-navbar " data-open="click"
+      data-menu="vertical-menu" data-col="2-columns" dir="rtl">
+    <div class="container-all">
+        <div class="mx-3 mx-md-5 header-container d-flex flex-row align-items-center ">
+            <div class="d-flex flex-column flex-lg-row align-items-lg-center flex-grow-1 mb-3 mb-lg-0">
+                <h3 class="site-color mb-2 mb-lg-4">@DbRes.TResource("Admin.ExternalParty.ExternalParty")</h3>
+            </div>
+            @*<div class="ml-lg-auto d-flex flex-column flex-md-row">
+                <div class="filter-link ml-lg-auto mr-lg-3 my-2 mt-lg-auto ">
+                    <a class="dashed-circle search-target" href="#">
+                        <i class="fas fa-search"></i>
+                        @DbRes.TResource("User.File.Search")
+                    </a>
+                </div>
+            </div>*@
+
+        </div>
+        @*<div class="filter-box search mx-3 mx-md-5 white-container mt-2">
+
+        </div>*@
+        @Html.Partial("~/Areas/Admin/Views/ExternalParties/_ExternalPartiesRootTreeViewPartial.cshtml", Html.ViewData);
+    </div>
+</body>
+<script>
+function UsersProfileSearch() {
+        var filter = "";
+        var token = $("#frmUsersSearch input[name='__RequestVerificationToken']").val();
+
+    if ($("#hdnExternalPartiesNumber").val() != "" && $("#hdnExternalPartiesNumber").val() != null) {
+
+            if (filter.length > 0) {
+                filter += "&";
+            }
+        filter += "ExternalPartiesNumber__1__" + $("#hdnExternalPartiesNumber").val();
+        }
+
+    if ($("#hdnExternalPartiesName").val() != "" && $("#hdnExternalPartiesName").val() != null) {
+
+        filter += "ExternalPartiesName__1__" + $("#hdnExternalPartiesName").val();
+        }
+
+        $("#filterData").val(filter);
+        $.ajax({
+            type: 'post',
+            data: { filter: filter, __RequestVerificationToken: token},
+            url: '@Url.Action("UsersProfileSearch", "User")',
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    $("#dvUsersGrid").html("");
+                    $("#dvUsersGrid").html(data.Html);
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            }
+        });
+    }
+    function redirect() {
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("Index", "ExternalParties", new { area="Admin"})';
+                        }, 2000);
+                    }
+
+    function DeleteNode(id) {
+
+        var nodeId = id;
+
+        if (nodeId != null && nodeId != "root") {
+
+            if (nodeId.length != 0) {
+                $.ajax({
+                    cache: false,
+                    type: "Post",
+                    url: '@Url.Action("DeleteExternalParty", "ExternalParties")',
+                    data: { "ids": nodeId },
+                    success: function (data) {
+
+                        if (data.MessageType != 2) {
+
+                            if (data.ExteralPartyUsedList.length == 0) {
+                                ShowSuccesMessage(data.MessageText, redirect());
+                            }
+                            else {
+
+                                var treeData = data.ExteralPartyList;
+
+                                var msg = '';
+
+                                for (var i = 0; i < data.ExteralPartyUsedList.length; i++) {
+
+                                    for (var y = 0; y < treeData.length; y++) {
+
+                                        if (treeData[y].Id == data.ExteralPartyUsedList[i]) {
+
+                                            if (msg == '')
+                                                msg = treeData[y].LocalName;
+                                            else
+                                                msg = msg + '</br>' + treeData[y].LocalName;
+                                        }
+                                    }
+                                }
+
+                                msg = '@DbRes.TResource("Admin.ExternalParty.DeleteExternalPartiesErrorMsg")' + '</br>' + msg;
+
+                                ShowErrorMessage(msg);
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    }
+    $(document).ready(function () {
+
+        $('.search-target').click(function () {
+            $('.filter-box.search').slideToggle('fast');
+            $('.sort-target').removeClass("active");
+            $('.filter-target').removeClass("active");
+            $(this).toggleClass("active");
+            $('.filter-box.filter').hide();
+            $('.filter-box.sort').hide();
+
+        });
+    });
+
+</script>

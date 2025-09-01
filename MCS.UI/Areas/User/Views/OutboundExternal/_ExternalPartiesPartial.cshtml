@@ -1,0 +1,18 @@
+﻿@model MCS.UI.Areas.User.Models.ExternalParties.OutboundExternalPartiesVM
+@using MCS.Common;
+
+<script>
+    var Regiterd = '@ViewData["isYesserRegisterd"]';
+    $(document).ready(function () {
+        $('#YesserRegisterd').val(Regiterd);
+    });
+</script>
+
+@Html.StickyHidden("YesserRegisterd", "", null)
+<div class="externalParties">
+    <fieldset class="field-set">
+        @Html.DepartmentsTreeOnDemand(ViewData["ExternalPartiesData"] as TreeViewModel, model => model.DestinationId, TreeMode.Single, "dvDestinationTree", true, "GetDestinationUsersByOrgUnitId", "", "divContainerExternalParties", false)
+    </fieldset>
+
+  
+</div>

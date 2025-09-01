@@ -1,0 +1,135 @@
+﻿@using MCS.UI.Areas.User.Models;
+@using MCS.UI.Areas.User.Models.Shared;
+@using MCS.UI.Areas.User.Models.Transaction;
+@using MCS.UI.Common
+@using MCS.Framework.Localization;
+@using MCS.Common
+@model EditorViewModel
+@{
+    ViewBag.Title = "Index";
+    bool isVIP = (bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser);
+    if (!isVIP)
+    {
+        Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Areas/User/Views/Shared/_VIPLayout.cshtml";
+    }
+    var archivesVm = new TransactionArchiveVM { Archives = (AjaxGrid<TransactionArchiveVM>)new AjaxGridFactory().CreateAjaxGrid(Model.Archives, 1, Model.Archives.Count, false) };
+    var linksVm = new TransactionLinkVM { Links = (AjaxGrid<TransactionLinkVM>)new AjaxGridFactory().CreateAjaxGrid(Model.TransactionBasicInfoVM.Links, 1, Model.TransactionBasicInfoVM.Links.Count, false) };
+
+    var doconutIframeUrl = UIConfigurations.GetFullURl() + string.Format("{0}?sIncludedItemDoc=true&hidecontrols=true&hideAllcontrols=true&showwatermark={1}", SystemConfigurations.DoconutIframeUrl, "true");
+    bool isEditMode = false;
+    Session["IsEditMode"] = isEditMode;
+}
+<script src="~/Scripts/Transaction.js"></script>
+<script>
+    var archiveMode = '@isEditMode';
+</script>
+<div class="expanded-container">
+
+    <div class="content_container content_container--body transparent-bg">
+        <div class="options-list row anchor">
+            <div class="col-xs-4 col-sm-2 text-center" id="basicInfor">
+                <a href="#" id="first" class="boardered-circle-transparent active" data-divid="first-tab"><i class="uicon icon_folder1"></i></a>
+                <a href="#" data-id="first" data-divid="first-tab">  @DbRes.TResource("User.Editor.BasicInfo")</a>
+            </div>
+            <div class="col-xs-4 col-sm-2 text-center" id="transactionAttachment">
+                <a href="#" id="second" class="boardered-circle-transparent" data-divid="second-tab"><i class="uicon icon_folder2"></i></a>
+                <a href="#" data-id="second" data-divid="second-tab"> @DbRes.TResource("User.Editor.Explanations")</a>
+            </div>
+            <div class="col-xs-4 col-sm-2 text-center" id="electronicCopies">
+                <a href="#" id="third" class="boardered-circle-transparent" data-divid="third-tab"><i class="uicon icon_folder4"></i></a>
+                <a href="#" data-id="third" data-divid="third-tab"> @DbRes.TResource("User.OutboundDraft.ElectronicCopies")</a>
+            </div>
+        </div>
+    </div>
+    @Html.Hidden("hdnCurrentTransactionId", ViewData["TransactionId"], new { @id = "hdnTransactionId" })
+    <div class="tabscontent" id="first-tab">
+        @Html.Partial("~/Areas/User/Views/Editor/EditorOutboundInternal/_OutboundInternalBasicInfoPartial.cshtml", Model.TransactionBasicInfoVM)
+
+        @*@Html.Partial("~/Areas/User/Views/Editor/Archiving/_ArchivingReadPartial.cshtml", Model.DocumentVM != null ? Model.DocumentVM : new DocumentVM())*@
+    </div>
+
+    <div class="tabscontent hidden_" id="second-tab">
+        <div class="content_container content_container--header extra-padding" id="dvEditorExplanation">
+            <div class="row">
+                <div class="col-xs-12">
+                    <h2 class="title2"> @DbRes.TResource("User.Editor.Explanations")</h2>
+                </div>
+            </div>
+        </div>
+        <div class="content_container content_container--body white-bg panel-body">
+            @{Html.ViewData.TemplateInfo.HtmlFieldPrefix = "EditorExplanations";}
+            @Html.Partial("~/Areas/User/Views/Editor/Explanations/_ExplanationReadWritePartial.cshtml", new ExplanationVM(), Html.ViewData)
+        </div>
+    </div>
+    @using (Html.BeginForm("AddTransactionCopy", "Editor", FormMethod.Post, new { id = "CopiesEditorForm" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="tabscontent hidden_" id="third-tab">
+            <div class="content_container content_container--header extra-padding">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h3 class="title2"> @DbRes.TResource("User.Transaction.InternalCopies")</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="content_container content_container--body white-bg">
+                @{Html.ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+                @Html.Partial("~/Areas/User/Views/Editor/Copies/_CopiesPartial.cshtml", new TransactionCopyVM(), Html.ViewData)
+            </div>
+        </div>
+        <div class="content_container content_container--footer">
+            <div class="row">
+
+                <div class="col-xs-12 text-center">
+                    @Html.ConfirmAction(OperationType.Update, "btnEditInbound", DbRes.TResource("User.Inbound.Edit"), Url.Action("AddTransactionCopy", "Editor"), null, null, null, "OnSuccess", null, DbRes.TResource("User.Inbound.SaveMessage"), "post", "frmEditInbound", "BasicInformation", "btn btn-save btn-site", "", UserClaims.Inbound.EditInbound, "NotValid")
+                </div>
+            </div>
+        </div>
+        @Html.StickyHidden("hdntransactionId", ViewData["TransactionId"].ToString())
+    }
+</div>
+<div id="dvArchivingGrid" hidden>
+    @Html.Partial("~/Areas/User/Views/Transaction/_ArchivingGridPartial.cshtml", archivesVm.Archives);
+</div>
+
+<script>
+
+    ("div.anchor a").click(function () {
+        $("div.anchor a").removeClass("active");
+        $("div.anchor a").addClass("disabled");
+        $(this).addClass("active");
+        var id = $(this).data("id");
+        $("#" + id).addClass("active");
+        $(".tabscontent").addClass("hidden_");
+
+        var divId = $(this).data("divid");
+        $("#" + divId).removeClass("hidden_");
+    });
+
+    //$('.tab_editor').click(function () {
+
+    //    var url;
+    //    var data = new Array();
+
+    //    $('.tab_editor').removeClass('select_but');
+    //    $(this).addClass('select_but');
+
+    //    $("._views").hide();
+
+    //    switch ($(this)[0].id) {
+
+    //        case "btnBasicInfo":
+    //            $("#dvEditorBasicInfo").show();
+    //            break;
+
+    //        case "btnExplanation":
+    //            $("#dvEditorExplanation").show();
+    //            break;
+    //    }
+    //    return false;
+    //});
+</script>

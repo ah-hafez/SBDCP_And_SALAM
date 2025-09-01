@@ -1,0 +1,58 @@
+﻿@model MCS.UI.Areas.User.Models.Transaction.TransactionBasicInfoVM
+@using MCS.Framework.Localization
+<div class="panel-body editor">
+    <p class="subtitle">@DbRes.TResource("User.Editor.BasicInfo")</p>
+
+    <div class="panel-body">
+        <div class="row just_read">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.Label(DbRes.TResource("User.Editor.BasicInfo.OutboundInternal.DocumentNumber"), new { @class = "col-md-5 control-label definition" })
+                    <label class="col-md-7 control-label">@Html.DisplayFor(model => model.Number)</label>
+
+                </div>
+                <div class="form-group">
+                    @Html.Label(DbRes.TResource("User.Editor.BasicInfo.OutboundInternal.Date"), new { @class = "col-md-5 control-label definition" })
+                    <label class="col-md-7 control-label">@Html.DisplayFor(model => model.DateH)</label>
+                </div>
+                <div class="form-group">
+                    @Html.Label(DbRes.TResource("User.Editor.BasicInfo.OutboundInternal.SourceType"), new { @class = "col-md-5 control-label definition" })
+                    <label class="col-md-7 control-label">@Html.DisplayFor(model => model.TransactionTypeName)</label>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.Label(DbRes.TResource("User.Editor.BasicInfo.OutboundInternal.Confidentiality"), new { @class = "col-md-5 control-label definition" })
+                    <label class="col-md-7 control-label">@Html.DisplayFor(model => model.ConfidentialityName)</label>
+                </div>
+                <div class="form-group">
+                    @Html.Label(DbRes.TResource("User.Editor.BasicInfo.OutboundInternal.Priority"), new { @class = "col-md-5 control-label definition" })
+                    <label class="col-md-7 control-label">@Html.DisplayFor(model => model.PriorityName)</label>
+                </div>
+                <div class="form-group">
+                    @Html.Label(DbRes.TResource("User.Editor.BasicInfo.OutboundInternal.LetterType"), new { @class = "col-md-5 control-label definition" })
+                    <label class="col-md-7 control-label">@Html.DisplayFor(model => model.LetterTypeName)</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row just_read group push-bottom">
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.Label(DbRes.TResource("User.Editor.BasicInfo.OutboundInternal.Remarks"), new { @class = "col-md-4 control-label definition" })
+                    <label class="col-md-8 control-label">@Html.DisplayFor(model => model.Remarks)</label>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.Label(DbRes.TResource("User.Editor.BasicInfo.OutboundInternal.Subject"), new { @class = "col-md-4 control-label definition" })
+                    <label class="col-md-8 control-label">@Html.DisplayFor(model => model.Subject)</label>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+</div>

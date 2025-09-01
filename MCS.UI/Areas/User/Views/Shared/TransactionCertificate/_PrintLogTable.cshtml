@@ -1,0 +1,38 @@
+﻿@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<TransactionLogDetailInfoVM>
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" id="theme" href="@Url.Content("~/Content/User/lib/css/theme_" + SessionInfo.CultureShortName + ".css")" />
+    @if (SessionInfo.CultureShortName == "ar")
+    {
+        <link rel="stylesheet" type="text/css" id="theme" href="@Url.Content("~/Content/User/lib/css/rtl.css")" />
+    }
+    <!-- EOF CSS INCLUDE -->
+    <!-- Theme -->
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/User/lib/fonts/fonts.css")" />
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/User/lib/css/style.css")" />
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/User/lib/css/responsive_table_" + SessionInfo.CultureShortName + ".css")" />
+</head>
+<body>
+    <table class="table table-striped" border="1">
+        <thead>
+            <tr>
+                <th>@DbRes.TResource("User.TransactionCertificate.user")</th>
+                <th>@DbRes.TResource("User.TransactionCertificate.MovementType")</th>
+                <th>@DbRes.TResource("User.TransactionCertificate.MovementDate")</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.GridItems)
+            {
+                <tr>
+                    <td>@item.UserName</td>
+                    <td>@item.Description</td>
+                    <td>@item.Date</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
+</html>

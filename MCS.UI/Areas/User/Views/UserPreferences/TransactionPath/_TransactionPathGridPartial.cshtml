@@ -1,0 +1,30 @@
+﻿@using MCS.UI.Areas.User.Models.UserPreferences;
+@model AjaxGrid<TransactionPathVM>
+
+@{
+    Layout = null;
+}
+
+<div class="boxes">
+        @Html.Grid(Model, "_CardGrid").CollectionName("TransactionPathGrid").Named("grdTransactionPath").Columns(columns =>
+        {
+            columns.Add(true).Titled("").RenderValueAs(mvcgridcolumn => Html.Partial("~/Areas/User/Views/UserPreferences/TransactionPath/_Path_Item.cshtml", mvcgridcolumn))
+            .Sanitized(false).Encoded(false);
+        }).WithPaging(GridHelper.PageSize)
+</div>
+
+<script>
+    $(document).ready(function () {
+        prepareUserTransPathGrid();
+    })
+    function prepareUserTransPathGrid() {
+        $(".grid-mvc").gridmvc();
+        pageGrids.grdTransactionPath.ajaxify(
+            {
+                getPagedData: '@Html.Raw(Url.Action("UpdateGridTransactionPath", "UserPreferences"))',
+                getData: '@Html.Raw(Url.Action("UpdateGridTransactionPath", "UserPreferences"))',
+                callbackClientFunctionAfter: ["goToViewAfterPaging"],
+                requestType: "POST"
+            });
+    }
+</script>

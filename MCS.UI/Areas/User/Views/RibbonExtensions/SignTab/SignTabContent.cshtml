@@ -1,0 +1,63 @@
+﻿@using MCS.UI.Areas.User.Models
+
+
+<div class="tab-content" id="ribbonTabSign" style="display: none;">
+    <!-- Clipboard group -->
+    <div class="ribbon-group" id="ribbonGroupClipboard">
+        <div class="ribbon-group-content">
+
+            <div id="SignTabButtonContainer"
+                 style="display: inline-block; float: left; margin-right: 5px">
+
+                <div onclick="setSignatureImage('@(((int)SigntureType.Electronic).ToString())');"
+                     class="ribbon-button ribbon-button-big btn btn-st1 btn-lg pull-right">
+                    <div class="ribbon-button-big-label-container">
+                        <p class="ribbon-button-label">@DbRes.TResource("User.UserPreferences.ElectronicSignature")
+                    </div>
+                </div>
+
+
+                <div onclick="setSignatureImage('@(((int)SigntureType.Command).ToString())');"
+                     class="ribbon-button ribbon-button-big btn btn-st1 btn-lg pull-right">
+                    <div class="ribbon-button-big-label-container">
+                        <p class="ribbon-button-label">@DbRes.TResource("User.User.UserPreferences.SignatureCommand")
+                    </div>
+                </div>
+
+
+
+                <div onclick="setSignatureImage('@(((int)SigntureType.Behalf).ToString())');"
+                     class="ribbon-button ribbon-button-big btn btn-st1 btn-lg pull-right">
+                    <div class="ribbon-button-big-label-container">
+                        <p class="ribbon-button-label">@DbRes.TResource("User.User.UserPreferences.SignatureBehalf")
+                    </div>
+                </div>
+
+
+                <div onclick="setSignatureImage('@(((int)SigntureType.Message).ToString())');"
+                     class="ribbon-button ribbon-button-big btn btn-st1 btn-lg pull-right">
+                    <div class="ribbon-button-big-label-container">
+                        <p class="ribbon-button-label">@DbRes.TResource("User.UserPreferences.MessageSignature")
+                    </div>
+                </div>
+
+                <div onclick="setSignatureImage('@(((int)SigntureType.Seal).ToString())');"
+                     class="ribbon-button ribbon-button-big btn btn-st1 btn-lg pull-right">
+                    <div class="ribbon-button-big-label-container">
+                        <p class="ribbon-button-label">@DbRes.TResource("User.UserPreferences.SealSignature")
+                    </div>
+                </div>
+
+                <div onclick="setSignatureImage('@(((int)SigntureType.Marking).ToString())');"
+                     class="ribbon-button ribbon-button-big btn btn-st1 btn-lg pull-right">
+                    <div class="ribbon-button-big-label-container">
+                        <p class="ribbon-button-label">@DbRes.TResource("User.UserPreferences.Marking")
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+</div>

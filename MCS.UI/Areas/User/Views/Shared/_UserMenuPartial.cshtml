@@ -1,0 +1,114 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Common
+@using MCS.Common
+@using MCS.UI.Areas.User.Models.Shared
+@using MCS.Framework.Controls.Mvc
+@using MCS.UI
+
+@*<li class="xn-profile">
+    <a class="profile-mini">
+        <img src="~/Content/User/lib/assets/images/users/no-image.png" />
+    </a>
+    <div class="profile">
+        <div class="profile-image">
+            <a>
+                <img src="~/Content/User/lib/assets/images/users/no-image.png" />
+            </a>
+        </div>
+        <div class="profile-data">
+            @{UserVM userVM = SessionInfo.GetObjectFromSession(Constants.LoggedInUserKey) as UserVM;}
+            <div class="profile-data-name">@((userVM.LoclizationName != null) ? userVM.LoclizationName.Where(l => l.CultureName == SessionInfo.CultureShortName).FirstOrDefault().Text : string.Empty)</div>
+            <div class="profile-data-title">@((userVM.LoclizationUserCategory != null) ? userVM.LoclizationUserCategory.Where(l => l.CultureName == SessionInfo.CultureShortName).FirstOrDefault().Text : string.Empty)</div>
+            <div class="profile-data-title icon">
+                <a href="@(MCS.UI.UrlHelper.GetBaseUri() + "/User/UserPreferences/Index")" data-bs-toggle="tooltip" data-placement="top" title="@DbRes.TResource("User.Layout.UserPreferences")"><span class="fa fa-cog"></span></a>
+                <a class="change_your_password" data-bs-toggle="tooltip" data-placement="top" title="@DbRes.TResource("User.Layout.ChangePassword")"><i class="fa fa-lock"></i></a>
+            </div>
+         </div>
+    </div>
+</li>*@
+
+
+<li id="_UserFileMenu" class="xn-openable">
+</li>
+<li class="xn-openable">
+    @Html.MenuLink(DbRes.TResource("User.Layout.Outbound"), null, null, null, "fa fa-exporting", UserClaims.Outbound.DisplayOutbound)
+    <ul>
+        <li>
+            @Html.MenuLink(DbRes.TResource("User.Layout.NewOutboundExternal"), "Add", "OutboundExternal", "User", null, UserClaims.Outbound.CreateExternalOutbound)
+        </li>
+        <li>
+            @Html.MenuLink(DbRes.TResource("User.Layout.NewOutboundDraft"), "Add", "OutboundDraft", "User", null, UserClaims.Outbound.CreateOutboundDraft)
+        </li>
+        <li>
+            @Html.MenuLink(DbRes.TResource("User.Layout.NewOutboundInternal"), "Add", "OutboundInternal", "User", null, UserClaims.Outbound.CreateInternalOutbound)
+        </li>
+        <li>
+            @Html.MenuLink(DbRes.TResource("User.Layout.EditOutbound"), "OutboundOpen", "OutboundExternal", "User", null, UserClaims.Outbound.EditOutbound)
+        </li>
+    </ul>
+</li>
+<li class="xn-openable">
+    @Html.MenuLink(DbRes.TResource("User.Layout.Inbound"), null, null, null, "fa fa-incoming", UserClaims.Inbound.DisplayInbound)
+    <ul>
+        <li>
+            @Html.MenuLink(DbRes.TResource("User.Layout.NewInbound"), "Add", "Inbound", "User", null, UserClaims.Inbound.CreateInbound)
+        </li>
+      
+        <li>
+            @Html.MenuLink(DbRes.TResource("User.Layout.EditInbound"), "InboundOpen", "Inbound", "User", null, UserClaims.Inbound.EditInbound)
+        </li>
+    </ul>
+</li>
+<li class="xn-openable">
+    @Html.MenuLink(DbRes.TResource("User.Layout.Dashboard"), null, null, null, "fa fa-reports", UserClaims.Reports.DisplayReports)
+    <ul>
+        <li>
+            @Html.MenuLink(DbRes.TResource("User.Layout.InboundDashboard"), "InboundTransactions", "Reports", "User", null, UserClaims.Reports.InboundTransactionsReports)
+        </li>
+        <li>
+            @Html.MenuLink(DbRes.TResource("User.Layout.OutboundInternalDashboard"), "OutboundInternalTransactions", "Reports", "User", null, UserClaims.Reports.InboundTransactionsReports)
+        </li>
+        <li>
+            @Html.MenuLink(DbRes.TResource("User.Layout.OutboundDashboard"), "OutboundTransactions", "Reports", "User", null, UserClaims.Reports.OutboundTransactionsReports)
+        </li>
+         
+        <li>
+            @Html.MenuLink(DbRes.TResource("User.Layout.OrgUnitPerformanceReport"), "OrgUnitPerformance", "Reports", "User", null, null)
+        </li>
+        <li>
+            @Html.MenuLink(DbRes.TResource("User.Layout.TransactionsDeliveryReport"), "TransactionsDeliveryReport", "Reports", "User", null, UserClaims.GeneralPermissions.PrintDeliveryData)
+        </li>
+    </ul>
+</li>
+<li>
+    @Html.MenuLink(DbRes.TResource("User.Layout.Search"), "Index", "Search", "User", "fa fa-search", UserClaims.Search.DisplaySearch)
+</li>
+<li>
+    @Html.MenuLink(DbRes.TResource("User.Layout.Tasks"), "Tasks", "Home", "User", "fa fa-tasks", UserClaims.Tasks.Details)
+</li>
+
+<script>
+
+    @*$("#AddInbound").click(function (e) {
+    $.ajax({
+        type: 'get',
+        url: '@Url.Action("Add", "Inbound")',
+        data: null,
+        Async: true,
+        success:
+           function (data) {
+               $(".content").html("");
+               $(".content").html(data);
+           }
+    });
+})*@
+
+    //$(document).ready(function () {        
+    //    $("#AddInbound").click(function (e) {
+    //        $(".content").load("http://localhost/MCS.UI/User/Inbound/Add");
+    //        return false;
+    //    });
+    //});
+
+</script>
+

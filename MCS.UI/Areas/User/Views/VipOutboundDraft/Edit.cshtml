@@ -1,0 +1,370 @@
+﻿@model VIPEditOutboundDraftVM
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Transaction.Outbound.Internal
+@using MCS.UI.Areas.User.Models.Assignment
+@using MCS.UI.Areas.User.Models.Transaction
+@using MCS.Common
+@using MCS.UI.Helpers
+@using MCS.Framework.Controls;
+
+@{
+
+    Layout = "~/Areas/User/Views/Shared/_VIPLayout.cshtml";
+    ViewBag.Title = DbRes.TResource("User.OutboundExternal.EditTitle");
+    var linkVM = new TransactionLinkVM { Links = (AjaxGrid<TransactionLinkVM>)new AjaxGridFactory().CreateAjaxGrid(Model.Links, 1, Model.Links.Count, false) };
+    var followUpVM = new TransactionFollowUpVM() { FollowUps = (AjaxGrid<TransactionFollowUpVM>)new AjaxGridFactory().CreateAjaxGrid(Model.FollowUps, 1, Model.FollowUps.Count, false) };
+}
+
+
+@Html.StickyHidden("ConfidentialityItems", ViewData["ConfidentialityData"].ToString())
+
+
+<script src="~/Scripts/VipCommon.js"></script>
+<script src="~/Scripts/VipTransaction.js"></script>
+
+<script>
+    var showSignatureDiv = true;
+</script>
+<div class="d-flex flex-column flex-sm-row mx-5 mx-xs-3 mb-3 header-container">
+
+</div>
+<a href="@Url.Action("DraftOutbound", "File", new { area = "user" })">
+    <i class="fa fa-arrow-left" style="position: absolute; left: 63px; top: 30px; font-size:20px;"></i>
+</a>
+<div class="white-container mx-5 mx-xs-3">
+    @{
+        var list = ViewData["AssignmentPaperData"] as List<TransactionAssignmentVM> ?? new List<TransactionAssignmentVM>();
+    }
+    <div class="tab-content">
+
+        @using (Html.BeginForm("Send", "OutboundDraftVip", FormMethod.Post, new { id = "frmEditInbound", @class = "tab-content" }))
+        {
+            <div role="tabpanel" class="tab-pane active" id="first-tab">
+                <div id="dvBasicInfo">
+                    @Html.Partial("~/Areas/User/Views/VipOutboundDraft/_BasicInfoPartial.cshtml", Model.OutboundDraftBasicInfo, Html.ViewData)
+                </div>
+
+                <div class="tabscontent hidden_" id="eleven-tab">
+                    <div id="dvOutboundDraftContainer">
+                    </div>
+                </div>
+
+                <div class="extraOption col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-3 mt-3" id="divContentAssignmement">
+                    <h4>
+                        <a role="button" style="display:flex">
+                            <span onclick="CollapseDiv('dvContentAssignmement'); return false;" style="cursor: pointer;">
+                                <img src="~/Content/User/lib/images/plus-icon.svg" id="dvContentAssignmementPlusIcon" width="25" />
+                                <img src="~/Content/User/lib/images/Dash-icon.svg" id="dvContentAssignmementDashIcon" width="25" style="display: none;" />
+                            </span>
+                            <span class="ml-3 mt-1">@DbRes.TResource("User.TransactionCertificate.TransactionAssignments")</span>
+                        </a>
+                    </h4>
+
+                    <div role="tabpanel" class="tab-pane" id="dvContentAssignmement" style="display:none">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            @Html.AntiForgeryToken()
+            @Html.StickyHidden("hdnTransactionId", ViewData["TransactionId"].ToString(), new { id = "Id", @class = "TransactionId" })
+            @Html.StickyHidden("OutboundDraftId", ViewData["TransactionId"].ToString(), new { id = "OutboundDraftId" })
+            @Html.StickyHidden("MainDocumentBase64String", "", new { id = "hdnMainDocumentBase64String" })
+            @Html.StickyHidden("PdfMainDocumentBase64String", "", new { id = "hdnMainDocumentBase64String" })
+            @Html.StickyHidden("IsSigned", "false", new { id = "IsSigned" })
+            @Html.StickyHidden("IsDecisionDraft", Model.OutboundDraftBasicInfo.IsDecisionDraft.ToString(), new { id = "IsDecisionDraft" })
+
+            @*<div class="extraOption col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-3 mt-3">
+            <h4>
+                <a role="button" style="display:flex">
+                    <span onclick="CollapseDiv('assigmentpaper'); return false;" style="cursor: pointer;">
+                        <img src="~/Content/User/lib/images/Dash-icon.svg" id="assigmentpaperDashIcon" width="25" style="display: none;" />
+                        <img src="~/Content/User/lib/images/plus-icon.svg" id="assigmentpaperPlusIcon" width="25" />
+                    </span>
+                    <span class="ml-3 mt-1">@DbRes.TResource("User.File.AssignmentPaper")</span>
+                </a>
+            </h4>*@
+            <div role="tabpanel" class="tab-pane" id="assigmentpaper">
+                <div>
+                    @{ViewData.TemplateInfo.HtmlFieldPrefix = "AssignmentVM";}
+
+                    @if (SessionInfo.CurrentUser.DefaultAssignmentPaper == false)
+                    {
+                        @Html.Partial("~/Areas/User/Views/Vip/AssignmentPaper/_AssignmentPaperDraftPartial.cshtml", new VIPAssignmentVM(), Html.ViewData)
+                    }
+                    else
+                    {
+                        @Html.Partial("~/Areas/User/Views/Vip/AssignmentPaper/_AssignmentPaperPartialNew2.cshtml", new VIPAssignmentVM { ToOrgUnitId = SessionInfo.OrgUnitId }, Html.ViewData)
+                    }
+                </div>
+            </div>
+            @*</div>*@
+            <div class="row">
+                <div class="col-xs-12">
+                </div>
+            </div>
+
+            <div class="extraOption col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-3 mt-3" id="divFollow">
+                <h4>
+                    <a role="button" style="display:flex">
+                        <span onclick="CollapseDiv('followup'); return false;" style="cursor: pointer;">
+                            <img src="~/Content/User/lib/images/Dash-icon.svg" id="followupDashIcon" width="25" style="display: none;" />
+                            <img src="~/Content/User/lib/images/plus-icon.svg" id="followupPlusIcon" width="25" />
+                        </span>
+                        <span class="ml-3 mt-1">@DbRes.TResource("User.Inbound.FollowUp")</span>
+                    </a>
+                </h4>
+
+                <div id="followup" style="display:none">
+                    <div>
+                        @Html.Partial("~/Areas/User/Views/Vip/Followup/_FollowUpPartial.cshtml", followUpVM, Html.ViewData)
+                    </div>
+                </div>
+            </div>
+            @Html.HiddenFor(model => model.OutboundDraftBasicInfo.ToFollowUp, new { id = "hdnToFollowUp", value = Model.OutboundDraftBasicInfo.ToFollowUp, @name = "hdnToFollowUp" })
+            <i id="FollowCalMessageOrg" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+            <span id="FollowdateMessageOrg" style="color:red"></span>
+
+
+            <div class="row" id="divAddExplanation">
+                @{ ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+                <div class="col-lg-12">
+                    <div id="ctl00_MainPlaceHolder_divAddExplanation">
+                        <div class="corr-details-subtitle d-flex">
+                            <span class="mt-2">التوجيه</span>
+
+                            <span onchange="DirectionTypeChange(1);" name="direction" style="padding-right: 10px" class="checkbox">
+                                <label>
+                                    <input type="checkbox" id="ctl00_MainPlaceHolder_chkAgree" name="ctl00MainPlaceHolderchkAgree" />
+                                    <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                    <label for="ctl00_MainPlaceHolder_chkAgree">@DbRes.TResource("User.Transaction.Agree")</label>
+                                </label>
+
+                            </span>
+
+                            <span onchange="DirectionTypeChange(2);" name="direction" style="padding-right: 10px" class="checkbox mt-2">
+
+                                <label>
+                                    <input type="checkbox" id="ctl00_MainPlaceHolder_chkNotAgree" name="ctl00MainPlaceHolderchkNotAgree" />
+                                    <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                    <label for="ctl00_MainPlaceHolder_chkNotAgree">@DbRes.TResource("User.Transaction.disagree")</label>
+                                </label>
+
+                            </span>
+                            <span onchange="DirectionTypeChange(3);" style="padding-right: 10px" class="checkbox mt-2">
+                                <label>
+                                    <input type="checkbox" id="ctl00_MainPlaceHolder_chkAcknowledge" name="ctl00MainPlaceHolderchkAcknowledge" />
+                                    <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                    <label for="ctl00_MainPlaceHolder_chkAcknowledge">@DbRes.TResource("User.Transaction.seen")</label>
+                                </label>
+
+                            </span>
+                        </div>
+                        <div class="corr-details-section">
+                            @Html.TextAreaFor(x => x.Notes, new { rows = 3, cols = 20, @id = "ctl00_MainPlaceHolder_txtData", @class = "form-control", @name = "Notes" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        <div role="tabpanel" class="tab-pane hidden_" id="CertificateAssignment-tab">
+            <div class="">
+
+            </div>
+        </div>
+    </div>
+</div>
+<div id="dvButtonFooter" class="row text-right mr-5 mt-4 ml-xs-3 mb-4">
+
+    <div id="DivbtnPrintTransaction"> <a class="btn btn-st2 btn-lg pull-right mr-1 " id="btnPrintTransaction" onclick="PrintTransaction(@Model.Id)">@DbRes.TResource("Grid.Preview")</a></div>
+    @*@Html.ConfirmAction(OperationType.Update, "SaveandReturn", DbRes.TResource("Global.SaveandReturn"), Url.Action("DraftAssignItBack", "VipOutboundDraft"), null, null, null, "OnSuccess", null, DbRes.TResource("User.OutboundInternal.SaveMessage"), "post", "frmEditInbound", "", "btn btn-st1 btn-lg pull-right margin", "checkIfHasMainDocument", UserClaims.Outbound.EditOutbound, null)
+        @Html.ConfirmAction(OperationType.Update, "SaveBtn", DbRes.TResource("User.File.SaveandSend"), Url.Action("Send", "VipOutboundDraft"), null, null, null, "OnSuccess", null, DbRes.TResource("User.OutboundInternal.SaveMessage"), "post", "frmEditInbound", "", "btn btn-st2 btn-lg pull-right margin", "checkIfHasMainDocument", UserClaims.Outbound.EditOutbound, null)*@
+    @Html.ActionButton(DbRes.TResource("Global.SaveandReturn"), Url.Action("DraftAssignItBack", "VipOutboundDraft"), "", null, "", "OnSuccess", "", "Post", null, "SaveandReturn", "frmEditInbound", "btn btn-st1 btn-lg pull-right margin", "checkIfHasMainDocument", UserClaims.Outbound.EditDraft)
+    @Html.ActionButton(DbRes.TResource("User.File.SaveandSend"), Url.Action("Send", "VipOutboundDraft"), "", null, "", "OnSuccess", "", "Post", null, "SaveBtn", "frmEditInbound", "btn btn-st2 btn-lg pull-right margin", "checkIfHasMainDocument", UserClaims.Outbound.EditDraft)
+    @Html.ConfirmAction(OperationType.Update, "ConvertDraftBtn", DbRes.TResource("User.ConvertToOutBound"), Url.Action("Send", "VipOutboundDraft"), null, null, null, "OnSuccess", null, DbRes.TResource("User.OutboundInternal.SaveMessage"), "post", "frmEditInbound", "", "btn btn-st2 btn-lg pull-right margin", "ConvertDraftToExternal", UserClaims.Outbound.EditOutbound, null)
+
+    <button id="SaveBtn" hidden></button>
+</div>
+<script>
+
+    function assignmentPaper() {
+        $("#assigmentpaper").show();
+        $("#ArchivingPartial").hide();
+        $("#divAddExplanation").hide();
+        $("#divFollow").hide();
+        $("#divContentAssignmement").hide();
+
+    }
+    function basicInfo() {
+        $("#assigmentpaper").hide();
+        $("#ArchivingPartial").show();
+        $("#divAddExplanation").show();
+        $("#divFollow").show();
+        $("#divContentAssignmement").show();
+    }
+
+     function PrintTransaction(TransactionId) {
+         debugger;
+        $("#Loader").show();
+         checkIfHasMainDocument();
+        var Number = $('#hdnNumber').val();
+        var IsDecisionDraft = $("#IsDecisionDraft").val();
+        var token = $("input[name='__RequestVerificationToken']").val();
+        var data = { transactionId: TransactionId, __RequestVerificationToken: token, hdnMainDocToken: $("#hdnMainDocToken").val(), transactionNumber: Number, isDecisionDraft: IsDecisionDraft };
+        event.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("PrintDraftOutboundTransaction", "Shared")',
+            data: data,
+            cache: false,
+            success:
+
+                function (data) {
+                    if (data.MessageType != 2) {
+                        var TransactionWindow = window.open('', '_blank', 'width=900,height=500');
+
+                        TransactionWindow.document.write(data);
+                        TransactionWindow.document.close();
+                        TransactionWindow.focus();
+                        $("#Loader").hide();
+                        //setTimeout(function () {
+                        //    TransactionExplanationsWindow.print();
+                        //    TransactionExplanationsWindow.close();
+                        //}, 2000);
+                    }
+                    else {
+                        ShowErrorMessage(data.MessageText);
+                    }
+                }
+        });
+    }
+
+
+    function ConvertDraftToExternal()
+    {
+
+        checkIfHasMainDocument();
+
+        $("#hdnIsSigned").val(true);
+        return true;
+    }
+
+
+    function goToNext(data)
+    {
+        debugger;
+        var redirectUrl = '@Url.Action("DraftOutbound", "File", new { Area = "user" })';
+        var nextId = data.NextId;
+        if (nextId != undefined && nextId != null && nextId > 0)
+        {
+             redirectUrl = '@Url.Action("Edit", "VipOutboundDraft")?id=' + EncryptionKey(nextId);
+
+        }
+
+     setTimeout(function () {
+            window.location.href = redirectUrl;
+        }, 2000);
+
+    }
+
+    var token = $('form:first').find("input[name='__RequestVerificationToken']").val();
+
+
+          function checkIfHasMainDocument()
+          {
+              debugger;
+              var isSecret = false;
+        var isReadOnly = $('#hdnDocumentReadOnly').val();
+        if (isReadOnly == 'True')
+        {
+            $('#hdnMainDocToken').val('');
+            return true;
+        }
+        window.checkIfHasMainArchiveURL = '@Url.Action("CheckIfHasMainArchive", "VipOutboundDraft")';
+        var token = $("#dvArchivingMainDocumentBody").parents("form").find("input[name='__RequestVerificationToken']").val();
+     var docoNutFrameContent = $('#frameViewer').contents();
+    var isDraft=false;
+      var isArchived = true;
+    if (docoNutFrameContent.length > 0)
+     {
+
+     var __docViewerToken = $('#_hdnToken', docoNutFrameContent)[0].value;
+        $('#hdnMainDocToken').val(__docViewerToken);
+
+    }
+    else
+    {
+
+    isArchived=false;
+    isDraft=true;
+    }
+
+
+        if (isSecret) {
+            return true;
+        }
+        $("#CalMessageForMainDoc").html('');
+        $("#CalMessage2").hide();
+        if ($('#dvTextEditor').is(":visible")) {
+                return true;
+        } else if(isDraft) {
+      return true;
+
+    }
+    else {
+
+            if (!isArchived) { // here
+
+                $("#doconutViewer > #CalMessage2").removeClass("hidden_");
+                $("#doconutViewer > #CalMessage2").show();
+                $("#doconutViewer > #CalMessageForMainDoc").html('@Html.Raw(DbRes.TValidation("User.Inbound.MainDocument"))');
+            }
+            if ($('#doconutViewer > #CalMessageForMainDoc').html() == "")
+                return true;
+            else if ($('#doconutViewer > #CalMessageForMainDoc').html() != "" && $('#doconutViewer > #ddlInboundDocumentType').val() != "" && (!isArchived)) {
+                $("#doconutViewer > #CalMessageForMainDoc").html('@Html.Raw(DbRes.TValidation("User.Inbound.MainDocument"))');
+                return false;
+            }
+            else if ($('#doconutViewer > #CalMessageForMainDoc').html() != "" && $('#doconutViewer > #ddlInboundDocumentType').val() != "" && (isArchived)) {
+                $("#doconutViewer > #CalMessageForMainDoc").html('');
+                $("#doconutViewer > #CalMessage2").hide();
+                return false;
+            }
+            else if ($('#doconutViewer > #CalMessageForMainDoc').html() != "" && (isArchived)) {
+                $("#doconutViewer > #CalMessageForMainDoc").html('');
+                $("#doconutViewer > #CalMessage2").hide();
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+    }
+
+
+</script>
+
+<style>
+    .margin {
+        margin-left: 10px;
+    }
+
+    .VIPEditLable {
+        color: green;
+        font-weight: bold;
+    }
+
+
+
+
+    #aArchive {
+        color: black;
+    }
+
+    #followupshow {
+        display: none;
+    }
+</style>

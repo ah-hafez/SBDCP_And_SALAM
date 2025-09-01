@@ -1,0 +1,85 @@
+﻿@using MCS.UI.Areas.User.Models.Transaction;
+@model AjaxGrid<TransactionDetailsVM>
+@using MCS.UI.Areas.User.Models.Report;
+@using MCS.Framework.Localization;
+@using MCS.Framework.Controls;
+@using MCS.UI.Common;
+@using MCS.UI.Helpers;
+@using System.Reflection;
+@using MCS.UI.Areas.Admin.Models.Lookups
+@using System.Globalization;
+
+@Html.Grid(Model).Named("grdTransactionDetails").Columns(columns =>
+{
+    columns.Add(model => model.Number).Titled(DbRes.TResource("User.Transaction.Link.TransactionNumber"));
+    columns.Add(model => model.Creator).Titled(DbRes.TResource("User.OutboundCertificate.CreatedByUser").Replace(":", ""));
+    columns.Add().RenderValueAs(model => DateHelper.DateCalendar(model.Date, SessionInfo.CultureShortName, true)).Titled(DbRes.TResource("User.Transaction.CreateDate"));
+    columns.Add(model => model.SourceType).Titled(DbRes.TResource("User.Editor.BasicInfo.Inbound.LetterType"));
+    columns.Add(model => model.Priority).Titled(DbRes.TResource("User.File.Priority"));
+    columns.Add(model => model.LetterType).Titled(DbRes.TResource("User.Transaction.BasicInfo.SubjectClassifications"));
+    columns.Add(model => model.Subject).Titled(DbRes.TResource("User.OutboundInternal.BasicInfo.Subject"));
+}).Sortable(false).WithPaging(UIHelper.PageSize)
+
+<button class="btn btn-st1 btn-lg" onclick="ShowPrintDialog()">@DbRes.TResource("User.Transaction.Reports.Prints")</button>
+
+
+<script>
+
+    function ShowPrintDialog() {
+        debugger
+        var itemId = globalItemId;
+        var fromDate = $("#hdnFromDateCal").val();
+        var toDate = $("#hdnToDateCal").val();
+        var departmentId = $(".hdnDepartmentId").val();
+        var isPrinting = true;
+        $('#ItemId').val(itemId);
+        $('#FromDate').val(fromDate);
+        $('#ToDate').val(toDate);
+        $('#DepartmentId').val(departmentId);
+        $('#isPrinting').val(isPrinting);
+        // FromDate, string ToDate, int ItemId, int? page, int DepartmentId = -1, bool? isPrinting
+
+        var params = { FromDate: fromDate, ToDate: toDate, ItemId: itemId, DepartmentId: departmentId, isPrinting: isPrinting };
+        $.ajax({
+            type: "get",
+            url: '@Url.Action("DashboardDetails", "Shared")' + "?" + $.param(params),
+            success: function (data) {
+                debugger
+                if (data) {
+                    if (data.MessageType != 2) {
+                        var urll = '@Url.Action("Download", "Reports", new { Area = "user" })';
+                        window.location.href =   urll + '?fileGuid=' + data.FileGuid + '&filename=' + data.FileName;
+                    }
+                    else {
+                        ShowErrorMessage(data.MessageText);
+                    }
+                }
+            }
+        });
+
+
+
+
+    }
+    var gridEventHandler = "@Url.Action("DashboardDetails", "Shared")";
+    var searchCriteria = { data: '' };
+    searchCriteria.data = $("#dashboardHomeCards :input").serializeArray();
+
+    function prepareDashboardDetailsGrid() {
+        $(".grid-mvc").gridmvc();
+        var token = $("#dvDashboardHome").find("input[name='__RequestVerificationToken']").val();
+        var searchCriteriaData = JSON.parse(JSON.stringify(searchCriteria.data));
+        searchCriteriaData.push({ name: '__RequestVerificationToken', value: token });
+        pageGrids.grdTransactionDetails.ajaxify({
+            getPagedData: gridEventHandler,
+            requestType: "post",
+            getData: gridEventHandler,
+            optionalData: searchCriteriaData
+        });
+    }
+
+    $(document).ready(function () {
+        prepareDashboardDetailsGrid();
+    });
+
+</script>

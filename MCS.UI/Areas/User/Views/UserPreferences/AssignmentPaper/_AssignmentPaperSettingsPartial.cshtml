@@ -1,0 +1,584 @@
+﻿@using MCS.UI.Areas.User.Models
+@using MCS.UI.Areas.User.Models.UserPreferences
+@using MCS.Framework.Localization
+@using MCS.Common
+@using MCS.UI.Areas.User.Models.OrgUnit
+@model AssignmentPaperBeneficiaryVM
+
+@{
+    /**/
+
+    /**/
+
+    string controller = "UserPreferences";
+    ViewBag.Title = DbRes.TResource("User.Editor.AssignmentPaper");
+    Layout = "~/Areas/User/Views/Shared/_SearchLayout.cshtml";
+}
+<script src="~/Content/User/lib/js/jquery/jquery.tablednd.js"></script>
+<div class="d-flex mb-3 mx-5 mx-xs-3 header-container mt-5">
+    <div class="filter-link">
+        <h3 class="site-color">@DbRes.TResource("User.AssignmentPaper.Prepare")</h3>
+    </div>
+</div>
+<div class="content_container">
+    <div class="white-container mx-5 mx-xs-3">
+        <div class="add-management-form">
+            <div id="dvAdd">
+                @Html.Partial("~/Areas/User/Views/UserPreferences/AssignmentPaper/_AssignmentPaperGroupsAddPartial.cshtml", Model.AssignmentPaperGroupVM)
+            </div>
+            <div id="dvEdit" style="display: none;">
+                @Html.Partial("~/Areas/User/Views/UserPreferences/AssignmentPaper/_AssignmentPaperGroupsEditPartial.cshtml", Model.AssignmentPaperGroupEditVM)
+            </div>
+            <form id="frmBeneficiary">
+                @Html.AntiForgeryToken()
+                <div id="dvBeneficiaryBody">
+                    <div class="form-row">
+
+                        <div class="col-xs-12">
+                            <div id="GridLink">
+                                @Html.Partial("~/Areas/User/Views/UserPreferences/AssignmentPaper/_AssignmentPaperGroupsGridPartial.cshtml", Model.AssignmentPaperGroupVMs)
+                            </div>
+                        </div>
+                        @*<div style="margin-top:100px;"></div>*@
+
+                        <div id="BeneficiaryForm" class="col-xs-12">
+                            <div class="col-xs-6">
+
+                                @Html.LabelFor(model => model.GroupId, new { @class = "w-100" })
+                                <div>
+                                    @Html.AutoCompleteBuilder("ddlAssignmentPaperGroupType", "hdnAssignmentPaperGroupType", ViewData["AssignmentPaperGroups"].ToString(), Model != null ? Model.GroupId.ToString() : null, true, "form-control", "", "", "", true, "Copies", "assignmentPaperGroupDdlChanged")
+                                    @Html.HiddenGroupFor(model => model.GroupId, new { @Value = Model.GroupId, id = "hdnAssignmentPaperGroupType" }, "Copies")
+                                    @Html.HiddenGroupFor(model => model.GroupName, new { @Value = Model.GroupName, id = "hdnAssignmentPaperGroupName" }, "Copies")
+                                    <span class="help-block"></span>
+                                </div>
+                            </div>
+                            <div class="col-xs-6">
+                            </div>
+                            <div class="col-xs-12" id="AssignmentDetailsDiv" hidden>
+
+                                <h3 class="site-color mb-4">اضافة ادارة</h3>
+                                @Html.HiddenFor(model => model.OrgUnitName, new { id = "hdnOrgUnitName" })
+                                @Html.HiddenFor(model => model.OrgUnitCode, new { id = "hdnOrgUnitCode" })
+                                @Html.HiddenFor(model => model.Id, new { id = "hdnBeneficiaryId", required = "false" })
+                                @Html.HiddenFor(model => model.OrderNo, new { id = "hdnBeneficiaryOrderNo", required = "false" })
+                                @Html.HiddenFor(model => model.DefaultActionId, new { id = "hdnBeneficiaryDefaultActionId", required = "false" })
+
+                                <div class="form-group col-lg-5 col-md-6 col-sm-12 col-xs-12">
+                                    <div id="dvDepartmentsTree">
+                                        @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.BeneficiaryOrgUnitId, TreeMode.Single, "BeneficiaryOrgUnitId", true, "GetUsersByOrgUnitId", "Copies", "dvDepartmentsTree")
+
+
+                                        @*<label>@Html.DisplayNameFor(model => model.BeneficiaryOrgUnitId)<span class="stark">*</span></label>
+                                            @Html.EditorFor(model => model.BeneficiaryOrgUnitId, "OrgHierarchyCaller", additionalViewData: new { treeId = "BeneficiaryOrgUnitId", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Shared"), GetNodeInfoByIdActionURL = @Url.Action("GetInternalPartyInfoById", "Shared"), GetNodeInfoByNumActionURL = @Url.Action("GetInternalPartyInfoByNumber", "Shared"), onClickfunction = "GetUsersByOrgUnitId", ValidationGroup = "Copies", ShowAddPartyButton = false })*@
+                                    </div>
+                                </div>
+                                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+
+                                    @Html.LabelFor(model => model.UserId, new { @class = "w-100" })
+                                    <div>
+                                        @Html.AutoCompleteBuilder("ddlOrgUnitUsers", "hdnOrgUnitUsers", null, null, true, "form-control", "hdnOrgUnitUsersExtraParameters")
+                                        @Html.HiddenFor(model => model.UserName, new { id = "hdnOrgUnitUserName", @class = "UserName" })
+                                        @Html.HiddenGroupFor(model => model.UserImageId, new { id = "hdnOrgUnitUsersExtraParameters", @Value = "", @class = "UserImage" })
+                                        @Html.HiddenGroupFor(model => model.UserId, new { id = "hdnOrgUnitUsers", @Value = "", @class = "UserId" })
+                                        <span class="help-block"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group col-lg-1 col-md-4 col-sm-6 col-xs-12 mt-4">
+                                    <div id="ChkConstant" class="form-check form-check-inline pl-0 pt-1">
+                                        @Html.CheckBoxFor(model => model.ChkConstant)
+
+                                        <label class="form-check-label dark-color" for="inlineRadio1"> @DbRes.TResource("User.Transaction.Assignment.ChkConstant")</label>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-xs-12">
+                                    <p class="stark">@DbRes.TResource("Admin.User.MustFill") * </p>
+                                </div>
+
+                            </div>
+
+
+                        </div>
+                        <div class="col-xs-12">
+                            <div class="col-sm-12 panel-body text-right">
+                                @Html.StickyHiddenFor(model => model.Key, new { id = "hdnEditKey" })
+                                @Html.ClientActionButton(DbRes.TResource("User.Editor.AssignmentPaperBeneficiaries.Add"), Url.Action("AddBeneficiary", controller), "dvBeneficiariesGrid", "BeneficiaryOnSuccess", null, "Copies", "btnBeneficiary", "dvBeneficiaryBody", " btn-site", null, null, UserClaims.UserPreferences.AssignmentPaper, "<i class='glyphicon glyphicon-plus'></i>")
+                                @Html.ClientActionButton(DbRes.TResource("User.Transaction.Copies.Edit"), Url.Action("EditBeneficiary", controller), "dvBeneficiariesGrid", "BeneficiaryOnEditSuccess", null, "Copies", "btnEditBeneficiary", "dvBeneficiaryBody", "btn-site hidden_", null, null, UserClaims.UserPreferences.AssignmentPaper)
+                                <a class="btn-site" style="display:none" id="aCancelBeneficiary" onclick="CancelBeneficiaryEdit(); return false;">@DbRes.TResource("User.Transaction.Name.Cancel")</a>
+                            </div>
+                        </div>
+                        <hr />
+                        <br />
+
+                        <div class="col-xs-12">
+                            @Html.StickyHidden("Refkey", "", new { id = "hdnRefkey" })
+                            @Html.StickyHidden("isMoveUp", "", new { id = "hdnIsMoveUp" })
+                            <div id="dvBeneficiariesGrid" class="bitacoratable">
+
+
+                                @*@Html.Partial("~/Areas/User/Views/UserPreferences/AssignmentPaper/_AssignmentPaperSettingsGridPartial.cshtml", Model.AssignmentPaperBeneficiaryVMs)*@
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content_container content_container--footer">
+                        <div class="col-xs-12 text-right preview-mini-options">
+
+                            @Html.ConfirmAction(OperationType.Save, "btnSaveBeneficiaries", DbRes.TResource("Admin.User.Save"), Url.Action("AssignmentPaperSettings", "UserPreferences"), null, null, null, "OnSaveBeneficiariesCallBack", null, DbRes.TResource("User.Inbound.SaveMessage"), "post", "frmBeneficiary", "BasicInformation", "btn btn-st1 btn-lg pull-right", "fillGroupName", UserClaims.UserPreferences.AssignmentPaper)
+                        </div>
+                    </div>
+
+
+                    <div style="display:none">
+                        @Html.ActionButton(DbRes.TResource("اضافة"), Url.Action("ChangeBeneficiaryOrder", "UserPreferences"), "dvBeneficiariesGrid", null, null, "OnOrderBeneficiarySuccess", null, "post", null, "btnChangeBeneficiaryOrder", "frmBeneficiary", "btn btn-lg btn-st3 mx-1")
+
+                    </div>
+
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function ()
+    {
+
+        var firstGroupName = '';
+        var groupTds = $('#grid-table-grdAssignmentPaperGroup').find('td[data-name=DescriptionAr]')
+        if (groupTds.length > 0)
+        {
+            firstGroupName = '';
+        }
+        $('#ddlAssignmentPaperGroupType').val('');
+        $('#hdnAssignmentPaperGroupName').val('');
+
+
+    });
+
+     $(document).ready(function () {
+
+        var oldIndex;
+
+            $('.grid-table').sortable({
+                containerSelector: 'table',
+                itemPath: '> tbody',
+                itemSelector: 'tr',
+                placeholder: '<tr class="placeholder"/>',
+                onDragStart: function ($item, container, _super) {
+                    oldIndex = $item.find("input[name*='Key']").val();
+
+                    _super($item, container);
+                },
+                onDrop: function ($item, container, _super) {
+                    var field,
+                        newIndex = $item.index() + 1;
+                    newIndex = newIndex == 0 ? 1 : newIndex;
+                    $("#Sort_" + oldIndex).val(newIndex);
+
+                    if (newIndex != oldIndex) {
+                        if (newIndex < oldIndex) {
+                            $item.nextAll('tr').each(function (i, row) {
+                                var key = $(row).find("input[name*='Key']").val();
+                                var newSort = parseInt($('#Sort_' + key).val()) + 1;
+                                $('#Sort_' + key).val(newSort);
+                            });
+                        }
+                        else {
+                            $item.prevAll('tr').each(function (i, row) {
+                                var key = $(row).find("input[name*='Key']").val();
+                                var newSort = parseInt($('#Sort_' + key).val()) - 1
+                                $('#Sort_' + key).val(newSort);
+                            });
+                        }
+
+                    }
+
+                    _super($item, container);
+                }
+            });
+
+    });
+    function CheckOrgUnit() {
+      //  if ($('#BeneficiaryOrgUnitId_txtDepartmentName').val() == "") {
+      //      $('#BeneficiaryOrgUnitId_txtDepartmentName, #BeneficiaryOrgUnitId_txtDepartmentNumber').addClass("RedBorder");
+      //      return false;
+     //   }
+     //   else {
+    //        $('#BeneficiaryOrgUnitId_txtDepartmentName, #BeneficiaryOrgUnitId_txtDepartmentNumber').removeClass("RedBorder");
+     //       return true;
+    //    }
+    }
+
+    //$(document).on("change", "leftBeneficiaryOrgUnitId", function ()
+    //{
+    //    debugger;
+    //    GetUsersByOrgUnitId();
+    //});
+
+
+
+    $(document).on("change", ".txtDepartmentNumber", function (e)
+    {
+        debugger;
+        $("#hdnOrgUnitCode").val($("#rightBeneficiaryOrgUnitId").val());
+        GetUsersByOrgUnitId();
+    });
+
+
+
+     $(document).on("click", "span[data-node-id]", function () {
+        var elemnt = $(this);
+
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('InternalLoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetOrgUnitsNodes")',
+                data: { parentId: $(this).data("node-id"), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+                success:
+               function (data) {
+
+                   $(elemnt).closest('li').children('ul').last().empty()
+
+                   $(elemnt).closest('li').children('ul').last().append(data);
+
+                   $(elemnt).removeClass("InternalLoadedData");
+               }
+            });
+        }
+    });
+
+    //$("#ddlOrgUnitUsers").prop('disabled', true);
+    $(document).on('change', '#ddlOrgUnitUsers', function () {
+
+        $('#hdnOrgUnitUserName').val($('#ddlOrgUnitUsers').val());
+    });
+
+    $(document).on('change', '#ddlAssignmentPaperGroupType', function ()
+    {
+        var groupId = $("#hdnAssignmentPaperGroupType").val();
+        if (groupId != '')
+        {
+              $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetBeneficiaryByAssignmentPaperGroupId", "UserPreferences")',
+              data: { assignmentPaperGroupId: groupId},
+                success:
+                    function (data)
+                   {
+
+                   $("#dvBeneficiariesGrid").html('');
+                   $("#dvBeneficiariesGrid").html(data.Html);
+                   $("#AssignmentDetailsDiv").show();
+               }
+          });
+
+
+
+        }
+
+    });
+
+
+    function OnOrderBeneficiarySuccess(data)
+    {
+        $("#dvBeneficiariesGrid").html('');
+        $("#dvBeneficiariesGrid").html(data.Html);
+    }
+
+    $(document).on("change", "#ddlCopyActionId", function () {
+        $("#hdnCopyActionName").val($(this).val());
+    })
+
+    function GetUsersByOrgUnitId() {
+
+        if ($("#divForm__dvDepartmentsTree").find(".hdnDepartmentId").val() != '' && $("#dvBeneficiaryBody .txtDepartmentName").val() != '') {
+
+            debugger;
+            $('#hdnOrgUnitName').val($('#dvBeneficiaryBody .txtDepartmentName').val());
+            if ($("#BeneficiaryOrgUnitId").val() != '' && $("#BeneficiaryOrgUnitId").val() != undefined)
+            {
+                 $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetUnitUsers", "Editor")',
+                     data: { id: $("#BeneficiaryOrgUnitId").val(), addSelectOption:true},
+                success:
+               function (data) {
+                   AutoCompleteChangeList("ddlOrgUnitUsers", data);
+                   $("#hdnOrgUnitUsers").val('-1');
+                   $("#ddlOrgUnitUsers").val('استقبال الادارة');
+                   $("#hdnOrgUnitUserName").val('استقبال الادارة');
+                   $("#ddlOrgUnitUsers").trigger('change');
+                   //$("#hdnOrgUnitUsers").trigger('change');
+                   //$("#ddlOrgUnitUsers").prop('disabled', false);
+               }
+            });
+            }
+
+            return false;
+        }
+        else {
+
+            AutoCompleteChangeList("ddlOrgUnitUsers", "[]");
+            $("#hdnOrgUnitUsers").val('');
+            $("#ddlOrgUnitUsers").trigger('change');
+            $("#hdnOrgUnitUsers").trigger('change');
+        /*    $("#ddlOrgUnitUsers").prop('disabled', true);*/
+        }
+    }
+
+    function GetUsersByOrgUnitIdForEdit(keyValue) {
+
+        if ($("#divForm__dvDepartmentsTree").find(".hdnDepartmentId").val() != '' && $("#dvBeneficiaryBody .txtDepartmentName").val() != '') {
+
+            debugger;
+            $('#hdnOrgUnitName').val($('#dvBeneficiaryBody .txtDepartmentName').val());
+            if ($("#BeneficiaryOrgUnitId").val() != '' && $("#BeneficiaryOrgUnitId").val() != undefined)
+            {
+                 $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetUnitUsers", "Editor")',
+                     data: { id: $("#BeneficiaryOrgUnitId").val(), addSelectOption:true},
+                success:
+               function (data) {
+                   AutoCompleteChangeList("ddlOrgUnitUsers", data);
+                   $("#ddlOrgUnitUsers").val($("#UserName_" + keyValue).val());
+
+               }
+            });
+            }
+
+            return false;
+        }
+        else {
+
+            AutoCompleteChangeList("ddlOrgUnitUsers", "[]");
+            $("#hdnOrgUnitUsers").val('');
+            $("#ddlOrgUnitUsers").trigger('change');
+            $("#hdnOrgUnitUsers").trigger('change');
+        /*    $("#ddlOrgUnitUsers").prop('disabled', true);*/
+        }
+    }
+
+
+    function BeneficiaryOnSuccess(data) {
+        if (data.MessageType != 2) {
+
+            $("#grid-table-grdBeneficiary > tbody > .grid-empty-text").remove();
+            $("#grid-table-grdBeneficiary > tbody:last").append(data.Html);
+            $("#hdnBeneficiaries").val(data.hdnValue);
+            $("#hdnBeneficiariesGrid").val(data.hdnValue);
+            ClearInputs('AssignmentDetailsDiv');
+            $("#hdnBeneficiaryDefaultActionId").val(0);
+            $("#rightBeneficiaryOrgUnitId").val(0);
+            $("#hdnBeneficiaryOrderNo").val(0);
+            $("#hdnBeneficiaryId").val(0);
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function OnDeleteCopiesSuccess(data) {
+        if (data.MessageType != 2) {
+            $("#grid-table-grdBeneficiary > tbody > .grid-empty-text").remove();
+            $("#grid-table-grdBeneficiary > tbody:last").append(data.Html);
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+    function CancelBeneficiaryEdit()
+    {
+
+        $("#btnBeneficiary").show();
+        $("#btnEditBeneficiary").addClass('hidden_');
+        $("#aCancelBeneficiary").hide();
+
+    }
+
+    function BeneficiaryOnEditSuccess(data, div) {
+        if (data.MessageType != 2) {
+            if (data.Key != "") {
+                $('#grid-table-grdBeneficiary').find('#Key_' + data.Key).closest('tr').replaceWith(data.Html);
+            }
+            ClearInputs('AssignmentDetailsDiv');
+            $("#btnBeneficiary").show();
+            $("#btnEditBeneficiary").hide();
+            $("#aCancelBeneficiary").hide();
+            $("#hdnBeneficiaryDefaultActionId").val(0);
+            $("#rightBeneficiaryOrgUnitId").val(0);
+            $("#hdnBeneficiaryOrderNo").val(0);
+            $("#hdnBeneficiaryId").val(0);
+
+
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+
+
+    function OnSaveBeneficiariesCallBack(data , div) {
+        if (data.MessageText != 2) {
+            ShowSuccesMessage('@DbRes.TResource("User.AssignmentPaper.SaveSucceeded")');
+                } else {
+                    ShowErrorMessage(data.MessageText);
+                }
+    }
+
+    function doReload()
+    {
+        location.reload();
+    }
+    function GetBeneficiaryById(keyValue) {
+        debugger;
+
+
+        $("#BeneficiaryOrgUnitId_hdnDepartmentId").val($("#BeneficiaryOrgUnitId_" + keyValue).val());
+        SetTreeDefaultInfo("BeneficiaryOrgUnitId");
+
+        $("#divForm__dvDepartmentsTree").find(".hdnDepartmentId").val($("#BeneficiaryOrgUnitId_" + keyValue).val());
+        $("#dvBeneficiaryBody .txtDepartmentName").val($("#OrgUnitName_" + keyValue).val());
+        FillOrgUnitsTreeControls("dvDepartmentsTree", $("#BeneficiaryOrgUnitId_" + keyValue).val());
+        $("#BeneficiaryOrgUnitId").val($("#BeneficiaryOrgUnitId_" + keyValue).val());
+        $("#hdnOrgUnitUserName").val($("#UserName_" + keyValue).val());
+        $("#hdnOrgUnitUsers").val($("#UserId_" + keyValue).val());
+        $("#hdnBeneficiaryId").val($("#Key_" + keyValue).val());
+
+        //$("#hdnBeneficiaryGroupId").val($("#GroupId_" + keyValue).val());
+        $("#hdnBeneficiaryDefaultActionId").val($("#DefaultActionId_" + keyValue).val());
+        $("#hdnOrgUnitCode").val($("#OrgUnitCode_" + keyValue).val());
+
+        $("#rightBeneficiaryOrgUnitId").val($("#OrgUnitCode_" + keyValue).val());
+        $("#hdnBeneficiaryOrderNo").val(parseInt($("#OrderNo_" + keyValue).val()));
+        $("#hdnEditKey").val(keyValue);
+        GetUsersByOrgUnitIdForEdit(keyValue);
+
+        $("#btnBeneficiary").hide();
+        $("#btnEditBeneficiary").show();
+        $("#aCancelBeneficiary").show();
+        $("#btnEditBeneficiary").removeClass("hidden_");
+
+
+    }
+</script>
+
+<script>
+    function ShowEditDiv() {
+
+        $("#dvEdit").css("display", "block");
+        $("#dvAdd").css("display", "none");
+    }
+
+    function HideEditDiv() {
+        $("#dvEdit").css("display", "none");
+        $("#dvAdd").css("display", "block");
+    }
+
+    function OnEditSuccess(data, div) {
+        if (data.MessageType != 2) {
+            $("#dvEdit").css("display", "none");
+            $("#dvAdd").css("display", "block");
+            $("#GridLink").html("");
+            $("#GridLink").html(data.Html);
+            jQuery.validator.unobtrusive.parse('#' + div);
+            ClearInputs('EditLinkContent');
+            ShowSuccesMessage(data.MessageText);
+            //window.location.href = window.location.href;
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function OnAddSuccess(data, div) {
+        if (data.MessageType != 2) {
+            $("#GridLink").html("");
+            $("#GridLink").html(data.Html);
+            jQuery.validator.unobtrusive.parse('#' + div);
+            ShowSuccesMessage(data.MessageText);
+            ClearInputs('AddLinkContent');
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function OnDeleteSuccess(data) {
+        if (data.MessageType != 2) {
+            ShowSuccesMessage(data.MessageText);
+            $("#GridLink").html("");
+            $("#GridLink").html(data.Html);
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+     function LockUnlockLookup(LookupType, LookupOperationType, FormId) {
+         var token = $("#dvAdd input[name='__RequestVerificationToken']").val()
+        var data = { lookupType: LookupType, lookupOperationType: LookupOperationType, lookUpId: FormId, __RequestVerificationToken: token};
+        $.ajax({
+            type: "post",
+            url: '@Url.Action("LockUnlockLookup", "Lookups")',
+            data: data,
+            success:
+                function (data) {
+                    if (data.MessageType != 2) {
+                        $("#GridLink").html("");
+                        $("#GridLink").html(data.Html);
+                        //ShowInformationMessage("OK");
+                    }
+                    else {
+                        ShowErrorMessage(data.MessageType);
+                    }
+                },
+            error: function (data) {
+            }
+        });
+    }
+
+    function ActiveDeactiveLookup(LookupType, LookupOperationType, FormId) {
+        var token = $("#dvAdd input[name='__RequestVerificationToken']").val()
+        var data = { lookupType: LookupType, lookupOperationType: LookupOperationType, lookUpId: FormId, __RequestVerificationToken: token};
+        $.ajax({
+            type: "post",
+            url: '@Url.Action("ActiveDeactiveLookup", "Lookups")',
+            data: data,
+            success:
+                function (data) {
+                    if (data.MessageType != 2) {
+                        $("#GridLink").html("");
+                        $("#GridLink").html(data.Html);
+                        //ShowInformationMessage("OK");
+                    }
+                    else {
+                        ShowErrorMessage(data.MessageType);
+                    }
+                },
+            error: function (data) {
+            }
+        });
+    }
+
+    function assignmentPaperGroupDdlChanged() {
+
+            var groupId = hdnAssignmentPaperGroupType.value;
+            var groupName = $('#ui-id-2 li[data-value=' + groupId + ']').text();
+            $('#hdnAssignmentPaperGroupName').val(groupName);
+
+    }
+
+    function fillGroupName() {
+        hdnAssignmentPaperGroupType.value = '0';
+        return true;
+    }
+</script>
+
+<style>
+    .RedBorder {
+        border: 1px solid #fe0000 !important
+    }
+</style>

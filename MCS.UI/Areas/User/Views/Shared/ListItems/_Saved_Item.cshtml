@@ -1,0 +1,494 @@
+﻿@using MCS.UI.Helpers
+@using MCS.Common
+@using MCS.UI.Areas.User.Models.File
+@model TransactionTrayInfoVM
+
+@{
+    string colorType = string.Empty;
+    string className = "result";
+    string classNameTo = "result";
+    if (Model.TransactionDetailsInfoVM.ConfidentialityId == 28 || Model.TransactionDetailsInfoVM.ConfidentialityId == 29)
+    {
+        className = "resultReed";
+    }
+    if (Model.TransactionDetailsInfoVM.TransactionTypeId == 2)
+    {
+        classNameTo = "resultReed";
+    }
+
+    if (Model.TransactionDetailsInfoVM.TransactionTypeColorId == Color.Red.LookupIdentity(LookupCategory.Color, SessionInfo.CultureShortName))
+    {
+        colorType = "reddark";
+
+    }
+    else if (Model.TransactionDetailsInfoVM.TransactionTypeColorId == Color.Blue.LookupIdentity(LookupCategory.Color, SessionInfo.CultureShortName))
+    {
+        colorType = "blue";
+    }
+    else
+    {
+        colorType = "gray";
+    }
+    if (Model.TransactionDetailsInfoVM.StatusId == TransactionStatus.Completed.LookupIdentity(LookupCategory.TransactionStatus, "ar"))
+    {
+        colorType = "box red animated zoomIn buttons-action";
+
+    }
+    bool isPermition = false;
+    string Confidentiality = "ConfidentialityNormal";
+    string ConfidentialityBac = "ConfidentialityNormalBackg";
+
+    switch (Model.TransactionDetailsInfoVM.ConfidentialityId)
+    {
+        case (int)Confedentiality.HandDelivered:
+            {
+                Confidentiality = "ConfidentialityVeryRed";
+                ConfidentialityBac = "ConfidentialityVeryRedBackg";
+
+                if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.ConfidentialityOfTransactions.HandDelivered))
+                {
+                    isPermition = true;
+                }
+
+                break;
+            }
+        case (int)Confedentiality.HighConfidential:
+            {
+                Confidentiality = "ConfidentialityMidRed";
+                ConfidentialityBac = "ConfidentialityMidRedBackg";
+
+                if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.ConfidentialityOfTransactions.HandDelivered) || SessionInfo.CurrentUser.Claims.Contains(UserClaims.ConfidentialityOfTransactions.ExtremlyConfidential))
+                {
+                    isPermition = true;
+                }
+
+                break;
+            }
+        case (int)Confedentiality.Secret:
+            {
+                Confidentiality = "ConfidentialityRed";
+                ConfidentialityBac = "ConfidentialityRedBackg";
+
+                if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.ConfidentialityOfTransactions.HandDelivered) || SessionInfo.CurrentUser.Claims.Contains(UserClaims.ConfidentialityOfTransactions.ExtremlyConfidential) || SessionInfo.CurrentUser.Claims.Contains(UserClaims.ConfidentialityOfTransactions.Secret))
+                {
+                    isPermition = true;
+                }
+
+                break;
+            }
+        case (int)Confedentiality.Normal:
+            {
+                isPermition = true;
+                break;
+            }
+    }
+
+    string isIndivisualText = Model.TransactionDetailsInfoVM.TransactionCategoryId == TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName) ? Model.TransactionDetailsInfoVM.IsIndividual ? string.Format("({0})", DbRes.TResource("User.Inbound.BasicInfo.InboundDestination.Individual")) : string.Format("({0})", DbRes.TResource("User.Inbound.BasicInfo.InboundDestination.Entities")) : string.Empty;
+
+}
+<script>
+    function redirect() {
+        debugger
+        var link = $(event.currentTarget).parent().find('.correspondence-icon').children()[0];
+        link.click();
+    }
+</script>
+
+<style>
+    .description {
+        text-align: center;
+        color: white;
+    }
+
+    .cardTable {
+        max-height: 200px;
+        min-height: 197px;
+    }
+
+        .cardTable .table.section2 {
+            transform: translateY(-169px);
+            background: white;
+            display: none;
+        }
+
+        .cardTable:hover .table.section2 {
+            transform: translateY(-169px);
+            display: inline-table;
+            min-height: 197px;
+        }
+
+    .correspondence-icon .info {
+        color: white !important;
+    }
+
+    .ConfidentialityNormalBackg {
+        border: 2px solid #869AB7;
+    }
+
+    .ConfidentialityVeryRedBackg, .ConfidentialityRedBackg, .ConfidentialityMidRedBackg {
+        border: 2px solid #c41c0e;
+    }
+</style>
+<div class="box-grid colorType" data-id="@Model.TransactionDetailsInfoVM.Id">
+    <div class="box animated zoomIn hover-area buttons-action @ConfidentialityBac">
+
+        <div class="correspondence-t">
+            <div class="d-flex">
+
+                <div class="col-lg-9">
+
+                    <div class="mr-auto d-flex">
+                        <div class="checkbox">
+                            @if (Model.TransactionDetailsInfoVM.HasPermission)
+                            {
+                                <label>
+                                    <input type="checkbox" value="" onchange="holdDataFromBox(this)" id="ch_@Model.TransactionDetailsInfoVM.Id" data-id="@Model.TransactionDetailsInfoVM.Id" class="FillIds">
+                                    <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                </label>
+                            }
+                        </div>
+                        <div class="pl-2" id="Number_@Model.TransactionDetailsInfoVM.Id">
+                            @Model.TransactionDetailsInfoVM.Number
+                        </div>
+                    </div>
+                    <div onclick='redirect()'>
+
+                        @if (Model.TransactionDetailsInfoVM.EntityName.Length > 12)
+                        {
+                            <div class="title" id="entityName_@Model.TransactionDetailsInfoVM.Id" title="@Model.TransactionDetailsInfoVM.EntityName">
+                                @Model.TransactionDetailsInfoVM.EntityName.Substring(0, 12)...
+                            </div>
+
+                        }
+                        else
+                        {
+                            <div class="title">@Model.TransactionDetailsInfoVM.EntityName</div>
+                        }
+                        <div class="correspondence-h">
+                            <div class="" style="margin-top:-10px;">
+                                @DateHelper.GetDate(@Model.TransactionDetailsInfoVM.DateH)
+                                @Model.TransactionDetailsInfoVM.Date.ToShortTimeString()
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr style="margin-top:-8px;" />
+        <div onclick='redirect()'>
+            <div class="correspondence-t hover-area">
+                @*<div class="correspondence-h">
+                        <div class="title" id="entityName_@Model.TransactionDetailsInfoVM.Id">
+                            @Model.TransactionDetailsInfoVM.EntityName
+                        </div>
+                        <div class="date">
+                            @DateHelper.GetDate(@Model.TransactionDetailsInfoVM.DateH)
+                            @Model.TransactionDetailsInfoVM.Date.ToShortTimeString()
+                        </div>
+                    </div>*@
+
+                @if (Model.TransactionDetailsInfoVM.HasPermission)
+                {
+                    <div class="correspondence-b d-flex flex-wrap">
+                        <div class="f-line w-full w-f-50">
+                            @*@if (Model.TransactionDetailsInfoVM.HasPermission)
+                                {*@
+                            @if (Model.TransactionDetailsInfoVM.Subject != null && Model.TransactionDetailsInfoVM.Subject.Length > 20)
+                            {
+                                <div id="example" class="description" data-bs-toggle="tooltip" data-placement="bottom" title="@Model.TransactionDetailsInfoVM.Subject">
+                                    @Model.TransactionDetailsInfoVM.Subject.Substring(0, 20)
+                                    ...
+                                </div>
+                            }
+                            else
+                            {
+                                <div class=" description">
+                                    @Model.TransactionDetailsInfoVM.Subject
+                                </div>
+                            }
+                            @*}
+                                else
+                                {
+                                    <div class=" description">***</div>
+                                }*@
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="correspondence-b d-flex flex-wrap" style="background: red;">
+                        <div class="f-line w-full w-f-50 description" style="color:white">
+                            غير مصرح لك
+                        </div>
+                    </div>
+                }
+
+
+                @if (Model.TransactionDetailsInfoVM.HasPermission)
+                {
+                    <div class="correspondence-b d-flex flex-wrap cardTable">
+                        <table class="table table-bordered section1" style="margin-top:10px;">
+                            <tbody>
+                                <tr>
+                                    <th scope="row" class="headerAddress">@DbRes.TResource("User.Transaction.MoveDate")</th>
+                                    <td class="result">
+                                        @DateHelper.GetDate(@Model.TransactionDetailsInfoVM.DateH)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="headerAddress">@DbRes.TResource("User.InboundCertificate.Status")</th>
+                                    <td class="result">
+                                        @Model.TransactionDetailsInfoVM.Status
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="headerAddress">@DbRes.TResource("Admin.AssignmentPaperActions.Action")</th>
+                                    <td>
+                                        @if (Model.TransactionAssignmentInfoVMs != null && Model.TransactionAssignmentInfoVMs.Count > 0)
+                                        {
+                                            <div class="result">
+
+                                                @Model.TransactionAssignmentInfoVMs.FirstOrDefault().Action
+                                                @if (Model.TransactionAssignmentInfoVMs.FirstOrDefault().Action == null)
+                                                {
+                                                    <div class="result">
+                                                        ---
+                                                    </div>
+                                                }
+
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="result">
+                                                ---
+                                            </div>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="headerAddress">@DbRes.TResource("سبب الحفظ")</th>
+                                    <td class="result">
+                                        @if (Model.TransactionDetailsInfoVM.SavedReason != null && Model.TransactionDetailsInfoVM.SavedReason.Length > 20)
+                                        {
+                                            <div data-bs-toggle="tooltip" data-placement="bottom" title="@Model.TransactionDetailsInfoVM.SavedReason">
+                                                @Model.TransactionDetailsInfoVM.SavedReason.Substring(0, 12)...
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div>
+                                                @Model.TransactionDetailsInfoVM.SavedReason
+                                            </div>
+                                        }
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="table table-bordered section2">
+                            <tbody>
+                                <tr>
+                                    <th scope="row" class="headerAddress">@DbRes.TResource("User.Inbound.BasicInfo.InboundType")</th>
+                                    <td class="result">
+                                        @Model.TransactionDetailsInfoVM.TransactionTypeName
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="headerAddress">@DbRes.TResource("User.File.Priority")</th>
+                                    <td class="@classNameTo">
+                                        @Model.TransactionDetailsInfoVM.PriorityName
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="headerAddress">@DbRes.TResource("User.File.Confidentiality")</th>
+                                    <td class="@classNameTo">
+                                        @Model.TransactionDetailsInfoVM.ConfidentialityName
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="correspondence-b d-flex flex-wrap cardTable" style=" filter: blur(8px); -webkit-filter: blur(8px);">
+                        <table class="table table-bordered section1" style="margin-top:10px;">
+                            <tbody>
+                                <tr>
+                                    <th scope="row" class="headerAddress">@DbRes.TResource("User.Transaction.MoveDate")</th>
+                                    <td class="result">
+                                        @DateHelper.GetDate(@Model.TransactionDetailsInfoVM.DateH)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="headerAddress">@DbRes.TResource("User.InboundCertificate.Status")</th>
+                                    <td class="result">
+                                        @Model.TransactionDetailsInfoVM.Status
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="headerAddress">@DbRes.TResource("Admin.AssignmentPaperActions.Action")</th>
+                                    <td>
+                                        @if (Model.TransactionAssignmentInfoVMs != null && Model.TransactionAssignmentInfoVMs.Count > 0)
+                                        {
+                                            <div class="result">
+
+                                                @Model.TransactionAssignmentInfoVMs.FirstOrDefault().Action
+                                                @if (Model.TransactionAssignmentInfoVMs.FirstOrDefault().Action == null)
+                                                {
+                                                    <div class="result">
+                                                        ---
+                                                    </div>
+                                                }
+
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="result">
+                                                ---
+                                            </div>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="headerAddress">@DbRes.TResource("سبب الحفظ")</th>
+                                    <td class="result">
+                                        سبب الحفظ
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                }
+
+
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+
+        <div class="correspondence-t">
+            <div class="correspondence-icon d-flex" style="padding-right: 2px;">
+                @if (Model.TransactionDetailsInfoVM.HasPermission)
+                {
+
+                    <a id="link" href="#" title="@DbRes.TResource("User.InboundSearch.InboundCertificate")" data-id="@Model.TransactionDetailsInfoVM.Id" onclick="ShowTransactionLog(@Model.TransactionDetailsInfoVM.Id)">
+                        <img src="~/Content/User/lib/images/SystemIcon/main bar-14.svg" width="30" />
+                    </a>
+                    <div style="border-left: 3px solid white;"></div>
+                    @*<a href="#" title="@DbRes.TResource("User.File.SaveRevert")" data-id="@Model.TransactionDetailsInfoVM.Id" class="aSaveRevert  referral" data-type="@TrayActionType.SaveRevert">
+                            <img src="~/Content/User/lib/images/SystemIcon/main bar-36.svg" width="25" />
+                        </a>*@
+
+                    if (Model.TransactionDetailsInfoVM.TransactionCopyId != null)
+                    {
+                        <a href="#" title="@DbRes.TResource("User.File.Delete")" data-id="@Model.TransactionDetailsInfoVM.TransactionCopyId" data-tray="@Model.TransactionDetailsInfoVM.TransactionCategoryId" data- class="aMarkDelete" data-type="@TrayActionType.DeleteCopy">
+                            <img src="~/Content/User/lib/images/SystemIcon/delete.svg" width="28" />
+                        </a>
+                    }
+
+                    else
+                    {
+                        <div class="mr-auto d-flex">
+                            <a class="" style="cursor:initial">
+                            </a>
+                        </div>
+                    }
+                }
+                <div class="ml-auto">
+                    <div class="info">
+                        @if (Model.TransactionDetailsInfoVM.HasLinks)
+                        {
+                            <i class="la la-link"></i>
+                            <span>
+                                @DbRes.TResource("Admin.TransactionLink.Link")
+                            </span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+      function ViewedTransaction() {
+
+        var trayid = parseInt($("#hdnTrayId").val());
+        var copytrayid = parseInt($('#trayId').val());
+        var page = $("#hdnCurrentPage").val();
+        var orderBy = $("#hdnOrderBy").val();
+        var dir = $("#hdnDirection").val();
+        var filter = $("#hdnFilter").val();
+        var fromDate = $("#hdnFromDateValue").val();
+        var toDate = $("#hdnToDateValue").val();
+        var number = $("#hdnSearchTransactionNumberValue").val();
+        var viewType = $("#hdnViewFile").val();
+        var dateType = $("#hdnFilterDateType").val();
+        var transactionId = $(_this).data("id");
+        var transactionTypeId = $(_this).data("tray");
+        var trayActionType = $(_this).data("type");
+        var PageSize = $("#ddlPaging").val();
+        var url2 = '@Url.Action("MoveTransaction","File")';
+        var copyType = 0;
+
+        if (transactionTypeId == @(TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName))|| transactionTypeId == @(TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName))) {
+            copyType = @((int)TrayType.Copies);
+        }
+        else if (transactionTypeId == @(TransactionCategory.ExternalOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName))) {
+            copyType = @((int)TrayType.CopiesOutbound);
+        }
+        var data = {
+            trayId: trayid, page: page, gridColumn: orderBy, dir: dir, filter: filter, fromDate: fromDate,
+            toDate: toDate, searchColumn: number, viewType: viewType, transactionId: transactionId, trayActionType: trayActionType,
+            dateType: dateType, pageSize: PageSize
+        };
+        debugger
+        $.ajax({
+            url: url2,
+            type: 'post',
+            data: data,
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    $("#dvTransactionsContainer").html("");
+                    $("#dvTransactionsContainer").html(data.Html);
+                    $("#txtCurrentPage").val(page);
+                    $("#hdnCurrentPage").val(page);
+                    $("#ddlPaging option[value=" + PageSize + "]").attr('selected', 'selected');
+
+                    $("li#_UserFileMenu").html("");
+                    $("li#_UserFileMenu").html(data.FileMenuHtml);
+                    var transactionCount = parseInt($("#transactionCount").html()) - 1;
+                    $("#transactionCount").html(transactionCount);
+                    filterByCopyType(null, copytrayid);
+                    window.location.href = '@Url.Action("Saved", "File")';
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            },
+            error: function (a) {
+
+                alert(a)
+            }
+        });
+    }
+
+
+
+    $(".aMarkDelete").unbind('click').click(function (e)
+    {
+        e.stopPropagation();
+        _this = this;
+        ShowConfirmMessage('@(DbRes.TResource("User.File.Deleted"))', "ViewedTransaction");
+    })
+</script>

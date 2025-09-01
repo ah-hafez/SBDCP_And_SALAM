@@ -1,0 +1,72 @@
+﻿@model SuggestedTopicVM
+@using MCS.Common;
+@using MCS.Framework.Localization;
+@using MCS.UI.Areas.Admin.Models.Lookups
+@using UserLookups = MCS.UI.Areas.User.Models.Lookups
+@{
+    Layout = null;
+}
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmEditTopic", @class = "form-horizontal form-row" }))
+{
+    @Html.AntiForgeryToken()
+    <div id="EditTopicContent">
+        @Html.StickyHidden("hdnEditSuggestedTopics", ViewData["SuggestedTopics"] != null ? ViewData["SuggestedTopics"].ToString() : null)
+        @Html.StickyHiddenFor(model => model.Id)
+        @Html.StickyHiddenFor(model => model.ParentId)
+        @Html.StickyHiddenFor(model => model.IsGroup)
+        @Html.StickyHiddenFor(model => model.IsNew)
+        <div class="panel-body">
+            <p>@DbRes.TResource("Global.Forms.MandatoryFields")</p>
+            <div class="row">
+
+                @{List<UserLookups.CultureVM> cultureVM = ViewData["Culture"] as List<UserLookups.CultureVM>;}
+                @if (cultureVM != null)
+                {
+                    for (int m = 0; m < cultureVM.Count; m++)
+                    {
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.CustomLabelFor(model => model.Description[m].CultureName, new { @class = "col-md-4 control-label" }, DbRes.TResource(string.Format("Admin.SuggestedTopic.Description.{0}", cultureVM[m].ShortName)))
+                                @Html.StickyHiddenFor(model => model.Description[m].CultureId, new { Value = cultureVM[m].Id })
+                                @Html.StickyHiddenFor(model => model.Description[m].CultureName, new { Value = cultureVM[m].ShortName })
+                                <div class="col-md-8">
+                                    <div class="">
+                                        @Html.TextBoxGroupFor(model => model.Description[m].Text, "SuggestedTopic", new { @class = "form-control" }, DbRes.TValidation("Admin.SuggestedTopic.DescriptionRequired." + cultureVM[m].ShortName))
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+        <div class="panel-body">
+            @Html.DepartmentsTree(ViewData["OrgUnits"] as TreeViewModel, model => model.OrgUnits, TreeMode.Multiple, "EdittreeOrgUnits", true)
+        </div>
+    </div>
+    <div class="panel-footer middle">
+        @Html.ActionButton(DbRes.TResource("Admin.SuggestedTopic.Edit"), "EditSuggestedTopic", "dvSave", null, null, "OnEditSuccess", null, "post", "SuggestedTopic", "btnEdit", "frmEditTopic", "btn btn-save pull-right")
+        <a id="ancCloseEdit" onclick="CloseEditMode();" class="btn-link pull-right">@DbRes.TResource("Admin.SuggestedTopic.Cancel")</a>
+    </div>
+}
+
+<script>
+    function OnEditSuccess(data, div) {
+
+        $("#" + div).html("");
+        $("#" + div).html(data.Html);
+        jQuery.validator.unobtrusive.parse('#' + div);        
+        ClearInputs('EditTopicContent');
+        $("#hdnSuggestedTopics").val(data.Data);
+        $("#hdnAddSuggestedTopics").val(data.Data);
+        $("#hdnEditSuggestedTopics").val(data.Data);
+        CloseEditMode();
+    }
+
+    function CloseEditMode() {
+        $("#dvEdit").hide();
+        $("#dvAdd").show();
+    }
+
+</script>

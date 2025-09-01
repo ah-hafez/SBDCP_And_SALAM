@@ -1,0 +1,120 @@
+﻿
+@using MCS.Framework.Localization
+@using MCS.Common;
+@using MCS.UI.Areas.User.Models.Assignment
+@model TransactionAssignmentVM
+
+@using (Html.BeginCollectionItem("TransactionAssignments"))
+{
+    <div class="TransactionAssignment" id="@Model.Key">
+        <!--<div class="form-group ToOrgUnitName checkbox" style="padding-top:0">-->
+        @*<label class="control-label">اسم الادارة :</label>*@
+        <!--<input onchange="" type="radio" style="padding-left:10px" class="" name="Radio" id="Radio_@Html.IdFor(a => a.IsAssigned).ToString()" />&nbsp
+        <label>
+            <input type="checkbox" id="">
+            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+            <label>@Model.ToOrgUnitName</label>
+        </label>
+    </div>-->
+
+
+
+
+        <table>
+            <tr>
+                <div class="form-group ToOrgUnitName ss" style="padding-top:0">
+
+                    @*<input onchange="" type="radio" style="padding-left:10px" class="crs" name="Radio" id="Radio_@Html.IdFor(a => a.IsAssigned).ToString()" />*@
+
+
+
+                    @*<span class="crs"><i class="cr-icon glyphicon glyphicon-ok"></i></span>*@
+					
+                    @if (Model.AliceName != null && Model.AliceName != "")
+                    {
+					<td class="ss"><input type="checkbox" id=""></td>
+                       <td class="ss">@Model.AliceName </td>
+                    }
+                    else
+                    {
+					<td class="ss"><input type="checkbox" id=""></td>
+                     <td class="ss">@Model.ToOrgUnitName </td>
+                    }
+
+                    @*<input onchange="" type="radio" style="padding-left:10px" class="" name="Radio" id="Radio_@Html.IdFor(a => a.IsAssigned).ToString()" />*@
+                    @*<label>
+
+            <input type="checkbox" id="">
+            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+
+            <label>@Model.ToOrgUnitName</label>
+        </label>*@
+                </div>
+            </tr>
+        </table>
+
+        @*<div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3 ToUserId">
+            @Html.LabelFor(model => model.ToUserId, new { @class = "control-label" })
+            <div>
+                <label id="ToUserNamelabel">@Model.ToUserName</label>
+                @if (Model.UserImageId.HasValue && Model.UserImageId != 0)
+                {
+                    <img alt='Image' height='40px' width='40px' src='@Url.Action("GetUserImage", "Shared", new { UserImageId = Model.UserImageId.Value })' />
+                }
+                else if (Model.ToUserId != null)
+                {
+                    <img alt='Image' height='40px' width='40px' src='@MCS.UI.UrlHelper.GetBaseUri()/Content/User/lib/images/businessman.png' />
+                }
+            </div>
+        </div>*@
+        @*<div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3 divRadio">
+            <label class="control-label">النوع<span class="stark">*</span></label>
+            <div class="inline-radio">
+                <div class="radio">
+                    <label>
+                        <input onchange="UpdateAssignedToEntity(this); ActionChanged();" type="radio" class="rValue" name="Radio" id="Radio_@Html.IdFor(a => a.IsAssigned).ToString()" />
+                        <span class="cr"><i class="cr-icon"></i></span>
+                        <text>إحالة</text>
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input onchange="UpdateIsCopy(this); ActionChanged();" type="checkbox" id="ch_@Html.IdFor(a => a.IsCopy).ToString()">
+                        <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                        <text style="color:black">صورة</text>
+                    </label>
+                </div>
+            </div>
+            @Html.HiddenFor(a => a.IsAssigned, new { id = "hdn_" + Html.IdFor(a => a.IsAssigned).ToString(), @class = "isAssigned", @Value = false })
+            @Html.HiddenFor(a => a.IsCopy, new { id = "hdn_" + Html.IdFor(a => a.IsCopy).ToString(), @class = "IsCopy" })
+            @Html.HiddenFor(a => a.ToOrgUnitId)
+            @Html.HiddenFor(a => a.ToOrgUnitName)
+            @Html.HiddenFor(a => a.ToUserId, new { @class = "ToUserId" })
+            @Html.HiddenFor(a => a.ToUserName)
+            @Html.HiddenFor(a => a.DeliveryMethodId, new { @Value = 2703 })
+            @Html.HiddenFor(a => a.GroupId)
+        </div>*@
+        @*<div class="form-group col-lg-2 col-md-4 col-sm-6 col-xs-12 mb-2 divDDl ActionId">
+            <label class="control-label">@DbRes.TResource("User.Transaction.Assignment.ActionId")<span class="stark NotIndividual">*</span></label>
+            @Html.AutoCompleteBuilder("Action_" + Html.IdFor(a => a.ActionId).ToString(), Html.IdFor(a => a.ActionId).ToString(), ViewData["AllActionsData"].ToString(), Model != null ? Model.ActionId.ToString() : null, true, "form-control DDLClass", "", "", "", true, "", "ActionChanged")
+            @Html.HiddenGroupFor(model => model.ActionId, new { @Value = "", id = Html.IdFor(a => a.ActionId).ToString() }, "AssignmentPaper")
+        </div>*@
+        <!--<div class="form-group col-lg-1 col-md-4 col-sm-6 col-xs-12 mb-1">
+    <label class="control-label"></label>
+    <br />
+    <br />
+    <a class="edit_link" onclick="DeleteAssignment('@Model.Key')"> <i class="glyphicon glyphicon-remove"></i> </a>-->
+        @*<label class="control-label"></label>
+        <a class="edit_link" data-original-title="" data-placement="top" data-bs-toggle="tooltip" onclick="return DeleteActionGrid('grdArchiving',1,'هل أنت متأكد من عملية الحذف ؟','dvAttachmentsForm','DeleteArchive','1')" style="">
+            <i class="glyphicon glyphicon-trash color-danger"></i>
+        </a>*@
+        <!--</div>-->
+    </div>
+}
+<script>
+    function DeleteAssignment(id) {
+        var value;
+        value = '#' + id;
+        $(value).remove();
+    }
+</script>

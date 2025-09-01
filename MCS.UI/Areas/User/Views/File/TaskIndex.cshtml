@@ -1,0 +1,38 @@
+﻿@using MCS.Common 
+@using MCS.UI.Areas.User.Models.Transaction
+@model IList<ReceivedTaskVM>
+
+@{
+    ViewBag.Title = ViewData["FileTitle"];
+    Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    TrayType traytype = TrayType.Tasks;
+
+    @Html.Hidden("hdnTrayId", (int)traytype, new { id = "hdnTrayId" })
+
+
+    @Html.Partial("~/Areas/User/Views/File/_TransactionTasksPartial.cshtml", Model)
+
+}
+
+<script>
+    $(document).ready(function () {
+        if ($("#IsVIPUser").val() == 'True') {
+            $("#divBtn").html("");
+        } else {
+            $("#divBtn").show();
+        }
+
+        switch (localStorage.getItem('CurrentTypeView')) {
+            case 'Card': goCardsView(event);
+                break;
+            case 'Table': goTableView(event);
+                break;
+            default: goCardsView(event);
+        }
+
+
+    });
+</script>

@@ -1,0 +1,43 @@
+﻿@using MCS.UI.Areas.User.Models.UserPreferences;
+@using MCS.Framework.Localization
+@model TransactionPathVM
+
+<!-- #Start# BOX -->
+<div class="box-grid two" data-id="@Model.Id">
+    <div class="box no_sorting animated zoomIn buttons-action">
+        <div class="correspondence-b d-flex flex-wrap">
+            <div class="f-line w-full">
+                <div class="heading">@DbRes.TResource("User.Transaction.Path.Name")</div>
+
+                <div>@Model.Name</div>
+            </div>
+            <div class="f-line full-mode">
+                <div class="heading">@DbRes.TResource("User.File.TransactionType")</div>
+
+                <div>@Model.TransactionTypeName</div>
+            </div>
+            <div class="f-line full-mode">
+                <div class="heading">@DbRes.TResource("Admin.AssignmentPaperBeneficiaries.Unit")</div>
+
+                <div>@Model.OrgUnitName</div>
+            </div>
+            <div class="f-line full-mode">
+                <div class="heading">@DbRes.TResource("Admin.AssignmentPaperBeneficiaries.User")</div>
+                @if (Model.CreatedByName != "")
+                { <div>@Model.CreatedByName</div>}
+                else
+                { <div>---</div>}
+            </div>
+        </div>
+        <div class="correspondence-icon w-100 d-inline-block">
+            <div class="d-inline-block">
+                <a class="circle color-blue" onclick="GetPathDetailsById(@Model.Id) " title="@DbRes.TResource("Grid.Edit")">
+                    <i class="icon-outline-edit"></i>
+                </a>
+                <a class="circle color-gray" onclick="ConfirmDeletePathById(@Model.Id)" title=" @DbRes.TResource("Grid.Delete")">
+                    <i class="icon-delete"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,29 @@
+﻿@model int?
+
+<div class="row">
+    <div class=" col-lg-4 col-md-4 col-sm-4 col-xs-4 pr-0 ">
+        <input type="text" data-func="@ViewBag.onClickfunction" data-container="@ViewBag.treeId" onkeypress="return IsNumeric(event);" class="form-control InboundDepNum" id="@(ViewBag.treeId)_txtDepartmentNumber" data-getNodeInfoByNumActionURL="@ViewBag.GetNodeInfoByNumActionURL" maxlength="20">
+    </div>
+    <div class=" col-lg-8 col-md-8 col-sm-8 col-xs-8">
+        <div class="d-flex align-items-stretch w-100 flex-wrap">
+            <div class="input-group compatable">
+                <input type="text" data-func="@ViewBag.onClickfunction" data-container="@ViewBag.treeId" class="form-control InboundDepName" id="@(ViewBag.treeId)_txtDepartmentName" maxlength="40" readonly>
+                <div class="input-group-append">
+                    <span class="input-group-text hyperlink white">
+                        <a class="ShowHideOrgHierarchyDialog" id="@(ViewBag.treeId)_hrefShowDialog" data-getChildrenUrl="@ViewBag.GetChildrenActionURL" data-getchildrenparameters="@ViewBag.GetChildrenActionParameters" data-modal-container="@ViewBag.TreeId" data-onClickFunction="@ViewBag.onClickfunction" data-getNodeInfoByIdActionURL="@ViewBag.GetNodeInfoByIdActionURL"><i class="icon-filter-form"></i></a>
+                    </span>
+                </div>
+            </div>
+            <a class="btn btn-st5 ml-3" style="display:@(ViewBag.ShowAddPartyButton == true ? "block" : "none")">
+                <i class="la la-plus"></i>
+            </a>
+        </div>
+    </div>
+</div>
+@Html.HiddenGroupFor(model => model, htmlAttributes: new { @id = ViewBag.treeId + "_hdnDepartmentId" }, validationGroup: (string)ViewBag.ValidationGroup)
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        SetTreeDefaultInfo('@ViewBag.treeId');
+    });
+</script>

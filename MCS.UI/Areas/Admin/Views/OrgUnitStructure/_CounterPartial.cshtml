@@ -1,0 +1,189 @@
+﻿@using MCS.Framework.Localization;
+@using MCS.UI.Areas.Admin.Models.OrgUnit;
+@model CounterVM
+@{
+    ViewBag.Title = "Counter";
+    Layout = "~/Views/Shared/_AdminDialogLayout.cshtml";
+}
+<div>
+    <div id="CounterContentAddEdit">
+        @Html.Partial("~/Areas/Admin/Views/OrgUnitStructure/_CounterAddEditPartial.cshtml", Model)
+    </div>
+    <div id="CounterDetailsGridGeneralCounter">
+        <div class="panel-body">
+            <div class="row">
+                @Html.Partial("~/Areas/Admin/Views/OrgUnitStructure/_CounterGridPartial.cshtml", ViewData["GridDataGeneralCounter"],
+               new ViewDataDictionary { { "IsRoot", Model.IsRoot }, { "GridName", "GridGeneralCounter" } })
+            </div>
+        </div>
+    </div>
+    <div id="CounterDetailsGrid">
+        <div class="panel-body">
+            <div class="row">
+                <div id="dvGrid">
+                    @Html.Partial("~/Areas/Admin/Views/OrgUnitStructure/_CounterGridPartial.cshtml", ViewData["GridData"],
+                   new ViewDataDictionary { { "GridName", "GridCounter" } })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var isRoot = JSON.parse('@Model.IsRoot'.toLowerCase());
+        var isGeneral =JSON.parse('@Model.IsGeneral'.toLowerCase());
+        if (isRoot) {
+            $('#CounterForm').show();
+            $('#CounterDetailsGrid').show();
+            $('#CounterDetailsGridGeneralCounter').hide();
+        }
+        else {
+            if (isGeneral) {
+                $('#CounterForm').hide();
+                $('#CounterDetailsGrid').hide();
+                $('#CounterDetailsGridGeneralCounter').show();
+            }
+            else {
+                $('#CounterForm').show();
+                $('#CounterDetailsGrid').show();
+                $('#CounterDetailsGridGeneralCounter').show();
+                $('#CounterDetailsGridGeneralCounter').hide();
+            }
+        }
+        $('#JoinToGeneralCounter').val(isGeneral);
+        $("#InitialValue").val(1);
+    });
+    function GeneralRadioChanged() {
+        var value = JSON.parse($(event.currentTarget).val().toLowerCase())
+        if (value) {
+            $('#CounterForm').hide();
+            $('#CounterDetailsGrid').hide();
+            $('#CounterDetailsGridGeneralCounter').show();
+        }
+        else {
+            $('#CounterForm').show();
+            $('#CounterDetailsGrid').show();
+            $('#CounterDetailsGridGeneralCounter').hide();
+            $('.CounterDescription').val('');
+            CustomClearInputs("CounterForm");
+        }
+        $('#JoinToGeneralCounter').val(value);
+    }
+    function CustomClearInputs(containerId) {
+        $('#' + containerId).find(':input')
+            .not('input:submit').not('input:button').not('input:radio').not('input:hidden')
+            .not('input:checkbox').not('input.__hdnSticky').not('input.CounterDescription').not("input:disabled").each(function () {
+                $(this).val('');
+            });
+
+        $('#' + containerId).find('input:checkbox').each(function () {
+            $(this).prop('checked', false);
+        });
+        $("#CounterDetailId").val(0);
+        $("#InitialValue").removeAttr("disabled");
+        $("#InitialValue").val(1);
+        $('#' + containerId).find(".removeTag").trigger("click");
+        $('#' + containerId).find(".removeDepartmentTag").trigger("click");
+        $('#' + containerId).find(".hdnDepartmentId").trigger("change");
+    }
+
+    function OnSuccess(data) {
+        if (data.MessageType != 2) {
+            ShowSuccesMessage(data.MessageText);
+            $("#dvGrid").html("");
+            $("#dvGrid").html(data.Html);
+            CustomClearInputs('CounterForm');
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+            CustomClearInputs('CounterForm');
+        }
+    }
+    function OnDeleteSuccess(data) {
+        if (data.MessageType != 2) {
+            ShowSuccesMessage(data.MessageText);
+            CustomClearInputs('CounterForm');
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function UpdateCounterButton(actionUrl, id, columnIndex, divUpdatData, onAjaxSuccess, onAjaxFaild) {
+        var input;
+        if (!$.isNumeric($("#" + id).parents('tr').find("td").eq(columnIndex).html())) {
+            input = $("#" + id).parents('tr').find("td").eq(columnIndex).html();
+        }
+        else {
+            input = parseInt($("#" + id).parents('tr').find("td").eq(columnIndex).html());
+        }
+        jQuery.support.cors = true;
+        $.ajax({
+            cache: false,
+            type: "get",
+            url: actionUrl,
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+            data: { 'id': input, 'orgUnitId': '@Model.OwnerEntityId' },
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    $("#" + divUpdatData).html("");
+                    $("#" + divUpdatData).html(data.Html);
+                    jQuery.validator.unobtrusive.parse('#' + divUpdatData);
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+                if (onAjaxSuccess != '') {
+                    window[onAjaxSuccess](data, divUpdatData);
+                }
+            },
+            error: function (data) {
+
+                if (onAjaxFaild != '') {
+                    window[onAjaxFaild](data, divUpdatData);
+                }
+            }
+        });
+    }
+
+    function DeleteCounterButton(actionUrl, id, columnIndex, divUpdatData, onAjaxSuccess, onAjaxFaild) {
+        var input;
+        if (!$.isNumeric($("#" + id).parents('tr').find("td").eq(columnIndex).html())) {
+            input = $("#" + id).parents('tr').find("td").eq(columnIndex).html();
+        }
+        else {
+            input = parseInt($("#" + id).parents('tr').find("td").eq(columnIndex).html());
+        }
+        var token = $("#frmCounterAddEdit").find("input[name='__RequestVerificationToken']").val();
+        jQuery.support.cors = true;
+        $.ajax({
+            cache: false,
+            type: "post",
+            url: actionUrl,
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+            data: { 'id': input, 'orgUnitId': '@Model.OwnerEntityId', __RequestVerificationToken: token },
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    $("#" + divUpdatData).html("");
+                    $("#" + divUpdatData).html(data.Html);
+                    ShowSuccesMessage(data.MessageText);
+                    CustomClearInputs('CounterForm');
+                    jQuery.validator.unobtrusive.parse('#' + divUpdatData);
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+                if (onAjaxSuccess != '') {
+                    window[onAjaxSuccess](data, divUpdatData);
+                }
+            },
+            error: function (data) {
+
+                if (onAjaxFaild != '') {
+                    window[onAjaxFaild](data, divUpdatData);
+                }
+            }
+        });
+    }
+</script>

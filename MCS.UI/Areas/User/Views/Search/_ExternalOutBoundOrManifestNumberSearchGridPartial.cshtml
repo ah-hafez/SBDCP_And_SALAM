@@ -1,0 +1,92 @@
+﻿@using MCS.Framework.Localization
+@*@using MCS.Framework.Controls.Mvc*@
+@using MCS.UI.Areas.User.Models.Search
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<SearchCriteriaByExternalOutBoundOrManifestNumberResultVM>
+
+<div style="margin-bottom:50px;">
+
+    @Html.Grid(Model, "_CardGridSearch").Named("ExternalOutBoundOrManifestNumberSearch").CollectionName("ExternalOutBoundOrManifestNumberSearchResult").Columns(columns=>
+    {
+        columns.Add(true).Titled("").RenderValueAs(mvcgridcolumn => Html.Partial("ListItems/_ExternalOutBoundOrManifestNumberSearch_Item", mvcgridcolumn))
+        .Sanitized(false).Encoded(false);
+    }).WithPaging(UIHelper.PageSize)
+</div>
+
+<script>
+    var myExternalOutBoundOrManifestNumberSearchGridEventHandler = "@Url.Action("SearchPaging", "Search")";
+    function prepareExternalOutBoundOrManifestNumberSearchGrid() {
+        pageGrids.ExternalOutBoundOrManifestNumberSearch = undefined;
+        var filterData = $("#frmSearch").serializeArray();
+
+        if (!pageGrids.ExternalOutBoundOrManifestNumberSearch) {
+            $("div[data-gridname='ExternalOutBoundOrManifestNumberSearch']").gridmvc();
+        }
+
+        pageGrids.ExternalOutBoundOrManifestNumberSearch.ajaxify({ getPagedData: myExternalOutBoundOrManifestNumberSearchGridEventHandler, requestType: "POST", getData: myExternalOutBoundOrManifestNumberSearchGridEventHandler, optionalData: filterData });
+
+    }
+
+     
+
+
+    $(document).ready(function () {
+
+        prepareExternalOutBoundOrManifestNumberSearchGrid();
+    });
+
+    function ShowPrintDialog(id) {
+        var params = { transactionId: id};
+        ShowDialogAjaxPrintingBarcodes('@Url.Action("PrinttingBarcodes","Shared")' + "?" + $.param(params), {}, 'OpenPrintDialogSuccess', 'dialogbox col-md-12 ');
+        event.stopPropagation();
+    }
+    function OpenPrintDialogSuccess(data, $obj) {
+        if (data.MessageType != 2) {
+            $obj.setContent(data.Html);
+        }
+        else {
+            __dialog.close();
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+     function ShowVisitTickect(id) {
+        var actionUrl = '@Url.Action("PrintTicket", "Shared")' + "?transactionId=" + id;
+
+        PrintButton(actionUrl);
+
+    }
+
+
+
+
+    function Open(Id) {
+        var url = "";
+        var isFromDraft = $('#EncryptedFalse').val();
+        var isHubEditable = $('#EncryptedTrue').val();
+        url = '@Url.Action("Edit", "ExternalOutBoundOrManifestNumberExternal")' + "?id=-1&" + 'IsFromDraft=' + isFromDraft + '&isHubEditable=' + isHubEditable;
+
+        url = url.replace("-1", Id);
+
+        window.location.href = url;
+    }
+
+    function Reactivate(Id) {
+        var data = { transactionId: Id };
+        $.ajax({
+            url: '@Url.Action("Reactivate","Search")',
+            type: 'POST',
+            data: data,
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    ShowSuccesMessage(data.MessageText);
+                    window.location.href = '@Url.Action("Index", "Search")';
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            },
+            error: function (a) {
+            }
+        });
+    }
+</script>

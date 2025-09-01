@@ -1,0 +1,156 @@
+﻿@using MCS.Common
+@model TreeNode
+@using MCS.Framework.Localization;
+
+<div class="panel-group custom-tree pl-4 mt-2" role="tablist">
+    <div class="panel panel-default  ">
+        @Html.AntiForgeryToken()
+        <div class="panel-heading" role="tab" id="collapseListGroupHeading1__@Model.Id" data-id="@Model.Id">
+            <div class="panel-title dark-color">
+   
+                    <a class="collapsed" role="button" id="toggleAnchor_@Model.Id" data-bs-toggle="collapse" href="#collapseListGroup1__@Model.Id" aria-expanded="false" aria-controls="collapseListGroup1__@Model.Id">
+                    </a>
+                
+                    <div class="collection-label">
+                        <label class="order-2 order-md-1">
+                            <span class="department-number"></span>
+                            <span class="department-name">
+                                @Model.Name
+                            </span>
+                        </label>
+                        <div class="table-icon d-flex align-items-center ml-md-auto order-1 order-md-2 mb-2 mb-md-0">
+                            @if (Model.ParentId != -1)
+                            {
+                                <a href="@(Url.Action("AddNewOrgUnitInfo", "OrgUnitStructure") + "?id=" + Model.ParentId)" class="color-orange"><i class="icon-tables-sitemap-sub" title="@DbRes.TResource("User.ExternalParty.AddUnit")"></i></a>
+                            }
+                            <a href="@(Url.Action("AddNewOrgUnitInfo" , "OrgUnitStructure")+ "?id=" + Model.Id)" class="color-blue"><i class="icon-tables-sitemap" title="@DbRes.TResource("User.ExternalParty.AddSubUnit")"></i></a>
+                            <a href="@(Url.Action("OrgUnitInfo" , "OrgUnitStructure")+ "?orgUnitKey=" + Model.Id)" class="color-purple"><i class="icon-tables-edit" title="@DbRes.TResource("User.ExternalParty.Edit")"></i></a>
+                            @if (!Model.ExternalId.HasValue)
+                            {
+                                <a onclick="ShowCustomConfirmMessage('@DbRes.TResource("Admin.Lookups.PriorityExceptions.ConfirmDelete")', 'DeleteOrg', '@Model.Id')" class="color-burgundy" data-toggle="modal" data-target="#Modal1"><i class="icon-tables-delete" title="@DbRes.TResource("User.ExternalParty.Delete")"></i></a>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+        </div>
+
+            <div id="collapseListGroup1__@Model.Id" class="panel-collapse collapse" role="tabpanel" aria-labelledby="collapseListGroupHeading1__@Model.Id" aria-expanded="false" style="">
+
+            </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).on("click", ".panel-heading", function (e) {
+        var nodeId = $(this).data('id');
+        var areaExpanded = $('#toggleAnchor_' + nodeId).attr('aria-expanded');
+
+        if (areaExpanded == 'true') {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetChildren", "OrgUnitStructure")',
+                data: { id: nodeId },
+                success: function (data) {
+                    $('#collapseListGroup1__' + nodeId).html(data);
+                   // $('#toggleAnchor_' + nodeId).toggleClass();
+                }
+            });
+        }
+    });
+
+    $(function () {
+        $('[data-bs-toggle="tooltip"]').tooltip();
+
+        $('.custom-tree li.list-group-item:not(.has-sub)').click(function () {
+            if (!$(this).hasClass('selected')) {
+                $('.custom-tree li.list-group-item:not(.has-sub)').removeClass('selected');
+                $('.custom-tree .panel-title.dark-color').removeClass('selected');
+                $('.custom-tree .panel-default>.panel-heading .panel-title.dark-color a').removeClass('active');
+                $(this).addClass('selected');
+
+                var treeOpenedParents = $('.custom-tree .panel-default>.panel-heading .panel-title.dark-color a:not(.collapsed)');
+                for (i = 0; i < treeOpenedParents.length; i++) {
+                    if ($(treeOpenedParents[i]).parent().parent().parent().find('.selected').html()) {
+                        $(treeOpenedParents[i]).addClass('active');
+                    }
+                }
+            }
+            else {
+                $('.custom-tree li.list-group-item:not(.has-sub)').removeClass('selected');
+                $('.custom-tree .panel-title.dark-color').removeClass('selected');
+                $('.custom-tree .panel-default>.panel-heading .panel-title.dark-color a').removeClass('active');
+            }
+        });
+        $('.custom-tree .panel-title.dark-color label').click(function () {
+            if (!$(this).parent().parent().hasClass('selected')) {
+                $('.custom-tree li.list-group-item:not(.has-sub)').removeClass('selected');
+                $('.custom-tree .panel-title.dark-color').removeClass('selected');
+                $('.custom-tree .panel-default>.panel-heading .panel-title.dark-color a').removeClass('active');
+                $(this).parent().parent().addClass('selected');
+
+                var treeOpenedParents = $('.custom-tree .panel-default>.panel-heading .panel-title.dark-color a:not(.collapsed)');
+                for (i = 0; i < treeOpenedParents.length; i++) {
+                    if ($(treeOpenedParents[i]).parent().parent().parent().find('.selected').html()) {
+                        $(treeOpenedParents[i]).addClass('active');
+                    }
+                }
+            }
+            else {
+                $('.custom-tree li.list-group-item:not(.has-sub)').removeClass('selected');
+                $('.custom-tree .panel-title.dark-color').removeClass('selected');
+                $('.custom-tree .panel-default>.panel-heading .panel-title.dark-color a').removeClass('active');
+            }
+        });
+
+        $('#saveTreeValue').click(function () {
+            $('#treeValueName').val($('.custom-tree .selected').find('label .department-name').text());
+            $('#treeValueNumber').val($('.custom-tree .selected').find('label .department-number').text());
+        });
+
+        $(".right-arrow").click(function () {
+            $("div .top-icons").toggleClass("show-icons");
+            $(".right-arrow").toggleClass("la-rotate");
+            $(".right-arrow").toggleClass("left-arrow");
+            $(".la-angle-right").toggleClass("pl-2");
+        });
+
+        $('.filter-target').click(function () {
+            $('.filter-box.filter').slideToggle('fast');
+            $('.sort-target').removeClass("active");
+            $('.search-target').removeClass("active");
+            $(this).toggleClass("active");
+            $('.filter-box.sort').hide();
+            $('.filter-box.search').hide();
+
+        });
+    });
+
+    function DeleteOrg(Key) {
+         
+        var token = $("input[name='__RequestVerificationToken']").val();
+        $.ajax({
+            type: 'post',
+            data: { id: Key, __RequestVerificationToken: token},
+            url: '@Url.Action("DeleteOrg", "OrgUnitStructure")',
+            success: function (data) {
+                 
+                if (data.MessageType != 2) {
+                    ShowInformationMessage(data.MessageText, redirect());
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            }
+        });
+
+    }
+
+      function redirect() {
+          setTimeout(function () {
+            window.location.href = '@Url.Action("Index", "OrgUnitStructure", new { area="Admin"})';
+        }, 2000);
+    }
+
+</script>

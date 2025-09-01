@@ -1,0 +1,311 @@
+﻿@model InboundCertificateVM
+@using Newtonsoft.Json
+@using MCS.Common
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Search.TransactionCertificate
+@{
+    Layout = null;
+}
+
+@*@Html.RenderGridViewResources()*@
+
+
+<h3 class="page_sub-title"><span>@DbRes.TResource("User.InboundCertificate.InboundCertificate")</span></h3>
+
+<div class="stage_transact">
+
+    <div class="form-horizontal form-row transact_widescreen">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="buts_editor">
+                    @Html.ClientAnchor("<div class='buts_icon'><div class='center'><i><img src=" + Url.Content("~/Content/User/lib/img/morasalat/editor/icon_01.svg") + " alt=''></i></div></div><div class='clear'></div><div class='buts_title'>" + DbRes.TResource("User.Editor.BasicInfo") + "</div>", "btnBasicInfo", "tab_editor select_but")
+                    @Html.ClientAnchor("<div class='buts_icon'><div class='center'><i><img src=" + Url.Content("~/Content/User/lib/img/morasalat/editor/icon_09.svg") + " alt=''></i></div></div><div class='clear'></div><div class='buts_title'>" + DbRes.TResource("User.InboundCertificate.Names") + "</div>", "btnNames", "tab_editor")
+                    @Html.ClientAnchor("<div class='buts_icon'><div class='center'><i><img src=" + Url.Content("~/Content/User/lib/img/morasalat/editor/icon_02.svg") + " alt=''></i></div></div><div class='clear'></div><div class='buts_title'>" + DbRes.TResource("User.InboundCertificate.Assignments") + "</div>", "btnAssignments", "tab_editor")
+                    @Html.ClientAnchor("<div class='buts_icon'><div class='center'><i><img src=" + Url.Content("~/Content/User/lib/img/morasalat/editor/icon_08.svg") + " alt=''></i></div></div><div class='clear'></div><div class='buts_title'>" + DbRes.TResource("User.InboundCertificate.Links") + "</div>", "btnLinks", "tab_editor")
+                    @Html.ClientAnchor("<div class='buts_icon'><div class='center'><i><img src=" + Url.Content("~/Content/User/lib/img/morasalat/editor/icon_10.svg") + " alt=''></i></div></div><div class='clear'></div><div class='buts_title'>" + DbRes.TResource("User.InboundCertificate.Archiving") + "</div>", "btnArchiving", "tab_editor")
+                    @Html.ClientAnchor("<div class='buts_icon'><div class='center'><i><img src=" + Url.Content("~/Content/User/lib/img/morasalat/editor/icon_11.svg") + " alt=''></i></div></div><div class='clear'></div><div class='buts_title'>" + DbRes.TResource("User.InboundCertificate.TransactionHistory") + "</div>", "btnTransactionHistory", "tab_editor")
+                </div>
+            </div>
+
+            <div id="dvEditorBasicInfo" class="panel-body editor _views">
+                <p class="subtitle">@DbRes.TResource("User.Editor.BasicInfo")</p>
+
+
+                <div class="basic_information">
+
+
+                    <div class="row_basic_information">
+
+                        <div class="column_basic_information">
+                            <div class="item"><em>@DbRes.TResource("User.InboundCertificate.InboundNumber")</em><span>@Model.InboundNumber</span></div>
+                            <div class="item"><em>@DbRes.TResource("User.InboundCertificate.DateAndTime")</em><span>@(Model.HijriDate + " - " + Model.Date.ToShortTimeString())</span></div>
+                            <div class="item"><em>@DbRes.TResource("User.InboundCertificate.OrgUnit")</em><span>@Model.OrgUnit</span></div>
+                            <div class="item"><em>@DbRes.TResource("User.InboundCertificate.InboundDocumentNumber")</em><span>@Model.InboundDocumentNumber</span></div>
+                            <div class="item"><em>@DbRes.TResource("User.InboundCertificate.Destination")</em><span>@Model.Destination</span></div>
+                        </div>
+                        <div class="column_basic_information">
+                            <div class="item"><em>@DbRes.TResource("User.InboundCertificate.Source")</em><span>@Model.Source</span></div>
+                            <div class="item"><em>@DbRes.TResource("User.InboundCertificate.Type")</em><span>@Model.Type</span></div>
+                            <div class="item"><em>@DbRes.TResource("User.InboundCertificate.SignedBy")</em><span>@Model.SignedBy</span></div>
+                            <div class="item"><em>@DbRes.TResource("User.InboundCertificate.PriorityLevel")</em><span>@(Model.PriorityLevel + " " + Model.RemindDateH)</span></div>
+                        </div>
+                        <div class="column_basic_information">
+                            <div class="item"><em>@DbRes.TResource("User.InboundCertificate.ConfidentialityLevel")</em><span>@Model.ConfidentialityLevel</span></div>
+                            <div class="item"><em>@DbRes.TResource("User.InboundCertificate.CreatedByOrgUnit")</em><span>@Model.CreatedByOrgUnit</span></div>
+                            <div class="item"><em>@DbRes.TResource("User.InboundCertificate.DirectedTo")</em><span>@Model.DirectedTo</span></div>
+                            <div class="item"><em>@DbRes.TResource("User.InboundCertificate.CreatedByUser")</em><span>@Model.CreatedByUser</span></div>
+                        </div>
+                    </div>
+                    <div class="row_basic_information full">
+                        <div class="column_basic_information">
+                            <div class="item"><em>@DbRes.TResource("User.InboundCertificate.Status") :</em><span>@Model.Status</span></div>
+                            <div class="item"><em>@DbRes.TResource("User.Inbound.BasicInfo.Subject") :</em><span>@Model.Subject</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="dvEditorNames" class="panel-body editor hidden_ _views">
+                <p class="subtitle">@DbRes.TResource("User.InboundCertificate.Names")</p>
+                <div class="row">
+                    <div class="">
+                        @Html.Partial("~/Areas/User/Views/Shared/TransactionCertificate/_NameGridPartial.cshtml", ViewData["NamesData"])
+                    </div>
+                </div>
+            </div>
+            <div id="dvEditorAssignments" class="panel-body editor hidden_ _views">
+                <p class="subtitle">@DbRes.TResource("User.InboundCertificate.Assignments")</p>
+                <div class="row">
+                    <div class="where">
+                        <div class="group_where">
+                            <span class="">@DbRes.TResource("User.InboundCertificate.TransactionFound")</span>
+                            @if (Model.IsAssignToMoreThanOne)
+                            {
+                                <span class="">@DbRes.TResource("User.InboundCertificate.AssignToMoreThanOne")</span>
+
+
+                            }
+                            @if (Model.LatestAssignment != null)
+                            {
+                                <span class="">@Model.LatestAssignment.DateH</span>
+                                <span class="">@Model.LatestAssignment.Date.ToShortTimeString()</span>
+                                <span class="">@Model.LatestAssignment.ToOrgUnitName</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="">
+                        @Html.Partial("~/Areas/User/Views/Shared/TransactionCertificate/_AssignmentGridPartial.cshtml", ViewData["AssignmentsData"])
+                    </div>
+                </div>
+            </div>
+            <div id="dvEditorLinks" class="panel-body editor hidden_ _views">
+                <p class="subtitle">@DbRes.TResource("User.InboundCertificate.Links")</p>
+                <div class="row linking_transactions">
+
+                    @helper DrawLinks(List<TransactionCertificateLinkVM> links)
+                    {
+
+
+                        for (int i = 0; i < links.Count; i++)
+                        {
+
+
+
+
+                            <div class="group_linking margin-right fx_linking">
+                                <a href="" onclick="ShowTransactionCertificate(@links[i].Transaction.Id, '@links[i].Transaction.TransactionType'); return false;">
+                                    <span class="fa fa-link"></span>
+                                    <span class="">@links[i].Transaction.Number</span>
+                                    <span class="">@links[i].Transaction.Source</span>
+                                    <span class="">@links[i].Transaction.HijriDate</span>
+                                    <span class="">@links[i].Transaction.Date.ToShortTimeString()</span>
+                                </a>
+                                @DrawLinks(links[i].Transaction.Links)
+                            </div>
+                        }
+                    }
+
+                    @for (int i = 0; i < Model.Links.Count; i++)
+                    {
+
+                        <div class="group_linking fx_linking">
+                            <a href="" onclick="ShowTransactionCertificate(@Model.Links[i].Transaction.Id, '@Model.Links[i].Transaction.TransactionType'); return false;">
+                                <span class="fa fa-link"></span>
+                                <span class="">@Model.Links[i].Transaction.Number</span>
+                                <span class="">@Model.Links[i].Transaction.Source</span>
+                                <span class="">@Model.Links[i].Transaction.HijriDate</span>
+                                <span class="">@Model.Links[i].Transaction.Date.ToShortTimeString()</span>
+                            </a>
+
+                            @DrawLinks(Model.Links[i].Transaction.Links)
+                        </div>
+                    }
+                </div>
+
+            </div>
+            <div id="dvEditorArchiving" class="panel-body editor hidden_ _views archiving">
+                <p class="subtitle">@DbRes.TResource("User.InboundCertificate.Archiving")</p>
+                <div class="row">
+                    @if (Model.DocumentVM != null)
+                    {
+                        <div class="archiving_group">
+                            @*<div class="archiving_group_title">
+                                @DbRes.TResource("User.InboundCertificate.MainDocument")
+                            </div>*@
+                            <div class="archiving_group_content">
+                                <a href="" onclick="ShowDocumentViewer('@Model.DocumentVM.Id','@ViewData["DocumentSessionKey"]'); return false;">
+                                    <span class="">@Model.InboundNumber</span>
+                                    <span class="">@Model.Source</span>
+                                    <span class="">@Model.HijriDate</span>
+                                    <span class="">@Model.Date.ToShortTimeString()</span>
+                                </a>
+                            </div>
+                        </div>
+                    }
+                    <div class="archiving_group">
+                        <div class="archiving_group_title">
+                            @DbRes.TResource("User.InboundCertificate.Attachments")
+                        </div>
+                        <div class="archiving_group_content">
+                            @for (int i = 0; i < Model.Attachments.Count; i++)
+                            {
+                                <span class=""><a href="@Url.Action("DownloadFile", "File")?DocumentId=@Model.Attachments[i].DocumentVM.EncryptedId" target="_blank"> @DbRes.TResource("User.InboundCertificate.AttachmentNumber") @(i + 1)</a></span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div id="dvEditorTransactionHistory" class="panel-body editor hidden_ _views">
+                <p class="subtitle">@DbRes.TResource("User.InboundCertificate.TransactionHistory")</p>
+
+                <div class="editor_content">
+                    <div class="active assignments">
+                        <div class="row">
+                            <div class="panel-body faq history_faq">
+                                @for (int i = 0; i < Model.TransactionCertificateHistory.Count; i++)
+                                {
+                                    <div class="faq-item">
+                                        <div class="faq-title"><span class="fa fa-angle-down"></span><span class="name">@Model.TransactionCertificateHistory[i].UserName</span></div>
+                                        <div class="faq-text">
+                                            <div class="panel-body faq history_faq">
+                                                @for (int y = 0; y < Model.TransactionCertificateHistory[i].CertificateHistoryDetails.Count; y++)
+                                                {
+                                                    <div class="faq-item none">
+                                                        <div class="faq-title">
+                                                            <span class="fa fa-angle-down"></span><span class="date">@Model.TransactionCertificateHistory[i].CertificateHistoryDetails[y].DateH  @Model.TransactionCertificateHistory[i].CertificateHistoryDetails[y].Date.ToShortTimeString()</span>
+                                                            <span>@Model.TransactionCertificateHistory[i].CertificateHistoryDetails[y].Description</span>
+                                                        </div>
+                                                        <div class="faq-text"></div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-footer">
+                <button type="button" class="btn btn-default" onclick='ShowPrintDialog(@Model.Id);return false;'>@DbRes.TResource("User.InboundCertificate.PrintBarcode")</button>
+                @Html.PrintButton(DbRes.TResource("User.InboundCertificate.PrintVisitTicket"), "urlPrintTicket", "btn btn-save pull-right", "btnPrintTicket", UserClaims.GeneralPermissions.PrintReviewTicket)
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    $('.tab_editor').click(function () {
+
+        var url;
+        var data = new Array();
+
+        $('.tab_editor').removeClass('select_but');
+        $(this).addClass('select_but');
+
+        $("._views").hide();
+
+        switch ($(this)[0].id) {
+
+            case "btnBasicInfo":
+                $("#dvEditorBasicInfo").show();
+                break;
+
+            case "btnAssignments":
+                $("#dvEditorAssignments").show();
+                break;
+
+            case "btnLinks":
+                $("#dvEditorLinks").show();
+                break;
+
+            case "btnNames":
+                $("#dvEditorNames").show();
+                break;
+
+            case "btnArchiving":
+                $("#dvEditorArchiving").show();
+                break;
+
+            case "btnTransactionHistory":
+                $("#dvEditorTransactionHistory").show();
+                break;
+        }
+    });
+</script>
+
+
+<script>
+    var urlPrintTicket = '@Url.Action("PrintTicket","Shared")' + '?transactionId=' + @Model.Id;
+    var names = '@Html.Raw(JsonConvert.SerializeObject(Model.Names))';
+
+    var assignments = '@Html.Raw(JsonConvert.SerializeObject(Model.Assignments))';
+
+
+  
+
+    function ShowTransactionCertificate(id, transactionType) {
+        var url;
+
+        switch (transactionType) {
+
+            case '@TransactionCategory.Inbound.ToString()':
+
+                url = '@Url.Action("InboundCertificate", "Shared")' + '?transactionId=' + id;
+
+                break;
+
+            case '@TransactionCategory.InternalOutbound.ToString()':
+
+                url = '@Url.Action("InboundCertificate", "Shared")' + '?transactionId=' + id;
+
+                break;
+
+            case '@TransactionCategory.ExternalOutbound.ToString()':
+
+                url = '@Url.Action("OutboundCertificate", "Shared")' + '?transactionId=' + id;
+
+                break;
+        }
+
+        ShowDialog(url,'dialogbox col-md-12');
+    }
+    function ShowPrintDialog(id) {
+        var params = { transactionId: id };
+        ShowDialogAjaxPrintingBarcodes('@Url.Action("PrinttingBarcodes","Shared")' + "?" + $.param(params), {}, 'OpenPrintDialogSuccess', 'dialogbox col-md-12 ');
+    }
+
+    function OpenPrintDialogSuccess(data, $obj) {
+        if (data.MessageType != 2) {
+            $obj.setContent(data.Html);
+        }
+        else {
+            __dialog.close();
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+</script>

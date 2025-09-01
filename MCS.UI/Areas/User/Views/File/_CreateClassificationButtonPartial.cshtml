@@ -1,0 +1,13 @@
+﻿<div class="btn-options ml-lg-auto d-flex flex-wrap">
+
+
+    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Outbound.CreateOutboundDraft))
+    {
+        <a class="btn btn-site mr-3" href="~/User/File/AddClassification">
+            <i class="icon-create-1"></i>
+            @DbRes.TResource("User.Create.Classification")
+        </a>
+    }
+
+
+</div>

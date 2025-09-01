@@ -1,0 +1,37 @@
+﻿@model AjaxGrid<MCS.UI.Areas.User.Models.Transaction.TransactionLinkVM>
+@Html.Grid(Model).Named("grdEditorLinks").Columns(columns =>
+{
+
+columns.Add(model => model.TransactionId, true);
+columns.Add().Encoded(false).Sanitized(false).Titled(DbRes.TResource("User.Transaction.Link.TransactionNumber")).RenderValueAs(o => @<a class="trans_Number" data-transactioncategory="@o.TransactionCategory" data-linktypeid="@o.LinkTypeId" data-id="@o.TransactionId">@o.TransactionNumber</a>);
+columns.Add(model => model.OrgunitName).Titled(DbRes.TResource("Admin.OrgUnitStructure.OrgName"));
+columns.Add(model => model.TransactionCategoryName).Titled(DbRes.TResource("User.Transaction.Link.TransactionType"));
+columns.Add(model => model.DateH).Titled(DbRes.TResource("User.Inbound.BasicInfo.RecordDate"));
+columns.Add(model => model.TransactionType).Titled(DbRes.TResource("Admin.Layout.TransactionSourceLookup"));
+columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => @Html.ConfirmImageButton(Url.Action("DeleteEditorLinks", "Editor"), "grdEditorLinks", 0, "dvEditorLinksGrid", "dvEditorLinksBody :input", null, "OnDeleteEditorLinksSuccess", null, "post", DbRes.TResource("Grid.DeleteMassage"), UserClaims.Editor.Link)).Titled(DbRes.TResource("Grid.Delete"));
+
+})
+
+<script>
+    $(".trans_Number").click(function () {
+        debugger;
+        var transactionId = $(this).data("id");
+        var trx = EncryptionKey(transactionId);
+        var linkTypeId = $(this).data("linktypeid");
+        var transactionCategory = $(this).data("transactioncategory");
+        switch (transactionCategory) {
+            case @(TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName)):
+                var url = '@Url.Action("Index", "TransactionLog")' + '?transactionId=' + trx + "&transactionCategory=" + @((int)TransactionCategory.Inbound);
+                break;
+            case @(TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName)):
+                var url = '@Url.Action("Index", "TransactionLog")' + '?transactionId=' + trx + "&transactionCategory=" + @((int)TransactionCategory.InternalOutbound);
+                break;
+            case @(TransactionCategory.ExternalOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName)):
+            case @(TransactionCategory.DraftOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName)):
+                var url = '@Url.Action("Index", "TransactionLog")' + '?transactionId=' + trx + "&transactionCategory=" + @((int)TransactionCategory.ExternalOutbound);
+                break;
+        }
+
+        ShowDialog(url, 'dialogbox col-md-12 ');
+    });
+</script>

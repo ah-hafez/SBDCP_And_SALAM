@@ -1,0 +1,491 @@
+﻿@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.UI.Areas.User.Models.UserPreferences;
+@using MCS.Common
+@using MCS.Framework.Localization
+@model TransactionPathVM
+
+<style>
+    body.dragging, body.dragging * {
+        cursor: move !important;
+    }
+
+    .dragged {
+        position: absolute;
+        top: 0;
+        opacity: 0.5;
+        z-index: 2000;
+    }
+
+    .grid-table tr {
+        cursor: pointer;
+    }
+
+        .grid-table tr.placeholder {
+            display: block;
+            background: red;
+            position: relative;
+            margin: 0;
+            padding: 0;
+            border: none;
+        }
+
+            .grid-table tr.placeholder:before {
+                content: "";
+                position: absolute;
+                width: 0;
+                height: 0;
+                border: 5px solid transparent;
+                border-left-color: red;
+                margin-top: -5px;
+                left: -5px;
+                border-right: none;
+            }
+</style>
+
+<div id="dvAddTransactionPath">
+    <div class="mb-3 mx-5 mx-xs-3 header-container2 d-flex align-items-center">
+        <h3 class="site-color mt-xs-4">@DbRes.TResource("User.Transaction.Path.AddPathTitle") </h3>
+        <div class="close-icon mt-0 ml-auto" data-bs-toggle="tooltip" data-placement="bottom" title="إغلاق" onclick="OnCancelPathEdit();">
+            <a class="circle-icon color-white" href="#"><i class="la la-close"></i></a>
+        </div>
+    </div>
+    <div class="content_container">
+        <div class="white-container mx-5 mx-xs-3">
+            @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmPaths", @class = "" }))
+            {
+                @Html.AntiForgeryToken()
+            <div class="" id="dvAddPath">
+                <div class="ml-auto">
+                    <h3 class="black">@DbRes.TResource("User.Transaction.Path.InfoTitle") </h3>
+                </div>
+                <div id="dvPathInfo" class="form-row">
+                    <div id="pathAlert" class="alert alert-danger" role="alert" style="display:none;">
+                    </div>
+                    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                        <label class="">@DbRes.TResource("User.Transaction.Path.Name") <span class="red-color">*</span></label>
+                        @Html.TextBoxGroupFor(model => model.Name, "AddTransactionPath", new { id = "txtPathName", @class = "form-control", autocomplete = "off" })
+                    </div>
+                    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                        <label>@DbRes.TResource("User.Transaction.Path.Type")</label>
+                        <div class="">
+                            @Html.AutoCompleteBuilder("ddlSourceTypes", "hdnSourceTypesId", ViewData["TransactionCategoryData"].ToString(), Model != null ? Model.TransactionTypeId.ToString() : null, true, "form-control", "", "", "", true)
+                            @Html.HiddenGroupFor(model => model.TransactionTypeId, new { id = "hdnSourceTypesId" }, "AddTransactionPath")
+                            @Html.StickyHiddenFor(model => model.TransactionTypeName, new { id = "hdnSourceTypeName" })
+                        </div>
+                        <span class="help-block"></span>
+                    </div>
+
+
+                    <div class="form-group col-lg-3 col-md-6 col-sm-6 col-xs-12 TreeHeight" id="dvPathDepartments">
+                        <label>@Html.DisplayNameFor(model => model.OrgUnitId)<span class="stark">*</span></label>
+                        @Html.EditorFor(model => model.OrgUnitId, "OrgHierarchyCaller", additionalViewData: new { treeId = "dvPathDepartments", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Common"), onClickfunction = "GetDirectedToByOrgUnitId", ValidationGroup = "AddTransactionPath", ShowAddPartyButton = false })
+                    </div>
+                   
+                    @*<div class="form-group col-lg-3 col-md-6 col-sm-6 col-xs-12 TreeHeight" id="dvPathDepartments">
+            @Html.DepartmentsTree(ViewData["PathDepartmentData"] as TreeViewModel, model => model.OrgUnitId, TreeMode.Single, "dvPathDepartments", true, "GetDirectedToByOrgUnitId", "AddTransactionPath", "dvPathDepartments")
+            @Html.StickyHiddenFor(model => model.OrgUnitName, new { @id = "PathOrgUnitName" })
+        </div>*@
+
+                    <div class="form-group col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                        <label class="">@DbRes.TResource("User.Transaction.Path.User")</label>
+                        @Html.AutoCompleteBuilder("ddlCreatedById", "hdnCreatedById", ViewData["OrgUnitUsers"] != null ? ViewData["OrgUnitUsers"].ToString() : null, Model != null ? Model.CreatedBy.ToString() : null, false, "form-control")
+                        @Html.HiddenGroupFor(model => model.CreatedBy, new { id = "hdnCreatedById" })
+                        @Html.StickyHiddenFor(model => model.CreatedByName, new { @id = "hdnCreatedByName" })
+                        <span class="help-block"></span>
+                    </div>
+
+                </div>
+                    <hr />
+                    <div class="ml-auto">
+                        <h3 class="black mb-4">@DbRes.TResource("User.Transaction.Path.DepartmentTitle")</h3>
+                    </div>
+                    <div id="pathDetailsAlert" class="alert alert-danger" role="alert" style="display:none;">
+
+                    </div>
+                    <div id="dvPathDetails" class="form-row">
+
+
+                        <div class="form-group col-lg-3 col-md-6 col-sm-6 col-xs-12 TreeHeight" id="dvDepartments">
+                            <label>@Html.DisplayNameFor(model => model.TransactionPathDetailsVM.EntityId)<span class="stark">*</span></label>
+                            @Html.EditorFor(model => model.TransactionPathDetailsVM.EntityId, "OrgHierarchyCaller", additionalViewData: new { treeId = "dvDepartments", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Common"), onClickfunction = "GetDirectedToUsersByOrgUnitId", ValidationGroup = "AddTransactionPathDetails", ShowAddPartyButton = false })
+                        </div>
+
+                        @*<div class="form-group col-lg-3 col-md-6 col-sm-6 col-xs-12 TreeHeight" id="dvDepartments">
+                            @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.TransactionPathDetailsVM.EntityId, TreeMode.Single, "dvDepartments", true, "GetDirectedToUsersByOrgUnitId", "AddTransactionPathDetails", "dvDepartments")
+                            @Html.StickyHiddenFor(model => model.TransactionPathDetailsVM.EntityName, new { @id = "OrgUnitName" })
+                            <span id="DepartmentsDataMessage" style="color:red; font-size: 13px"></span>
+                        </div>*@
+                        <div class="form-group col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                            <label class="">@DbRes.TResource("User.Transaction.PathDetails.User")</label>
+                            @Html.AutoCompleteBuilder("ddlDirectedToId", "hdnDirectedToId", ViewData["OrgUnitsUsersData"] != null ? ViewData["OrgUnitsUsersData"].ToString() : null, Model != null ? Model.TransactionPathDetailsVM.UserId.ToString() : null, true, "form-control")
+                            @Html.HiddenGroupFor(model => model.TransactionPathDetailsVM.UserId, new { id = "hdnDirectedToId" }, "AddTransactionPathDetails")
+                            @Html.StickyHiddenFor(model => model.TransactionPathDetailsVM.UserName, new { @id = "hdnDirectedToName" })
+                            <span class="help-block"></span>
+                        </div>
+                        <div class="form-group col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                            @Html.LabelFor(model => model.TransactionPathDetailsVM.ActionId, new { @class = "" })<span class="stark">*</span>
+                            @Html.AutoCompleteBuilder("ddlActionId", "hdnActionId", ViewData["AllActionsData"] != null ? ViewData["AllActionsData"].ToString() : null, Model != null ? Model.TransactionPathDetailsVM.ActionId.ToString() : null, true, "form-control")
+                            @Html.HiddenGroupFor(model => model.TransactionPathDetailsVM.ActionId, new { @Value = "", id = "hdnActionId" }, "AddTransactionPathDetails")
+                            @Html.HiddenGroupFor(model => model.TransactionPathDetailsVM.ActionName, new { id = "hdnActionName" }, "AddTransactionPathDetails")
+                        </div>
+
+                        <div class="form-group col-lg-12 col-md-12 col-xs-12 col-sm-12">
+                            <div class="mt-2 text-danger pull-left">
+                                <p class="stark">@DbRes.TResource("Admin.User.MustFill") * </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-right panel-body">
+                        @Html.StickyHiddenFor(model => model.TransactionPathDetailsVM.Key, new { id = "hdnEditKey" })
+                        @Html.StickyHiddenFor(model => model.TransactionPathDetailsVM.Sort, new { id = "hdnEditSort" })
+                        @Html.StickyHiddenFor(model => model.TransactionPathDetailsVM.Id, new { id = "hdnEditId" })
+                        @Html.ClientActionButton(DbRes.TResource("User.TransactionPath.AddDetails"), Url.Action("AddPathsDetails", "Paths") , "pathDetailsRow", "onAddTransactionDetails", null, "AddTransactionPathDetails", "btnAddPathDetails", "dvAddPath", "btn btn-lg btn-st3 mx-1 ", null, "OnAddPathDetailsValidation", "", "<i class='glyphicon glyphicon-plus'></i>")
+                        @Html.ClientActionButton(DbRes.TResource("User.UserDelegation.Edit"), Url.Action("AdminEditPathsInfo", "Paths") , "dvGrid", "OnClientEditSuccess", null, "AddTransactionPathDetails", "btnClientEditPathDetails", "dvAddPath", "btn btn-lg btn-st3 mx-1 hidden_")
+                        <a class="btn btn-lg btn-st3 mx-1" style="display:none" id="btnCancel" onclick="CancelPathDetailsEdit()">@DbRes.TResource("User.UserDelegation.Cancel")</a>
+                    </div>
+                    <div id="pathLessThanTwo" class="alert alert-danger" role="alert" style="display:none;"></div>
+
+                    <div class="panel-body" id="dvGrid">
+                        <div class="d-flex my-4">
+                            <h3 class="black mt-0">@DbRes.TResource("User.Transaction.Path.DepartmentTableTitle") </h3>
+                        </div>
+                        @Html.Partial("~/Areas/Admin/Views/Paths/_PathsDetailsGridPartial.cshtml", Model.TransactionPathDetailsGrid, ViewData)
+                    </div>
+                </div>
+                <div class="middle text-left">
+                    @Html.StickyHiddenFor(model => model.Id, new { id = "hdnTransactionPathId" })
+                </div>
+           
+            }
+        </div>
+        <div class="row text-right mr-5 mt-4 ml-xs-3 mb-4">
+            @Html.ConfirmAction(OperationType.Save, "btnSavePaths", DbRes.TResource("Admin.User.Save"), Url.Action("SaveTransactionPath", "Paths"), null, null, null, "OnSavePathCallBack", null, DbRes.TResource("User.Inbound.SaveMessage"), "post", "frmPaths","AddTransactionPath", "btn btn-lg btn-st3 mx-1", "")
+            @Html.ClientButton(DbRes.TResource("User.TransactionPath.Cancel"), "btnCancelPathEdit", "btn btn-lg btn-st3 mx-1", "OnCancelPathEdit")
+        </div>
+    </div>
+
+</div>
+<script>
+
+    $(document).ready(function () {
+        var isReadOnly = '@Model.IsReadOnly.ToString().ToLower()';
+        var oldIndex;
+        if (isReadOnly == 'false') {
+            $('.grid-table').sortable({
+                containerSelector: 'table',
+                itemPath: '> tbody',
+                itemSelector: 'tr',
+                placeholder: '<tr class="placeholder"/>',
+                onDragStart: function ($item, container, _super) {
+                    oldIndex = $item.find("input[name*='Key']").val();
+
+                    _super($item, container);
+                },
+                onDrop: function ($item, container, _super) {
+                    var field,
+                        newIndex = $item.index() + 1;
+                    newIndex = newIndex == 0 ? 1 : newIndex;
+                    $("#Sort_" + oldIndex).val(newIndex);
+
+                    if (newIndex != oldIndex) {
+                        if (newIndex < oldIndex) {
+                            $item.nextAll('tr').each(function (i, row) {
+                                var key = $(row).find("input[name*='Key']").val();
+                                var newSort = parseInt($('#Sort_' + key).val()) + 1;
+                                $('#Sort_' + key).val(newSort);
+                            });
+                        }
+                        else {
+                            $item.prevAll('tr').each(function (i, row) {
+                                var key = $(row).find("input[name*='Key']").val();
+                                var newSort = parseInt($('#Sort_' + key).val()) - 1
+                                $('#Sort_' + key).val(newSort);
+                            });
+                        }
+                    }
+                    _super($item, container);
+                }
+            });
+        }
+    });
+    function GetDirectedToByOrgUnitId() {
+            if ($("#divForm__dvPathDepartments").find(".hdnDepartmentId").val() != '' && $("#dvPathDetails .txtDepartmentName").val() != '') {
+                $("#hdnCreatedById").val('');
+                $("#ddlCreatedById").val('');
+                $("#hdnOrgUnitUserName").val('');
+                $('#hdnCreatedById').val($('#dvPathDetails .txtDepartmentName').val());
+            var token = $("#frmPaths").find("input[name='__RequestVerificationToken']").val();
+
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("GetUsersByOrgUnitId", "Paths")',
+                data: { id: $("#divForm__dvPathDepartments").find(".hdnDepartmentId").val(), __RequestVerificationToken: token },
+                success:
+                    function (data) {
+                        AutoCompleteChangeList("ddlCreatedById", data);
+                    }
+            });
+            return false;
+        }
+        else {
+
+                AutoCompleteChangeList("ddlCreatedById", "[]");
+                $("#hdnCreatedById").val('');
+        }
+    }
+    $(document).ready(function () {
+        $("#OrgUnitName").val($(".txtDepartmentName").val());
+        $("#ddlSourceTypes").prop('disabled', true);
+        $('#btnCancelPathEdit').hide();
+
+        if ('@Model.IsReadOnly.ToString().ToLower()' == 'true') {
+            $("#frmPaths :input").attr("readonly", true);
+            $('#dvPathDetails').hide();
+            $('#btnSavePaths').hide();
+            $('#btnCancelPathEdit').hide();
+        }
+    });
+    $(".txtDepartmentName").change(function () {
+        $("#OrgUnitName").val($(this).val());
+    });
+    $(".txtDepartmentNumber ").change(function () {
+          $("#OrgUnitName").val($(".txtDepartmentName").val());
+
+    });
+    $("#ddlDirectedToId").change(function () {
+        $("#hdnDirectedToName").val($(this).val());
+    });
+    $("#ddlPriority").change(function () {
+        $("#hdnPriorityName").val($(this).val());
+    });
+    $("#ddlSourceTypes").change(function () {
+        $("#hdnSourceTypeName").val($(this).val());
+    });
+    $("#ddlConfidentiality").change(function () {
+        $("#hdnConfidentialityName").val($(this).val());
+    });
+
+    $(document).on("change", "#ddlActionId", function () {
+        $("#hdnActionName").val($(this).val());
+    });
+
+    $(document).on("change", "#ddlDeliveryMethod", function () {
+        $("#hdnDeliveryMethod").val($(this).val());
+    });
+
+    $('#txtPathName').on("keypress", function (e) {
+        if (e.keyCode == 13) {
+            return false;
+        }
+    });
+
+    
+
+    function OnSavePathCallBack(data, div) {
+        if (data.MessageType != 2) {
+            ShowSuccesMessage('@DbRes.TResource("User.AssignmentPaper.SaveSucceeded")');
+            redirect();
+            $('#pathLessThanTwo').hide();
+            $('#pathLessThanTwo').html('');
+        }
+        else
+        {
+            $('#pathLessThanTwo').show();
+            $('#pathLessThanTwo').html(data.MessageText);
+        }
+    }
+    function redirect() {
+        setTimeout(function () {
+            window.location.reload();
+        }, 1000);
+    }
+    function GetDirectedToUsersByOrgUnitId() {
+        if ($("#divForm__dvDepartments").find(".hdnDepartmentId").val() != '' && $("#dvPathDetails .txtDepartmentName").val() != '') {
+            $("#hdnDirectedToId").val('');
+            $("#DepartmentsDataMessage").hide();
+            $('#dvPathDetails .txtDepartmentName, #dvPathDetails .txtDepartmentNumber').removeClass('invalid-input');
+            $("#ddlDirectedToId").val('');
+            $("#hdnOrgUnitUserName").val('');
+            $('#hdnDirectedToName').val($('#dvPathDetails .txtDepartmentName').val());
+            var token = $("#frmPaths").find("input[name='__RequestVerificationToken']").val();
+
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("GetUsersByOrgUnitId", "Paths")',
+                data: { id: $("#divForm__dvDepartments").find(".hdnDepartmentId").val(), __RequestVerificationToken: token },
+                success:
+                    function (data) {
+                        AutoCompleteChangeList("ddlDirectedToId", data);
+                        $("#ddlDirectedToId").trigger('change');
+                        $("#hdnDirectedToId").trigger('change');
+                    }
+            });
+            return false;
+        }
+        else {
+
+            AutoCompleteChangeList("ddlOrgUnitUsers", "[]");
+            $("#hdnDirectedToId").val('');
+            $("#ddlDirectedToId").trigger('change');
+            $("#hdnDirectedToId").trigger('change');
+        }
+    }
+
+    function OnAddPathSuccess(data, div) {
+        var pathInfo = $('#dvPathInfo :input').serializeArray();
+        if (pathInfo.length > 0) {
+            for (var i = 0; i < pathInfo.length; i++) {
+                if (pathInfo[i].name == "Name" || pathInfo[i].name == "TransactionTypeId") {
+                    if (pathInfo[i].value == undefined || pathInfo[i].value.trim() == "") {
+                        ShowInformationMessage('@DbRes.TResource("User.Transaction.Path.InvalidInfo")');
+                        return false;
+                    }
+                }
+            }
+        }
+
+        $('#pathDetailsRow').slideToggle();
+    }
+
+    function onAddTransactionDetails(data, div) {
+        if (data.MessageType != 2) {
+            $("#grid-table-grdPathDetails> tbody > .grid-empty-text").remove();
+            $("#grid-table-grdPathDetails > tbody").append(data.Html);
+            ClearInputs('dvPathDetails');
+            $('#pathDetailsAlert').hide();
+            $('#pathDetailsAlert').html('');
+            $('#pathLessThanTwo').hide();
+            $('#pathLessThanTwo').html('');
+        }
+        else {
+            $('#pathDetailsAlert').show();
+            $('#pathDetailsAlert').html(data.MessageText);
+            
+        }
+    }
+
+    function OnCancelPathEdit() {
+        redirect();
+    }
+
+    function OnAddPathDetailsValidation() {
+        var pathInfo = $('#dvPathDetails :input').serializeArray();
+        if (pathInfo.length > 0) {
+            var isValild = true;
+            for (var i = 0; i < pathInfo.length; i++) {
+                if (pathInfo[i].name == "TransactionPathDetailsVM.ActionId" || pathInfo[i].name == "TransactionPathDetailsVM.DeliveryMethodId" || pathInfo[i].name == "TransactionPathDetailsVM.EntityId") {
+                    if (pathInfo[i].value == undefined || pathInfo[i].value.trim() == "") {
+                        if (pathInfo[i].name == "TransactionPathDetailsVM.ActionId")
+                            $("#ddlActionId").trigger('change');
+                        else if (pathInfo[i].name == "TransactionPathDetailsVM.DeliveryMethodId")
+                        $("#ddlDeliveryMethod").trigger('change');
+                        else if (pathInfo[i].name == "TransactionPathDetailsVM.EntityId") {
+                            $('#dvPathDetails .txtDepartmentName, #dvPathDetails .txtDepartmentNumber').addClass('invalid-input');
+                            $('#DepartmentsDataMessage').html('@Html.Raw(DbRes.TResource("Admin.Lookups.Correspondent.OrgUnitRequired"))'); }
+
+                        $('#pathDetailsAlert').show();
+                        $('#pathDetailsAlert').html('@DbRes.TResource("User.Transaction.Path.InvalidInfo")');
+                        isValild = false;
+                    }
+                }
+            }
+            return isValild;
+        }
+        return true;
+    }
+
+    function OnClientEditSuccess(data, div) {
+        if (data.MessageType != 2) {
+            if (data.Key != "") {
+                $('#grid-table-grdPathDetails').find('#Key_' + data.Key).closest('tr').replaceWith(data.Html);
+            }
+            CancelPathDetailsEdit();
+            $('#pathDetailsAlert').hide();
+            $('#pathDetailsAlert').html('');
+        }
+        else {
+            $('#pathDetailsAlert').show();
+            $('#pathDetailsAlert').html(data.MessageText);
+        }
+    }
+
+    function GetPathDetailsByKey(keyValue, OrgUnitId) {
+        $("#divForm__dvDepartments").find(".hdnDepartmentId").val($("#EntityId_" + keyValue).val());
+        $("#OrgUnitName").val($("#EntityName_" + keyValue).val());
+        $("#dvPathDetails .txtDepartmentName").val($("#EntityName_" + keyValue).val());
+        SetTreeDefaultInfo("dvPathDepartments", OrgUnitId);
+
+        //FillOrgUnitsTreeControls("dvDepartments", $("#EntityId_" + keyValue).val());
+        $("#ddlDirectedToId").val($("#UserName_" + keyValue).val());
+        $("#hdnDirectedToId").val($("#UserId_" + keyValue).val());
+        $("#hdnDirectedToName").val($("#UserName_" + keyValue).val());
+
+        $('#ddlActionId').val($("#ActionName_" + keyValue).val());
+        $('#hdnActionName').val($('#ActionName_' + keyValue).val());
+        $('#hdnActionId').val($("#ActionId_" + keyValue).val());
+
+        $('#ddlDeliveryMethod').val($("#DeliveryMethodName_" + keyValue).val());
+        $('#hdnDeliveryMethod').val($('#DeliveryMethodName_' + keyValue).val());
+        $('#hdnDeliveryId').val($("#DeliveryMethodId_" + keyValue).val());
+
+        $("#hdnEditKey").val(keyValue);
+        $("#hdnEditSort").val($("#Sort_" + keyValue).val());
+        $("#hdnEditId").val($("#Id_" + keyValue).val());
+        $("#btnAddPathDetails").hide();
+        $("#btnClientEditPathDetails").show();
+        $("#btnCancel").show();
+        $("#btnClientEditPathDetails").removeClass("hidden_");
+        var token = $('form:first').find("input[name='__RequestVerificationToken']").val();
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("GetUsersByOrgUnitId", "paths")',
+                data: { id: $("#divForm__dvDepartments").find(".hdnDepartmentId").val(), __RequestVerificationToken: token },
+                success:
+                    function (data) {
+                        AutoCompleteChangeList("ddlDirectedToId", data);
+                        $("#ddlDirectedToId").trigger('change');
+                        $("#hdnDirectedToId").trigger('change');
+                    }
+        });
+    }
+
+    function SortPathDetailsByKey(keyValue, sortType) {
+        var sortValue = $("#Sort_" + keyValue).val();
+        var pathId = $('#hdnPathId').val();
+
+        $.ajax({
+            url: '@Url.Action("AdminEditPathsInfoSort", "paths")',
+            type: 'POST',
+            cache: false,
+            contentType: "application/json",
+            data: JSON.stringify({ pathId: pathId, sort: sortValue, order: sortType }),
+            success: function (data) {
+                if (data.MessageType == 2) {
+                    //ShowErrorMessage(data.MessageText);
+                    return;
+                }
+                else {
+                    GetPathDetailsById(pathId);
+                    return;
+                }
+
+            },
+            error: function (a, b, c, d) {
+                ShowErrorMessage('حدث خطأ');
+            }
+        });
+    }
+
+
+    function CancelPathDetailsEdit() {
+        $("#btnAddPathDetails").show();
+        $("#btnClientEditPathDetails").addClass('hidden_');
+        $("#btnCancel").hide();
+        ClearInputs('dvPathDetails');
+        $('#pathDetailsAlert').hide();
+        $('#pathDetailsAlert').html('');
+    }
+
+</script>
+

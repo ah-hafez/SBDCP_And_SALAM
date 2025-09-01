@@ -1,0 +1,41 @@
+﻿@model MCS.GridMvc.Ajax.GridExtensions.AjaxGridPager
+@using MCS.Framework.Localization
+@if (Model.Pages < 2)
+{
+    return;
+}
+@Html.StickyHiddenFor(model => model.Pages)
+
+<div class="text-center">
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            <li class="page-item"><a href="#" class="grid-prev-page page-link" gridname='@Model.GridName' title="Previous Page" style="display: none">@DbRes.TResource("User.Paging.Previous")</a></li>
+            @{Model.PagePartitionSize = 5;}
+            @{if (Model.Pages > Model.PagePartitionSize + 2 && Model.PagePartitionSize > 0)
+                {
+                    <li class="page-item active"><a class="grid-page-link page-link" gridname='@Model.GridName' data-page="1">1</a></li>
+                    <li class="page-item"><a href="#" class="grid-pageSetLink prev" gridname='@Model.GridName' style="display: none;color:black;vertical-align:middle;" data-pageset='1' data-partitionsize="@Model.PagePartitionSize">...</a></li>
+                    for (int i = 1; i < Model.PagePartitionSize + 1; i++)
+                    {
+                        var currentPage = i + 1;
+                        <li class="page-item"><a href="#" class="grid-page-link page-link" gridname='@Model.GridName' data-page='@currentPage'>@currentPage</a></li>
+                    }
+                    <li class="page-item"><a href="#" class="grid-pageSetLink next" gridname='@Model.GridName' style="color:black;vertical-align:middle;" data-pageset='2' data-partitionsize="@Model.PagePartitionSize">...</a></li>
+                    <li class="page-item"><a href="#" class="grid-page-link page-link" gridname='@Model.GridName' data-page='@Model.Pages'>@Model.Pages</a></li>
+                }
+                else
+                {
+                    <li class="active page-item"><a class="grid-page-link page-link" data-page="1" gridname='@Model.GridName'>1</a></li>
+                    for (int i = 1; i < Model.Pages; i++)
+                    {
+                        var currentPage = i + 1;
+                        <li class="page-item"><a href="#" class="grid-page-link page-link" gridname='@Model.GridName' data-page='@currentPage'>@currentPage</a></li>
+                    }
+                }
+            }
+            <li class="page-item"><a class="grid-next-page" href="" title="Next Page" gridname='@Model.GridName'>@DbRes.TResource("User.Paging.Next")</a></li>
+        </ul>
+    </nav>
+</div>
+
+

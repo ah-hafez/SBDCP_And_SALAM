@@ -1,0 +1,30 @@
+@font-face {
+    font-family: Greta;
+    src: url('Greta_Arabic_Regular.eot');
+    src: url('Greta_Arabic_Regular.eot?#iefix') format('embedded-opentype'), url('Greta_Arabic_Regular.woff') format('woff'), url('Greta_Arabic_Regular.otf') format("opentype");
+}
+
+@font-face {
+    font-family: Al-Jazeera-Arabic-Bold;
+    src: url('Al-Jazeera-Arabic-Bold.eot');
+    src: url('Al-Jazeera-Arabic-Bold.eot?#iefix') format('embedded-opentype'), url('Al-Jazeera-Arabic-Bold.woff') format('woff'), url('Al-Jazeera-Arabic-Bold.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: Al-Jazeera-Arabic-Light;
+    src: url('Al-Jazeera-Arabic-Light.eot');
+    src: url('Al-Jazeera-Arabic-Light.eot?#iefix') format('embedded-opentype'), url('Al-Jazeera-Arabic-Light.woff') format('woff'), url('Al-Jazeera-Arabic-Light.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: Al-Jazeera-Arabic-Regular;
+    src: url('Al-Jazeera-Arabic-Regular.eot');
+    src: url('Al-Jazeera-Arabic-Regular.eot?#iefix') format('embedded-opentype'), url('Al-Jazeera-Arabic-Regular.woff') format('woff'), url('Al-Jazeera-Arabic-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+

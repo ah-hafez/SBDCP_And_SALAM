@@ -1,0 +1,121 @@
+﻿@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.Common
+@using MCS.Framework.Localization
+@model MCS.UI.Areas.User.Models.Search.SearchCriteriaByManifestNumberVM
+
+    <div class="panel-body panel_dark">
+        <div class="col-md-4 col-xs-6">
+            <fieldset>
+                <label class="control-label">@DbRes.TResource("User.InboundSearch.DateBetween")</label>
+                <div class="input-group">
+                    @Html.Hidden("hdnFromDateUm", "", new { id = "hdnFromDateUm" })
+                    @Html.CalendarCustom("fromDateCal", "hdnFromDateGreg", "hdnFromDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">-</span>
+                    </div>
+                    @Html.Hidden("hdnToDateUm", "", new { id = "hdnToDateUm" })
+                    @Html.CalendarCustom("toDateCal", "hdnToDateGreg", "hdnToDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+                </div>
+
+
+            </fieldset>
+            @Html.HiddenGroupFor(model => model.DateTo, new { id = "hdnToDateGreg" }, "Search")
+            @Html.HiddenGroupFor(model => model.DateFrom, new { id = "hdnFromDateGreg" }, "Search")
+        </div>
+        <div class="row">
+            <div class="panel-body">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ManifestNumber, new { @class = "control-label" })<span class="stark">*</span>
+                        <div>
+                            @Html.TextBoxGroupFor(model => model.ManifestNumber, "Search", new { @Value = "", @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        @*<div id="AdvancedDiv"></div>
+
+
+        <a class="btn btn-st2 btn-lg pull-right mr-1 " id="btnAdvancedSearch" onclick="GetAdvancedSearch(@Convert.ToInt32(SearchType.SearchByManifestNumber))">اضافية</a>
+        <a class="btn btn-st2 btn-lg pull-right mr-1 hidden" id="btnCloseAdvancedSearch" onclick="CloseAdvancedSearch()">أغلاق</a>*@
+
+
+        @Html.EncryptedStickyHidden("EncryptedFalse", "false", new { id = "EncryptedFalse" })
+        @Html.EncryptedStickyHidden("EncryptedTrue", "true", new { id = "EncryptedTrue" })
+    </div>
+
+            <script>
+      $(document).ready(function () {
+        $('#fromDateCal').attr('autocomplete', 'off');
+        $('#toDateCal').attr('autocomplete', 'off');
+        $('#btnSearch').removeClass('hidden_');
+
+    var year = @DateTimeUtility.GetHijriYear(DateTime.Now).ToString();
+        var type = '@CalenderType.Ummalqura.ToString().ToLower()';
+        SetStartEndDate(year, 'fromDateCal', 'toDateCal', type);
+    });
+  
+                function CollapseDiv(divName) {
+                    if ($('#' + divName).css('display') == 'block') {
+                        $('#' + divName).css("display", "none");
+                        $('#' + divName + 'PlusIcon').css("display", "inline-block");
+                        $('#' + divName + 'DashIcon').css("display", "none");
+                    }
+                    else {
+                        $('#' + divName).css("display", "block");
+                        $('#' + divName + 'PlusIcon').css("display", "none");
+                        $('#' + divName + 'DashIcon').css("display", "inline-block");
+                    }
+                }
+
+    $('#fromDateCal, #toDateCal').change(function () {
+
+        var dateFrom = $('#hdnFromDateUm').val();
+        var dateTo = $('#hdnToDateUm').val();
+    });
+        
+    $('#ddlHourTo').change(function () {
+
+        $('#hdnHourTo').val($('#ddlHourTo').val());
+    });
+
+    $('#ddlMinuteTo').change(function () {
+
+        $('#hdnMinuteTo').val($('#ddlMinuteTo').val());
+    });
+
+    $('#ddlHourFrom').change(function () {
+
+        $('#hdnHourFrom').val($('#ddlHourFrom').val());
+    });
+
+    $('#ddlMinuteFrom').change(function () {
+
+        $('#hdnMinuteFrom').val($('#ddlMinuteFrom').val());
+    });
+   function CloseAdvancedSearch() {
+          $("#AdvancedDiv").html("");
+        $("#btnAdvancedSearch").removeClass("hidden");
+           $("#btnCloseAdvancedSearch").addClass("hidden");
+
+    }
+   function GetAdvancedSearch(id)
+       {
+      
+        $.ajax({
+            type: 'Get',
+            url: '@Url.Action("GetAdvancedSearchView")',
+            data: { SearchTypeId: id , TransactionCategoryId :  @Convert.ToInt32(TransactionCategory.Inbound)},
+            success:
+                function (response) { 
+                    $("#AdvancedDiv").html(response.html);
+                     $("#btnAdvancedSearch").addClass("hidden");
+                    $("#btnCloseAdvancedSearch").removeClass("hidden");
+               
+           }
+        });
+    }
+            </script>

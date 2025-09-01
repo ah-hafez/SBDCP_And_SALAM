@@ -1,0 +1,133 @@
+﻿@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.Common
+@using MCS.Framework.Localization
+@model MCS.UI.Areas.User.Models.Search.SearchCriteriaByCopyAssignemntVM
+
+    <div class="panel-body panel_dark">
+        <div class="col-md-4 col-xs-6">
+            <fieldset>
+                <label class="control-label">@DbRes.TResource("User.InboundSearch.DateBetween")</label>
+                <div class="input-group">
+                    @Html.Hidden("hdnFromDateUm", "", new { id = "hdnFromDateUm" })
+                    @Html.CalendarCustom("fromDateCal", "hdnFromDateGreg", "hdnFromDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">-</span>
+                    </div>
+                    @Html.Hidden("hdnToDateUm", "", new { id = "hdnToDateUm" })
+                    @Html.CalendarCustom("toDateCal", "hdnToDateGreg", "hdnToDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+                </div>
+
+
+            </fieldset>
+            @Html.HiddenGroupFor(model => model.DateTo, new { id = "hdnToDateGreg" }, "Search")
+            @Html.HiddenGroupFor(model => model.DateFrom, new { id = "hdnFromDateGreg" }, "Search")
+        </div>
+        <div class="row">
+            <div class="panel-body">
+
+
+            </div>
+        </div>
+
+        @Html.EncryptedStickyHidden("EncryptedFalse", "false", new { id = "EncryptedFalse" })
+        @Html.EncryptedStickyHidden("EncryptedTrue", "true", new { id = "EncryptedTrue" })
+
+
+    <div class="col-lg-12 mt-3">
+        <h4>
+            <a role="button" style="display:flex" onclick="GetAdvancedSearch(@Convert.ToInt32(SearchType.SearchByCopyAssignemnt))">
+                <span onclick="CollapseDiv('AdvancedDiv'); return false;" style="cursor: pointer;">
+                    <img src="~/Content/User/lib/images/plus-icon.svg" id="AdvancedDivPlusIcon" width="25" />
+                    <img src="~/Content/User/lib/images/Dash-icon.svg" id="AdvancedDivDashIcon" width="25" style="display: none;" />
+                </span>
+                <span class="ml-3 mt-1">@DbRes.TResource("User.Names.ExtraOptions")</span>
+            </a>
+        </h4>
+        <div role="tabpanel" class="tab-pane" id="AdvancedDiv" style="display:none">
+        </div>
+    </div>
+
+        @*<a class="btn btn-st2 btn-lg pull-right mr-1 " id="btnAdvancedSearch" onclick="GetAdvancedSearch(@Convert.ToInt32(SearchType.SearchByCopyAssignemnt))">اضافية</a>
+        <a class="btn btn-st2 btn-lg pull-right mr-1 hidden" id="btnCloseAdvancedSearch" onclick="CloseAdvancedSearch()">أغلاق</a>*@
+
+    </div>
+
+            <script>
+    $(function () {
+        $('#btnSearch').removeClass('hidden_');
+    });
+    $(document).ready(function () {
+        $('#fromDateCal').attr('autocomplete', 'off');
+        $('#toDateCal').attr('autocomplete', 'off');
+        $('#btnSearch').removeClass('hidden_');
+
+    var year = @DateTimeUtility.GetHijriYear(DateTime.Now).ToString();
+        var type = '@CalenderType.Ummalqura.ToString().ToLower()';
+        SetStartEndDate(year, 'fromDateCal', 'toDateCal', type);
+    });
+
+                function CollapseDiv(divName) {
+                    if ($('#' + divName).css('display') == 'block') {
+                        $('#' + divName).css("display", "none");
+                        $('#' + divName + 'PlusIcon').css("display", "inline-block");
+                        $('#' + divName + 'DashIcon').css("display", "none");
+                    }
+                    else {
+                        $('#' + divName).css("display", "block");
+                        $('#' + divName + 'PlusIcon').css("display", "none");
+                        $('#' + divName + 'DashIcon').css("display", "inline-block");
+                    }
+                }
+
+
+    $('#fromDateCal, #toDateCal').change(function () {
+
+        var dateFrom = $('#hdnFromDateUm').val();
+        var dateTo = $('#hdnToDateUm').val();
+    });
+        
+    $('#ddlHourTo').change(function () {
+
+        $('#hdnHourTo').val($('#ddlHourTo').val());
+    });
+
+    $('#ddlMinuteTo').change(function () {
+
+        $('#hdnMinuteTo').val($('#ddlMinuteTo').val());
+    });
+
+    $('#ddlHourFrom').change(function () {
+
+        $('#hdnHourFrom').val($('#ddlHourFrom').val());
+    });
+
+    $('#ddlMinuteFrom').change(function () {
+
+        $('#hdnMinuteFrom').val($('#ddlMinuteFrom').val());
+    });
+
+       function CloseAdvancedSearch() {
+          $("#AdvancedDiv").html("");
+        $("#btnAdvancedSearch").removeClass("hidden");
+           $("#btnCloseAdvancedSearch").addClass("hidden");
+
+    }
+   function GetAdvancedSearch(id)
+       {
+      
+        $.ajax({
+            type: 'Get',
+            url: '@Url.Action("GetAdvancedSearchView")',
+            data: { SearchTypeId: id , TransactionCategoryId :  @Convert.ToInt32(TransactionCategory.Inbound)},
+            success:
+                function (response) { 
+                    $("#AdvancedDiv").html(response.html);
+                     $("#btnAdvancedSearch").addClass("hidden");
+                    $("#btnCloseAdvancedSearch").removeClass("hidden");
+               
+           }
+        });
+    }
+
+            </script>

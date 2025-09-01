@@ -1,0 +1,65 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Common
+@using MCS.UI.Areas.User.Models.Assignment;
+@model TransactionAssignmentVM
+<div class="col-xs-12" id="AssignmentInvdividualBody">
+    <div class="single-wrapper">
+        <div class="row">
+            <div class="form-horizontal form-row">
+                @Html.HiddenGroupFor(model => model.ToOrgUnitName, new { id = "hdnToOrgUnitName" }, "AssignmentIndividual")
+                <div>
+                    <div class="col-sm-4" id="dvTreeAssignment">
+                        @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.ToOrgUnitId, TreeMode.Single, "treeAssignment", true, "GetAllUsersAssignment", "AssignmentIndividual", "dvTreeAssignment")
+                    </div>
+                    <div class="col-sm-4">
+                        <fieldset>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ToUserId, new { @class = "control-label" })
+                                <div>
+                                    @Html.AutoCompleteBuilder("ddlToUserId", "hdnToUserId", ViewData["ToUserAssignment"] != null ? ViewData["ToUserAssignment"].ToString() : null, Model != null ? Model.ToUserId.ToString() : null, true, "form-control")
+                                    @Html.HiddenGroupFor(model => model.ToUserId, new { id = "hdnToUserId" }, "AssignmentIndividual")
+                                    @Html.HiddenGroupFor(model => model.ToUserName, new { id = "hdnToUserName" }, "AssignmentIndividual")
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="col-sm-4">
+                        <fieldset>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ActionId, new { @class = " control-label" })<span class="stark">*</span>
+                                <div>
+                                    @Html.AutoCompleteBuilder("ddlActionId", "hdnActionId", ViewData["ActionData"].ToString(), Model != null ? Model.ActionId.ToString() : null, true, "form-control", "hdnActionTypeId")
+                                    @Html.HiddenGroupFor(model => model.ActionId, new { @Value = "", id = "hdnActionId" }, "AssignmentIndividual")
+                                    @Html.HiddenGroupFor(model => model.ActionName, new { id = "hdnActionName" }, "AssignmentIndividual")
+                                    @Html.HiddenGroupFor(model => model.ActionTypeId, new { @Value = "", id = "hdnActionTypeId" }, "AssignmentIndividual")
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="col-sm-4">
+                            <fieldset>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.DeliveryMethodId, new { @class = " control-label" })
+                                    <div>
+                                        @Html.AutoCompleteBuilder("ddlDeliveryMethod", "hdnDeliveryMethodId", LookupCategory.DeliveryMethod, Model.DeliveryMethodId.ToString(), true, "form-control")
+                                        @Html.HiddenGroupFor(model => model.DeliveryMethod, new { @Value = "", id = "hdnDeliveryMethod" }, "AssignmentIndividual")
+                                        @Html.HiddenGroupFor(model => model.DeliveryMethodId, new { @Value = "", id = "hdnDeliveryMethodId" }, "AssignmentIndividual")
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+                @Html.StickyHidden("hdnIndexIndividual")
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        ClearInputs('AssignmentInvdividualBody');
+    });
+</script>

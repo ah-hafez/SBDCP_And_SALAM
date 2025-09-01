@@ -1,0 +1,35 @@
+﻿@using MCS.Framework.Localization;
+@using MCS.UI.Areas.Admin.Models.Lookups
+@model List<TransactionCategoryVM>
+
+@if (Model != null)
+{
+    for (int i = 0; i < Model.Count; i++)
+    {
+        <div class="form-check form-check-inline">
+            @Html.CheckBoxFor(model => model[i].IsSelected, new { @class = "form-check-input chkk" })
+            @Html.StickyHiddenFor(model => model[i].Id)
+            @Html.LabelFor(model => model[i].Text, Model[i].Text, new { @class = "form-check-label" })
+        </div>
+    }
+}
+@*@Html.ValidationMessageFor(model => model[0].IsSelected, DbRes.TResource("Admin.Lookups.TransactionSource"), new { @class = "_msgval" })*@
+
+<script>
+    $.validator.addMethod('require-one', function (value) {
+        return $('.require-one:checked').size() > 0;
+    });
+
+    var checkboxes = $('.require-one');
+    var checkbox_names = $.map(checkboxes, function (e, i) {
+        return $(e).attr("name")
+    }).join(" ");
+
+    $('.require-one').change(function () {
+        if ($(this).is(':checked')) {
+            $("._msgval")
+                .removeClass("field-validation-error")
+                .addClass("field-validation-valid")
+        }
+    });
+</script>

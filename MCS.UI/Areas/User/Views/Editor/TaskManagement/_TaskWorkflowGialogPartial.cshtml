@@ -1,0 +1,177 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Framework.Controls.Mvc;
+@using MCS.Common;
+
+@{
+    Layout = "~/Views/Shared/_EmptyLayout.cshtml";
+}
+
+@{string controller = ViewData["ControllerName"] != null ? ViewData["ControllerName"].ToString() : ViewContext.RouteData.Values["controller"].ToString();}
+
+<style>
+    .contextMenuPlugin {
+        z-index: 99999999999999999999999999999 !important;
+    }
+</style>
+
+<div class="content-rtl panel panel-default dialogbox_panel">
+    <div class="panel-heading">
+        <h3 class="panel-title">@DbRes.TResource("User.Task.TaskWorkflow.TaskWorkflow")</h3>
+
+        <div class="toolbar_structure push-left-20">
+            <div class="icon_toolbar">
+                <div class="icon_group_left">
+                    <a class="" href="#">                       
+                        @Html.ImageButton("return SaveTaskWorkFlow()", "", DbRes.TResource("User.Task.TaskWorkflow.Save"), MCS.UI.UrlHelper.GetBaseUri() + "/Content/User/lib/img/morasalat/toolbar_icon_06.png")
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="clear"></div>
+
+    <div class="modal-body" id="dvOrgUnitUsers">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="alert alert-normal push-down-10">
+                    @DbRes.TResource("User.Task.TaskWorkflow.OrgInformation")
+                </div>
+            </div>
+        </div>
+        @Html.Hidden("departmentsStructure", Newtonsoft.Json.JsonConvert.SerializeObject(ViewData["DepartmentsStructure"]).ToString(), new { id = "hdnSaveDepartmentsData", @class = "departments-structure" })
+        @Html.Hidden("settingsStructure", ViewData["SettingsStructure"], new { id = "hdnSaveSettings" })
+        @Html.Hidden("TaskWorkflow", null, new { id = "hdnTaskWorkflow" })
+       
+         <script>
+            $('#hdnTaskWorkflow').val($('#hdnTaskArray').val());
+        </script>
+           
+
+        @Html.Hidden("TaskIndex", ViewData["TaskIndex"], new { id = "hdnTaskIndex" })
+        <input type="hidden" id="hdnSaveSelectedDepartment" />
+
+        <div class='panel panel-default panel_org'>
+            @Html.OrgStructure("hdnSaveDepartmentsData", "hdnSaveSettings", "hdnSaveSelectedDepartment", "ar", Json.Encode(ViewData["ListOfActions"]).ToString(), SystemConfigurations.OrgStructureLimitationLevel, "bottom", false)
+            <div class="panel-footer middle">
+                @Html.ClientButton(DbRes.TResource("User.Task.TaskWorkflow.Save"), "", "btn btn-save pull-right", "SaveTaskWorkFlow")
+            </div>
+        </div>
+
+
+
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        Initialize();
+    });
+
+
+    function OpenSelectUserDialogSuccess(data, $obj) {
+
+        $obj.setContent(data.Html);
+    }
+
+    function SelectUser() {
+
+        if ($('#hdnSaveSelectedDepartment').val() != null && $('#hdnSaveSelectedDepartment').val() != '') {
+            ShowDialogAjax('@Url.Action("SelectUser", controller)', { orgUnitKey: $('#hdnSaveSelectedDepartment').val() }, 'OpenSelectUserDialogSuccess');
+
+        }
+
+        else {
+
+            ShowErrorMessage(selectDepartmentErrorMsg);
+        }
+    }
+
+    function GetTask() {
+        var taskIndex = $('#hdnTaskIndex').val();
+
+        var tasks = $.parseJSON($('#hdnTaskArray').val());
+
+        var task = tasks[taskIndex - 1];
+
+        return task;
+    }
+
+    function PushSelectUser() {
+
+        var departmentArray = $.parseJSON($('#hdnSaveDepartmentsData').val());
+
+        var index = ElementIndex(departmentArray, $('#hdnOrgUnitKey').val());
+
+        departmentArray[index].Users.push({ Id: $('#hdnUser').val(), UserName: $('#ddlUser').val() });
+
+        $('#selectedUser').html($('#ddlUser').val());
+
+        $('#hdnSaveDepartmentsData').val(JSON.stringify(departmentArray));
+    }
+
+    function GetUserIdByOrgID(orgUnitId) {
+        var userOrgStructure = $.parseJSON($('#hdnSaveDepartmentsData').val());
+
+        for (var i = 0; i < userOrgStructure.length; i++) {
+            if (userOrgStructure[i].Key == orgUnitId) {
+                if (userOrgStructure[i].Users != null) {
+                    if (userOrgStructure[i].Users[0] == undefined) {
+                        return 0;
+                    }
+
+                    return userOrgStructure[i].Users[0].Id;
+                }
+
+            }
+        }
+        return 0;
+    }
+
+    function SaveTaskWorkFlow() {
+        $('#hdnTaskArray').val($('#hdnTaskWorkflow').val());
+
+        var taskIndex = $('#hdnTaskIndex').val();
+
+        var tasks = $.parseJSON($('#hdnTaskArray').val());
+
+        var task = tasks[taskIndex - 1];
+
+        var userOrgStructure = $.parseJSON($('#hdnSaveDepartmentsData').val());
+
+        task.TaskWorkflows = [];
+
+        for (var j = 0; j < userOrgStructure.length; j++) {
+            for (var i = 0; i < userOrgStructure[j].LinkUnitsKeys.length; i++) {
+                tasks[taskIndex - 1].TaskWorkflows.push({ FromOrgUnitId: userOrgStructure[j].Key, ToOrgUnitId: userOrgStructure[j].LinkUnitsKeys[i], ToUserId: GetUserIdByOrgID(userOrgStructure[j].LinkUnitsKeys[i]) });
+            }
+        }
+
+        task.OrgSettings = $('#hdnSaveSettings').val();
+
+        task.OrgStructure = userOrgStructure;
+
+        $('#hdnTaskArray').val(JSON.stringify(tasks));
+
+        ShowSuccesMessage('@Html.Raw(DbRes.TResource("User.Task.SaveWorkFlowSuccess"))');
+
+    }
+
+    function Initialize() {
+        var task = GetTask();
+
+        if (task.TaskWorkflows.length > 0) {
+            $('#hdnSaveSettings').val(task.OrgSettings);
+        }
+
+        else {
+            var OrgStructureSettings = $.parseJSON($('#hdnSaveSettings').val());
+
+            for (var i = 0; i < OrgStructureSettings.length; i++) {
+                OrgStructureSettings[i].LinkUnitsKeys = [];
+            }
+
+            $('#hdnSaveSettings').val(JSON.stringify(OrgStructureSettings));
+        }
+    }
+</script>

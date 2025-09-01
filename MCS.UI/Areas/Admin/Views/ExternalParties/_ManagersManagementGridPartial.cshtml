@@ -1,0 +1,34 @@
+﻿@using MCS.Framework.Controls.Mvc
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.ExternalParties
+
+@model AjaxGrid<ManagerVM>
+@{
+    /**/
+
+    Layout = null;
+}
+
+<div class="w-100 d-flex align-items-center mt-2 mb-2">
+    <h3 class="white-c-title">جدول منتسبوا الجهة</h3>
+    <span class="badge ml-3">@Model.ItemsCount</span>
+    <span class="pl-2 gray4">سجلات</span>
+</div>
+<div class="table-responsive mt-3">
+    @Html.Grid(Model, "_Grid").Named("Managers").Columns(columns =>
+{
+    columns.Add(model => model.Id).Css("hidden_");
+    columns.Add(model => model.LocalName, "Name").Titled(DbRes.TResource("Admin.ExternalParty.Name"));
+    columns.Add(model => model.EmailAddress, "EmailAddress").Titled(DbRes.TResource("البريد الالكتروني"));
+
+    columns.Add().Encoded(false).Sanitized(false).Css("").RenderValueAs(model =>
+    MvcHtmlString.Create(
+    "<div class='table-icon d-flex align-items-center'>" +
+    (@Html.GridImageButton("GetManager", "Managers", 0, OperationType.Update, "EditDiv", "", null, "ShowEditDiv", "", "get") +
+    (@Html.GridImageButton("DeleteManager", "Managers", 0, OperationType.Delete, "GridDiv", "frmAddManager", null, "DeleteManagersSuccess", null, "post")+
+     "</div>"))));
+}).WithPaging(GridHelper.PageSize)
+
+</div>
+
+

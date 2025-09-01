@@ -1,0 +1,15 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Framework.Controls
+@using MCS.Framework.Controls.Mvc
+@using Grid = MCS.GridMvc.Ajax.GridExtensions
+@model Grid.AjaxGrid<MCS.UI.Areas.Admin.Models.AdminAudit.AdminAudit>
+@{
+    ViewBag.Title = DbRes.TResource("Admin.OrgUnitStructure.Title");
+    Layout = "~/Areas/Admin/Views/Shared/_OrgUnitStructureLayout.cshtml";
+}
+ 
+
+<div id="">
+    @Html.Partial("~/Areas/Admin/Views/AdminAudit/_AdminAuditPartial.cshtml", Model)
+</div>
+

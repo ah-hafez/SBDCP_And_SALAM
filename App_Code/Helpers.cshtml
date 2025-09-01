@@ -1,0 +1,41 @@
+﻿@using MCS.Common
+
+@helper GetTransactionColor(int? colorId)
+{
+    if (colorId.HasValue)
+    {
+        switch ((Color)colorId.Value.LookupInternalID(LookupCategory.Color,string.Empty))
+        {
+            case Color.Red:
+                @("red");
+                break;
+            case Color.Blue:
+            @("blue");
+            break;
+            case Color.Green:
+            @("green");
+            break;
+        }
+    }
+
+}
+
+@helper GetTransactionConfedentialityCss(Confedentiality confedentiality)
+{
+
+    switch (confedentiality)
+    {
+        case Confedentiality.Normal:
+            break;
+        case Confedentiality.Secret:
+            @("fa-secure_transactions_icon-b")
+            break;
+        case Confedentiality.HighConfidential:
+        @("fa-secure_transactions_icon-a")
+            break;
+    }
+}
+
+
+
+

@@ -1,0 +1,365 @@
+﻿.fa-sort-amount-desc:before {
+    content: "\f161";
+}
+
+.input-group-text .fa-sort-amount-desc {
+    font-size: 20px;
+    color: #333;
+}
+
+.tree-list > li {
+    overflow: hidden;
+    border-radius: 4px;
+    box-shadow: 0 11px 14px -10px #e5eced;
+    background-color: #ffffff;
+    margin-bottom: 20px;
+    display: inline-block;
+    width: 100%;
+    position: relative;
+    border: 1px solid rgba(238, 238, 238, 0.8);
+    padding-right: 56px;
+}
+
+    .tree-list > li > a {
+        background: #F0F7F5;
+        color: #0c7c5a;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        width: 44px;
+        text-align: center;
+        transition: all 0.2s;
+        height: 57px;
+    }
+
+        .tree-list > li > a:before {
+            content: '';
+            position: absolute;
+            background: #54A38B;
+            top: 57px;
+            width: 100%;
+            height: 100vh;
+            right: 0;
+            cursor: default;
+        }
+
+        .tree-list > li > a i {
+            display: inline-block;
+            width: 100%;
+            height: 100%;
+            padding-top: 16px;
+        }
+
+    .tree-list > li .sub-m-list {
+        height: 0;
+        display: block;
+        width: 100%;
+        overflow: hidden;
+        transition: height 0.2s;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.li_open i.glyphicon-plus:before {
+    content: "\2212";
+}
+
+.tree-list li.li_open > a {
+    color: #FFF !important;
+    background: #0c7c5a;
+}
+
+.tree-list > li > span {
+    font-weight: 600;
+    vertical-align: middle;
+}
+
+.tree-list > li span {
+    padding-top: 16px;
+    padding-bottom: 16px;
+    display: inline-block;
+    width: 100%;
+}
+
+.node{
+    display:flex;
+    place-content:end;
+}
+
+.tree-list li {
+    color: #0c7c5a;
+}
+
+.single-tree {
+    right: 0;
+    padding: 20px 30px;
+    background: #f3f3f3;
+    width: 100%;
+    border-radius: 3px;
+    max-height: 310px;
+    overflow-y: scroll;
+    z-index: 100;
+}
+
+.row_directory:hover {
+    background: #8BA8A9;
+}
+.single-tree::-webkit-scrollbar {
+    width: 10px;
+}
+
+    .single-tree::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    .single-tree::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+
+        .single-tree::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Panel Tree */
+.panel.panel-tree {
+    border-top-color: #F5F5F5;
+    border-top-width: 1px;
+    background: #FFFFFF;
+}
+
+    .panel.panel-tree .tree-control {
+        background: #FFFFFF;
+        padding: 5px 10px;
+        margin: 0px 0px 10px 0px;
+        -moz-border-radius: 5px;
+        -webkit-border-radius: 5px;
+        border-radius: 5px;
+        border: 1px solid #696969;
+    }
+
+        .panel.panel-tree .tree-control span {
+            float: right;
+            display: block;
+            margin: 0px 0px 0px 10px;
+        }
+
+            .panel.panel-tree .tree-control span a {
+                display: block;
+                text-decoration: none;
+                width: 21px;
+                height: 21px;
+                background: url(tree-control_icon.png) no-repeat;
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.jstree_scroll {
+    width: auto;
+    overflow-x: visible;
+    overflow-y: hidden;
+}
+
+    .jstree_scroll.push-down-20 {
+        margin-bottom: 0px !important;
+    }
+
+
+/* A */
+.tree-control span.control-add a {
+    background-position: -118px top !important;
+}
+
+.tree-control span.control-add_in a {
+    background-position: -77px top !important;
+}
+
+.tree-control span.control-remove a {
+    background-position: -36px top !important;
+}
+
+.tree-control span.control-close a {
+    background-position: 3px top !important;
+}
+
+.tree-control span.control-undo a {
+    background-position: -159px top !important;
+}
+
+/* Hover */
+.tree-control span.control-add a:hover {
+    background-position: -118px bottom !important;
+}
+
+.tree-control span.control-add_in a:hover {
+    background-position: -77px bottom !important;
+}
+
+.tree-control span.control-remove a:hover {
+    background-position: -36px bottom !important;
+}
+
+.tree-control span.control-close a:hover {
+    background-position: 3px bottom !important;
+}
+
+.tree-control span.control-undo a:hover {
+    background-position: -159px bottom !important;
+}
+
+.tree_parties .selected_top.last-child {
+    box-shadow: 0px 3px 7px 0px rgba(0,0,0,0.25) !important;
+    z-index: 9;
+}
+
+
+
+.tree_parties {
+/*    border: 1px solid #DDD;
+*/    line-height: 30px;
+   
+}
+
+    .tree_parties .check {
+        line-height: 30px !important;
+    }
+
+    .tree_parties.space {
+        margin-top: 10px;
+    }
+
+
+.directorytree {
+    font-size: 20px;
+}
+
+.row_directory span.fa, .row_directory i.glyphicon {
+    font-size: 16px;
+    padding-top: 5px;
+
+}
+.fa.fa-plus {
+    color: white;
+    font-weight: bold;
+}
+
+.fa.fa-minus {
+    color: white;
+    font-weight: bold;
+}
+
+
+.row_directory span.fa {
+/*    color: #BB1D48;
+*/
+     direction:ltr;
+}
+
+
+.row_directory i.glyphicon {
+    color: #3467A5;
+}
+
+.row_directory i.glyphicon {
+    display: none;
+}
+
+.row_directory.selected i.glyphicon {
+    display: block !important;
+}
+
+.row_directory.last span.fa-plus {
+    display: none;
+}
+
+.row_directory.selected_top, .row_directory.selected_bottom, .row_directory.last {
+    margin: 0px;
+    padding: 0px;
+    border-bottom: 1px solid #8BA8A9;
+    cursor: pointer;
+    /* color: #1C0B77;*/
+    background-color: #8BA8A9;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+.row_directory > div {
+    color: #e8dddd;
+}
+div .selected {
+    background-color: hsla(200, 13%, 73%, 0.25);
+    border: 1px solid #0E8270;
+    border-radius: 5px;
+    margin-top: 5px !important;
+}
+
+div.row_directory {
+    margin: 0px;
+    width: 100%;
+}
+
+.listed-input {
+    text-overflow: ellipsis;
+}
+
+.row_directory.selected_top:hover, .row_directory.selected_bottom:hover {
+    background-color: #8BA8A9;
+}
+
+.single-tree .directory {
+    max-width:inherit !important;
+}

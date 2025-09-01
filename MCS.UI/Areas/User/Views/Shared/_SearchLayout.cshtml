@@ -1,0 +1,20 @@
+﻿@{
+
+    bool isVIP = (bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser);
+    if (!isVIP)
+    {
+        Layout = "~/Views/Shared/_BaseLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_VIPBaseLayout.cshtml";
+    }
+
+
+
+}
+
+@section Body
+    {
+    @RenderBody()
+}

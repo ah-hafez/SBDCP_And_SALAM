@@ -1,0 +1,249 @@
+﻿@using MCS.UI.Helpers
+@using MCS.Common
+@using MCS.UI.Areas.User.Models.File
+@model TransactionTrayInfoVM
+@{
+    ViewData["dateType"] = ViewData["dateType"] ?? TransactionDateType.Any;
+    string colorType = string.Empty;
+
+    if (Model.TransactionDetailsInfoVM.TransactionTypeColorId == Color.Red.LookupIdentity(LookupCategory.Color, SessionInfo.CultureShortName))
+    {
+
+        colorType = "reddark";
+
+    }
+    else if (Model.TransactionDetailsInfoVM.TransactionTypeColorId == Color.Blue.LookupIdentity(LookupCategory.Color, SessionInfo.CultureShortName))
+    {
+
+        colorType = "blue";
+
+
+    }
+    else
+    {
+        colorType = "gray";
+    }
+
+    string remindDate = (((TransactionDateType)ViewData["dateType"] == TransactionDateType.HasDate)
+                                                                ? @DateHelper.GetDate(@Model.TransactionDetailsInfoVM.RemindDateH) + " - " + Model.TransactionDetailsInfoVM.RemindDate.Value.ToString("hh:mm tt")
+                                                                : (TransactionDateType)ViewData["dateType"] == TransactionDateType.Late
+                                                                ? DateTime.Now.Date >= Model.TransactionDetailsInfoVM.Date.Date.AddDays(2)
+                                                                ? (Int32.Parse((DateTime.Now.Date - Model.TransactionDetailsInfoVM.Date.Date.AddDays(2)).Days.ToString()) + 1).ToString()
+                                                                : Model.TransactionDetailsInfoVM.RemindDate.ToString() != ""
+                                                                ? (Int32.Parse((DateTime.Now.Date - Model.TransactionDetailsInfoVM.Date.Date).Days.ToString()) + 1).ToString()
+                                                                : "---"
+                                                                : "");
+
+    string isIndivisualText = Model.TransactionDetailsInfoVM.TransactionCategoryId == TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName) ? Model.TransactionDetailsInfoVM.IsIndividual ? string.Format("({0})", DbRes.TResource("User.Inbound.BasicInfo.InboundDestination.Individual")) : string.Format("({0})", DbRes.TResource("User.Inbound.BasicInfo.InboundDestination.Entities")) : string.Empty;
+
+    bool isViewed = false;
+    string isViewedHeaderClass = "correspondence-t";
+    if (Model.TransactionAssignmentInfoVMs != null && Model.TransactionAssignmentInfoVMs.Count > 0)
+    {
+        isViewed = Model.TransactionAssignmentInfoVMs.FirstOrDefault().Viewed;
+    }
+    isViewedHeaderClass = isViewed ? "correspondence-t" : "correspondence-t correspondence-t-notviewed bold ";
+}
+<script>
+    $(document).ready(function () {
+     var isVIPUser = '@SessionInfo.GetObjectFromSession(Constants.IsVIPUser)';
+        if (isVIPUser.toLowerCase() == 'true') {
+            goTableView();
+        }
+        else {
+            var type = localStorage.getItem('CurrentTypeView');
+            if (type) {
+                if (type === "Table") {
+                    goTableView();
+                }
+                else if (type === "Card") {
+                    goCardsView();
+                }
+            }
+        }
+    });
+</script>
+
+<div class="box-grid" data-id="@Model.TransactionDetailsInfoVM.Id">
+    <div class="box animated zoomIn buttons-action @colorType">
+
+        <div class="@isViewedHeaderClass">
+            <div class="d-flex">
+                <div class="treaty-name">
+                    @Model.TransactionDetailsInfoVM.TransactionCategory @isIndivisualText
+                </div>
+                <div class="ml-auto d-flex">
+                    <div class="pr-1" id="Number_@Model.TransactionDetailsInfoVM.Id">@Model.TransactionDetailsInfoVM.Number</div>
+                </div>
+            </div>
+        </div>
+        <div class="hover-area">
+            <div class="correspondence-h">
+                @if (Model.TransactionDetailsInfoVM.TransactionCategoryId != TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName))
+                {
+                    if (Model.TransactionDetailsInfoVM.ExternalPartyName == null)
+                    {
+                        <div></div>
+                    }
+                    else
+                    {
+                        <div class="title" id="entityName_@Model.TransactionDetailsInfoVM.Id" title="@Model.TransactionDetailsInfoVM.ExternalPartyName">@Model.TransactionDetailsInfoVM.ExternalPartyName</div>
+                        <div>
+                            @*@(Model.TransactionAssignmentInfoVMs[0].FromUser.CompareTo(Model.TransactionAssignmentInfoVMs[0].ToUser) == 0 ? "" : Model.TransactionAssignmentInfoVMs[0].FromUser)*@
+                        </div>
+                    }
+
+                }
+
+                else
+                {
+                    <div class="title" id="entityName_@Model.TransactionDetailsInfoVM.Id" title="@Model.TransactionDetailsInfoVM.EntityName">
+                        @Model.TransactionDetailsInfoVM.EntityName
+                    </div>
+                    <div class="">
+                        @*@(Model.TransactionAssignmentInfoVMs[0].FromUser.CompareTo(Model.TransactionAssignmentInfoVMs[0].ToUser) == 0 ? "" : Model.TransactionAssignmentInfoVMs[0].FromUser)*@
+                    </div>
+                }
+                <div class="">
+                    @DateHelper.GetDate(@Model.TransactionDetailsInfoVM.DateH)
+                    @Model.TransactionDetailsInfoVM.Date.ToShortTimeString()
+                </div>
+            </div>
+            <div class="correspondence-b d-flex flex-wrap">
+                <div class="f-line w-full w-f-50">
+                    @if (Model.TransactionDetailsInfoVM.HasPermission)
+                    {
+                        if (Model.TransactionDetailsInfoVM.Subject != null && Model.TransactionDetailsInfoVM.Subject.Length > 20)
+                        {
+                            <div id="example" class="description" title="@Model.TransactionDetailsInfoVM.Subject">
+                                @Model.TransactionDetailsInfoVM.Subject.Substring(0, 20)
+                                ...
+                            </div>
+                        }
+                        else
+                        {
+                            <div class=" description">
+                                @Model.TransactionDetailsInfoVM.Subject
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="description">***</div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="more-info correspondence-b d-flex flex-wrap">
+            <div class="f-line w-medium w-small">
+                <div class="heading">@DbRes.TResource("User.File.Priority")</div>
+                @if (Model.TransactionDetailsInfoVM.PriorityName != null && Model.TransactionDetailsInfoVM.PriorityName.Length > 5)
+                {
+                    <div  title="@Model.TransactionDetailsInfoVM.PriorityName">
+                        @Model.TransactionDetailsInfoVM.PriorityName.Substring(0, 5)
+                        ...
+                    </div>
+                }
+                else
+                {
+                    <div>
+                        @Model.TransactionDetailsInfoVM.PriorityName
+                    </div>
+                }
+            </div>
+            <div class="f-line w-medium w-small">
+                <div class="heading">@DbRes.TResource("User.File.Confidentiality")</div>
+                @if (Model.TransactionDetailsInfoVM.ConfidentialityName != null && Model.TransactionDetailsInfoVM.ConfidentialityName.Length > 5)
+                {
+                    <div  title="@Model.TransactionDetailsInfoVM.ConfidentialityName">
+                        @Model.TransactionDetailsInfoVM.ConfidentialityName.Substring(0, 5)
+                        ...
+                    </div>
+                }
+                else
+                {
+                    <div>
+                        @Model.TransactionDetailsInfoVM.ConfidentialityName
+                    </div>
+                }
+            </div>
+            <div class="f-line w-medium w-small">
+                <div class="heading">@DbRes.TResource("User.Inbound.BasicInfo.InboundType")</div>
+                <div>@Model.TransactionDetailsInfoVM.TransactionTypeName</div>
+            </div>
+            <div class="f-line w-medium w-small">
+                <div class="heading">@DbRes.TResource("User.File.Cards.Classification")</div>
+                @if (Model.TransactionDetailsInfoVM.LetterTypeName != null && Model.TransactionDetailsInfoVM.LetterTypeName.Length > 5)
+                {
+                    <div   title="@Model.TransactionDetailsInfoVM.LetterTypeName">
+                        @Model.TransactionDetailsInfoVM.LetterTypeName.Substring(0, 5)
+                        ...
+                    </div>
+                }
+                else
+                {
+                    <div>
+                        @Model.TransactionDetailsInfoVM.LetterTypeName
+                    </div>
+                }
+            </div>
+            @if ((TransactionDateType)ViewData["dateType"] == TransactionDateType.Late || (TransactionDateType)ViewData["dateType"] == TransactionDateType.HasDate)
+            {
+                <div class="f-line w-medium w-small">
+                    <div class="heading">
+                        @(((TransactionDateType)ViewData["dateType"] == TransactionDateType.HasDate) ? DbRes.TResource("User.File.appointment") : (TransactionDateType)ViewData["dateType"] == TransactionDateType.Late ? DbRes.TResource("User.File.DaysDelay") : "")
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(remindDate) && remindDate.Length > 10)
+                    {
+                        <div   title="@remindDate">
+                            @remindDate.Substring(0, 10)
+                            ...
+                        </div>
+                    }
+                    else
+                    {
+                        <div>
+                            @remindDate
+                        </div>
+                    }
+                </div>
+            }
+            @if ((TransactionDateType)ViewData["dateType"] == TransactionDateType.Late)
+            {
+                <div class="f-line w-medium w-small">
+                    <div class="heading"   title="@DbRes.TResource("User.File.FinishTime")">
+                        @DbRes.TResource("User.File.FinishTime"):
+                    </div>
+                    <div>
+                        @if (@Model.TransactionDetailsInfoVM.RemindDateH != null && @Model.TransactionDetailsInfoVM.RemindDateH != "")
+                        {
+                            @DateHelper.GetDate(@Model.TransactionDetailsInfoVM.RemindDateH)
+                        }
+                        else
+                        {
+                            @DateTimeUtility.ConvertToUmAlQuraCalendar(Model.TransactionDetailsInfoVM.Date.Date.AddDays(2))
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+        
+        <div class="correspondence-t">
+            <div class="correspondence-icon d-flex" style="padding-right: 2px;">
+                <div>
+                    <a title="سحب وتعديل" data-Viewed="@isViewed"
+                       data-DeliveryMethodId="@Model.TransactionDetailsInfoVM.DeliveryMethodId"
+                       onclick="Open(@Model.TransactionDetailsInfoVM.Id,'@Model.TransactionDetailsInfoVM.EncryptedId')">
+                        <img src="~/Content/User/lib/images/SystemIcon/main bar-24.svg" width="23" />
+                    </a>
+                </div>
+
+
+            </div>
+        </div>
+        
+        @Html.StickyHidden("TransactionType", ((TransactionCategory)Model.TransactionDetailsInfoVM.TransactionCategoryId.LookupInternalID(LookupCategory.TransactionCategory, SessionInfo.CultureShortName)).ToString(), new { id = "hdnTransactionType_" + Model.TransactionDetailsInfoVM.Id })
+        @Html.StickyHidden("Type", Model.TransactionDetailsInfoVM.TransactionCategoryId.ToString(), new { id = "hdnType_" + Model.TransactionDetailsInfoVM.Id })
+
+    </div>
+</div>

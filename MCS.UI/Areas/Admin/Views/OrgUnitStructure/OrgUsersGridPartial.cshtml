@@ -1,0 +1,41 @@
+﻿
+@using MCS.GridMvc.Ajax.GridExtensions
+@using MCS.UI.Areas.Admin.Models.OrgUnit
+@using MCS.GridMvc.Helpers;
+@using MCS.GridMvc.Html;
+@using MCS.Common;
+
+@model AjaxGrid<OrgUnitUserVM>
+
+@{
+
+}
+
+<div style="margin-bottom:50px;">
+    @Html.Grid(Model, "_CardGrid").Named("UsersGrid").CollectionName("UserProfileVMs").Columns(columns=>
+{
+    columns.Add(true).Titled("").RenderValueAs(mvcgridcolumn => Html.Partial("~/Areas/Admin/Views/OrgUnitStructure/OrgUserBoxPartial.cshtml", mvcgridcolumn,Html.ViewData))
+    .Sanitized(false).Encoded(false);
+    }).WithPaging(UIHelper.PageSize)
+</div>
+
+
+<script>
+    var token = $('form:first').find("input[name='__RequestVerificationToken']").val();
+    var requestedData = { filter: $("#filterData").val(), __RequestVerificationToken: token, orgUnitKey : @ViewData["OrgUnitKey"]};
+     var UsersEventHandler = "@Html.Raw(Url.Action("UpdateGridOrgUserProfile", "User"))";
+    function prepareUsers() {
+        $(".grid-mvc").gridmvc();
+        pageGrids.UsersGrid.ajaxify(
+            {
+                getPagedData: UsersEventHandler,
+                getData: UsersEventHandler,
+                requestType: "POST",
+                optionalData: requestedData
+            });
+    }
+
+    $(document).ready(function () {
+        prepareUsers();
+    });
+</script>

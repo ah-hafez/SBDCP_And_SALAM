@@ -1,0 +1,278 @@
+﻿@model MCS.UI.Areas.User.Models.Assignment.TransactionRejectAssignmentVM
+@using MCS.Common
+@using MCS.Framework.Localization
+<style>
+    .rowhight {
+        height: 250px;
+    }
+</style>
+<div class="">
+    @if (string.IsNullOrEmpty(Model.Title) == false)
+    {
+        <h4 class="site-color title4 text-center">@Model.Title</h4>
+    }
+    @Html.Hidden("TransactionType", (int)Model.Type)
+    @using (Html.BeginForm("MyTransactions", "File", FormMethod.Post, new { id = "frmRejectAssign" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="row rowhight" id="dvRejectPartial">
+            <div class="panel-group accordion accordion-dc">
+                <div class="form-group col-xs-12 mb-3">
+
+                    @Html.Label(@DbRes.TResource("User.Transaction.Assignment.Reason"), new { @class = "m-100" })<span class="stark">*</span>
+                    @Html.TextAreaGroupFor(model => model.Remarks, new { id = "rejectnote", @class = "form-control", @rows = "3" })
+                    @Html.Hidden("type", TrayActionType.RejectRevert, new { id = "type" })
+                    <i id="glyph" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                    <span id="Reason" style="color:red"></span>
+                </div>
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                    @Html.Label(@DbRes.TResource("User.Transaction.Assignment.DeliveryMethod"), new { @class = "m-100" })<span class="stark">*</span>
+                    @Html.AutoCompleteBuilder("ddlRejectBasicDeliveryMethod", "hdnRejectBasicDeliveryMethod", ViewData["DeliveryMethod"].ToString(),
+                   Model != null ? Model.DeliveryMethodId.ToString() : null, true, "form-control disabled", onChangeCallback: "onChangeRejectDeliveryMethod")
+                    @Html.HiddenGroupFor(model => model.DeliveryMethodId, new { @Value = "", id = "hdnRejectBasicDeliveryMethod", @disabled = "true" }, "BasicInformation")
+                </div>
+                <div id="RejectReporterContent" class="hide">
+                    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                        @Html.LabelFor(model => model.ReporterId, new { @class = "w-100" })
+                        @Html.AutoCompleteBuilder("ddlRejectBasicReporter", "hdnRejectBasicReporter", ViewData["Reporters"].ToString(), Model != null ? Model.ReporterId.ToString() : null, true,
+                        "form-control")
+                        @Html.HiddenGroupFor(model => model.ReporterId, new { @Value = "", id = "hdnRejectBasicReporter" }, "BasicInformation")
+                    </div>
+                    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                        <label class="w-100"></label>
+                        @Html.ClientButton("<i class='glyphicon glyphicon-plus'></i>" + DbRes.TResource("User.Transaction.BasicInfo.AddNewReporter"), null, " btn-site", "AddReporter", UserClaims.Reporter.AddReporter)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class=" text-right">
+            @Html.ClientActionButton(@DbRes.TResource("User.File.Reject"), "", "", "", "", "Reject", "btnReject", "dvRejectPartial", " btn-site", null, "RejectTransaction", "")
+        </div>
+    }
+</div>
+<script>
+    $(document).ready(function () {
+        onChangeRejectDeliveryMethod();
+        $('#ddlRejectBasicDeliveryMethod').attr('disabled', 'disabled');
+    });
+      function OnAddReporterSuccess(data) {
+        if (data.MessageType != 2) {
+            ShowSuccesMessage(data.MessageText)
+            ClearInputs('frmAddReporter');
+            __dialog.close();
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+     function AddReporter() {
+        __dialog = $.confirm({
+            title: false,
+            content: function ($obj) {
+                return $.ajax({
+                    url: '@Url.Action("AddReporter", "Shared")',
+                    type: 'GET',
+                    cache: false,
+                    success: function (data) {
+                        $obj.setContent(data.Html);
+                        jQuery.validator.unobtrusive.parse('#frmAddReporter');
+                    }
+                });
+            },
+            onOpen: function () {
+                jQuery(function () {
+                    jQuery('.jconfirm-box').draggable({
+                        revert: false,
+                    });
+                });
+                $("#Loader").hide();
+            },
+            onClose: function () {
+                GetAllReporter();
+            },
+            confirmButton: false,
+            icon: 'fa fa-info',
+            animation: 'scale',
+            columnClass: "dialogbox col-md-8 col-md-offset-2 col-xs-8 col-xs-offset-2",
+            backgroundDismiss: false,
+            closeIcon: true,
+            cancelButton: false
+        });
+    }
+     function GetAllReporter() {
+        $.ajax({
+            cache: false,
+            type: 'get',
+            url: '@Url.Action("GetReporters")',
+            success: function (data) {
+                AutoCompleteChangeList("ddlBasicReporter", data);
+                AutoCompleteChangeList("ddlBasicReporterAssinment", data);
+                AutoCompleteChangeList("ddlAssignmentPaperReporter", data);
+                AutoCompleteChangeList("ddlRejectBasicReporter", data);
+                var newItems = $.parseJSON(data);
+                var lastItem = newItems.slice(-1)[0].value;
+                $('#hdnRejectBasicReporter').val(lastItem);
+                $('#hdnRejectBasicReporter').trigger('change')
+            }
+        });
+    }
+
+    function onChangeRejectDeliveryMethod() {
+        var value = $('#hdnRejectBasicDeliveryMethod').val();
+        switch (parseInt(value)) {
+            case DeliveryMethodType.Paper:
+                ShowHideRejectReporterContent(true);
+                break;
+            case DeliveryMethodType.Electronic:
+                ShowHideRejectReporterContent(false);
+                break;
+            case DeliveryMethodType.ElectronicPaper:
+                ShowHideRejectReporterContent(true);
+                break;
+            default:
+        }
+    }
+
+    function ShowHideRejectReporterContent(isShow) {
+        if (isShow) {
+            $('#RejectReporterContent').removeClass('hide');
+            $('#hdnRejectBasicDeliveryMethod').prop('disabled', false);
+        } else {
+            $('#RejectReporterContent').addClass('hide');
+            $('#hdnRejectBasicDeliveryMethod').prop('disabled', 'disabled');
+        }
+    }
+
+    function RejectTransaction() {
+
+        var trayid = @Model.TrayID;
+        var page = $("#hdnCurrentPage").val();
+        var orderBy = $("#hdnOrderBy").val();
+        var dir = $("#hdnDirection").val();
+        var filter = $("#hdnFilter").val();
+        var fromDate = $("#hdnFromDateValue").val();
+        var toDate = $("#hdnToDateValue").val();
+        var number = $("#hdnSearchTransactionNumberValue").val();
+        var viewType = $("#hdnViewFile").val();
+        var dateType = $("#hdnFilterDateType").val();
+        var transactionId = $("#hdnTransEditorId").val();
+        var trayActionType = $("#type").val();
+        var PageSize = $("#ddlPaging").val();
+        var remarks = $("#rejectnote").val();
+        var rejectReportId = $('#hdnRejectBasicReporter').val();
+
+        var returnToCreator = false;
+        if ($('#hdnAssignToCreator').val() == undefined || $('#hdnAssignToCreator').val() == "") {
+            returnToCreator = false;
+        }
+        else if ($('#hdnAssignToCreator').val().toLowerCase() == 'true') {
+            returnToCreator = true;
+            trayActionType = '@TrayActionType.RejectRevertToCreator';
+        }
+
+        if ($("#hdnTransEditorId").val() == undefined || $("#hdnTransEditorId").val() == "") {
+            transactionId = $('#transId').val();
+        }
+        if (remarks == "" || remarks == undefined) {
+            $("#glyph").removeClass("hidden_");
+            $("#glyph").show();
+            $("#rejectnote").addClass("RedBorder");
+            $("#Reason").html('@Html.Raw(DbRes.TResource("User.Transaction.Assignment.Reason.Required"))');
+            return false;
+        }
+        else {
+            $("#Reason").html("");
+            $("#glyph").hide();
+            $("#rejectnote").removeClass("RedBorder");
+        }
+        if (rejectReportId == "" || rejectReportId == undefined) {
+            rejectReportId = 0;
+        }
+        var token = $("#frmRejectAssign").find("input[name='__RequestVerificationToken']").val();
+        var data = {
+            trayId: trayid, page: page, gridColumn: orderBy, dir: dir, filter: filter, fromDate: fromDate,
+            toDate: toDate, searchColumn: number, viewType: viewType, transactionId: transactionId, trayActionType: trayActionType
+            , dateType: dateType, pageSize: PageSize, Remarks: remarks, __RequestVerificationToken: token
+        };
+
+        $.ajax({
+            url: '@Url.Action("MoveTransaction", "File")',
+            type: 'POST',
+            data: data,
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    $("#dvTransactionsContainer").html("");
+                    $("#dvTransactionsContainer").html(data.Html);
+                    $("#txtCurrentPage").val(page);
+                    $("#hdnCurrentPage").val(page);
+                    $("#ddlPaging option[value=" + PageSize + "]").attr('selected', 'selected');
+                    $("li#_UserFileMenu").html("");
+                    $("li#_UserFileMenu").html(data.FileMenuHtml);
+                    if (transactionId == parseInt($("#hdnTransEditorId").val())) {
+                        $("#editor_transaction").html("");
+                    }
+
+                    if (parseInt($('#hdnRejectBasicDeliveryMethod').val()) != DeliveryMethodType.Electronic) {
+                        $.ajax({
+                            type: 'get',
+                            url: '@Url.Action("GetDeliveryReportByTransactionId","Inbound")',
+                            data: { id: transactionId, type: $('#TransactionType').val() },
+                            success: function (data) {
+                                if (data.MessageType != 2) {
+                                    PrintRejectTransactionsDeliveryReport(data.ReportId, rejectReportId);
+                                }
+                                else {
+                                    ShowErrorMessage(data.MessageText);
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        reloadPage();
+                    }
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            }
+        });
+    }
+
+    function PrintRejectTransactionsDeliveryReport(reportId, rejectReportId) {
+        var deliveryReportArray = [];
+        var newTransactionId;
+        switch (parseInt($('#TransactionType').val())) {
+            case TransactionCategory.Inbound:
+                newTransactionId = $('#hdnInboundId').val();
+                break;
+            case TransactionCategory.ExternalOutbound:
+                newTransactionId = $('#hdnOutboundExternalId').val();
+                break;
+            case TransactionCategory.InternalOutbound:
+                newTransactionId = $('#hdnOutboundInternalId').val();
+                break;
+        }
+        if (newTransactionId == undefined || newTransactionId == "") {
+            newTransactionId = $('#transId').val();
+        }
+        deliveryReportArray.push({ TransactionId: newTransactionId, ReportsIds: [], RejectReportId: rejectReportId});
+        deliveryReportArray[0].ReportsIds.push(reportId);
+        var reportType = @((int)DeliveryReportType.DeliveryReport);
+        var parameters = '?transactionReportInfo=' + JSON.stringify(deliveryReportArray) + '&isPerTransaction=true&group=false&IsNew=true&reportType=' + reportType;
+        urlDeliveryReport = '@Url.Action("PrintDeliveryReportsByIds", "Reports")' + parameters
+        PrintReport(urlDeliveryReport, '', reloadPage);
+    }
+
+    function reloadPage() {
+        setTimeout(function () {
+            window.location.href = '@Model.URLAction';
+        }, 3000);
+    }
+</script>
+<style>
+    .RedBorder {
+        border: 1px solid #fe0000 !important
+    }
+</style>

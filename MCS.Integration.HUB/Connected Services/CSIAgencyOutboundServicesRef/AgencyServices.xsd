@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns="http://yesser.gov.sa/NCS/CSIAgencyOutboundServices/version/0.1" xmlns:b="http://schemas.microsoft.com/BizTalk/2003" xmlns:cdt="http://yefi.gov.sa/CSIHUBDataTypes/xml/schemas/version1.0" elementFormDefault="qualified" targetNamespace="http://yesser.gov.sa/NCS/CSIAgencyOutboundServices/version/0.1" id="AgencyServices" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="CSIHUBDataTypes.xsd" namespace="http://yefi.gov.sa/CSIHUBDataTypes/xml/schemas/version1.0" />
+  <xs:annotation>
+    <xs:appinfo>
+      <b:references xmlns:b="http://schemas.microsoft.com/BizTalk/2003">
+        <b:reference targetNamespace="http://yefi.gov.sa/CSIHUBDataTypes/xml/schemas/version1.0" />
+      </b:references>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="SendOutbound">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="1" maxOccurs="1" name="OutboundRec">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element minOccurs="1" maxOccurs="1" name="OutboundInfo">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element minOccurs="1" maxOccurs="1" name="OutboundDocNo" type="xs:string" />
+                    <xs:element minOccurs="1" maxOccurs="1" name="OutboundType" type="cdt:Msg_Subject" />
+                    <xs:element minOccurs="1" maxOccurs="1" name="OutboundGDate" type="cdt:HUB.DateTime" />
+                    <xs:element minOccurs="1" maxOccurs="1" name="OutboundHDate" type="cdt:HDate_Type" />
+                    <xs:element minOccurs="1" maxOccurs="1" name="OutboundSubject" type="xs:string" />
+                    <xs:element minOccurs="1" maxOccurs="1" name="OutboundCategory" type="cdt:OutboundCategory_Type" />
+                    <xs:element minOccurs="0" maxOccurs="1" name="OutboundRemarks" type="xs:string" />
+                    <xs:element minOccurs="0" maxOccurs="1" name="SPTrackingNumber" type="xs:string" />
+                    <xs:element minOccurs="0" maxOccurs="1" name="OutboundHDueDate" type="cdt:HDate_Type" />
+                    <xs:element minOccurs="0" maxOccurs="1" name="OutboundGDueDate" type="cdt:HUB.DateTime" />
+                    <xs:element minOccurs="1" maxOccurs="1" name="OutboundClassification" type="cdt:OutboundClassification_Type" />
+                    <xs:element minOccurs="0" maxOccurs="unbounded" name="RelatedPersonsInfo">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element minOccurs="1" maxOccurs="1" name="PersonFullName" type="xs:string" />
+                          <xs:element minOccurs="1" maxOccurs="1" name="PersonID" type="xs:string" />
+                          <xs:element minOccurs="0" maxOccurs="1" name="PersonAddress" type="xs:string" />
+                          <xs:element minOccurs="0" maxOccurs="1" name="PersonEmail" type="xs:string" />
+                          <xs:element minOccurs="0" maxOccurs="1" name="PersonMobileNumber" type="xs:string" />
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element minOccurs="1" maxOccurs="1" name="RoutingInfo">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element minOccurs="1" maxOccurs="1" name="From" type="cdt:Identifier_Type" />
+                    <xs:element minOccurs="1" maxOccurs="1" name="To" type="cdt:Identifier_Type" />
+                    <xs:element minOccurs="1" maxOccurs="1" name="SecrecyLevel" type="cdt:Msg_Secrecy" />
+                    <xs:element minOccurs="1" maxOccurs="1" name="Priority" type="cdt:Msg_Priority" />
+                    <xs:element minOccurs="1" maxOccurs="1" name="DeliveryType" type="cdt:OutboundDelivery_Type" />
+                    <xs:element minOccurs="1" maxOccurs="1" name="SenderType" type="cdt:OutboundSender_Type" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element minOccurs="0" maxOccurs="unbounded" name="AttachmentRec">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element minOccurs="1" maxOccurs="1" name="AttachmentId" type="xs:string" />
+                    <xs:element minOccurs="1" maxOccurs="1" name="AttachmentBase64" type="xs:base64Binary" />
+                    <xs:element minOccurs="0" maxOccurs="1" name="Remarks" type="xs:string" />
+                    <xs:element minOccurs="1" maxOccurs="1" name="AttachementType" type="cdt:Attachment_Type" />
+                    <xs:element minOccurs="1" maxOccurs="1" name="AttachmentContentType" type="cdt:AttachmentContent_Type" />
+                    <xs:element minOccurs="0" maxOccurs="1" name="AttachmentFileName" type="xs:string" />
+                    <xs:element minOccurs="0" maxOccurs="1" name="AttachementURL" type="xs:string" />
+                    <xs:element minOccurs="1" maxOccurs="1" name="IsObject" type="xs:boolean" />
+                    <xs:element minOccurs="0" maxOccurs="1" name="AttachmentBarcode" type="xs:base64Binary" />
+                    <xs:element minOccurs="0" maxOccurs="1" name="ContentClassification" type="cdt:Content_Classification" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SendOutboundResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="1" maxOccurs="1" name="Status" type="cdt:Status_Type" />
+        <xs:element minOccurs="0" maxOccurs="1" name="ErrorCode" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="ErrorMessage" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RejectOutbound">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="1" maxOccurs="1" name="From" type="cdt:Identifier_Type" />
+        <xs:element minOccurs="1" maxOccurs="1" name="To" type="cdt:Identifier_Type" />
+        <xs:element minOccurs="1" maxOccurs="1" name="OutboundDocumentNumber" type="xs:string" />
+        <xs:element minOccurs="1" maxOccurs="1" name="RejectionDate" type="cdt:HUB.DateTime" />
+        <xs:element minOccurs="1" maxOccurs="1" name="RejectionCode" type="xs:string" />
+        <xs:element minOccurs="1" maxOccurs="1" name="RejectionReason" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RejectOutboundResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="1" maxOccurs="1" name="Status" type="cdt:Status_Type" />
+        <xs:element minOccurs="0" maxOccurs="1" name="ErrorCode" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="ErrorMessage" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="StatusInquiry">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="1" maxOccurs="1" name="From" type="cdt:Identifier_Type" />
+        <xs:element minOccurs="1" maxOccurs="1" name="To" type="cdt:Identifier_Type" />
+        <xs:element minOccurs="1" maxOccurs="1" name="OutboundDocumentNumber" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="StatusInquiryResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="OutboundDocumentNumber" type="xs:string" />
+        <xs:element name="InboundDocumentNumber" type="xs:string" />
+        <xs:element name="InboundCreationTimestamp" type="xs:string" />
+        <xs:element minOccurs="1" maxOccurs="1" name="Status" type="cdt:MsgStatus_Type" />
+        <xs:element name="Timestamp" type="cdt:HUB.DateTime" />
+        <xs:element minOccurs="0" maxOccurs="1" name="ErrorCode" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="ErrorMessage" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

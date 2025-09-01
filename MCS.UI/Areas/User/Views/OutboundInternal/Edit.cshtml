@@ -1,0 +1,1069 @@
+﻿@model MCS.UI.Areas.User.Models.Transaction.Outbound.Internal.EditOutboundInternalVM
+@using MCS.UI.Areas.User.Models.Transaction;
+@using MCS.UI.Areas.User.Models.Assignment;
+@using MCS.Framework.Localization
+@using MCS.Common
+@using MCS.UI.Helpers
+
+@{
+
+
+    Layout = "~/Areas/User/Views/Shared/_SearchLayout.cshtml";
+    var attachmentVM = new TransactionAttachmentVM
+    {
+        Attachments = (AjaxGrid<TransactionAttachmentVM>)new AjaxGridFactory()
+        .CreateAjaxGrid(Model.Attachments, 1, Model.Attachments.Count, false)
+    };
+    var nameVM = new TransactionNameVM
+    {
+        Names = (AjaxGrid<TransactionNameVM>)new AjaxGridFactory()
+        .CreateAjaxGrid(Model.Names, 1, Model.Names.Count, false)
+    };
+    var linkVM = new TransactionLinkVM
+    {
+        Links = (AjaxGrid<TransactionLinkVM>)new AjaxGridFactory().
+        CreateAjaxGrid(Model.Links, 1, Model.Links.Count, false)
+    };
+    var followUpVM = new TransactionFollowUpVM()
+    {
+        FollowUps = (AjaxGrid<TransactionFollowUpVM>)new AjaxGridFactory()
+        .CreateAjaxGrid(Model.FollowUps, 1, Model.FollowUps.Count, false)
+    };
+    var assignmentVM = new TransactionAssignmentVM { ToOrgUnitId = SessionInfo.OrgUnitId };
+
+    var EditMode = SessionInfo.CurrentUser.Claims.Contains(UserClaims.Outbound.EditInternalOutbound);
+    ViewBag.Title = DbRes.TResource("User.OutboundInternal.EditTitle");
+    bool barCodePermission = SessionInfo.CurrentUser.Claims
+        .Contains(UserClaims.PopUpWindowData.Internal_PrintBarCode) &&
+                  SessionInfo.CurrentUser.Claims.Contains(UserClaims.GeneralPermissions.PrintEncryptionCode);
+
+    string transactionId = ViewData["TransactionId"].ToString();
+    bool isEditMode = true;
+    Session["IsEditMode"] = isEditMode;
+
+    List<ExplanationVM> explanations = ViewData["ExplanationsData"] as List<ExplanationVM>;
+    var tasks = ViewData["Tasks"] as TaskAddVM;
+
+
+    var LinkCount = Model.Links.Count;
+    var FollowupCount = Model.FollowUps.Count;
+    var ExplaintionCount = explanations.Count;
+    var TasksCount = tasks.TasksGrid.ItemsCount;
+    var NameCount = Model.Names.Count;
+    string controllerName = TempData.Peek("ControllerName") != null ? TempData.Peek("ControllerName").ToString() : ViewContext.RouteData.Values["controller"].ToString();
+
+
+}
+<script src=@Url.Content("~/Content/User/lib/js/app.min.js")></script>
+<script src="~/Scripts/Transaction.js"></script>
+<script>
+    var archiveMode = '@isEditMode';
+</script>
+@Html.Hidden("hdnTransactionID", Model.Id)
+@Html.Hidden("hdnTransEditorId", ViewData["TransactionId"])
+@Html.Hidden("hdnEditorTransactionTypeId", Model.OutboundInternalBasicInfoEdit.LetterTypeId)
+@Html.Hidden("TransactionType", (int)Model.Type)
+
+@Html.StickyHidden("EncryptedModelId")
+<ul class="ul-progress-bar-container" style="margin-bottom:10px; display:none">
+</ul>
+
+
+
+
+<br />
+<div class="content_container transparent-be mx-5 mx-xs-3 mt-5">
+    <div class="options-list row anchor">
+        <div id="progress-bar-container">
+            <div id="line-edit">
+                <div id="line-proces"></div>
+            </div>
+            <ul class="upperBoxes">
+
+                <li class="text-center" id="basicInf">
+                    <a href="#first-tab" aria-controls="first-tab" role="tab" data-toggle="tab" class="boardered-circle-transparent active">
+                        <i class="uicon icon_folder1"></i>
+                    </a>
+                    <a>@DbRes.TResource("User.OutboundExternal.DataInsertion")</a>
+                </li>
+                @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.FollowUps.DisplayLink))
+                {
+                    <li class="text-center" id="FollowUP">
+                        <a href="#Thirteen-tab" aria-controls="Thirteen-tab" role="tab" data-toggle="tab" class="boardered-circle-transparent">
+                            <span class="badge badge-danger" style="margin-right:-22px; margin-top:-35px">@FollowupCount</span>
+
+                            <i class="far fa-clock"></i>
+                        </a>
+                        <a>@DbRes.TResource("User.Trays.FollowUp") </a>
+                    </li>
+                }
+                @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Links.DisplayLink))
+                {
+                    <li class="text-center" id="Links">
+                        <a href="#sixth-tab" aria-controls="sixth-tab" role="tab" data-toggle="tab" class="boardered-circle-transparent">
+                            <span class="badge badge-danger" style="margin-right:-22px; margin-top:-35px">@LinkCount</span>
+                            <i class="uicon icon_attachments"></i>
+                        </a>
+                        <a>@DbRes.TResource("User.Inbound.Link") </a>
+                    </li>
+                }
+                @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Names.DisplayLink))
+                {
+                    <li class="text-center" id="Names">
+                        <a href="#second-tab" aria-controls="second-tab" role="tab" data-toggle="tab" class="boardered-circle-transparent">
+                            <span class="badge badge-danger" style="margin-right:-22px; margin-top:-35px">@NameCount</span>
+                            <i class="fa fa-users"></i>
+                        </a>
+                        <a>@DbRes.TResource("User.Inbound.Names") </a>
+                    </li>
+                }
+                <li class="text-center" id="AssignmentPaper">
+                    <a href="#twelve-tab" aria-controls="twelve-tab" role="tab" data-toggle="tab" class="boardered-circle-transparent">
+                        <i class="fa fa-book"></i>
+                    </a>
+                    <a>@DbRes.TResource("User.OutboundInternal.Assignment") </a>
+                </li>
+                @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Tasks.DisplayLink))
+                {
+                    <li class="text-center" id="Task">
+                        <a href="#Tenth-tab" aria-controls="Tenth-tab" role="tab" data-toggle="tab" class="boardered-circle-transparent">
+                            <span class="badge badge-danger" style="margin-right:-22px; margin-top:-35px">@TasksCount</span>
+
+                            <i class="fa fa-tasks"></i>
+                        </a>
+                        <a>@DbRes.TResource("User.Inbound.Task") </a>
+                    </li>
+                }
+                @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.ExpalanationsEditor.DisplayLink))
+                {
+                    <li class="text-center" id="Explanations">
+                        <a href="#ninth-tab" aria-controls="ninth-tab" role="tab" data-toggle="tab" class="boardered-circle-transparent">
+
+                            <span class="badge badge-danger" style="margin-right:-22px; margin-top:-35px">@ExplaintionCount</span>
+
+                            <i class="fa fa-sticky-note"></i>
+                        </a>
+                        <a>@DbRes.TResource("User.Editor.Explanations") </a>
+                    </li>
+                }
+                <li class="mt-2">
+                    <a href='@Url.Action("MyTransactions", "File", new { area = "user" })'>
+                        <i class="fa fa-arrow-left" style="font-size:25px; position:absolute; left:27px;" title="@DbRes.TResource("User.Internalinbound.Back")"></i>
+                    </a>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+</div>
+@*</div>*@
+<div style="direction:ltr; padding-left:3rem">
+    <a data-bs-toggle="tooltip" onclick="NavigateToTransaction(@transactionId, true)" data-placement="bottom" title="التالي">
+        <input class="btn-site" type="button" value="التالي">
+    </a>
+    <a data-bs-toggle="tooltip" onclick="NavigateToTransaction(@transactionId, false)" data-placement="bottom" title="السابق">
+        <input class="btn-site" type="button" value="السابق">
+    </a>
+</div>
+<div class="white-container mx-5 mx-xs-3">
+    <div class="inner-header d-flex">
+
+
+        <div class="d-flex" style="margin-right:-45px; margin-bottom:16px;">
+
+            <div class="pl-sm-5 Editor-div">
+                <div class="gray3">@DbRes.TResource("User.Editor.BasicInfo.OutboundInternal.Number")</div>
+                <div class="transaction-number Editor-lable">@Model.OutboundInternalBasicInfoEdit.Number</div>
+                @Html.Hidden("hdnNumber", Model.OutboundInternalBasicInfoEdit.Number)
+            </div>
+            <div class="pl-5 Editor-div">
+                <div class="gray3">@DbRes.TResource("User.Editor.BasicInfo.OutboundDraft.Date") </div>
+                <div class="date-value Editor-lable">
+                    @DateHelper.GetDate(Model.HijriRecordDate)
+                    -
+                    @Model.RecordDate.ToString("h:m:s tt")
+                </div>
+            </div>
+
+            <div class="pl-sm-5">
+                <div class="gray3">@DbRes.TResource("User.OutboundInternal.BasicInfo.Subject")</div>
+                @if (Model.OutboundInternalBasicInfoEdit.Subject.Length > 100)
+                {
+                    <div class="transaction-number Editor-lable" style="word-break:break-all" title="@Model.OutboundInternalBasicInfoEdit.Subject">@Model.OutboundInternalBasicInfoEdit.Subject.Substring(0, 100)...</div>
+
+                }
+                else
+                {
+                    <div class="transaction-number Editor-lable" style="word-break:break-all">@Model.OutboundInternalBasicInfoEdit.Subject</div>
+
+                }
+                @Html.Hidden(Model.OutboundInternalBasicInfoEdit.Subject)
+            </div>
+            @if (Model.AssignedFromUser != null && Model.AssignedToUser != null && Model.AssignedFromUser.LocalName.CompareTo(Model.AssignedToUser.LocalName) != 0)
+            {
+                <div class="pl-5 Editor-div">
+                    <div class="gray3">@DbRes.TResource("User.Editor.Transaction.AssignedFrom") </div>
+                    <div class="date-value Editor-lable">
+                        @(Model.AssignedFromUser.LocalName)
+                    </div>
+                </div>
+            }
+        </div>
+        @if (Model.OutboundInternalBasicInfoEdit.RemindDateH != null)
+        {
+            <div class="pl-5 Editor-div">
+                <div class="gray3"><br/> </div>
+                <div class="date-value Editor-lable">
+                    @DbRes.TResource("User.Transaction.HasDate")
+                </div>
+            </div>}
+        <ul class="custom-sub-nav-tabs mb-2 mb-sm-auto d-flex flex-nowrap ml-auto" role="tablist" style="border: 1px solid white; border-radius: 20px; padding: 5px; background: #f5f6f7 ">
+
+            <li role="presentation" id="draft">
+                <a id="draftAnchor" href="#" aria-controls="Twelfth-tab" role="tab" data-toggle="tab" class="site-color  px-2 d-block d-sm-inline" onclick="goToDraft()">
+                    <i class="fa fa-plus-circle" title="@DbRes.TResource("مشروع خطاب")" id="icon-edit"></i>
+                    @*<div class="mt-2">@DbRes.TResource("مشروع خطاب")</div>*@
+                </a>
+            </li>
+            <div style="border-left: 2px solid white; height: 24px; "></div>
+
+            <li role="presentation" id="reply">
+                <a id="directReplyAnchor" href="#Fifteenth-tab" aria-controls="Fifteenth-tab" role="tab" data-toggle="tab" class="site-color  px-2 d-block d-sm-inline">
+                    <i class="fa fa-reply" title="@DbRes.TResource("الرد المباشر")" id="icon-edit"></i>
+                </a>
+            </li>
+
+        </ul>
+    </div>
+    <!-- Nav tabs -->
+
+    <div class="tab-content">
+
+        @using (Html.BeginForm("EditOutboundInternal", "OutboundInternal", FormMethod.Post, new { id = "frmEditOutboundInternal", @class = "tab-content" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.StickyHiddenFor(model => model.Id, new { id = "hdnOutboundInternalId", value = Model.Id })
+            @Html.StickyHiddenFor(model => model.OutboundInternalBasicInfoEdit.Number)
+            @Html.StickyHiddenFor(model => model.HijriRecordDate)
+            @Html.StickyHiddenFor(model => model.RecordDate)
+            @Html.StickyHiddenFor(model => model.StatusId)
+            @Html.Hidden("isConfirmed", "false", new { id = "isConfirmedId" })
+            @Html.Hidden("ControllerName", controllerName, new { id = "ControllerName" })
+            {
+                Html.ViewData.TemplateInfo.HtmlFieldPrefix = "OutboundInternalBasicInfoEdit";
+                Html.ViewData.Add("HijriDate", Model.HijriRecordDate + " - " + Model.RecordDate.ToString("hh:mm tt"));
+                Html.ViewData.Add("HijriDateTitle", DbRes.TResource("User.Inbound.BasicInfo.RecordDate"));
+                Html.ViewData.Add("TransactionNumber", Model.OutboundInternalBasicInfoEdit.Number);
+                Html.ViewData.Add("TransactionNumberTitle", DbRes.TResource("User.Inbound.BasicInfo.InboundNumber"));
+            }
+            <div role="tabpanel" class="tab-pane active" id="first-tab">
+                <div class="dvBasicInfo">
+                    @Html.Partial("~/Areas/User/Views/OutboundInternal/_BasicInfoEditPartial.cshtml", Model.OutboundInternalBasicInfoEdit, Html.ViewData)
+                </div>
+            </div>
+            <div role="tabpanel" class="tab-pane hidden_" id="second-tab">
+                <div class="">
+                    @Html.Partial("~/Areas/User/Views/Transaction/_NamesPartial.cshtml", nameVM)
+                </div>
+            </div>
+            if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Links.DisplayLink))
+            {
+                <div role="tabpanel" class="tab-pane hidden_" id="sixth-tab">
+                    <div class="">
+                        @Html.Partial("~/Areas/User/Views/Shared/_LinksPartial.cshtml", linkVM)
+                    </div>
+                </div>
+            }
+
+
+
+
+        }
+
+
+        @using (Html.BeginForm("AddTask", "Editor", FormMethod.Post, new { id = "EditorTaskManagementForm" }))
+        {
+            @Html.AntiForgeryToken()
+            <div role="tabpanel" class="tab-pane hidden_" id="Tenth-tab">
+                <div class="" id="dvTasks">
+                    @{ViewData.TemplateInfo.HtmlFieldPrefix = "TransactionTasks";}
+                    @Html.Partial("~/Areas/User/Views/Editor/TaskManagement/_AddTaskPartial.cshtml", ViewData["Tasks"])
+                </div>
+            </div>
+        }
+        <div role="tabpanel" class="tab-pane hidden_" id="ninth-tab">
+            <div class="">
+                @{Html.ViewData.TemplateInfo.HtmlFieldPrefix = "EditorExplanations";}
+                @Html.Partial("~/Areas/User/Views/Editor/Explanations/_ExplanationReadWritePartial.cshtml", new ExplanationVM(), Html.ViewData)
+            </div>
+        </div>
+
+    </div>
+    <div role="tabpanel" class="tab-pane hidden_" id="twelve-tab">
+        <div class="">
+
+            @Html.Partial("~/Areas/User/Views/Editor/AssignmentPaper/AssignmentPaperPartial.cshtml", assignmentVM)
+        </div>
+    </div>
+    @using (Html.BeginForm("AddFollowUp", "Editor", FormMethod.Post, new { id = "EditorFollowUpForm" }))
+    {
+        @Html.AntiForgeryToken()
+        <div role="tabpanel" class="tab-pane hidden_" id="Thirteen-tab">
+            <div class="">
+                @Html.Partial("~/Areas/User/Views/Transaction/_FollowUpPartial.cshtml", followUpVM)
+
+            </div>
+        </div>
+    }
+    @*<div role="tabpanel" class="tab-pane hidden_" id="Fourteen-tab">
+            <div class="">
+                @{ViewData.TemplateInfo.HtmlFieldPrefix = "TransactionChatTab";}
+                @Html.Partial("~/Areas/User/Views/Chat/_TransactionChatPartial.cshtml")
+            </div>
+        </div>*@
+    @*<div role="tabpanel" class="tab-pane hidden_" id="CertificateAssignment-tab">
+            <div class="">
+
+            </div>
+        </div>*@
+
+    @*<label>السبب</label>
+        <span class="stark">*</span>*@
+    <div role="tabpanel" class="tab-pane hidden_" id="Fifteenth-tab">
+        <textarea class="form-control" cols="20"
+                  id="replyTxtArea" rows="5"
+                  style="max-width: 100vh;"></textarea>
+
+        <span class="stark" style="display:none;" id="replyValidationlabel">أدخل السبب</span>
+        <input class="btn btn-st1 btn-lg pull-right" id="btnDirectReply" type="button" value="رد" />
+    </div>
+
+
+    <div id="dvEditorPartialContainer">
+        @Html.Partial("~/Areas/User/Views/Transaction/_ArchivingPartialMainDocument.cshtml", new TransactionArchiveVM(TransactionAttachmentType.Main, true, !((bool)ViewData["isTransactionCreator"]), false,
+                                                bStampPermission: SessionInfo.CurrentUser.Claims.Contains(UserClaims.UserPreferences.Mark),
+                                                bSignaturePermission: SessionInfo.CurrentUser.Claims.Contains(UserClaims.UserPreferences.Signature),
+                                                bAnnotationsPermission: SessionInfo.CurrentUser.Claims.Contains(UserClaims.Archiving.Annotations),
+                                                bColorScanningPermission: SessionInfo.CurrentUser.Claims.Contains(UserClaims.Archiving.ColorScanning)), Html.ViewData)
+    </div>
+</div>
+<div id="dvButtonFooter" class="row text-right mr-5 mt-4 ml-xs-3 mb-4 save">
+
+    @Html.ConfirmAction(OperationType.Update, "btnSaveOutboundInternal",
+    DbRes.TResource("User.File.Save"),
+    Url.Action("EditOutboundInternal", "OutboundInternal"),
+    null, null, null, "OnSuccess", null,
+    DbRes.TResource("User.OutboundInternal.SaveMessage"),
+    "post", "frmEditOutboundInternal", "BasicInformation",
+    "btn btn-st1 btn-lg pull-right", "CheckPriorityIfHasDate",
+    UserClaims.Outbound.EditOutbound, "NotValid")
+
+
+    <a class="btn btn-st2 btn-lg pull-right mr-1 hidden_" id="btnPrintTransaction" onclick="PrintTransaction(@Model.Id)">@DbRes.TResource("User.Print")</a>
+    <a class="btn btn-st2 btn-lg pull-right mr-1 " id="btnPrintBarcode" onclick="ShowPrintDialog()">@DbRes.TResource("User.Inbound.Add.barcode")</a>
+    <a class="btn btn-st2 btn-lg pull-right mr-1 " id="SeparateTransaction" onclick="SeparateTransaction()">@DbRes.TResource("User.EditInbound.SeparateTransaction")</a>
+    <a class="btn btn-st2 btn-lg pull-right mr-1 " onclick="MoveToAssignmenTransaction()" id="btnMoveToAssignmenId">  @DbRes.TResource("User.Transaction.Send") </a>
+
+</div>
+<div style="display:none">
+    @Html.ActionButton(DbRes.TResource("Global.SaveandReturn"), Url.Action("EditOutboundInternal", "OutboundInternal"), "", null, "", "", "", "Post", null, "SavebackgroundBtn", "frmEditOutboundInternal", "btn btn-st1 btn-lg pull-right margin", "CheckPriorityIfHasDate", UserClaims.Outbound.EditOutbound)
+
+</div>
+
+
+<script>
+
+
+      @*function GetCertificateAssignments(transactionId) {
+        var id = transactionId;
+        $.ajax({
+            type: 'Get',
+            cache: false,
+            url: '@Url.Action("GetTransactionAssignmentHistories", "TransactionLog")',
+            data: { transactionId: id},
+            success:
+                function (data) {
+                    $("#CertificateAssignment-tab").html(data)
+                }
+        });
+    }*@
+
+</script>
+<script>
+    $(document).ready(function () {
+        window.textEditorSingature = '@Session["textEditorSignature"]';
+        $("#dvDocumentViewerEditorContainer").html($("#dvEditorPartialContainer").html());
+        $("#dvEditorPartialContainer").html("");
+        $("#hdnOutboundInternalId").val('@Model.Id');
+
+        @*if ('@Model.defaultTabId' != null) {
+            $("#@Model.defaultTabId").click();
+        }*@
+
+        $('#draftAnchor').click(function () {
+            var trxId = EncryptionKey('@Model.Id');
+
+            @*var outboundUlr = '@Url.Action("Add", "OutboundExternal")?baseTransactionId =' + trxId + '&isOutboundInternal = true")';
+            window.open("@Html.Raw(outboundUlr)", '_self').focus();*@
+            window.open("@Url.Action("Add", "OutboundExternal")?baseTransactionId=" + trxId + "&isOutboundInternal=true", '_self').focus();
+        })
+
+        $('#navigateToEditor').click(function () {
+             var trxId = EncryptionKey('@Model.Id');
+            window.open("@Url.Action("Editor", "OutboundInternal")?id" + trxId, '_blank').focus();
+        })
+
+        $('#btnDirectReply').click(function () {
+            var token = $('form:first').find("input[name='__RequestVerificationToken']").val();
+
+            var replyTxtAreaContent = $('#replyTxtArea').val();
+            if (replyTxtAreaContent.length == 0) {
+                $('#replyValidationlabel').show();
+            } else {
+                $('#replyValidationlabel').hide();
+
+                $.ajax({
+                    type: 'Post',
+                    url: '@Url.Action("TransactionDirectReply", "OutboundInternal")',
+                    data: { transactionId: @Model.Id, remarks: replyTxtAreaContent, __RequestVerificationToken: token },
+                    success: function (data) {
+                        if (data.MessageType != 2) {
+                            if (data.result == false) {
+                                ShowErrorMessage('المعاملة عند نفس المستخدم بالفعل.');
+                                return;
+                            }
+                            window.location.href = '@Url.Action("MyTransactions", "File")'
+                        }
+                        else {
+                            ShowErrorMessage(data.MessageText);
+                        }
+                    }
+                });
+            }
+        });
+
+        EnableDisableControls();
+
+    });
+    function goToDraft() {
+
+          var trxId = EncryptionKey('@Model.Id');
+
+            @*var outboundUlr = '@Url.Action("Add", "OutboundExternal")?baseTransactionId =' + trxId + '&isOutboundInternal = true")';
+            window.open("@Html.Raw(outboundUlr)", '_self').focus();*@
+            window.open("@Url.Action("Add", "OutboundExternal")?baseTransactionId=" + trxId + "&isOutboundInternal=true", '_self').focus();
+    }
+    function EnableDisableControls() {
+        var editMode = '@EditMode';
+        if (editMode.toLowerCase() != 'true') {
+            $("#dvBasicInfo .BasicInfo .disableByPrivilege").prop("disabled", true);
+            $("#dvBasicInfo .BasicInfo .readonlyByPrivilege").prop("readonly", true);
+
+        }
+    }
+
+    $("#rejecttrans, #transactionAssigments, #assignmentPaper").click(function () {
+        $(".save").hide()
+    });
+        $("#transactionChats, #basicInfo, #first, #anchorArchiving, #transactionNames, #transactionLinks, #transactionCopies, #electronicCopies, #explanations ").click(function () {
+            $(".save").show()
+        });
+        $("div.anchor a").click(function () {
+            $("div.anchor a").removeClass("active");
+            $("div.anchor a").addClass("disabled");
+            $(this).addClass("active");
+            var id = $(this).data("id");
+            $("#" + id).addClass("active");
+            $(".tabscontent").addClass("hidden_");
+
+            var divId = $(this).data("divid");
+            $("#" + divId).removeClass("hidden_");
+
+            if (divId == "thirteen-tab" || divId == "second-tab" || divId == "twelve-tab") {
+                $('#dvButtonFooter').hide();
+            }
+            else {
+                $('#dvButtonFooter').show();
+            }
+
+            if ($(this).data("id") == 'outboundDraft') {
+                GetOutboundDraft();
+            }
+
+        });
+
+        $("ul li a").click(function () {
+            var tabId = $(this).attr("aria-controls");
+
+            if (tabId != undefined && tabId.trim() != '') {
+                //$('ul li').removeClass('active');
+                //$(this).parent().addClass("active");
+
+                $(".tab-pane").hide();
+                $("#" + tabId).removeClass('hidden_');
+                $("#" + tabId).show();
+            }
+        });
+
+    function OnAddReporterSuccess(data) {
+        if (data.MessageType != 2) {
+            ShowSuccesMessage(data.MessageText)
+            ClearInputs('frmAddReporter');
+            __dialog.close();
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+     function AddReporter() {
+        __dialog = $.confirm({
+            title: false,
+            content: function ($obj) {
+                return $.ajax({
+                    url: '@Url.Action("AddReporter", "Shared")',
+                    type: 'GET',
+                    cache: false,
+                    success: function (data) {
+                        $obj.setContent(data.Html);
+                        jQuery.validator.unobtrusive.parse('#frmAddReporter');
+                    }
+                });
+            },
+            onOpen: function () {
+                jQuery(function () {
+                    jQuery('.jconfirm-box').draggable({
+                        revert: false,
+                    });
+                });
+                $("#Loader").hide();
+            },
+            onClose: function () {
+                GetAllReporter();
+            },
+            confirmButton: false,
+            icon: 'fa fa-info',
+            animation: 'scale',
+            columnClass: "dialogbox col-md-8 col-md-offset-2 col-xs-8 col-xs-offset-2",
+            backgroundDismiss: false,
+            closeIcon: true,
+            cancelButton: false
+        });
+    }
+
+     function PrintTransaction(TransactionId) {
+         var Number = $('#hdnNumber').val();
+       @*var url= '@Url.Action("GetTransactionExplanationsForPrint", "Editor")' + '?transactionId=' + TransactionId
+
+        ShowDialog(url, 'dialogbox col-md-12 ');*@
+
+        //var data = { transactionId: TransactionId  ,__RequestVerificationToken: token };
+        event.preventDefault();
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("PrintTransaction", "Shared")' + '?transactionId=' + TransactionId + "&transactionNumber=" + Number,
+            //data: data,
+            cache: false,
+            success:
+
+                function (data) {
+                    if (data.MessageType != 2) {
+                        var TransactionWindow = window.open('', '_blank', 'width=900,height=500');
+
+                        TransactionWindow.document.write(data);
+                        TransactionWindow.document.close();
+                        TransactionWindow.focus();
+
+                        //setTimeout(function () {
+                        //    TransactionExplanationsWindow.print();
+                        //    TransactionExplanationsWindow.close();
+                        //}, 2000);
+                    }
+                    else {
+                        ShowErrorMessage(data.MessageText);
+                    }
+                }
+        });
+    }
+     function GetAllReporter() {
+        $.ajax({
+            cache: false,
+            type: 'get',
+            url: '@Url.Action("GetReporters")',
+            success: function (data) {
+                AutoCompleteChangeList("ddlBasicReporter", data);
+                AutoCompleteChangeList("ddlBasicReporterAssinment", data);
+                AutoCompleteChangeList("ddlAssignmentPaperReporter", data);
+                AutoCompleteChangeList("ddlRejectBasicReporter", data);
+                var newItems = $.parseJSON(data);
+                var lastItem = newItems.slice(-1)[0].value;
+                $('#hdnBasicReporter').val(lastItem);
+                $('#hdnBasicReporter').trigger('change')
+            }
+        });
+    }
+
+    function SetSuggestedTopic() {
+        $("#txtAreaSubject").val($("#divForm__dvSuggestedTopicTree .txtDepartmentName").val());
+    }
+
+    var transactionId = $("#hdnOutboundInternalId").val();
+
+    $("#basicInfo").click(function () {
+        var actionType=@Convert.ChangeType(MCS.Common.AuditingActionCode.ViewBasicInformation, MCS.Common.AuditingActionCode.ViewBasicInformation.GetTypeCode());
+        PostTransactionLog(actionType, @Model.Id);
+    });
+
+    $("#transactionLinks").click(function () {
+        var actionType=@Convert.ChangeType(MCS.Common.AuditingActionCode.ViewTransactionLinks, MCS.Common.AuditingActionCode.ViewTransactionLinks.GetTypeCode());
+        PostTransactionLog(actionType, @Model.Id);
+    });
+
+    $("#transactionNames").click(function () {
+        var actionType=@Convert.ChangeType(MCS.Common.AuditingActionCode.ViewTransactionNames, MCS.Common.AuditingActionCode.ViewTransactionNames.GetTypeCode());
+        PostTransactionLog(actionType, @Model.Id);
+    });
+
+    $("#dvViewAttachment").click(function () {
+
+        if(!$(this).hasClass('active')){
+
+            var actionType=@Convert.ChangeType(MCS.Common.AuditingActionCode.ViewTransactionAttachmentsArchiving, MCS.Common.AuditingActionCode.ViewTransactionAttachmentsArchiving.GetTypeCode());
+            PostTransactionLog(actionType, @Model.Id);
+        }
+    });
+
+    function NotValid() {
+        $('#dvBasicInfo input').each(function () {
+            if ($('#dvBasicInfo input').hasClass('invalid-input')) {
+
+                $('div, a').removeClass('selected');
+
+                if (!$('#first').hasClass('selected'))
+                    $('#first').addClass('active');
+
+                $(".tabscontent").addClass("hidden_");
+                $("#first-tab").removeClass("hidden_");
+
+                $(".boardered-circle-transparent").removeClass("active");
+                $('#first').addClass('active');
+
+                $(window).scrollTop(0);
+            }
+        });
+    }
+
+    function ShowPrintDialog()
+    {
+        var params = { transactionId: $("#hdnOutboundInternalId").val() };
+        ShowDialogAjaxPrintingBarcodes('@Url.Action("PrinttingBarcodes","Shared")' + "?" + $.param(params), {}, 'OpenPrintDialogSuccess', 'dialogbox col-md-12 ');
+    }
+     function SeparateTransaction() {
+         var trxId = EncryptionKey($("#hdnOutboundInternalId").val()).toString();
+         var params = { transactionId: trxId };
+          window.location.href = '@Url.Action("AddPrevious", "OutboundInternal")' + "?" + $.param(params);
+    }
+    function OpenPrintDialogSuccess(data, $obj)
+    {
+        if (data.MessageType != 2) {
+            $obj.setContent(data.Html);
+        }
+        else {
+            __dialog.close();
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+        function NavigateToTransaction(Id, IsNext) {
+
+        $.ajax({
+
+            type: 'get',
+            url: '@Url.Action("InboundNavigateTransactions","Inbound")',
+            data: { CurrentId: Id, IsNext: IsNext },
+            success:
+                function (data) {
+                    if (data.MessageType != 2) {
+                        debugger
+                       if (data.TransactionCategoryId == '@TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName)') {
+
+                            window.location.href = '@Url.Action("Edit", "OutboundInternal", new { area="User"} )' + "?id=" + EncryptionKey(data.Id);
+                        } else {
+                             window.location.href = '@Url.Action("Edit", "Inbound", new { area="User"} )' + "?id=" + EncryptionKey(data.Id);
+                        }
+                    }
+                    else {
+                        ShowErrorMessage(data.Message);
+                    }
+                }
+        });
+    }
+
+    $("#anchorArchiving").click(function () {
+        var actionType=@Convert.ChangeType(MCS.Common.AuditingActionCode.ViewTransactionArchiving, MCS.Common.AuditingActionCode.PrintBarcode.GetTypeCode());
+        PostTransactionLog(actionType, @Model.Id);
+    });
+
+    $(document).ready(function () {
+
+        $("#hdnTransactionId").val('@Model.Id');
+    })
+
+    function OnSuccess(data) {
+
+          if (data.MessageType != 2) {
+
+
+            //var date = data.Date + ' ' + '@DbRes.TResource("User.Transaction.HijriSymbol" )' + data.currTime;
+               var date = data.Date; //+ ' ' + '@DbRes.TResource("User.Transaction.HijriSymbol" )' + data.currTime;
+              var trxId = EncryptionKey(data.Id);
+              $("#EncryptedModelId").val(trxId.toString());
+              $('#EncryptedId').val(data.Id);
+            $(".transaction-number").html(data.InternalNumber);
+            $(".date-value").html(date);
+            $("#hdnOutboundInternalId").val(data.Id);
+            $("#hdnTransactionId").val(data.Id);
+            $('#timenow').show();
+
+            $("#btnSaveOutboundInternal").remove();
+            $("#btnGetPrevious").remove();
+            $('#aPrint').show();
+            $('#btnPrintTicket').show();
+            $("#btnPrintTicket").removeClass("hidden_");
+
+            if (typeof BindRoomsToTransaction != 'undefined') {
+                BindRoomsToTransaction(data.Id);
+            }
+
+            var sendBtnHtml = '';
+            var DirectedToOrgUnit = $("#OutboundInternalBasicInfoAdd_DirectedToOrgUnitId").val();
+            var DirectedToUser = $("#hdnDirectedToId").val();
+            var DepartmentsOrgUnit = @SessionInfo.OrgUnitId;
+            var LoginUser = @SessionInfo.CurrentUser.Id;
+            var DirectedToUser = $("#hdnDirectedToId").val();
+            var showFollowUpChkBox = false;
+
+            if ((DirectedToOrgUnit != DepartmentsOrgUnit) || (LoginUser != DirectedToUser)) {
+                $("#btnSendTransaction").removeClass("hidden_");
+                $('#btnSendTransaction').show();
+                sendBtnHtml = '@DbRes.TResource("User.OutboundInternal.Send")';
+                showFollowUpChkBox = true;
+            }
+
+
+
+                  PrintBarCodeValue = '';
+            AddArchiveValue = '';
+            CopyDataValue = '';
+
+            if ('@barCodePermission' == 'True') {
+                PrintBarCodeValue = '@DbRes.TResource("User.OutboundInternal.Add.barcode")';
+            }
+            if ('@SessionInfo.CurrentUser.Claims.Contains(UserClaims.PopUpWindowData.Internal_AddArchive)' == 'True') {
+                AddArchiveValue = '@DbRes.TResource("User.Add.AddArchive")';
+            }
+            if ('@SessionInfo.CurrentUser.Claims.Contains(UserClaims.PopUpWindowData.Internal_CopyData)' == 'True') {
+                CopyDataValue = '@DbRes.TResource("User.OutboundInternal.Add.CopylastInternal")';
+            }
+
+               if ('@SessionInfo.CurrentUser.Claims.Contains(UserClaims.PopUpWindowData.Prefix)' == 'True')
+            {
+                        ShowSaveTransSuccesMessage(data.MessageText, '', ' @DbRes.TResource("User.OutboundInternal.Add.TranNo"):', data.InternalNumber, ' @DbRes.TResource("User.OutboundInternal.Add.CreatedDate"):', date, PrintBarCodeValue, '', '', CopyDataValue, '@DbRes.TResource("User.OutboundInternal.NewInternalOutbound")', '', '', '', '', '@DbRes.TResource("User.Transaction.BackToBox")', AddArchiveValue, '@DbRes.TResource("User.Transaction.Send")');
+
+
+
+
+            } else
+            {
+                ShowSuccesMessage(data.MessageText);
+
+
+                   setTimeout(function () {
+            $(document).trigger("AddArchiveButtonPopupClicked", '');
+        }, 3000);
+
+
+
+
+
+            }
+        }
+        else {
+
+            ShowErrorMessage(data.MessageText);
+        }
+        $('#officeIframe').hide();
+       // window.location.reload();
+    }
+    function doReload() {
+        window.location.reload();
+    }
+    function GetDirectedToUsersByOrgUnitId() {
+        $("#hdnDirectedToId").val('')
+        if ($("#OutboundInternalBasicInfoEdit_DirectedToOrgUnitId").val() != "") {
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("GetUsersByOrgUnitId")',
+                data: { id: $("#OutboundInternalBasicInfoEdit_DirectedToOrgUnitId").val(), addSelectOption: true },
+                success:
+               function (data) {
+                   $("#ddlDirectedToId").val("");
+                   $("#hdnDirectedToId").val("");
+                   AutoCompleteChangeList("ddlDirectedToId", data);
+                   $("#ddlDirectedToId").prop('disabled', false);
+               }
+            });
+            return false;
+        }
+        else {
+            $("#ddlDirectedToId").prop('disabled', true);
+            $("#ddlDirectedToId").val("");
+            $("#hdnDirectedToId").val("");
+            AutoCompleteChangeList("ddlDirectedToId", "[]");
+        }
+    }
+</script>
+<script>
+    var EditorPartialStorage;
+
+
+    function PrepareEditorContainer() {
+        $("#dvDocumentViewerEditorContainer").html($("#dvEditorPartialContainer").html());
+        $("#dvEditorPartialContainer").html("");
+        if (EditorPartialStorage == "" || EditorPartialStorage === undefined) {
+            EditorPartialStorage = $("#dvDocumentViewerEditorContainer").html();
+        }
+        else {
+            $("#dvDocumentViewerEditorContainer").html(EditorPartialStorage);
+        }
+    }
+
+    $(document).on("BarcodeButtonPopupClicked", function (event, param) {
+        ShowPrintDialog();
+    });
+
+    $(document).on("AddArchiveButtonPopupClicked", function (event, param) {
+
+        editUrl = "@Url.Action("Edit", "OutboundInternal")";
+
+        if (!(/\d/.test(editUrl))) {
+            editUrl += "?id=" + $("#EncryptedModelId").val();
+        }
+
+        window.location.href = editUrl;
+    });
+        function CheckUserHasPermission()
+    {
+        debugger;
+        var form = $("#frmEditorAssignment").serialize();
+         $.ajax({
+                type: 'post',
+                url: '@Url.Action("CheckUserHasPermission", "File")',
+               data: form,
+               success:
+                   function (data)
+                   {
+                       switch (data.MessageType)
+                       {
+                           case 0:
+                               return true;
+                           case 1:
+                               return ShowConfirmMessage(data.MessageText,"ContinueAssigneTransaction");
+                               break;
+                           case 1:
+                               // code block
+                               ShowErrorMessage(data.MessageText);
+                               return false;
+                           default:
+                               ShowErrorMessage(data.MessageText);
+                               return false;
+                       }
+
+               }
+            });
+    }
+
+    $(document).on("MoveToAssignmenPopupClicked", function (event, param) {
+        debugger;
+        var DirectedToId;
+        if ($("#hdnDirectedToId").val() == '' || $("#hdnDirectedToId").val() == undefined)
+            DirectedToId = '-1'
+        else
+            DirectedToId = $("#hdnDirectedToId").val()
+
+        var outboundExternalId = $("#hdnOutboundInternalId").val();
+        var token = $("input[name='__RequestVerificationToken']").val();
+
+                    $.ajax({
+
+                    url: '@Url.Action("SendAssignmentByTransaction")',
+                    data: {
+                        hdnTransactionId: outboundExternalId,
+                        DirectedToOrgUnitId: $("#OutboundInternalBasicInfoEdit_DirectedToOrgUnitId").val() ,
+                        DirectedToId: DirectedToId,
+                        DeliveryMethodId: $("#hdnBasicDeliveryMethod").val(),
+                        isConfirmed: $("#isConfirmedId").val(),
+                        __RequestVerificationToken: token,
+                    },
+                        success: function (data)
+                        {
+                            debugger;
+                            switch (data.MessageType) {
+                                case 0:
+                                    break;
+                                case 1:
+                                    return ShowConfirmMessage(data.MessageText, "ContinueAssigneTransaction");
+                                    break;
+                                default:
+                                    return ShowErrorMessage(data.MessageText);
+
+                            }
+
+                            if (data.MessageType != 2) {
+                               window.location.href = '@Url.Action("MyTransactions", "File")';
+                            }
+                            else {
+                              debugger;
+                            ShowErrorMessage(data.MessageText);
+                            }
+                        }
+                    });
+                });
+
+
+    function ContinueAssigneTransaction()
+    {
+
+        $("#isConfirmedId").val(true);
+        MoveToAssignmenTransaction();
+
+    }
+    function ReturnToMyTransactionTray() {
+        window.location.href = '@Url.Action("MyTransactions", "File")';
+    }
+
+        $(document).on("NewButtonPopupClicked", function (event, param) {
+        window.location.href = '@Url.Action("Add", "OutboundInternal")';
+    });
+    $(document).on("RedirectToTrayButtonPopupClicked", function (event, param) {
+        window.location.href = '@Url.Action("MyTransactions", "File")';
+    });
+    $(document).on("AssignButtonPopupClicked", function (event, param) {
+        assignTransAjax();
+    });
+    $(document).on("GetPreviousPopupClicked", function (event, param) {
+        getPreviousTransaction();
+    });
+
+    var _url = null;
+    var urlDeliveryReport;
+
+    function getPreviousTransaction() {
+        window.location.href = '@Url.Action("AddPrevious","OutboundInternal")';
+    }
+
+    function assignTransAjax() {
+        var data = $('#dvBasicInfo :input').serializeArray();
+        var token = $("#frmAddOutboundInternal").find("input[name='__RequestVerificationToken']").val();
+        data.push({ name: 'hdnTransactionId', value: $('#hdnOutboundInternalId').val() });
+        data.push({ name: 'type', value: '@TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName)' });
+        data.push({ name: 'chkboxFollowUp', value: $('#chkboxFollowUp').prop('checked') });
+        data.push({ name: '__RequestVerificationToken', value: token });
+        $.ajax({
+            type: 'post',
+            cache: false,
+            url: '@Url.Action("AssignTrans", "OutboundInternal")',
+            data: data,
+            success:
+                function (data, textStatus, request) {
+                    if (typeof data.errorOccurred != "undefined") {
+                        if (data.errorOccurred == true && data.url != null) {
+                            window.location.href = data.url;
+                            return;
+                        }
+                    }
+                    else {
+
+                        if (data.ReportsIds) {
+                            PrintTransactionsDeliveryReport(data.ReportsIds);
+                        }
+                        else {
+                            reloadPage();
+                        }
+                    }
+                },
+            error: function (data) { }
+        });
+    }
+
+    function Reload() {
+        location.reload();
+    }
+
+    //$(function () {
+    //    $("#ddlDirectedToId").prop('disabled', true);
+    //});
+
+    function OnGetPreviousSuccess(data, div) {
+        if (data.MessageType != 2) {
+            if (data.UserHasTransactions) {
+                $("#" + div).html(data.Html);
+                jQuery.validator.unobtrusive.parse('#' + div);
+                if ($("#HasDateCal").val() != "") {
+                    $('#datePicker').show();
+                }
+                if ($('#hdnPriorityHasDate').val() === "true") {
+                    $("#dvHasDateContainer").show();
+                    $('#ddlHour').val($('#hdnHour').val());
+                    $('#ddlHour').trigger("focusout");
+                    if ($('#hdnMinute').val().length == 1) {
+
+                        $('#ddlMinute').val("0" + $('#hdnMinute').val());
+                        $('#ddlMinute').trigger("focusout");
+                    }
+                    else {
+                        $('#ddlMinute').val($('#hdnMinute').val());
+                        $('#ddlMinute').trigger("focusout");
+                    }
+                }
+                PrepareEditorContainer();
+                isCopyPrevious = true;
+                tinymce.remove();
+                InitTinymce();
+            }
+            else {
+                ShowInformationMessage(data.MessageText);
+            }
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+
+    function ResetAutoCompleteDeliveryMethod() {
+        AutoCompleteChangeList("ddlBasicDeliveryMethod", "[]");
+        ShowHideReporterContent(false);
+    }
+
+    function PrintTransactionsDeliveryReport(ReportsIds) {
+        var reporterName = $('#ddlBasicReporter').val();
+        var deliveryReportArray = [];
+        var newTransactionId = $('#hdnOutboundInternalId').val();
+        var result = JSON.parse(ReportsIds);
+
+        for (var i = 0; i < result.length; i++) {
+             deliveryReportArray.push({ TransactionId: newTransactionId, ReportsIds: [result[i]] });
+        }
+        var reportType = @((int)DeliveryReportType.DeliveryReport);
+        var parameters = '?transactionReportInfo=' + JSON.stringify(deliveryReportArray) + '&isPerTransaction=true&group=false&reportType=' + reportType + '&reporterName=' + reporterName;
+        urlDeliveryReport = '@Url.Action("PrintDeliveryReportsByIds", "Reports")' + parameters
+        PrintReport(urlDeliveryReport, '', reloadPage);
+    }
+
+    function reloadPage() {
+        setTimeout(function () {
+            window.location.href = '@Url.Action("MyTransactions", "File")';
+        }, 3000);
+    }
+
+</script>

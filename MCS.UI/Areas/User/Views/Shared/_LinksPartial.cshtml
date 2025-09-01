@@ -1,0 +1,388 @@
+﻿@model MCS.UI.Areas.User.Models.Transaction.TransactionLinkVM
+@using MCS.Common;
+@using MCS.Framework.Localization
+
+@{
+    string controller = TempData.Peek("ControllerName") != null ? TempData.Peek("ControllerName").ToString() : ViewContext.RouteData.Values["controller"].ToString();
+    ViewData.TemplateInfo.HtmlFieldPrefix = "TransactionLink";
+    var transID = ViewData["transactionId"] != null ? ViewData["transactionId"].ToString() : "0";
+
+}
+
+<div> 
+    <div>
+        <div class="panel-body">
+            <div class="row" id="dvResultGrid" style="display:none">
+                @Html.Partial("~/Areas/User/Views/Shared/_SearchTransactionLinksGridPartial.cshtml", Model.TransactionLinkSearch)
+            </div>
+        </div>
+    </div>
+    <div id="dvLinksBody">
+        @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Links.Add) || SessionInfo.CurrentUser.Claims.Contains(UserClaims.Links.Edit))
+        {
+            <div class="form-horizontal form-row" id="dvLinksForm">
+                <div class="form-group col-lg-12 col-md-12 col-sm-6 col-xs-12 mb-3">
+                    <div hidden>
+                        <label class="w-100">@DbRes.TResource("User.Transaction.Link.LinkType") <span class="stark">*</span></label>
+                        @Html.AutoCompleteBuilder("ddlLinkType", "LinkTypeId", ViewData["LinkTypeData"].ToString(), null, true, "form-control", selectFirstIndex: true)
+                        @Html.HiddenGroupFor(model => model.LinkTypeId, new { @Value = "", id = "LinkTypeId" }, "Links")
+                        @Html.HiddenGroupFor(model => model.LinkTypeName, new { @Value = "", id = "hdnLinkingTypeName" }, "Links")
+                    </div>
+                    <div class="form-group col-lg-12 col-md-12 col-sm-6 col-xs-12 mb-3">
+                        <label class="w-100" id="chlinks">@DbRes.TResource("User.Transaction.Link.TransactionType") </label>
+                        <div class="inline-radio" id="dvTransactionTypes">
+                            <div class="radio ">
+                                <label>
+                                    @Html.CustomRadioButtonFor(model => model.TransactionCategory, TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName), new { @class = "Inbound", id = "ChType", onchange = "LinkOnRadiochange('false')", @checked = "checked" })
+                                    @DbRes.TResource("User.Transaction.Link.Inbound")
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    @Html.CustomRadioButtonFor(model => model.TransactionCategory, TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName), new { @class = "InboundDocumentNumber", id = "ChType", onchange = "LinkOnRadiochange('true')" })
+                                    @DbRes.TResource("User.Inbound.BasicInfo.InboundDocumentNumber")
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    @Html.CustomRadioButtonFor(model => model.TransactionCategory, TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName), new { @class = "InternalOutbound", id = "ChType", onchange = "LinkOnRadiochange('false')" })
+                                    @DbRes.TResource("User.Transaction.Link.InternalOutbound")
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    @Html.CustomRadioButtonFor(model => model.TransactionCategory, TransactionCategory.ExternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName), new { @class = "Outbound", id = "ChType", onchange = "LinkOnRadiochange('false')" })
+                                    @DbRes.TResource("User.Transaction.Link.Outbound")
+                                </label>
+                            </div>
+
+
+                        </div>
+
+                        @Html.HiddenGroupFor(model => model.TransactionCategory, new { @Value = "", id = "TransactionType" }, "Links")
+                        @Html.HiddenGroupFor(model => model.WithDocumentNumber, new { @Value = "false", id = "WithDocumentNumber" }, "Links")
+
+                        @Html.HiddenFor(model => model.TransactionCategoryName, new { id = "hdnTypeName" })
+                    </div>
+                </div>
+                <br />
+                <div class="form-group col-lg-12 col-md-12 col-sm-6 col-xs-12 mb-3">
+                    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                        <label class="w-100">@DbRes.TResource("User.Transaction.Link.TransactionNumber") <span class="stark">*</span></label>
+                        @Html.TextBoxGroupFor(model => model.TransactionNumber, "Links", new { @class = "form-control", id = "TransactionNumber", @Value = "" })
+                    </div>
+                    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                        <label class="w-100">@DbRes.TResource("User.Transaction.Link.Year") <span class="stark">*</span></label>
+                        @Html.AutoCompleteBuilder("ddlYear", "Year", LookupCategory.Year, null, true, "form-control", "", "", true)
+                        @Html.HiddenGroupFor(model => model.Year, new { @Value = "", id = "Year" }, "Links")
+                    </div>
+                    <div class="panel-body text-left" style="margin-top:7px;">
+                        @Html.StickyHiddenFor(model => model.Key, new { id = "hdnLinkEditKey" })
+                        @Html.ClientActionButton(DbRes.TResource("User.Transaction.Link.Add"), Url.Action("AddLink", controller), "dvLinksGrid", "LinkOnSuccess", null, "Links", "btnLink", "dvLinksBody", " btn-site  ", null, "ReturnTransactionTypeName", UserClaims.Links.Add, "<i class='glyphicon glyphicon-plus' style=\"\r\n    margin-top: -10px;\r\n    font-size: small;\"></i>")
+                        @Html.ClientActionButton(DbRes.TResource("User.Transaction.Copies.Edit"), Url.Action("EditLink", controller), "dvLinksGrid", "LinkOnEditSuccess", null, "Links", "btnEditLinks", "dvLinksBody", "btn-site hidden_", null, null, UserClaims.Links.Edit)
+                        <a class="btn-site " style="display:none" id="aCancelLink" onclick="CancelLinkEdit(); return false;">@DbRes.TResource("User.Transaction.Name.Cancel")</a>
+                    </div>
+
+                    @*@Html.StickyHidden("hdnLinks", ViewData["hdnLinkArray"].ToString())*@
+                    @if (ViewData["transactionId"] != null)
+                    {
+                        @Html.StickyHidden("transactionId", "", new { value = transID })
+                    }
+                </div>
+            </div>
+        }
+        @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Links.DisplayLink))
+        {
+            <div class="panel-body">
+                <div class="row" id="dvLinksGrid">
+                    @Html.Partial("~/Areas/User/Views/Shared/_LinksGridPartial.cshtml", Model.Links, new ViewDataDictionary { { "IsEnableAction", Model.IsEnableAction } })
+                </div>
+            </div>
+
+        }
+
+    </div>
+</div>
+<script>
+
+    var withReplyInbound = parseInt('@((int)LinkingType.WithReplyInbound.LookupIdentity(LookupCategory.LinkingType,SessionInfo.CultureShortName))');
+    var withReferenceInbound = parseInt('@((int)LinkingType.WithReferenceInbound.LookupIdentity(LookupCategory.LinkingType,SessionInfo.CultureShortName))');
+    var withReplyOutbound = parseInt('@((int)LinkingType.WithReplyOutbound.LookupIdentity(LookupCategory.LinkingType,SessionInfo.CultureShortName))');
+    var withInboundDocumentNumber  = parseInt('@((int)LinkingType.WithInboundDocumentNumber.LookupIdentity(LookupCategory.LinkingType,SessionInfo.CultureShortName))');
+    var withReferenceOutbound  = parseInt('@((int)LinkingType.WithReferenceOutbound.LookupIdentity(LookupCategory.LinkingType,SessionInfo.CultureShortName))');
+    var withReferenceOutboundInternal  = parseInt('@((int)LinkingType.WithReferenceOutboundInternal.LookupIdentity(LookupCategory.LinkingType,SessionInfo.CultureShortName))');
+    var withReplyOutboundInternal  = parseInt('@((int)LinkingType.WithReplyOutboundInternal.LookupIdentity(LookupCategory.LinkingType,SessionInfo.CultureShortName))');
+
+
+        var __LinkOutboundInternalNumber = '@Html.Raw(DbRes.TResource("User.Transaction.Link.OutboundInternalNumber"))';
+    var __LinkOutboundNumber = '@Html.Raw(DbRes.TResource("User.Transaction.Link.OutboundNumber"))';
+    var __LinkInboundNumber = '@Html.Raw(DbRes.TResource("User.Transaction.Link.InboundNumber"))';
+    var __LinkInboundDocumentNumber = '@Html.Raw(DbRes.TResource("User.Transaction.Link.InboundDocumentNumber"))';
+    var __LinkTransactionNumber = '@Html.Raw(DbRes.TResource("User.Transaction.Link.TransactionNumber"))';
+    var __LinkEntityIssueNumber = '@Html.Raw(DbRes.TResource("User.Inbound.BasicInfo.InboundDocumentNumber"))';
+
+
+
+    function LinkOnRadiochange(withDocument)
+    {
+        $("#WithDocumentNumber").val(false);
+        var checkedValue = parseInt($("#ChType:checked").val());
+        var text = $("#dvTransactionTypes input:checked").parent('label').text();
+        $("#hdnTypeName").val(text.trim());
+        switch (checkedValue) {
+            case TransactionCategory.ExternalOutbound:
+                $("label[for='TransactionNumber']").text(__LinkOutboundNumber);
+                break;
+            case TransactionCategory.Inbound:
+                $("label[for='TransactionNumber']").text(__LinkInboundNumber);
+                 if (withDocument == 'true')
+                {
+
+                     $("label[for='TransactionNumber']").text(__LinkEntityIssueNumber);
+                      $("#hdnTypeName").val('@DbRes.TResource("User.Transaction.Link.Inbound")');
+                    $("#WithDocumentNumber").val(true);
+                }
+
+                break;
+            case TransactionCategory.InternalOutbound:
+                $("label[for='TransactionNumber']").text(__LinkOutboundInternalNumber);
+                break;
+            default:
+                $("label[for='TransactionNumber']").text(__LinkTransactionNumber);
+        }
+    }
+
+
+
+
+
+    $("#ddlLinkType").change(function () {
+        $("#hdnLinkingTypeName").val($(this).val());
+        switch ($("#LinkTypeId").val()) {
+            case withReplyInbound:
+            case withReferenceInbound:
+                if (("#chlinks".val) == @(TransactionCategory.ExternalOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName)))
+                    $("label[for='TransactionNumber']").text(__LinkOutboundNumber);
+                else
+                    $("label[for='TransactionNumber']").text(__LinkTransactionNumber);
+                break;
+            case withReplyOutbound :
+                $("label[for='TransactionNumber']").text(__LinkInboundNumber);
+                break;
+            case withInboundDocumentNumber:
+                $("label[for='TransactionNumber']").text(__LinkInboundDocumentNumber);
+                break;
+            default:
+                $("label[for='TransactionNumber']").text(__LinkTransactionNumber);
+        }
+    });
+
+
+
+
+
+
+    $(document).ready(function () {
+
+        $('#dvLinksForm #transactionId').val(@transID);
+
+        $("#hdnLinkingTypeName").val($("#ddlLinkType").val());
+        LinkOnRadiochange('false');
+
+    });
+    function CancelLinkEdit() {
+        $("#btnLink").show();
+        $("#btnResetLink").show();
+        $("#btnEditLinks").hide();
+        $("#aCancelLink").hide();
+        $(".Inbound").prop("checked", true);
+        $('#grid-table-grdLinks').find('#Key_' + $("#hdnLinkEditKey").val()).closest('tr').removeClass("grid-row-selected");
+        ClearInputs('dvLinksForm');
+    }
+    function GetLinkById(key) {
+        $('#Key').val(key)
+        SetAutoCompleteValue('ddlYear', $("#Year_" + key).val());
+        SetAutoCompleteValue('ddlLinkType', $("#LinkTypeName_" + key).val());
+        $("#LinkTypeId").val($("#LinkTypeId_" + key).val());
+        $("#ddlLinkType").val($("#LinkTypeName_" + key).val());
+        $("#hdnLinkingTypeName").val($("#LinkTypeName_" + key).val());
+        $("#Year").val($("#Year_" + key).val());
+        $("#ddlYear").val($("#YearDesc_" + key).val());
+        $("#hdnTypeName").val($("#TransactionTypeName_" + key).val());
+
+        $("#TransactionNumber").val($("#TransactionNumber_" + key).val());
+
+        switch ($("#TransactionType_" + key).val()) {
+            case "@(TransactionCategory.ExternalOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName))":
+                $(".Outbound").prop("checked", true);
+                break;
+            case "@(TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName))":
+                $(".Inbound").prop("checked", true);
+                break;
+            case "@(TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName))":
+                $(".InternalOutbound").prop("checked", true);
+                break;
+            default:
+                $(".Inbound").prop("checked", true);
+        }
+
+
+        $("#hdnLinkEditKey").val(key);
+        $("#btnLink").hide();
+        $("#btnResetLink").hide();
+        $("#btnEditLinks").show();
+        $("#aCancelLink").show();
+        $("#btnEditLinks").removeClass("hidden_");
+    }
+    function LinkOnEditSuccess(data) {
+        if (data.MessageType != 2) {
+            if (data.Key != "") {
+                $('#grid-table-grdLinks').find('#Key_' + data.Key).closest('tr').replaceWith(data.Html);
+            }
+            $("#Year").val($("#Year_" + data.Key).val());
+            $("#ddlYear").val($("#YearDesc_" + data.Key).val());
+            ClearInputs('dvLinksForm');
+            $("#btnLink").show();
+            $("#btnResetLink").show();
+            $("#btnEditLinks").hide();
+            $("#aCancelLink").hide();
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+    function ReturnTransactionTypeName() {
+        OnRadiochange();
+        return true;
+    }
+
+
+    function LinkOnSuccess(data) {
+        if (data.MessageType != 2) {
+            $("#grid-table-grdLinks > tbody > .grid-empty-text").remove();
+            $("#grid-table-grdLinks > tbody:last").append(data.Html);
+          /*  ClearInputs('dvLinksForm');*/
+            $('#dvLinksForm').find("#TransactionNumber").val('');
+            //$('#ChType').prop('checked', false);
+            //$(".Inbound").prop("checked", true);
+           /* $("#ddlLinkType").val($("#ddlLinkType option:first").val());*/
+          /*  SelectFirstIndex("ddlLinkType", "LinkTypeId", null);*/
+
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function GetLinkByTypeId(columnIndex) {
+        var input = parseInt($(event.target).parents('tr:first').find("td").eq(columnIndex).html());
+        var json = $.parseJSON($("#hdnLinks").val());
+        $.each(json, function (key, data) {
+            if (data.RecordNumber == input) {
+                $.each(data, function (name, value) {
+                    $("#" + name).val(value);
+                });
+                return;
+            }
+        });
+        $("#LinkingTypeId").trigger("change");
+        $("#Year").trigger("change");
+        $("#CabinetId").trigger("change");
+    }
+
+
+
+
+    function SearchTransaction() {
+        var data = {
+            hdnExternalPartyId: $('#ddnExternalPartyId_hdnDepartmentId').val()
+        };
+        $.ajax({
+            url: '@Url.Action("SearchTransactionLinks", "File")',
+            type: 'GET',
+            data: data,
+            success: function (data) {
+                // $('#dvResultGrid').s("display:block");
+                document.getElementById('dvResultGrid').style.display = "block"
+                $('#dvResultGrid').html("");
+                $('#dvResultGrid').html(data.Html);
+            }
+        });
+    }
+    function AddLinkByTransaction(numberTran, Year, TranType) {
+        $("#TransactionNumber").val(numberTran);
+        $("#Year").val(Year);
+        $("#Year").change();
+
+        switch (TranType) {
+            case TransactionCategory.ExternalOutbound:
+                $(".Outbound").prop("checked", true);
+                break;
+            case TransactionCategory.Inbound:
+                $(".Inbound").prop("checked", true);
+                break;
+            case TransactionCategory.InternalOutbound:
+                $(".InternalOutbound").prop("checked", true);
+                break;
+
+        }
+        $("#btnLink").click();
+
+    }
+
+    function PreviewTransactionDocument(transactionId) {
+        debugger;
+        var token = $("input[name='__RequestVerificationToken']").val();
+        $.ajax({
+            type: 'get',
+            url: '@Url.Action("GetMainDocumentByTransactionId", controller)',
+            data: { transactionId: transactionId, __RequestVerificationToken: token },
+            success: function (data) {
+                debugger
+                if (data.MessageType != 2) {
+
+                    var documentId = EncryptionKey(data.DocumentDTOResult.Id).toString();
+                    var url = '@Url.Action("ShowDocumentViewer","Shared")' + '?documentId=' + documentId + "&documentSessionKey=";
+                    ShowDialog(url);                }
+                else {
+                    RedirectToTargetPage();
+                    //ShowErrorMessage(data.MessageText);
+                }
+            }
+        });
+
+    }
+
+
+
+
+
+
+
+    function LinkOnEditSuccess(data) {
+        if (data.MessageType != 2) {
+            if (data.Key != "") {
+                $('#grid-table-grdLinks').find('#Key_' + data.Key).closest('tr').replaceWith(data.Html);
+            }
+            $("#Year").val($("#Year_" + data.Key).val());
+            $("#ddlYear").val($("#YearDesc_" + data.Key).val());
+
+            $("#btnLink").show();
+            $("#btnResetLink").show();
+            $("#btnEditLinks").hide();
+            $("#aCancelLink").hide();
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+
+
+
+
+
+
+
+
+</script>

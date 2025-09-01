@@ -1,0 +1,56 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Common
+@using MCS.Framework.Controls.DocumentViewer
+@model MCS.UI.Areas.User.Models.Shared.DocumentVM
+
+@using (Html.BeginForm("Index", "Editor", FormMethod.Post, new { id = "frmEditorArchiving" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.StickyHidden("hdnTransactionId", ViewData["TransactionId"].ToString(), new { id = "hdnArchivingTransactionId", @class = "TransactionId" })
+    <div class="panel-heading">
+        <h3 class="panel-title">@DbRes.TResource("User.Editor.Archive.ArchivingAndScanning")</h3>
+    </div>
+    <div id="dvDocumentData">
+        @Html.HiddenGroupFor(model => model.Id, null, "Archiving")
+    </div>
+
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                @{
+                    string editorMainDoc = ViewData["EditorMainDocumentSessionKey"] as string;
+                }
+                <iframe src="http://localhost/MCS.UI/Doconut/Index" class="col-md-12" style="height:500px" sandbox="allow-modals allow-same-origin allow-scripts allow-popups allow-forms allow-downloads"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel-footer">
+        @Html.ConfirmAction(OperationType.Save, "btnAddArchiveEditor", DbRes.TResource("User.Editor.Archive.Save"), Url.Action("SaveMainDocument", "Editor"), null, "__docViewerToken", null, "SaveMainDocumentOnSuccess", null, DbRes.TResource("User.Editor.Archiving.SaveMessage"), "post", "frmEditorArchiving", "Archiving", "btn btn-save pull-right", "CheckArchiveData", UserClaims.Archiving.AddArchiving)
+    </div>
+}
+
+<script>
+    function CheckArchiveData() {
+
+        var tokenValue = document.getElementById('EditorArchivingframeViewer').contentDocument.getElementById('_hdnToken').value;
+
+        __docViewerToken = tokenValue;
+
+        if (__docViewerToken == "") {
+
+            ShowErrorMessage('@Html.Raw(DbRes.TValidation("User.Transaction.Archive.ArchiveRequired"))');
+            return false;
+        }
+        return true;
+    }
+
+    function SaveMainDocumentOnSuccess(data, div) {
+        if (data.MessageType != 2) {
+            ShowSuccesMessage(data.MessageText)
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+</script>

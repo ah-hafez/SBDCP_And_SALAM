@@ -1,0 +1,65 @@
+﻿@using MCS.UI.Areas.User.Models.Transaction
+@using System.Globalization
+@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.Framework.Localization
+@using MCS.Common
+@model SentTaskVM
+
+@{
+    string colorStatus = string.Empty;
+    string reminderDisplay = "normal";
+    string DateExtenderDisplay = "normal";
+
+    switch (Model.Status)
+    {
+        case MCS.Common.TaskStatus.InProcess:
+            colorStatus = "blue";
+            break;
+        case MCS.Common.TaskStatus.Late:
+            colorStatus="red";
+            break;
+        case MCS.Common.TaskStatus.Complete:
+            reminderDisplay = "none";
+            colorStatus="green";
+            DateExtenderDisplay = "none";
+            break;
+        default:
+            reminderDisplay = "none";
+            DateExtenderDisplay = "none";
+            break;
+    }
+        
+}
+
+<li class="@colorStatus" id=@String.Format("task_color_status_{0}", Model.Id)>
+    <div class="subject_task">
+        <a href="#" data-task-id="@Model.Id" class="view_sent_task">
+            @String.Format(CultureInfo.CurrentCulture, " {0:d} : {1} ", DbRes.TResource("User.Task.SentTask.TaskNumber"), @Model.Id)
+        </a> 
+         @String.Format(CultureInfo.CurrentCulture, " {0:d} : {1} ", DbRes.TResource("User.Task.SendTask.TransactionNumber"), @Model.TransactionNumber)
+        
+    </div>
+    <div class="bottom_list">
+        <div class="sent_task">
+            @String.Format(CultureInfo.CurrentCulture, "    {0} : {1}", DbRes.TResource("User.Task.SentTask.TheFolowingUnitHasTask"), @Model.ToOrgUnit)
+        </div>
+
+        <div class="pull-right">
+
+            <div class="date_task">
+                <i class="fa fa-calendar-o" data-sent-task-dateh='@DbRes.TResource("User.Task.SentTask.Remind")'> <label data-sent-task-delivery-date="@String.Format("delivery-date{0}", Model.Id)">@String.Format("{0}", @Model.DeliveryDateH)</label></i>
+            </div>
+
+            <div class="accept_task" style="display:@reminderDisplay" id=@String.Format("task_Task_Remind_{0}", Model.Id)>
+                @Html.ClientLinkTag("", "", "", null, DbRes.TResource("User.Task.SentTask.Remind"), "ReminderTask(" + Model.Id + ")", UserClaims.Tasks.Reminder, "<i class='fa fa-clock-o'></i>")
+                @*<a onclick="ReminderTask(@Model.Id)" data-bs-toggle="tooltip" data-placement="top" title='@DbRes.TResource("User.Task.SentTask.Remind")' href="#"><i class="fa fa-clock-o"></i></a>*@
+            </div>
+
+            <div class="accept_task" style="display:@DateExtenderDisplay" id=@String.Format("task_DateExtender_{0}", Model.Id)>
+                @Html.Partial("~/Areas/User/Views/Home/_ExtendTaskDateTimePartial.cshtml", new ViewDataDictionary { { "TaskId", Model.Id } })
+            </div>
+
+        </div>
+    </div>
+</li>

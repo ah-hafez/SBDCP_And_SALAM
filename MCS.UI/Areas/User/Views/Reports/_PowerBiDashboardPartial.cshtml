@@ -1,0 +1,29 @@
+﻿@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Report;
+@using MCS.UI.Helpers;
+
+@{
+    Layout = "~/Areas/User/Views/Shared/_TransactionReportLayout.cshtml";
+    ViewBag.Title = DbRes.TResource("User.Reports.Bi");
+}
+<div class="content_container">
+    <div style="float:left"><input type="button" class="btn btn-st1 btn-lg" value="طباعة" id="btnPrintIframe" /></div>
+    
+    <h2 class="site-color main-title">@DbRes.TResource("User.Reports.Bi")</h2>
+    <iframe id="ifrmBi" src="https://bi.cchi.gov.sa" style="width:100%;height:700px"></iframe>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#btnPrintIframe').click(function () {
+            window.frames[0].focus();
+            window.frames[0].print();
+        });
+
+        const myTimeout = setTimeout(function () {
+            $('#aMenuTrigger').click();
+            clearTimeout(myTimeout);
+        }, 2000);
+    });
+</script>

@@ -1,0 +1,214 @@
+﻿@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Report;
+@using MCS.UI.Helpers;
+
+@model TransactionReportVM
+@{
+    ViewBag.Title = "";
+    Layout = "~/Areas/User/Views/Shared/_TransactionReportLayout.cshtml";
+    string currentDateUmmalqura = DateHelper.ConvertDateCalendar(DateTime.Now.AddDays(-1), CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString());
+    string currentDateGregorian = DateHelper.ConvertDateCalendar(DateTime.Now, CalenderType.Gregorian, SessionInfo.CultureShortName.ToString());
+    MCS.UI.Areas.Admin.Models.Shared.SettingVM dateType = SessionInfo.GetObjectFromSession(Constants.SettingDate) as MCS.UI.Areas.Admin.Models.Shared.SettingVM;
+    var settingDateType = Convert.ToInt32(dateType.Value);
+    var DateValue = (int)DateType.Gregorian;
+    ViewBag.Title = DbRes.TResource("User.Reports.TasksReport");
+}
+<div class="content_container mt-5">
+    <h2 class="site-color main-title">@DbRes.TResource("User.Layout.TasksReport")</h2>
+    @using (Html.BeginForm("TaskSearch", "Reports", FormMethod.Post, new { id = "FormTaskSearch" }))
+    {
+        @Html.AntiForgeryToken()
+        <div id="TransactionSearchContent" class="panel panel-default">
+            <div class="row panel-body">
+                <div id="ColumnsToGridContent"></div>
+
+                <div class="form-group col-lg-2 col-md-4 col-sm-6 col-xs-12 mb-3">
+
+                    <label class="w-100">@DbRes.TResource("User.File.TransactionType")<span class="stark">*</span></label>
+                    @Html.AutoCompleteBuilder("TransactionType", "hdnTransactionTypeId", ViewData["TransactionCategoriesForFilters"].ToString(), null, true, "form-control", "", "", "", true)
+                    @Html.Hidden("TransactionTypeId", -1, new { @Value = "", id = "hdnTransactionTypeId" })
+                </div>
+
+                <div class="form-group col-lg-4 col-md-4 col-sm-6 col-xs-12 mb-3">
+
+                    <div class="col-sm-6 px-0 pl-md-2">
+                        <label>@DbRes.TResource("User.OutboundSearch.FromDate")</label> <span class="stark">*</span>
+                        <div class="with-icon">
+                            @Html.StickyHidden("hdnFromDateUm", "", new { id = "hdnFromDateUm" })
+                            @Html.CalendarCustom("fromDateCal", "hdnFromDateGreg", "hdnFromDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), settingDateType == DateValue ? currentDateGregorian : currentDateUmmalqura, "form-control")
+                            <a class=" date-icon2 " onclick="showCalender('fromDateCal')"><img src="~/Content/User/lib/images/SystemIcon/main bar-08.svg" width="30" /></a>
+                            @Html.HiddenGroupFor(model => model.From, new { id = "hdnFromDateGreg" }, "Search")
+                            <i id="FromIcon" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                            <span id="FromMessage" style="color:red"></span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 px-0 pr-md-2">
+                        <label>@DbRes.TResource("User.OutboundSearch.ToDate")</label> <span class="stark">*</span>
+                        <div class="with-icon">
+                            @Html.StickyHidden("hdnToDateUm", "", new { id = "hdnToDateUm" })
+                            @Html.CalendarCustom("toDateCal", "hdnToDateGreg", "hdnToDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), settingDateType == DateValue ? currentDateGregorian : currentDateUmmalqura, "form-control")
+                            <a class=" date-icon2 " onclick="showCalender('toDateCal')"><img src="~/Content/User/lib/images/SystemIcon/main bar-08.svg" width="30" /></a>
+                            @Html.HiddenGroupFor(model => model.To, new { id = "hdnToDateGreg" }, "Search")
+                            <i id="ToIcon" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                            <span id="ToMessage" style="color:red"></span>
+                        </div>
+
+                        @*<label class="w-100">@DbRes.TResource("User.Task.SentTask.StatusName")<span class="stark">*</span></label>
+                @Html.AutoCompleteBuilder("TransactionStatusId", "hdnTaskStatusId", ViewData["TasksStatus"].ToString(), null, true, "form-control", "", "", "", true)
+                @Html.HiddenGroupFor(model => model.CommonVM.TransactionStatusId, new { @Value = "", id = "hdnTaskStatusId" }, "Search")*@
+                    </div>
+                </div>
+                <div class="form-group col-lg-2 col-md-4 col-sm-6 col-xs-12 mb-3">
+
+                    <label class="w-100">@DbRes.TResource("User.Task.SentTask.StatusName")<span class="stark">*</span></label>
+                    @Html.AutoCompleteBuilder("TransactionStatusId", "hdnTaskStatusId", ViewData["TasksStatus"].ToString(), null, true, "form-control", "", "", "", true)
+                    @Html.HiddenGroupFor(model => model.CommonVM.TransactionStatusId, new { @Value = "", id = "hdnTaskStatusId" }, "Search")
+                    @*<hr />*@
+                    </div>
+                </div>
+                <div id="AdditionalFileds" class="panel-body"></div>
+                @*<hr />*@
+
+                <div id="ClassificationOfFields" style="display:none;">
+                    <div id="ClassificationOfFieldsContent">
+                        <div id="TransactionTypeAll">
+
+                        </div>
+
+
+
+                    </div>
+                </div>
+            </div>
+        <span class="float-right">
+            @Html.ClientActionButton(@DbRes.TResource("User.Transaction.Search.DisplayResport"), "TaskSearch", "resultDiv", "OnSuccess", "", "Search", "btnSearch",
+                "TransactionSearchContent", "btn btn-st2 btn-lg hidden_", null, "VerifyTransaction", "")
+        </span>
+    }
+    <div id="ResultContent"></div>
+</div>
+<script>
+
+       $(document).ready(function () {
+        $('#fromDateCal').attr('autocomplete', 'off');
+        $('#toDateCal').attr('autocomplete', 'off');
+
+        var year = @DateTimeUtility.GetHijriYear(DateTime.Now).ToString();
+        var type = '@CalenderType.Ummalqura.ToString().ToLower()';
+           //SetStartEndDate(year, 'fromDateCal', 'toDateCal', type);
+
+    });
+
+    $(document).ready(function () {
+
+        ResetValidationForm();
+        $('#TransactionType').trigger('change');
+        var type = '@CalenderType.Ummalqura.ToString().ToLower()';
+        $('#hdnFromDateGreg').val('@currentDateGregorian');
+        $('#hdnToDateGreg').val('@currentDateGregorian');
+        $('#fromDateCal').attr('autocomplete', 'off');
+        $('#toDateCal').attr('autocomplete', 'off');
+        //$('#hdnFromDateGreg').val($('#fromDateCal').val());
+    });
+
+
+    document.addEventListener('readystatechange', (event) => {
+        if (document.readyState == "complete") {
+            $("#btnSearch").removeClass("hidden_");
+        }
+    });
+
+
+    function BuildColumnsToGrid() {
+
+        var arrayIds = [];
+        $('#ColumnsToGridContent').html('');
+
+        $('#TransactionTypeAll').find('input:checkbox').each(function (index) {
+            var item = $(this);
+            var type = item.data('type');
+            if (item.is(":checked")) {
+                arrayIds.push(type);
+            }
+        });
+
+        for (var index = 0; index < arrayIds.length; index++) {
+            var item = arrayIds[index];
+            $('#ColumnsToGridContent').append("<input name='ColumnsToGrid[" + index + "]' value=" + item + " type='hidden'/>");
+        }
+    }
+
+
+    function ResetValidationForm() {
+        var form = $("#FormTaskSearch");
+        $.validator.unobtrusive.parse(form);
+    }
+
+    function OnSuccess(data) {
+        if (data.MessageType != 2) {
+            $('#ResultContent').html(data.Html);
+            $('html, body').animate({ scrollTop: $(document).height() }, 'slow');
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    var searchCriteria = { data: '' };
+    function VerifyTransaction() {
+        searchCriteria = { data: '' };
+        var FromDateGreg = CheckDateUm('From', 'hdnFromDateGreg');
+        var ToDateGreg = CheckDateUm('To', 'hdnToDateGreg');
+        var RemindDateGreg = (($('#CommonVM_IsAppointment') != undefined && $('#CommonVM_IsAppointment').length > 0 &&
+            $('#CommonVM_IsAppointment').is(":checked")) ? CheckDateUm('AppointmentDate', 'hdnAppointmentDateGreg') : true);
+        var InboundDateGreg = CheckDateUm('InboundDateH', 'hdnHasInboundDateGreg');
+        var OutboundDateGreg = CheckDateUm('OutboundDateH', 'hdnHasOutboundDateGreg');
+        var isValid = FromDateGreg & ToDateGreg & RemindDateGreg & InboundDateGreg & OutboundDateGreg;
+        if (isValid) {
+            BuildColumnsToGrid();
+            searchCriteria.data = $("#TransactionSearchContent :input").serializeArray();
+        }
+        return isValid;
+    }
+
+    function CheckDateUm(selectorToValidation, selectorToCheckValue) {
+        var isValid = true;
+        //var dateNow = $.datepicker.formatDate('dd/mm/yy', new Date($.now()));
+        //var currentDate = convertdate(dateNow);
+        //$("#" + selectorToValidation + "Icon").addClass("hidden_");
+        //$("#" + selectorToValidation + "Icon").hide();
+        //$("#" + selectorToValidation + "Message").html('');
+        //if ($("#" + selectorToCheckValue).val() != undefined && $("#" + selectorToCheckValue).length > 0 && $("#" + selectorToCheckValue).val() != '') {
+        //    var selectedDate = convertdate($("#" + selectorToCheckValue).val());
+        //    if (selectedDate > currentDate) {
+        //        $("#" + selectorToValidation + "Icon").removeClass("hidden_");
+        //        $("#" + selectorToValidation + "Icon").show();
+        //        $("#" + selectorToValidation + "Message").html('يجب أن يكون التاريخ يساوي او أقل من تاريخ اليوم');
+        //        isValid =  false;
+        //    }
+        //}
+        return isValid;
+    }
+
+
+    function DateTimeValidation() {
+        var isValid = true;
+        var fromDate = $("#hdnFromDateGreg").val();
+        var toDate = $("#hdnToDateGreg").val();
+
+        if (fromDate == null || fromDate == '' || toDate == null || toDate == '') {
+            isValid = false;
+        }
+        return isValid;
+    }
+
+    function ResetSections() {
+        $('#Common').html('');
+        $('#Names').html('');
+        $('#InboundOrInternalOrDraft').html('');
+        $('#External').html('');
+        $('#Transferrd').html('');
+    }
+</script>

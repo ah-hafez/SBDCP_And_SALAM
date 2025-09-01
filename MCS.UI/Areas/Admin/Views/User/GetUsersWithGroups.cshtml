@@ -1,0 +1,85 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models
+@using MCS.GridMvc.Ajax.GridExtensions
+@using MCS.Common
+
+@using MCS.UI.Areas.Admin.Models.User
+
+@model UserFroupViewModel
+@{
+    ViewBag.Title = "ادوار المستخدمين";
+    Layout = "~/Areas/Admin/Views/Shared/_UsersTraysLayout.cshtml";
+}
+
+
+<div class="mx-3 mx-md-5 header-container d-flex flex-row align-items-center">
+    <div class="d-flex flex-column flex-md-row align-items-md-center flex-grow-1">
+        <h3 class="site-color mb-4">@DbRes.TResource("ادوار المستخدمين")</h3>
+    </div>
+</div>
+<div class="white-container mx-3 mx-md-5">
+
+
+    <div class="form-row">
+        <div class="form-group col-lg-6 col-md-8 col-sm-12 col-xs-12">
+            <fieldset class="field-set" id="dvDepartmentsTree">
+                @Html.DepartmentsTree(ViewData["orgUnitDataInfo"] as TreeViewModel, model => model.EntityId, TreeMode.Single, "treeDirectedToOrgUnit", false, "GetDirectedToUsersByOrgUnitId", "", "dvDepartmentsTree")
+            </fieldset>
+            @*<label>@DbRes.TResource("Admin.Actions.MoveUser.FromEntity")<span class="stark">*</span></label>*@
+            @*@Html.EditorFor(model => model.EntityFromId, "OrgHierarchyCaller", additionalViewData: new { treeId = "treeDirectedToOrgUnit", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Common"), GetNodeInfoByIdActionURL = @Url.Action("GetInternalPartyInfoById", "Common"), GetNodeInfoByNumActionURL = @Url.Action("GetInternalPartyInfoByNumber", "Common"), onClickfunction = "GetDirectedToUsersByOrgUnitId", ValidationGroup = "BasicInformation", ShowAddPartyButton = false })*@
+            @*@Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.EntityFromId, TreeMode.Single, "treeDirectedToOrgUnit", true, "GetDirectedToUsersByOrgUnitId", "BasicInformation", "dvDepartmentsTree")*@
+            @Html.HiddenGroupFor(model => model.EntityId, null, "moveUser")
+            <label class="hidden_" style="color:red" id="DepartmentNotSelectedValidation">* @DbRes.TValidation("Admin.Actions.MoveUser.FromEntityValidation")</label>
+        </div>
+
+
+        <div class="mx-3 mx-md-5 mb-4 d-flex">
+            <div class="ml-auto">
+                <button class="btn btn-lg btn-st3 mx-1" onclick="Search()">@DbRes.TResource("User.File.Search")</button>
+            </div>
+        </div>
+        <div class="form-group col-lg-12 col-md-12 col-xs-12 col-sm-12 d-flex">
+            <small class="text-danger ml-auto">
+                @*يرجى تعبئة الحقول التي تحتوي على إشارة **@
+            </small>
+        </div>
+    </div>
+
+    <div id="dvAdd">
+        @*@Html.Partial("~/Areas/Admin/Views/Lookups/_AttachmentTypeAddPartial.cshtml", Model.AddAttachmentType)*@
+    </div>
+    <div id="dvEdit" style="display:none;">
+        @*@Html.Partial("~/Areas/Admin/Views/Lookups/_AttachmentTypeEditPartial.cshtml", Model.EditAttachmentType)*@
+    </div>
+    <hr />
+    <div id="dvGrid">
+        <div class="w-100 d-flex align-items-center mt-2 mb-2">
+            <h3 class="white-c-title">@*@DbRes.TResource("Admin.Grid.AttachmentType")*@</h3>
+            <span class="roundedred ml-3">@*@(((AjaxGrid<AttachmentTypeVM>)ViewData["GridData"]).ItemsCount)*@</span>
+            <span class="pl-2 gray4">@*@DbRes.TResource("Admin.Grid.Records")*@</span>
+        </div>
+        <div class="table-responsive mt-3" id="partialViewContainer">
+            @*@Html.Partial("~/Areas/Admin/Views/Lookups/_UsersWithGroups.cshtml", ViewData["GridData"])*@
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+        function Search() {
+            event.preventDefault();
+            $.ajax({
+                type: "get",
+                url: '@Url.Action("GetUsersWithGroups", "User")',
+                data: {
+                    GroupId:$('#EntityId').val(),
+                },
+                cache: false,
+                success: function (data) {
+                    $('#partialViewContainer').html(data.Html);
+                }
+            });
+        }
+
+</script>

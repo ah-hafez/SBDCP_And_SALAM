@@ -1,0 +1,9 @@
+﻿@model ReportsExternalPartiesVM
+@using MCS.Common
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models
+
+<div class="externalParties">
+    @Html.DepartmentsTreeNotMandetory(ViewData["ExternalPartiesData"] as TreeViewModel, model => model.ToEntity, TreeMode.Single, "dvDestinationTree", true, "GetDestinationUsersByOrgUnitId", "TransactionReports", "divContainerExternalParties", false)
+
+</div>

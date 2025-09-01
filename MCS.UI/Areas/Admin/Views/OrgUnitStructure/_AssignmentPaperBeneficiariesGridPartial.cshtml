@@ -1,0 +1,28 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Framework.Controls.Mvc
+@model AjaxGrid<MCS.UI.Areas.Admin.Models.OrgUnit.AssignmentPaperBeneficiaryVM>
+
+@{
+    Layout = null;
+}
+
+@Html.Grid(Model, "_Grid").Named("grdAssignmentPaperBeneficiaries").Columns(columns =>
+    {
+        columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").Titled("", "<input type='checkbox' id='chkall'></input>")
+                                                  .RenderValueAs(o =>
+                                                    @<div class="chkCol" id="spanCheckBox">
+                                                        <input id="AssigneeSelectorcheckbox" type="checkbox" />
+                                                    </div>);
+
+        columns.Add(model => model.Key, true);
+        columns.Add(model => model.UserName).Titled(DbRes.TResource("Admin.AssignmentPaperBeneficiaries.User"));
+        columns.Add(model => model.OrgUnitName).Titled(DbRes.TResource("Admin.AssignmentPaperBeneficiaries.Unit"));
+        columns.Add().Encoded(false).Sanitized(false).Css("hidden_").RenderValueAs(model => @Html.Hidden("departmentsStructureBeneficiaryGrid", null, new { id = "hdnDepartmentsStructureBeneficiaryGrid" }));
+        columns.Add().Encoded(false).Sanitized(false).Css("hidden_").RenderValueAs(model => @Html.Hidden("orgUnitKeyBeneficiaryGrid", null, new { id = "hdnOrgUnitKeyBeneficiaryGrid" }));
+        columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => @Html.ConfirmImageButton("DeleteAssignmentPaperBeneficiaries", "grdAssignmentPaperBeneficiaries", 1, "dvAssignmentPaperBeneficiariesGrid", "dvAssignmentPaperBeneficiariesGrid :input", null, "DeleteBeneficiary", "Post"));
+    }).WithPaging(GridHelper.PageSize).Sortable().Filterable().WithMultipleFilters().UpdateActionUrl(Url.Action("UpdateGridAssignmentPaperBeneficiary", "OrgUnitStructure")).RenderDeleteButton("DeleteAssignmentPaperBeneficiaries", 1, "dvAssignmentPaperBeneficiariesGrid :input", "dvAssignmentPaperBeneficiariesGrid", "DeleteBeneficiary")
+
+<script>
+    $('#hdnDepartmentsStructureBeneficiaryGrid').val($('#hdnSaveDepartmentsData').val());
+    $('#hdnOrgUnitKeyBeneficiaryGrid').val($('#hdnOrgUnitKey').val());
+</script>

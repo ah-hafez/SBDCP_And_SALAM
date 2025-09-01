@@ -1,0 +1,62 @@
+﻿@using MCS.Common
+@using MCS.UI.Areas.User.Models.File
+@model TrayDetailsVM
+
+
+@{
+    ViewBag.Title = ViewData["FileTitle"];
+    Layout = "~/Areas/User/Views/Shared/_ArchiveLayout.cshtml";
+}
+
+
+
+
+@{
+    TrayType traytype = TrayType.Archives;
+
+    switch (traytype)
+    {
+        case TrayType.Archives:
+
+
+            if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.IC.ICMain))
+            {
+                @Html.Partial("~/Areas/User/Views/IC/_DirectoryPartial.cshtml")
+            }
+            else
+            {
+
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <p style="margin: 50px" > لا توجد صلاحية على الدليل </p>
+            }
+
+
+
+            break;
+        case TrayType.Classification:
+
+
+            if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.IC.ICClassification))
+            {
+                @Html.Partial("~/Areas/User/Views/IC/_ClassificationPartial.cshtml", new MCS.UI.Areas.User.Models.Search.SearchCriteriaByICVM())
+            }
+            else
+            {
+
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <p style="margin: 50px">لا توجد صلاحية على التصنيف  </p>
+            }
+
+            break;
+    }
+}
+
+

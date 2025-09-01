@@ -1,0 +1,44 @@
+﻿@model List<TransactionCertificateHistoryVM>
+@using MCS.UI.Areas.User.Models.Search.TransactionCertificate
+
+
+<div id="dvCerTransactionHistory" class="tabscontent ">
+    <div class="content_container content_container--header extra-padding">
+        <div class="row">
+            <div class="col-md-12">
+                <h3 class="title2"> @DbRes.TResource("User.InboundCertificate.TransactionHistory")</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="editor_content">
+        <div class="active assignments">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel-body faq history_faq">
+                        @for (int i = 0; i < Model.Count; i++)
+                        {
+                            <div class="faq-item">
+                                <div class="faq-title"><span class="fa fa-angle-down"></span><span class="name">@Model[i].UserName</span></div>
+                                <div class="faq-text">
+                                    <div class="panel-body faq history_faq">
+                                        @for (int y = 0; y < Model[i].CertificateHistoryDetails.Count; y++)
+                                        {
+                                            <div class="faq-item none">
+                                                <div class="faq-title">
+                                                    <span class="fa fa-angle-down"></span><span class="date">@Model[i].CertificateHistoryDetails[y].DateH  @Model[i].CertificateHistoryDetails[y].Date.ToShortTimeString()</span>
+                                                    <span>@Model[i].CertificateHistoryDetails[y].Description</span>
+                                                </div>
+                                                <div class="faq-text"></div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

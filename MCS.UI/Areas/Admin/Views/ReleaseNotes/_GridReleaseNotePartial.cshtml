@@ -1,0 +1,22 @@
+﻿@using MCS.Framework.Controls.Mvc
+@using MCS.Framework.Localization
+@model AjaxGrid<MCS.UI.Areas.Admin.Models.ReleaseNotes.ReleaseNotesVM>
+@{
+    ViewBag.Title = "_ReleaseNoteGridPartial";
+    Layout = null;
+}
+@Html.Grid(Model, "_Grid").Named("ReleaseNote").Columns(columns =>
+{
+columns.Add().Encoded(false).Sanitized(false).Css("fixed_col")
+.Titled("", "<input type='checkbox' id='chkall'></input>")
+.RenderValueAs(o =>
+@<div class="chkCol" id="spanCheckBox">
+    <input id="AssigneeSelectorcheckbox" type="checkbox" />
+</div>);
+columns.Add(model => model.Id).Titled(@DbRes.TResource("Admin.ReleaseNotes.ReleaseNumber"));
+columns.Add(model => model.ReleaseNumber).Titled(@DbRes.TResource("Admin.ReleaseNotes.ReleaseManualNumber"));
+columns.Add(model => model.DateHj).Titled(@DbRes.TResource("Admin.ReleaseNotes.ReleaseDate"));
+columns.Add().Encoded(false).Sanitized(false).Css("fixed_col Edit_Icon").RenderValueAs(model => @Html.GridImageButton(Url.Action("ReleaseNotesSelect", "ReleaseNotes"), "ReleaseNote", 1, OperationType.Update, "divEditReleaseNote", null, null, "ShowEditDiv", "", "get"));
+columns.Add().Encoded(false).Sanitized(false).Css("fixed_col delet_Icon").RenderValueAs(model => @Html.GridImageButton(Url.Action("ReleaseNotesDelete", "ReleaseNotes"), "ReleaseNote", 1, OperationType.Delete, "divGrid", "frmAddReleaseNotes", null, "OnDeleteSuccess"));
+
+}).WithPaging(GridHelper.PageSize).Sortable().Filterable().UpdateActionUrl(Url.Action("UpdateReleaseNotesGrid", "ReleaseNotes")).RenderDeleteButton(Url.Action("ReleaseNotesDelete", "ReleaseNotes"), 1, "", "divGrid", "OnDeleteSuccess")

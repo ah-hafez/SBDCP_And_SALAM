@@ -1,0 +1,29 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Framework.Controls.Mvc
+
+@model AjaxGrid<MCS.UI.Areas.Admin.Models.UserProfileVM>
+
+@{
+    ViewBag.Title = "_UserManagementGridPartial";
+}
+<div id="dvGrid">
+    @Html.Grid(Model, "_Grid").Named("grdUserManegement").Columns(columns =>
+        {
+            columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").Titled("", "<input type='checkbox' id='chkall'></input>")
+                                                      .RenderValueAs(o =>
+                                                        @<div class="chkCol" id="spanCheckBox">
+                                                            <input id="AssigneeSelectorcheckbox" type="checkbox" />
+                                                        </div>);
+
+                    columns.Add(model => model.Id).Titled(DbRes.TResource("Admin.UserSearch.Id")).SetWidth("25%");
+                    columns.Add(model => model.LocalName, "LocalizationIdentifier").Titled(DbRes.TResource("Admin.UserSearch.Name")).SetWidth("25%");
+                    columns.Add(model => model.Email).Titled(DbRes.TResource("Admin.UserSearch.Email")).SetWidth("25%");
+                    columns.Add(model => model.UserName).Titled(DbRes.TResource("Admin.User.UserName")).SetWidth("25%");
+
+                    columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => @Html.GridImageButton("GetUserProfile", "grdUserManegement", 1, OperationType.Update, "divEditUser", null, null, "ShowEditDiv", "", "Get"));
+                    columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => @Html.ConfirmImageButton("DeleteUserProfile", "grdUserManegement", 1, "divGridContainer", "", null, "OnDeleteSuccess"));
+                    columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => model.IsEmailConfirmed == false ? "<a data-toggle='tooltip' id='email' data-placement='top' title='' data-original-title='" + DbRes.TResource("Admin.UserSearch.SendEmail") + "' class='edit_link' onclick='SendEmail(" + model.Id + "); return false;'><i class='fa fa-reply'></i>" : "");
+
+                    columns.Add().Titled(DbRes.TResource("Admin.UserSearch.Activate")).Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => model.IsActive ? "<label class='switch content_table'><input type='checkbox' data-id='" + model.Id + "' value='" + model.IsActive + "' name='autoCrop' checked /><span></span></label>" : "<label class='switch content_table'><input type='checkbox' data-id='" + model.Id + "' value='" + model.IsActive + "' name='autoCrop'/><span></span></label>");
+                }).WithPaging(GridHelper.PageSize).Sortable().Filterable().WithMultipleFilters().UpdateActionUrl(Url.Action("UpdateGridUserProfile", "User")).RenderDeleteButton("DeleteUserProfile", 1, "formUserManagement", "divGridContainer", "OnDeleteSuccess")
+    </div>

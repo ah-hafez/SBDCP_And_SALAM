@@ -1,0 +1,111 @@
+﻿@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.Framework.Localization
+@model MCS.UI.Areas.User.Models.Transaction.TaskAddVM
+@using MCS.Common;
+
+<div class="col-xs-12">
+    <div class="row">
+        <!-- Form start -->
+        <div class="form-horizontal form-row" id="dvTasksBody">
+            @Html.StickyHiddenFor(model => model.Key, new { id = "hdnEditTaskKey" })
+            @Html.StickyHiddenFor(model => model.Id, new { id = "hdnTaskId" })
+            @Html.StickyHidden("TransactionIdForTask", ViewData["transactionId"].ToString(), new { id = "TransactionIdForTask" })
+            <div class="form-group col-lg-6 col-md-4 col-sm-6 col-xs-12 mb-3">
+                <div id="dvOrgUnitName">
+                    @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.SentToOrgUnitId, TreeMode.Single, "treeToOrgUnit", true, "GetDirectedToUsersTaskByOrgUnitId", null, "dvOrgUnitName")
+                </div>
+                @*<label>@Html.DisplayNameFor(model => model.SentToOrgUnitId)</label>*@
+                @*@Html.EditorFor(model => model.SentToOrgUnitId, "OrgHierarchyCaller", additionalViewData: new { treeId = "treeToOrgUnit", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Shared"), GetNodeInfoByIdActionURL = @Url.Action("GetInternalPartyInfoById", "Shared"), GetNodeInfoByNumActionURL = @Url.Action("GetInternalPartyInfoByNumber", "Shared"), onClickfunction = "GetUsersByOrgUnitId", ValidationGroup = "", ShowAddPartyButton = false })*@
+
+
+                <i id="ToOrgUnitValidateCallMessage" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                <span id="ToOrgUnitValidateMessage" class="hidden_" style="color:red;">@DbRes.TValidation("User.Task.TaskAdd.OrgUnitValidate")</span>
+                @Html.HiddenFor(model => model.SentToOrgUnitName, new { id = "hdnTaskToOrgUnitName" })
+
+            </div>
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                <label class="w-100">@DbRes.TResource("User.Task.TaskAdd.ToUser")<span class="stark ">*</span></label>
+                @Html.AutoCompleteBuilder("ddlTaskToUser", "hdnTaskToUser", ViewData["TasksUsersData"].ToString(), null, true, "form-control")
+                @Html.HiddenFor(model => model.SentToUserId, new { @Value = "", id = "hdnTaskToUser" })
+                @Html.HiddenFor(model => model.SentToUserName, new { @Value = "", id = "hdnTaskToUserName" })
+                <i id="TaskToUserValidateCallMessage" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                <span id="TaskToUserValidateMessage" class="hidden_" style="color:red;">@DbRes.TValidation("User.Task.TaskAdd.UserValidate")</span>
+            </div>
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3 with-icon">
+                <label class="w-100">@DbRes.TResource("User.Task.TaskAdd.EndDate")<span class="stark">*</span></label>
+                @Html.CalendarCustom("EndDateCal", "hdnEndDateGreg", "hdnEndDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), DateTimeUtility.ConvertToUmAlQuraCalendar_NewFormat(DateTime.Now.AddMonths(1)), "form-control")
+                <a class=" date-icon2 " onclick="showCalender('EndDateCal')"><img src="~/Content/User/lib/images/SystemIcon/main bar-08.svg" width="30" /></a>
+                @Html.HiddenFor(model => model.DeliveryDate, new { id = "hdnEndDateGreg", @Value = DateTime.Now.AddMonths(1).ToString("dd/MM/yyyy") })
+                @Html.HiddenFor(model => model.DeliveryDateH, new { id = "hdnEndDateUm", @Value = DateTimeUtility.ConvertToUmAlQuraCalendar(DateTime.Now.AddMonths(1)) })
+                <i id="DeliveryDateValidateCallMessage" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                <span id="DeliveryDateValidateMessage" class="hidden_" style="color:red;">@DbRes.TValidation("User.Task.TaskAdd.EndDateValidate")</span>
+            </div>
+            @*<div class="form-group col-lg-12 col-md-12 col-xs-12 col-sm-12">
+            <p class="stark">@DbRes.TResource("Admin.User.MustFill") * </p>
+        </div>*@
+                <div class="form-group col-lg-6 col-md-4 col-sm-6 col-xs-12 mb-3">
+                    <label class="w-100">@DbRes.TResource("User.Task.TaskAdd.TaskDescription")<span class="stark ">*</span></label>
+                    @Html.TextAreaGroupFor(model => model.TaskDescription, new { @class = "form-control", @rows = "6" })
+                    <i id="DescriptionValidateCallMessage" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                    <span id="DescriptionValidateMessage" class="hidden_" style="color:red;">@DbRes.TValidation("User.Task.TaskAdd.DescriptionValidate")</span>
+                </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#EndDateCal').attr('autocomplete', 'off');
+    });
+    $(document).on("change", "#ddlTaskActionId", function () {
+        $("#hdnTaskActionName").val($(this).val());
+    })
+    $(document).on("change", ".txtDepartmentNumber ", function () {
+        if ($("#ddlToUser").hasClass("invalid-input")) {
+            $("#TaskToUserValidateMessage").addClass("hidden_");
+            $('#ddlToUser').removeClass('RedBorder');
+            $("#TaskToUserValidateCallMessage").hide();
+        }
+        else {
+
+            $("#TaskToUserValidateMessage").removeClass("hidden_");
+            $('#ddlToUser').addClass('RedBorder');
+            $("#TaskToUserValidateCallMessage").show();
+        }
+
+        $('#dvAddtaskBodyContainer  .txtDepartmentNumber  ,  #dvAddtaskBodyContainer  .txtDepartmentName ').removeClass('RedBorder');
+        $("#ToOrgUnitValidateCallMessage").hide();
+        $("#ToOrgUnitValidateMessage").addClass("hidden_");
+    })
+
+
+
+        function GetDirectedToUsersTaskByOrgUnitId() {
+        if ($("#TaskAdd_SentToOrgUnitId").val() != "") {
+            token = $("input[name='__RequestVerificationToken']").val()
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("GetUsersByOrgUnitId")',
+                data: { id: $("#TaskAdd_SentToOrgUnitId").val(), __RequestVerificationToken: token },
+                success:
+               function (data) {
+                   $("#ddlTaskToUser").val("");
+                   $("#ddlTaskToUser").val("");
+                   AutoCompleteChangeList("ddlTaskToUser", data);
+                   $("#ddlTaskToUser").prop('disabled', false);
+               }
+            });
+            return false;
+        }
+        else {
+            $("#ddlTaskToUser").prop('disabled', true);
+            $("#ddlTaskToUser").val("");
+            $("#ddlTaskToUser").val("");
+            AutoCompleteChangeList("ddlTaskToUser", "[]");
+        }
+    }
+
+</script>
+

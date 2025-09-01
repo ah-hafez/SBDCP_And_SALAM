@@ -1,0 +1,291 @@
+﻿@{
+    ViewBag.Title = "OutboundTransactions";
+}
+
+
+@*
+<%@ Register TagPrefix="uc1" TagName="MenuCollapsible" Src="~/VIP/UserControls/MenuCollapsible/MenuCollapsible.ascx" %>
+<%@ Register TagPrefix="uc1" TagName="TimePicker" Src="~/VIP/UserControls/TimePicker.ascx" %>
+<%@ Register TagPrefix="uc1" TagName="ucPriorityLevel" Src="~/VIP/UserControls/PriorityLevel.ascx" %>
+<%@ Register TagPrefix="uc1" TagName="ucDistributionList" Src="~/VIP/UserControls/DistributionList.ascx" %>
+<%@ Register TagPrefix="uc1" TagName="PrintBar" Src="~/VIP/UserControls/Reports/PrintBar.ascx" %>*@
+
+<script type="text/javascript" src="Scripts/ReportFunctions.js"></script>
+<script type="text/javascript">
+    function __IsDestinationTransFilled(source, arguments) {
+        code = document.getElementById('<%= UcCabinetsMenu.ClientID %>_wstxtCode');
+        desc = document.getElementById('<%= UcCabinetsMenu.ClientID %>_wstxtName');
+        if ((code.value != '') && (desc.value != '')) {
+            arguments.IsValid = true;
+        }
+        else {
+            arguments.IsValid = false;
+        }
+    }
+</script>
+<script type="text/javascript">
+    function UcEntitiesMenu_Initialize(nTabID, nUserDivisionID, strUserDivisionDesc, nDivisionTabID) {
+        var obj_UcInboundTransactions_UcEntitiesMenu_Class = new ucMenuCallerClass('<%=UcEntitiesMenu.ClientID %>', '');
+        document.getElementById("<%=UcEntitiesMenu.ClientID %>_ucMenuDialog_hdnFilterByCabinetID").value = nTabID;
+        ucMenuCaller_GetObject(obj_UcInboundTransactions_UcEntitiesMenu_Class.Name).SetFilterByEntity(nTabID);
+        document.getElementById("<%=UcEntitiesMenu.ClientID %>_wstxtCode").value = nUserDivisionID;
+        document.getElementById("<%=UcEntitiesMenu.ClientID %>_wstxtName").value = strUserDivisionDesc;
+
+        // Set Focus to be changed immediately if the ucInboundDivision enabled
+        if (!document.getElementById("<%=UcEntitiesMenu.ClientID %>_wstxtCode").disabled)
+            document.getElementById("<%=UcEntitiesMenu.ClientID %>_wstxtCode").focus();
+
+        // Set m_tabID
+        document.getElementById("<%=UcEntitiesMenu.ClientID %>_hhidTabID").value = nDivisionTabID;
+    }
+
+    function UcCabinetsMenu_OnChange(nTabID) {
+        ucMenuCaller_GetObject("<%=UcEntitiesMenu.ClientID %>").SetFilterByEntity(nTabID);
+        document.getElementById("<%=UcEntitiesMenu.ClientID %>_ucMenuDialog_hdnFilterByCabinetID").value = nTabID;
+        document.getElementById("<%=UcEntitiesMenu.ClientID %>_wstxtCode").value = "";
+        document.getElementById("<%=UcEntitiesMenu.ClientID %>_wstxtName").value = "";
+        document.getElementById("<%=UcEntitiesMenu.ClientID %>_hhidTabID").value = "";
+        document.getElementById("<%=UcEntitiesMenu.ClientID %>_ucMenuDialog_hdnSelectID").value = "";
+        if (!document.getElementById("<%=UcEntitiesMenu.ClientID %>_wstxtCode").disabled)
+            document.getElementById("<%=UcEntitiesMenu.ClientID %>_wstxtCode").focus();
+    }
+
+    function UcCabinetsMenu_OnChangeWithNoPrivilege(nTabID) {
+        document.getElementById("<%=UcEntitiesMenu.ClientID %>_wstxtCode").value = "";
+        document.getElementById("<%=UcEntitiesMenu.ClientID %>_wstxtName").value = "";
+    }
+</script>
+
+
+<div class="grid formAction noBorder">
+    <div class="headRow">
+        <div class="col4">
+            <div class="iconHeadRow">
+                <img src="~/Images/sentPapersMini.png" width="32" height="32" alt="">
+            </div>
+            <h2>تقرير معاملات الصادر
+                    @*<asp:Literal ID="lblPageTitle" runat="server" meta:resourcekey="lblPageTitleResource1"
+                        />*@
+            </h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="colWide text-left">
+            <h3>
+                @Html.Label("معايير البحث", new { ID = "lblSearch" })
+                @*<asp:Label ID="Label2" runat="server" meta:resourcekey="wclblSearchCriteria" />*@
+            </h3>
+        </div>
+    </div>
+    <div class="rowF text-center" style="display: block">
+        <div class="colWide98">
+            @Html.ValidationSummary(true, "", new { id = "wcValidationSummary", @class = "alert alert-danger", ShowMessageBox = "false", ShowSummary = "true" })
+            @*<asp:ValidationSummary ID="wcValidationSummary" runat="server" CssClass="alert alert-danger"
+                    ForeColor="" ShowMessageBox="false" ShowSummary="true" meta:resourcekey="wcValidationSummaryResource1" />*@
+        </div>
+    </div>
+    <div id="tdUcCabinetsMenu" runat="server">
+        @Html.Label("", new { id = "wslblDirectorate", Visible = "false" })
+
+        @*<asp:Label ID="wslblDirectorate" runat="server" meta:resourcekey="wslblDirectorateResource1"
+                Visible="false" />*@
+        <div class="rowF">
+            <div class="pading">&nbsp;</div>
+            <div class="col2">
+                @Html.Label("الوحدة المعنية بالصادر", new { id = "wslblMenuLabel", @Class = "LredColor" })
+                @*<asp:Label ID="wslblMenuLabel" runat="server" />*@
+            </div>
+
+            @Html.Partial("~/Views/Shared/_MenuCollapsiblePartial.cshtml", null)
+        </div>
+        @* <uc1:menucollapsible id="UcCabinetsMenu" runat="server" ismandatory="true" />
+
+        </div>
+            <asp:CustomValidator ID="cvDestination" runat="server" Display="None" ClientValidationFunction="__IsDestinationTransFilled"
+                meta:resourcekey="cvDestinationResource1" />*@
+    </div>
+    <div class="rowF">
+        <div class="pading">
+            &nbsp;
+        </div>
+        <div class="col2">
+            @Html.Label("من تاريخ", new { id = "wclblFromDate", @Class = "LredColor" })
+
+            @*     <asp:Label ID="wclblFromDate" runat="server" meta:resourcekey="wclblFromDateResource1"
+                    CssClass="LredColor" />*@
+        </div>
+        <div class="col3">
+            @Html.TextBox("zcalFromDate", null, new { })
+            @*                <sssframework:textbox id="zcalFromDate" runat="server" />
+                <sssframework:hijricalendarextender id="HijriCalendarExtender1" targetcontrolid="zcalFromDate"*@
+            @*   runat="server" />*@
+        </div>
+        @Html.Partial("~/Views/Shared/_TimePickerPartial.cshtml", null)
+        @*<uc1:timepicker runat="server" id="ucTimeSpinTimeFrom" getsettime="0000" />*@
+    </div>
+    <div class="rowF">
+        <div class="pading">
+            &nbsp;
+        </div>
+        <div class="col2">
+            @Html.Label("إلى تاريخ", new { id = "wclblToDate", @Class = "LredColor" })
+            @*   <asp:Label ID="wclblToDate" runat="server" meta:resourcekey="wclblToDateResource1"
+                    CssClass="LredColor" />*@
+        </div>
+        <div class="col3">
+            @Html.TextBox("zcalToDate", null, new { })
+            @*<sssframework:textbox id="zcalToDate" runat="server" />
+                <sssframework:hijricalendarextender id="HijriCalendarExtender2" targetcontrolid="zcalToDate"
+                    runat="server" />*@
+        </div>
+            @Html.Partial("~/Views/Shared/_TimePickerPartial.cshtml", null)
+            @*<uc1:timepicker runat="server" id="ucTimeSpinTimeTo" getsettime="2359" />*@
+    </div>
+    <div class="rowF">
+        <div>
+            @Html.Label("", new { ID = "wslblScope", Visible = "false" })
+            @* <asp:Label ID="wslblScope" runat="server" meta:resourcekey="wslblScopeResource1"
+                    Visible="false" />
+                <uc1:menucollapsible id="UcEntitiesMenu" runat="server" />*@
+            <div class="pading">&nbsp;</div>
+            <div class="col2">
+                @Html.Label("أقسام الوحدة", new { id = "wslblMenuUnitDivision", @Class = "LredColor" })
+            </div>
+                @Html.Partial("~/Views/Shared/_MenuCollapsiblePartial.cshtml", null)
+        </div>
+        <div class="rowF">
+            @*  <asp:Label ID="wslblCode" runat="server" meta:resourcekey="wslblCodeResource1" Visible="false" />
+                <uc1:menucollapsible id="UcOutboundDestination" runat="server" />*@
+
+
+            <div class="pading">&nbsp;</div>
+            <div class="col2">
+                @Html.Label("جهة الصادر", new { id = "wslblMenuOutboundDirection", @Class = "LredColor" })
+
+            </div>
+
+                @Html.Partial("~/View/Shared/_MenuCollapsiblePartial.cshtml", null)
+
+        </div>
+        <div class="rowF" id="trOutboundSource">
+            <div class="pading">
+                &nbsp;
+            </div>
+            <div class="col2">
+                @Html.Label("نوع الصادر", new { ID = "wslblOutboundSource" })
+                @*<asp:Label ID="wslblOutboundSource" runat="server" meta:resourcekey="wslblOutboundSourceResource1" />*@
+            </div>
+            <div class="col5">
+                @Html.DropDownList("wscboOutboundSource", new List<SelectListItem>{
+                       
+                                                    new SelectListItem{Text="اختر"},
+                                                    new SelectListItem{Text="عام"},
+                                                    new SelectListItem{Text="البرقيات"},
+                                                    new SelectListItem{Text="خاص"}
+                                                
+                         }, new { @Class = "col7" })
+                @* <asp:DropDownList ID="wscboOutboundSource" runat="server" meta:resourcekey="wscboOutboundSourceResource1"
+                        CssClass="col7" />*@
+            </div>
+        </div>
+        <div class="rowF">
+            <div class="pading">
+                &nbsp;
+            </div>
+            <div class="col2">
+                @Html.Label("مستوى السرية", new { ID = "wslblDocConfLevel" })
+                @*<asp:Label ID="wslblDocConfLevel" runat="server" meta:resourcekey="wslblDocConfLevelResource1" />*@
+            </div>
+            <div class="col5">
+                @Html.DropDownList("wscboDocConfLevel", new List<SelectListItem>{
+                       
+                                                    new SelectListItem{Text="اختر"},
+                                                    new SelectListItem{Text="عادي"},
+                                                    new SelectListItem{Text="سري"},
+                                                    new SelectListItem{Text="سري للغايه"}
+                                                
+                         }, new { @Class = "col7" })
+                @*<asp:DropDownList ID="wscboDocConfLevel" runat="server" CssClass="col7" meta:resourcekey="wscboDocConfLevelResource1" />*@
+            </div>
+            <div class="rowF" style="display: none">
+                <div class="pading">
+                    &nbsp;
+                </div>
+                <div class="col2">
+                    @Html.Label("", new { ID = "wslblType" })
+                    @*<asp:Label ID="wslblDocPriorityLevel" runat="server" meta:resourcekey="wslblDocPriorityLevelResource1" />*@
+                </div>
+                <div class="col5">
+                    @*<uc1:ucprioritylevel id="UcPriorityLevel" runat="server" />*@
+                </div>
+            </div>
+            <div class="rowF">
+                <div class="pading">
+                    &nbsp;
+                </div>
+                <div class="col2">
+                    @Html.Label("قائمة التوزيع", new { ID = "wslblType" })
+                    @*<asp:Label ID="wslblType" runat="server" meta:resourcekey="wslblTypeResource1" />*@
+                </div>
+
+                @*@Html.Partial("~/Views/Reports/_DistributionListPartial.cshtml", null)*@
+                @*<uc1:ucdistributionlist id="ucDistributionList" runat="server" />*@
+
+            </div>
+            <div class="rowF">
+                <div class="pading">
+                    &nbsp;
+                </div>
+                <div class="col2" id="tdlblHolder">
+                    @Html.Label("حالة الصادر", new { ID = "wclblDeliveryStatus" })
+                    @*<asp:Label ID="wclblDeliveryStatus" runat="server" meta:resourcekey="wclblDeliveryStatusResource1" />*@
+                </div>
+                <div class="col5" id="tdddlHolder">
+                    @Html.DropDownList("wcddlDeliveyStatus", new List<SelectListItem>{
+                       
+                                                    new SelectListItem{Text="اختر"},
+                                                    new SelectListItem{Text="ارسلت"},
+                                                    new SelectListItem{Text="استلاو ورقي"}
+                                                
+                         }, new { @Class = "col7" })
+                    @* <asp:DropDownList ID="wcddlDeliveyStatus" runat="server" meta:resourcekey="wcddlDeliveyStatusResource1"
+                        CssClass="col7" />*@
+                </div>
+            </div>
+            <div class="rowF text-center">
+                <div class="colWide">
+                    <input type="button" id="eibtnSearch" value="بحث" class="btn btnBlue" />
+
+                    @*   <sss:sssbutton id="eibtnSearch" meta:resourcekey="eibtnSearch" runat="server" onewordstyledown="MCSButtonOneIN"
+                        onewordstyleover="MCSButtonOneDown" cssclass="btn btnBlue" onewordstyle="MCSButtonOneSel"
+                        showprogressbar="True" />*@
+                </div>
+            </div>
+            <div class="rowF">
+                <div id="divPrinter" class="rowExpandArea text-center expandArea">
+                    @*<uc1:printbar id="ucPrintBar" runat="server" />*@
+                </div>
+            </div>
+            <div>
+                @*<asp:CustomValidator ID="cvToDate" runat="server" ClientValidationFunction="__IsToDateFilled"
+                    Display="None" meta:resourcekey="cvToDateResource1" />
+                <asp:CustomValidator ID="cvFomDate" runat="server" ClientValidationFunction="__IsFromDateFilled"
+                    Display="None" meta:resourcekey="cvFomDateResource1" />
+                <asp:CustomValidator ID="cvDateDiff" runat="server" ClientValidationFunction="__IsDiffLessThanYear"
+                    Display="None" meta:resourcekey="cvDateDiffResource1" />
+                <asp:CustomValidator ID="cvDateCompare" runat="server" ClientValidationFunction="__IsFromDateLessThanToDate"
+                    Display="None" meta:resourcekey="cvDateCompareResource1" />
+                <asp:CustomValidator ID="cfvTimeComparison" runat="server" ClientValidationFunction="__CompareTime"
+                    Display="None" meta:resourcekey="cfvTimeComparison" />*@
+
+            </div>
+            <div id="service" style="behavior: url( ../webservice.htc )">
+            </div>
+        </div>
+        <div class="footerRow">
+            <div class="colWide">
+                &nbsp;
+            </div>
+        </div>
+    </div>
+</div>

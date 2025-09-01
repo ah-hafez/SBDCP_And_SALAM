@@ -1,0 +1,470 @@
+﻿@using MCS.Common
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.File
+@using MCS.UI.Areas.User.Models.Assignment
+@model List<TransactionTrayInfoVM>
+
+@{
+    bool isVIP = (bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser);
+    if (!isVIP)
+    {
+        Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Areas/User/Views/Shared/_VIPLayout.cshtml";
+    }
+
+    //Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
+
+    string colorType = string.Empty;
+
+}
+
+<script src="~/Content/User/lib/js/app.min.js"></script>
+@{
+    var trayType = (TrayType)Convert.ToInt32(ViewData["type"]);
+}
+
+@*<h2 class="site-color main-title">@DbRes.TResource("User.File.TransInProgress")</h2>*@
+<div class="row mt-5">
+    <div class="col-sm-4 col-md-3 mob-overflow boxes-right app-Heihgt">
+        <div class="row d-flex flex-wrap align-content-start">
+            @foreach (TransactionTrayInfoVM transactionTrayInfo in Model)
+            {
+                string isIndivisualText = transactionTrayInfo.TransactionDetailsInfoVM.TransactionCategoryId == TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName) ? transactionTrayInfo.TransactionDetailsInfoVM.IsIndividual ? string.Format("({0})", DbRes.TResource("User.Inbound.BasicInfo.InboundDestination.Individual")) : string.Format("({0})", DbRes.TResource("User.Inbound.BasicInfo.InboundDestination.Entities")) : string.Empty;
+
+                {
+                    if (transactionTrayInfo.TransactionDetailsInfoVM.TransactionTypeColorId == Color.Red.LookupIdentity(LookupCategory.Color, SessionInfo.CultureShortName))
+                    {
+
+                        colorType = "reddark";
+
+                    }
+                    else if (transactionTrayInfo.TransactionDetailsInfoVM.TransactionTypeColorId == Color.Blue.LookupIdentity(LookupCategory.Color, SessionInfo.CultureShortName))
+                    {
+
+                        colorType = "blue";
+
+
+                    }
+                    else
+                    {
+                        colorType = "gray";
+                    }
+                }
+                <div id="div_@transactionTrayInfo.TransactionDetailsInfoVM.Id" class="@(transactionTrayInfo.TransactionDetailsInfoVM.isChecked ? "w-100 col-xs-12 active-box":" w-100  col-xs-12") ">
+                    <!-- #Start# BOX -->
+                    <div class=" two">
+                        <div class="@string.Format("box animated zoomIn buttons-action")" style="margin-bottom:5px;">
+                            <div class="correspondence-t">
+                                <div class="d-flex">
+                                    @*<div class="treaty-name">
+                                            @transactionTrayInfo.TransactionDetailsInfoVM.TransactionCategory @isIndivisualText
+                                        </div>*@                <div class="col-lg-9">
+                                        <div class="mr-auto d-flex">
+                                            <div class="checkbox">
+                                                <div class="number">
+                                                    <label>
+                                                        <input data-id="@transactionTrayInfo.TransactionDetailsInfoVM.Id" type="checkbox" value="" @(transactionTrayInfo.TransactionDetailsInfoVM.isChecked ? "checked" : "")>
+                                                        <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="number pl-2" id="id_@transactionTrayInfo.TransactionDetailsInfoVM.Id">
+                                                @transactionTrayInfo.TransactionDetailsInfoVM.Number
+                                            </div>
+                                        </div>
+                                        <div class="title">
+                                            @transactionTrayInfo.TransactionDetailsInfoVM.EntityName
+                                        </div>
+                                        <div class="correspondence-h">
+                                            <div class="date" style="margin-top:-10px;">
+                                                @transactionTrayInfo.TransactionDetailsInfoVM.DateH
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr style="margin-top:-8px;" />
+
+                            <div class="correspondence-t hover-area">
+                                <div class="correspondence-b d-flex flex-wrap" style="background: #f1f1f1;">
+                                    <div class="f-line w-full w-f-50">
+                                        @if (transactionTrayInfo.TransactionDetailsInfoVM.HasPermission)
+                                        {
+                                            if (transactionTrayInfo.TransactionDetailsInfoVM.Subject != null && transactionTrayInfo.TransactionDetailsInfoVM.Subject.Length > 30)
+                                            {
+                                                <div id="example" class="description" data-bs-toggle="tooltip" data-placement="bottom" title="@transactionTrayInfo.TransactionDetailsInfoVM.Subject">
+                                                    @transactionTrayInfo.TransactionDetailsInfoVM.Subject
+                                                </div>
+
+                                            }
+                                            else
+                                            {
+                                                <div class=" description">
+                                                    @transactionTrayInfo.TransactionDetailsInfoVM.Subject
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class=" description">***</div>
+                                        }
+                                    </div>
+                                </div>
+                                <div class=" correspondence-b d-flex flex-wrap cardTable">
+                                    <table class="table table-bordered section1" style="margin-top:10px;">
+                                        <tbody>
+                                            <tr>
+                                                <th scope="row" class="headerAddress">@DbRes.TResource("User.File.Priority")</th>
+                                                <td class="result">
+                                                    @if (transactionTrayInfo.TransactionDetailsInfoVM.PriorityName != null && @transactionTrayInfo.TransactionDetailsInfoVM.PriorityName.Length > 15)
+                                                    {
+                                                        <div data-bs-toggle="tooltip" data-placement="bottom" title="@transactionTrayInfo.TransactionDetailsInfoVM.PriorityName">
+                                                            @transactionTrayInfo.TransactionDetailsInfoVM.PriorityName
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div>
+                                                            @transactionTrayInfo.TransactionDetailsInfoVM.PriorityName
+                                                        </div>
+                                                    }
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row" class="headerAddress">@DbRes.TResource("User.File.Confidentiality")</th>
+                                                <td class="result">
+                                                    @if (transactionTrayInfo.TransactionDetailsInfoVM.ConfidentialityName != null && @transactionTrayInfo.TransactionDetailsInfoVM.ConfidentialityName.Length > 15)
+                                                    {
+                                                        <div data-bs-toggle="tooltip" data-placement="bottom" title="@transactionTrayInfo.TransactionDetailsInfoVM.ConfidentialityName">
+                                                            @transactionTrayInfo.TransactionDetailsInfoVM.ConfidentialityName
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div>
+                                                            @transactionTrayInfo.TransactionDetailsInfoVM.ConfidentialityName
+                                                        </div>
+                                                    }
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row" class="headerAddress">@DbRes.TResource("User.GeneralSearch.Type")</th>
+                                                <td class="result">
+                                                    @if (transactionTrayInfo.TransactionDetailsInfoVM.TransactionTypeName != null && @transactionTrayInfo.TransactionDetailsInfoVM.TransactionTypeName.Length > 15)
+                                                    {
+                                                        <div data-bs-toggle="tooltip" data-placement="bottom" title="@transactionTrayInfo.TransactionDetailsInfoVM.TransactionTypeName">
+                                                            @transactionTrayInfo.TransactionDetailsInfoVM.TransactionTypeName
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div>
+                                                            @transactionTrayInfo.TransactionDetailsInfoVM.TransactionTypeName
+                                                        </div>
+                                                    }
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row" class="headerAddress">@DbRes.TResource("User.File.Category")</th>
+                                                <td class="result">
+                                                    @if (transactionTrayInfo.TransactionDetailsInfoVM.LetterTypeName != null && @transactionTrayInfo.TransactionDetailsInfoVM.LetterTypeName.Length > 15)
+                                                    {
+                                                        <div data-bs-toggle="tooltip" data-placement="bottom" title="@transactionTrayInfo.TransactionDetailsInfoVM.LetterTypeName">
+                                                            @transactionTrayInfo.TransactionDetailsInfoVM.LetterTypeName
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div>
+                                                            @transactionTrayInfo.TransactionDetailsInfoVM.LetterTypeName
+                                                        </div>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+
+
+                            @*<div class="correspondence-h">
+                                    <div class="title">
+                                        @transactionTrayInfo.TransactionDetailsInfoVM.EntityName
+                                    </div>
+                                    <div class="date">
+                                        @transactionTrayInfo.TransactionDetailsInfoVM.DateH
+                                    </div>
+                                </div>
+
+                                <div class="correspondence-b d-flex flex-wrap">
+                                    <div class="f-line w-full">
+                                        @if (transactionTrayInfo.TransactionDetailsInfoVM.HasPermission)
+                                        {
+                                            if (transactionTrayInfo.TransactionDetailsInfoVM.Subject != null && transactionTrayInfo.TransactionDetailsInfoVM.Subject.Length > 30)
+                                            {
+                                                <div id="example" class="description" data-bs-toggle="tooltip" data-placement="bottom" title="@transactionTrayInfo.TransactionDetailsInfoVM.Subject">
+                                                    @transactionTrayInfo.TransactionDetailsInfoVM.Subject
+                                                </div>
+
+                                            }
+                                            else
+                                            {
+                                                <div class=" description">
+                                                    @transactionTrayInfo.TransactionDetailsInfoVM.Subject
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class=" description">***</div>
+                                        }
+                                    </div>
+                                    <div class="f-line w-medium w-small">
+                                        <div class="heading">
+                                            @DbRes.TResource("User.File.Priority")
+                                        </div>
+                                        @if (transactionTrayInfo.TransactionDetailsInfoVM.PriorityName != null && @transactionTrayInfo.TransactionDetailsInfoVM.PriorityName.Length > 15)
+                                        {
+                                            <div data-bs-toggle="tooltip" data-placement="bottom" title="@transactionTrayInfo.TransactionDetailsInfoVM.PriorityName">
+                                                @transactionTrayInfo.TransactionDetailsInfoVM.PriorityName
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div>
+                                                @transactionTrayInfo.TransactionDetailsInfoVM.PriorityName
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="f-line w-medium w-small">
+                                        <div class="heading">
+                                            @DbRes.TResource("User.GeneralSearch.Type")
+                                        </div>
+                                        @if (transactionTrayInfo.TransactionDetailsInfoVM.TransactionTypeName != null && @transactionTrayInfo.TransactionDetailsInfoVM.TransactionTypeName.Length > 15)
+                                        {
+                                            <div data-bs-toggle="tooltip" data-placement="bottom" title="@transactionTrayInfo.TransactionDetailsInfoVM.TransactionTypeName">
+                                                @transactionTrayInfo.TransactionDetailsInfoVM.TransactionTypeName
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div>
+                                                @transactionTrayInfo.TransactionDetailsInfoVM.TransactionTypeName
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="f-line w-medium w-small">
+                                        <div class="heading">
+                                            @DbRes.TResource("User.File.Confidentiality")
+                                        </div>
+                                        @if (transactionTrayInfo.TransactionDetailsInfoVM.ConfidentialityName != null && @transactionTrayInfo.TransactionDetailsInfoVM.ConfidentialityName.Length > 15)
+                                        {
+                                            <div data-bs-toggle="tooltip" data-placement="bottom" title="@transactionTrayInfo.TransactionDetailsInfoVM.ConfidentialityName">
+                                                @transactionTrayInfo.TransactionDetailsInfoVM.ConfidentialityName
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div>
+                                                @transactionTrayInfo.TransactionDetailsInfoVM.ConfidentialityName
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="f-line w-medium w-small">
+                                        <div class="heading">
+                                            @DbRes.TResource("User.File.Category")
+                                        </div>
+
+                                        @if (transactionTrayInfo.TransactionDetailsInfoVM.LetterTypeName != null && @transactionTrayInfo.TransactionDetailsInfoVM.LetterTypeName.Length > 15)
+                                        {
+                                            <div data-bs-toggle="tooltip" data-placement="bottom" title="@transactionTrayInfo.TransactionDetailsInfoVM.LetterTypeName">
+                                                @transactionTrayInfo.TransactionDetailsInfoVM.LetterTypeName
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div>
+                                                @transactionTrayInfo.TransactionDetailsInfoVM.LetterTypeName
+                                            </div>
+                                        }
+                                    </div>
+                                </div>*@
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="col-sm-1 eye-seperator text-center">
+        <a class="boardered-eye" onclick="show" href="javascript:toggleBoxesRight();"><i class="uicon icon_eye"></i><i class="far fa-eye-slash hidden_"></i></a>
+    </div>
+    <div class="col-md-8 col-sm-7 expanded-container">
+        <div class="content_container content_container--body white-bg">
+            <div class="options-list">
+                <div class=" col-xs-6 col-sm-3 text-center Assignment">
+                    <a id="directAssignment" class="boardered-circle-transparent" onclick="dvReplace(this.id)"><i class="demo-icon icon-assignment"></i></a>
+                    <div>
+                        <a href="#"> @DbRes.TResource("User.File.DirectAssignments")</a>
+                    </div>
+                </div>
+                @if (!(ViewData["TrayType"].ToString() == ((int)TrayType.DraftOutbound).ToString()) & !(ViewData["TrayType"].ToString() == ((int)TrayType.Manager).ToString()))
+                {
+                    <div class="col-xs-6 col-sm-3 text-center move">
+                        <a id="moveToDone" class="boardered-circle-transparent" onclick="dvReplace(this.id)"><i class="demo-icon icon-transfertoclosed"></i></a>
+                        <div>
+                            <a class="aSave referral">@DbRes.TResource("User.Transaction.Done")</a>
+                        </div>
+                    </div>
+                }
+                <a class="close-box--sticky" href="@Url.Action("myTransactions" , "File")"><i class="uicon icon_close"></i></a>
+
+            </div>
+        </div>
+        <span id="dv_directAssignment">
+            @Html.Partial("~/Areas/User/Views/Editor/PendingExecuting/PendingAssinmentPartial.cshtml", new TransactionAssignmentVM { ActionId = 3 }, Html.ViewData)
+        </span>
+
+        <div id="dv_moveToDone" class="content_container">
+            <div class="content_container content_container--body white-bg">
+                <hr />
+                <div class="single-wrapper">
+                    <div class="row">
+
+                        @using (Html.BeginForm("MoveTransactionsList", "File", FormMethod.Post, new { id = "frmMoveToDone" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            @*<div class="form-group col-xs-12 ">
+                                <label class="w-100">@DbRes.TResource("User.File.ReasonForTransfer")  <span class="stark">*</span></label>
+                                <textarea class="form-control long-textarea2" id="remarks" name="remarks" maxlength="500"></textarea>
+                                <i id="CalMessageRes" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                                <span id="CalMessage" style="color:red"></span>
+                            </div>*@
+                            <div class="col-lg-5 col-md-6 col-sm-12 col-xs-12 mb-3">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="w-100">@DbRes.TResource("User.File.ReasonForTransfer") <span class="stark">*</span></label>
+                                        <div>
+                                            @Html.AutoCompleteBuilder("ddlSaveReason", "hdnSaveReason", ViewData["SaveReason"].ToString(), Model != null ? ViewData["SaveReason"].ToString() : null, true, "form-control", "remarks", "", "", true)
+                                            @Html.Hidden("remarks", "", new { id = "hdnSaveReason", name = "remarks" }) 
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="col-xs-12 panel-body text-center">
+                                <input type="hidden" id="TransIds" name="TransactionsIds" value="@ViewData["selectedTransIds"]" />
+                                @Html.StickyHidden("TrayId", ((int)TrayType.MyTransactions).ToString(), null)
+                                @Html.StickyHidden("TrayActionType", TrayActionType.Save.ToString(), null)
+                                @Html.ConfirmAction(OperationType.Save, "btnSend", DbRes.TResource("User.Task.TaskAdd.Send"), "MoveTransactionsList", null, null, null, "OnMoveSuccess", null, DbRes.TResource("User.Move.Done"), "post", "frmMoveToDone", "BasicInformation", "btn-site", "checkIfHasReason", UserClaims.Inbound.CreateInbound, "NotValid")
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function show() {
+    }
+    function dvReplace(id) {
+        if (id == "moveToDone") {
+            $('#dv_directAssignment').hide();
+            $('#dv_moveToDone').show();
+            $('.Assignment a').removeClass("active");
+        }
+        else{
+            $('#dv_moveToDone').hide();
+            $('#dv_directAssignment').show();
+            $('.Assignment a').addClass("active");
+            $('.move a').removeClass("active");
+        }
+    }
+    function checkIfHasReason() {
+        if ($('#ddlSaveReason').val().trim() == '') {
+
+            $("#ddlSaveReason").addClass("RedBorder");
+            $("#CalMessageRes").removeClass("hidden_");
+            $("#CalMessageRes").show();
+            $("#CalMessage").html('@Html.Raw(DbRes.TResource("Tray.Done.Reason"))');
+            return false;
+        }
+        else {
+            $("#ddlSaveReason").removeClass("RedBorder");
+            $("#CalMessage").html('');
+            $("#CalMessageRes").addClass("hidden_");
+            return true;
+        }
+    }
+
+    $(document).ready(function () {
+        dvReplace();
+        var selectedTrans = $('#transIds').val().split(",");
+        $('.row-inactiveBoxes input:checkbox').change(function () {
+            var id = $(this).data('id') + "";
+            if ($(this).is(":checked")) {
+                $('#div_' + id).attr('class', 'col-xs-12 active-box');
+                selectedTrans.push(id);
+            } else {
+                $('#div_' + id).attr('class', 'col-xs-12');
+                index = selectedTrans.indexOf(id);
+                if (index > -1) {
+                    selectedTrans.splice(index, 1);
+                }
+            }
+            var finalData = selectedTrans.join(",");
+            $('#transIds').val(finalData);
+        });
+        $('#dv_moveToDone').hide();
+
+        if ('@ViewData["TabId"]' == '@((int)TrayType.SentTransactions)') {
+            dvReplace('moveToDone');
+            $('.move a').addClass("active");
+        }
+        switch (@ViewData["TabId"]) {
+            case @((int)TrayType.Manager):
+                $("#selected5").addClass("active");
+                $("#selected").removeClass("active");
+                break;
+            case @((int)TrayType.DraftOutbound):
+                $("#selected2").addClass("active");
+                $("#selected").removeClass("active");
+                break;
+             case @((int)TrayType.OutboundExternal):
+                $("#selected2").addClass("active");
+                $("#selected").removeClass("active");
+                $(".move").hide();
+                break;
+        }
+    });
+
+    function OnMoveSuccess(data)
+    {
+        if (data.MessageType != 2)
+        {
+              window.location.href = '@Url.Action(((TrayType)Convert.ToInt32(ViewData["type"])).ToString(), "File")';
+        }
+        else
+        {
+            ShowErrorMessage(data.MessageText);
+        }
+
+    }
+
+</script>
+<style>
+    .RedBorder {
+        border: 1px solid #fe0000 !important
+    }
+
+    .description {
+        text-align: center;
+    }
+</style>

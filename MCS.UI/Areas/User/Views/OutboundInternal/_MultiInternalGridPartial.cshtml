@@ -1,0 +1,19 @@
+﻿@model AjaxGrid<MCS.UI.Areas.User.Models.Transaction.MultiInternalOutboundVM>
+
+ 
+
+
+@Html.Grid(Model).CollectionName("MultiInternal").Named("grdMultiInternal").Columns(columns =>
+{
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(column => model.Id, new { id = "ExEditId_" + model.Key }).FixIDAndName("column.", "column_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(column => model.Key, new { id = "Key_" + model.Key }).FixIDAndName("column.", "column_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(column => model.OrgUnitId, new { id = "ExOrgUnitId_" + model.Key }).FixIDAndName("column.", "column_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(column => model.OrgUnitName, new { id = "ExOrgUnitName_" + model.Key }).FixIDAndName("column.", "column_")).Sanitized(false).Encoded(false);
+
+columns.Add(model => model.OrgUnitName).Titled(DbRes.TResource("User.Transaction.Copies.InternalParty"));
+ 
+   columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => @Html.ClientLinkTag("", cssClass: "edit_link", permissionCode: UserClaims.CopiesInternal.Delete, clientFunctionToCall: "DeleteActionGrid(" + "'grdMultiInternal'," + model.Key + ",'" + DbRes.TResource("Grid.DeleteMassage") + "','', '', '" + model.OrgUnitId + "')", innerHtml: "<i class='glyphicon glyphicon-trash color-danger'></i>"));
+ 
+})
+
+ 

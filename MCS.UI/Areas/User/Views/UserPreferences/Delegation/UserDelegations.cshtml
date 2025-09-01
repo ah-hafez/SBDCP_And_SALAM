@@ -1,0 +1,227 @@
+﻿@using MCS.UI.Areas.User.Models
+@using MCS.UI.Areas.User.Models.UserPreferences
+@using MCS.UI.Areas.User.Models.UserPreferences.UserDelegation
+@using MCS.Framework.Localization
+@using MCS.Common
+@model UserDelegationSettingsVM
+
+@{
+    /**/
+
+    /**/
+
+    ViewBag.Title = DbRes.TResource("User.UserPreferences.UserDelegations");
+    Layout = "~/Areas/User/Views/Shared/_SearchLayout.cshtml";
+}
+<div class="mb-3 mx-3 mx-sm-5 header-container2 d-flex align-items-center mt-5">
+    <h3 class="site-color mt-xs-4">@DbRes.TResource("User.UserPreferences.UserDelegations")</h3>
+    @*<div class="close-icon mt-0 ml-auto" data-bs-toggle="tooltip" data-placement="bottom" title="إغلاق">
+        <a class="circle-icon color-white" href="#" onclick="OpenUrlMenu('@Url.Action("UserDelegations","UserPreferences", new { area = "User" })')"><i class="la la-close"></i></a>
+    </div>*@
+</div>
+<div role="tabpanel" class="active content_container" id="tab-1">
+
+    <div class="d-block d-lg-flex mx-3 mx-sm-5 mb-2">
+        <ul class="nav nav-tabs custom-sub-nav-tabs mb-2 mb-sm-auto d-block d-sm-flex" role="tablist">
+            <li role="presentation" class="active">
+                <a href="#sub-tab-1" aria-controls="sub-tab-1" role="tab" data-toggle="tab">
+                    @DbRes.TResource("User.UserDelegation.CurrentDelegations")
+                </a>
+            </li>
+            @*@if (Model.IsManager)
+        {
+            <li role="presentation">
+                <a href="#sub-tab-2" aria-controls="sub-tab-2" role="tab" data-toggle="tab">
+                    @DbRes.TResource("User.UserDelegation.DelegationRequests")
+                </a>
+            </li>
+        }*@
+            <li role="presentation">
+                <a href="#sub-tab-3" aria-controls="sub-tab-3" role="tab" data-toggle="tab">
+                    @DbRes.TResource("User.UserDelegation.ApprovedDelegations")
+                </a>
+            </li>
+            <li role="presentation">
+                <a href="#sub-tab-4" aria-controls="sub-tab-4" role="tab" data-toggle="tab">
+                    @DbRes.TResource("User.UserDelegation.MyDelegations")
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="white-container mx-5 mx-xs-3">
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="sub-tab-1">
+                @Html.Partial("~/Areas/User/Views/UserPreferences/Delegation/_UserCurrentDelegationsPartial.cshtml", Model.userCurrentDelegates, ViewData)
+            </div>
+            @*<div role="tabpanel" class="tab-pane" id="sub-tab-2">
+            <div class="panel-body">
+                @Html.Partial("~/Areas/User/Views/UserPreferences/Delegation/_UserManagerDelegationsGridPartial.cshtml", Model.userManagerDelegates.ManagerDelegationListGrid, ViewData)
+            </div>
+        </div>*@
+            <div role="tabpanel" class="tab-pane" id="sub-tab-3">
+                <div class="panel-body">
+                    @Html.Partial("~/Areas/User/Views/UserPreferences/Delegation/_UserApprovedDelegationsGridPartial.cshtml", Model.userApprovedDelegates.ApprovedDelegationListGrid, ViewData)
+                </div>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="sub-tab-4">
+                <div class="panel-body">
+                    @Html.Partial("~/Areas/User/Views/UserPreferences/Delegation/_MyUserDelegationsGridPartial.cshtml", Model.MyDelegates.MyDelegationListGrid, ViewData)
+                </div>
+            </div>
+            <div id="footer">
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    $(document).on("click", "span[data-node-id]", function () {
+        var elemnt = $(this);
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('InternalLoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetOrgUnitsNodes")',
+                data: { parentId: $(this).data("node-id"), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+                success:
+                    function (data) {
+
+                        $(elemnt).closest('li').children('ul').last().empty()
+
+                        $(elemnt).closest('li').children('ul').last().append(data);
+
+                        $(elemnt).removeClass("InternalLoadedData");
+                    }
+            });
+        }
+    });
+    $(document).ready(function () {
+        GetDirectedToUsersByOrgUnitId();
+    });
+    function OnAddUserPereferenceSuccess(data, div) {
+        if (data.MessageType != 2) {
+            $("#dvGrid" + div).html("");
+            $("#dvGrid" + div).html(data.EmptyHTML);
+            $("#dvCurrentGrid").html("");
+            $("#dvCurrentGrid").html(data.Html);
+            window.location.href = '@Url.Action("UserDelegations", "UserPreferences")';
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function OnDeleteDelegationSuccess(data, div) {
+         
+        if (data.MessageType != 2) {
+            ShowSuccesMessage(data.MessageText);
+            $("#hdnCurrentUsersArray").val(data.hdnValue);
+            $("#hdnAddCurrentUsersArray").val(data.hdnValue);
+            $("#hdnEditCurrentUsersArray").val(data.hdnValue);
+
+            $("#dvEditDelegation").hide();
+            $("#dvAddUserDelegation").show();
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    var currentDelegateId = -1;
+    function ManagerRejectDelegation(delegateId) {
+        currentDelegateId = delegateId;
+        ShowRejectTransactionPopup('@DbRes.TResource("User.UserDelegation.DelegationReject")', '', '@DbRes.TResource("User.UserDelegation.DelegationRejectReason")','', '@DbRes.TResource("User.UserDelegation.Reject")');
+    }
+
+    function ManagerApproveDelegation(delegateId) {
+        currentDelegateId = delegateId;
+        var token = $("#frmUserDelegation").find("input[name='__RequestVerificationToken']").val();
+        var data = { delegateId: currentDelegateId, statusType: 1, rejectionReason: "---", __RequestVerificationToken: token };
+        $.ajax({
+            url: '@Url.Action("UpdateUserDelegationStatus", "UserPreferences")',
+            type: 'POST',
+            cache: false,
+            //contentType: "application/json",
+            data: data,
+            success: function (data) {
+                if (data.MessageType == 2) {
+                    ShowErrorMessage(data.MessageText);
+                    return;
+                }
+                window.location.reload();
+            },
+            error: function (a, b, c, d) {
+                ShowErrorMessage('حدث خطأ');
+            }
+        });
+    }
+
+    $(document).on("RejectButtonPopupClicked", function (event, param) {
+        if ($('#rejectionReason').val().trim() == '') {
+            $('#errorMessageValidate').html("* أدخل سبب الرفض");
+        } else {
+            var token = $("#frmUserDelegation").find("input[name='__RequestVerificationToken']").val();
+            var data = { delegateId: currentDelegateId, statusType: 2, rejectionReason: $('#rejectionReason').val(), __RequestVerificationToken: token };
+            $.ajax({
+                url: '@Url.Action("UpdateUserDelegationStatus", "UserPreferences")',
+                type: 'POST',
+                cache: false,
+                //contentType: "application/json",
+                data: data,
+                success: function (data) {
+                    if (data.MessageType == 2) {
+                        ShowErrorMessage(data.MessageText);
+                        return;
+                    }
+                    window.location.reload();
+                },
+                error: function (a,b,c,d) {
+                    ShowErrorMessage('حدث خطأ');
+                }
+            });
+        }
+
+    });
+
+    function DisplayRejectReason(rejectReason) {
+        if (rejectReason != undefined && rejectReason != "") {
+            ShowInformationMessage(rejectReason);
+        }
+    }
+
+    var currentDisableDelegateId = -1;
+    function DisableDelegation(delegateId) {
+        ShowConfirmMessage("@DbRes.TResource("User.UserDelegation.ConfirmDisable")", "ConfirmDisableDelegation");
+        currentDisableDelegateId = delegateId;
+    }
+
+    function ConfirmDisableDelegation() {
+         
+         
+        var token = $("#frmUserDelegation").find("input[name='__RequestVerificationToken']").val();
+        var data = { delegateId: currentDisableDelegateId, statusType: 3, rejectionReason: '---', __RequestVerificationToken: token };
+        $.ajax({
+            url: '@Url.Action("ClientDeleteDelegation", "UserPreferences")',
+            type: 'POST',
+            cache: false,
+            //contentType: "application/json",
+            data: data,
+            success: function (data) {
+                if (data.MessageType == 2) {
+                    ShowErrorMessage(data.MessageText);
+                    return;
+                }
+                window.location.reload();
+            },
+            error: function (a, b, c, d) {
+                ShowErrorMessage('حدث خطأ');
+            }
+        });
+    }
+
+</script>
+<script>
+    $(".input-group-text.hyperlink ").click(function () {
+        $(this).parent().parent().find('.is-calendarsPicker').focus()
+    });
+
+</script>

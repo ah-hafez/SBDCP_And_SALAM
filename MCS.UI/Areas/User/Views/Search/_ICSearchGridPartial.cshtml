@@ -1,0 +1,457 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Search
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<SearchICTransactionResultVM>
+
+
+<div style="margin-bottom:50px;">
+
+    @Html.Grid(Model).Named("IcTransaction").Columns(columns =>
+{
+    columns.Add(model => model.Id).Css("hidden_");
+    columns.Add().Encoded(false).Sanitized(false).Css("hidden_ ").RenderValueAs(model =>
+
+    MvcHtmlString.Create(
+    "<div class='table-icon d-flex align-items-center'>" +
+        ((model.HasPermission && model.IsInIc == 1) ?
+        @Html.ClientLinkTag("", null, "color-blue", null, "", "", null, "<input type='hidden' value=' " + model.MainDocId + "' class='ForAllTransactionMainDocPrint' />")
+
+            : MvcHtmlString.Empty)
+            +
+         "</div>"));
+
+
+    columns.Add().Encoded(false).Sanitized(false).Css("hidden_ ").RenderValueAs(model =>
+
+    MvcHtmlString.Create(
+    "<div class='table-icon d-flex align-items-center'>" +
+        ((model.HasPermission) ?
+        @Html.ClientLinkTag("", null, "color-blue", null, "", "", null, "<input type='hidden' value=' " + model.Id + "_" + model.Number + "' class='ForAllTransactionPrint' />")
+
+            : MvcHtmlString.Empty)
+            +
+         "</div>"));
+
+
+    columns.Add().Encoded(false).Sanitized(false).Css("hidden_ ").RenderValueAs(model =>
+
+    MvcHtmlString.Create(
+    "<div class='table-icon d-flex align-items-center'>" +
+        ((model.HasPermission) ?
+        @Html.ClientLinkTag("", null, "color-blue", null, "", "", null, "<input type='hidden' value=' " + model.Id + "_" + model.Number + "' class='ForAllTransactionPrint' />")
+
+            : MvcHtmlString.Empty)
+            +
+         "</div>"));
+
+    columns.Add().Encoded(false).Sanitized(false).Css("").Titled("اسم الارشيف").RenderValueAs(model =>
+
+     MvcHtmlString.Create(
+         "<div class='table-icon d-flex align-items-center' style='' > " +
+             ((model.HasPermission) ?
+             @Html.ClientLinkTag("", null, "color-blue", null, "اسم الارشيف", "CertificateAssignmentOnly(" + model.Id + "," + model.TransactionCategoryId + ")", null, "<i  id='Ic_Icon_"+ model.Id + "' class=''>" + model.IcName+ "</i>")
+
+             : MvcHtmlString.Empty)
+             +
+
+          //@Html.ClientLinkTag(text: "", cssClass: "color-grey", title: DbRes.TResource("Admin.Lookups.Deactivate"), clientFunctionToCall: "ActiveDeactiveLookup(" + (int)LookupType.Link + "," + (int)LookupOperationType.Deactivate + " , " + model.Id + ")", innerHtml: "<i class='icon-tables-lamp-off'></i>") : MvcHtmlString.Empty) +
+          //(!model.IsLocked ?
+          //@Html.GridImageButton("GetLink", "Link", 0, OperationType.Update, "dvEdit", null, null, "ShowEditDiv", "", "get") : MvcHtmlString.Empty) +
+          //(!model.IsLocked ?
+          //@Html.GridImageButton("DeleteLink", "Link", 0, OperationType.Delete, "dvGrid", "EditLinkContent", null, "OnDeleteSuccess") : MvcHtmlString.Empty) +
+          "</div>"));
+
+    columns.Add(model => model.Number, "Number").Titled("الرقم");
+    columns.Add(model => model.Subject, "Subject").Titled("الموضوع");
+    columns.Add(model => model.DateH, "DateH").Titled("التاريخ");
+    columns.Add(model => model.PriorityName, "PriorityName").Titled("الاهمية");
+    columns.Add(model => model.ConfidentialityName, "ConfidentialityName").Titled("السرية");
+    columns.Add().Encoded(false).Sanitized(false).Css("").Titled("ترتيب الملف").RenderValueAs(model =>
+
+     MvcHtmlString.Create(
+         "<label id='Ic_OrderFileNumber_" + model.Id + "' >" + model.OrderFileNumber + "<label/> " ));
+    //columns.Add(model => model.OrderFileNumber, "OrderFileNumber").Titled("ترتيب الملف");
+    columns.Add().Encoded(false).Sanitized(false).Css("").Titled("الوصف").RenderValueAs(model =>
+
+    MvcHtmlString.Create(
+        "<label id='Ic_Description_" + model.Id + "' >" + model.Description + "<label/> "));
+    //columns.Add(model => model.Description, "Description").Titled("الوصف");
+    //columns.Add(model => model.StatusName, "StatusName").Titled("الاجراء");
+    //columns.Add(model => model.TransactionAssignmentInfoVM.DateH, "DateH").Titled("الاحالة");
+    //columns.Add(model => model.TransactionAssignmentInfoVM.FromEntity, "FromEntity").Titled("المرسلة");
+    //columns.Add(model => model.TransactionAssignmentInfoVM.FromUser, "FromUser").Titled("المرسل");
+    columns.Add().Encoded(false).Sanitized(false).Css("").RenderValueAs(model =>
+
+      MvcHtmlString.Create(
+          "<div class='table-icon d-flex align-items-center'>" +
+              ((SessionInfo.CurrentUser.Claims.Contains(UserClaims.Outbound.CreateExternalOutbound) && model.HasPermission) ?
+              @Html.ClientLinkTag("", null, "color-blue", null, "تعديل ارشيف المعاملة ", "ShowEditeIcItem(" + model.Id + ")", null, "<i class='icon-outline-edit color-red'></i>")
+
+
+                  : MvcHtmlString.Empty)
+
+                  +
+                  ((SessionInfo.CurrentUser.Claims.Contains(UserClaims.Outbound.CreateInternalOutbound) && model.HasPermission) ?
+                  @Html.ClientLinkTag("", null, "color-blue", null, "استرجاع ", "RemoveIcItem(" + model.Id + ")", null, "<i class='icon-outline-note-add color-blue'></i>")
+                   : MvcHtmlString.Empty)
+                  +
+                  ((model.HasPermission) ?
+                  @Html.ClientLinkTag("", null, "color-blue", null, "معاينة", "ShowDocumentViewer(" + model.MainDocId + ")", null, "<i class='fa fa-solid fa-eye'></i>")
+                   : MvcHtmlString.Empty)
+                  +
+               // ((SessionInfo.CurrentUser.Claims.Contains(UserClaims.GeneralPermissions.PrintReviewTicket) && model.HasPermission && (model.TransactionCategoryId == (int)TransactionCategorieColor.Inbound || model.TransactionCategoryId == (int)TransactionCategorieColor.Outbound)) ?
+               //@Html.ClientLinkTag("", null, "color-blue", null, DbRes.TResource("User.InboundSearch.PrintVisitTicket"), "ShowVisitTickect(" + model.Id + ")", null, "<i class='la la-print color-blue'></i>")
+               // : MvcHtmlString.Empty)
+               //+
+               //@Html.ClientLinkTag(text: "", cssClass: "color-grey", title: DbRes.TResource("Admin.Lookups.Deactivate"), clientFunctionToCall: "ActiveDeactiveLookup(" + (int)LookupType.Link + "," + (int)LookupOperationType.Deactivate + " , " + model.Id + ")", innerHtml: "<i class='icon-tables-lamp-off'></i>") : MvcHtmlString.Empty) +
+               //(!model.IsLocked ?
+               //@Html.GridImageButton("GetLink", "Link", 0, OperationType.Update, "dvEdit", null, null, "ShowEditDiv", "", "get") : MvcHtmlString.Empty) +
+               //(!model.IsLocked ?
+               //@Html.GridImageButton("DeleteLink", "Link", 0, OperationType.Delete, "dvGrid", "EditLinkContent", null, "OnDeleteSuccess") : MvcHtmlString.Empty) +
+               "</div>"));
+})
+
+    @*if (Model.TransactionCategoryId == (int)TransactionCategorieColor.Inbound || Model.TransactionCategoryId == (int)TransactionCategorieColor.Outbound)
+        {
+        if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.GeneralPermissions.PrintReviewTicket))
+        {
+        <a href="#" title="@DbRes.TResource("User.InboundSearch.PrintVisitTicket")"   class='circle color-green' onclick="ShowVisitTickect(@Model.Id)">
+            <i class='la la-print'></i>
+        </a>
+
+        }
+        }*@
+</div>
+
+<script>
+    var myIcTransactionGridEventHandler = "@Url.Action("SearchPaging", "Search")";
+
+    function prepareIcTransactionGrid() {
+        pageGrids.IcTransaction = undefined;
+        var filterData = $("#frmSearch").serializeArray();
+
+        if (!pageGrids.IcTransaction) {
+            $("div[data-gridname='IcTransaction']").gridmvc();
+        }
+
+       // pageGrids.IcTransaction.ajaxify({ getPagedData: myIcTransactionGridEventHandler, getData: myIcTransactionGridEventHandler});
+        pageGrids.IcTransaction.ajaxify({ getPagedData: myIcTransactionGridEventHandler, requestType: "POST", getData: myIcTransactionGridEventHandler, optionalData: filterData });
+
+    }
+
+     
+
+
+
+    $(document).ready(function () {
+        prepareIcTransactionGrid();
+
+        var IsMainValue = 0;
+        $('[data-name="IsMain"]').each(function () {
+
+            IsMainValue = $(this).text();
+
+            if (IsMainValue == "1" || IsMainValue == '1' || IsMainValue == 1) {
+                $(this).closest('tr').css("background-color", "#63be6a");
+            }
+
+        });
+
+
+    });
+
+    function ConvertDraftToOutbound(id, confidentialityId,categoryId, guid) {
+
+            if (guid != '' && categoryId==255) {
+                CreateOutboundHub(id, id);
+
+                return;
+            }
+
+
+            debugger;
+
+            addArchive(id, categoryId );
+
+
+            return;
+
+
+            var TransactionId = id
+        $.ajax({
+            url: '@Url.Action("GetPreviousOutboundExternalForSearch", "OutboundExternal")',
+            cache: false,
+            data: { id: TransactionId, ctgId: categoryId },
+            success: function (data) {
+
+                //addArchive(TransactionId);
+
+            }
+        });
+
+        return false;
+        }
+
+    function CreateInternalOutbound(id, confidentialityId , category) {
+
+            debugger;
+
+            var EncryptedId = id;
+        var type = category;
+        // window.location.href = '@Url.Action("CreateOutboundInternalForSearch", "OutboundInternal")' + "?transactionId=" + EncryptedId + "&transactionType=" + type + "&confidentialityId=" +confidentialityId;
+
+         window.location.href = '@Url.Action("AddPreviousForSearch", "Inbound")' + "?transactionId=" + EncryptedId + "&transactionType=" + type + "&confidentialityId=" +confidentialityId;
+
+        }
+
+    function closeDialog() {
+            window.location.reload();
+        }
+
+    function addArchive(transactionId , categoryId) {
+        window.location.href = '@Url.Action("GetPreviousOutboundExternalForSearch", "OutboundExternal")' + "?id=" + transactionId + "&ctgId=" + categoryId;
+    }
+
+    function ShowDocumentViewerForAllTransactions() {
+
+            var documentId = 8717
+            var documentSessionKey = 323155
+
+            var DocIds = "";
+
+            $(".ForAllTransactionMainDocPrint").each(function () {
+
+                DocIds = DocIds + $(this).val() + ','
+
+            })
+
+        if (DocIds == "") {
+
+            return;
+
+        }
+
+
+            DocIds = DocIds.substring(0, DocIds.length - 1);
+
+
+            var url = '@Url.Action("ShowDocumentViewerForAllDocs","Shared")' + '?documentIds=' + DocIds + "&documentSessionKey=" + documentSessionKey+"&Mode="+true;
+            ShowDialog(url, 'dialogbox col-md-10 col-md-offset-1')
+    }
+
+
+    function ShowDocumentViewer(docId) {
+        var documentSessionKey = 0
+        var documentClear = EncryptionKey(docId).toString();
+        var url = '@Url.Action("ShowDocumentViewer", "Shared")' + '?documentId=' + documentClear + "&documentSessionKey=" + documentSessionKey+"&Mode="+true;
+            ShowDialog(url, 'dialogbox col-md-10 col-md-offset-1')
+
+    }
+
+    function InboundCertificateAttachmentOnly(transactionId) {
+
+        var url = '@Url.Action("IndexAttachmentOnly", "TransactionLog")' + '?transactionId=' + transactionId + "&transactionCategory=" + @((int)TransactionCategory.Inbound);
+
+        ShowDialog(url, 'dialogbox col-md-12 ');
+    }
+
+    function OutboundCertificateAttachmentOnly(transactionId) {
+
+          var url = '@Url.Action("IndexAttachmentOnly", "TransactionLog")' + '?transactionId=' + transactionId + "&transactionCategory=" + @((int)TransactionCategory.DraftOutbound);
+
+
+        ShowDialog(url, 'dialogbox col-md-12 ');
+    }
+
+    function CertificateAssignmentOnly(id, transactionCategoryId) {
+
+        return;
+
+            if (transactionCategoryId == 254) {
+                InboundCertificateAssignmentOnly(id)
+                return;
+
+            }
+
+            if (transactionCategoryId == 256) {
+                OutboundInternalCertificateAssignmentOnly(id)
+                return;
+
+            }
+
+            if (transactionCategoryId == 257 || transactionCategoryId == 255) {
+                OutboundCertificateAssignmentOnly(id)
+                return;
+
+            }
+
+
+        }
+
+    function CertificateAttachmentOnly(id, transactionCategoryId) {
+            debugger;
+            if (transactionCategoryId == 254) {
+                InboundCertificateAttachmentOnly(id)
+                return;
+
+            }
+
+            if (transactionCategoryId == 256) {
+                OutboundInternalCertificateAttachmentOnly(id)
+                return;
+
+            }
+
+            if (transactionCategoryId == 257 || transactionCategoryId == 255) {
+                OutboundCertificateAttachmentOnly(id)
+                return;
+
+            }
+
+
+        }
+
+    function OutboundInternalCertificateAttachmentOnly(transactionId) {
+        var url = '@Url.Action("IndexAttachmentOnly", "TransactionLog")' + '?transactionId=' + transactionId + "&transactionCategory=" + @((int)TransactionCategory.InternalOutbound);
+        ShowDialog(url, 'dialogbox col-md-12 ');
+    }
+
+    function InboundCertificateAssignmentOnly(transactionId) {
+
+        var url = '@Url.Action("IndexAssignmentOnly", "TransactionLog")' + '?transactionId=' + transactionId + "&transactionCategory=" + @((int)TransactionCategory.Inbound);
+
+        ShowDialog(url, 'dialogbox col-md-12 ');
+    }
+
+    function OutboundCertificateAssignmentOnly(transactionId) {
+
+        var url = '@Url.Action("IndexAssignmentOnly", "TransactionLog")' + '?transactionId=' + transactionId + "&transactionCategory=" + @((int)TransactionCategory.DraftOutbound);
+
+
+        ShowDialog(url, 'dialogbox col-md-12 ');
+    }
+
+    function OutboundInternalCertificateAssignmentOnly(transactionId) {
+        var url = '@Url.Action("IndexAssignmentOnly", "TransactionLog")' + '?transactionId=' + transactionId + "&transactionCategory=" + @((int)TransactionCategory.InternalOutbound);
+        ShowDialog(url, 'dialogbox col-md-12 ');
+    }
+
+    function PrintTransaction(TransactionId) {
+
+
+        var Number = $('#hdnNumber').val();
+        var IdsAndNumbers = "";
+
+        $(".ForAllTransactionPrint").each(function () {
+
+            /*IdsAndNumbers = IdsAndNumbers + $(this).val() + ','*/
+            IdsAndNumbers = $(this).val() + ','
+
+        })
+
+
+        if (IdsAndNumbers == "") {
+
+            return;
+
+        }
+
+
+
+        IdsAndNumbers=IdsAndNumbers.substring(0, IdsAndNumbers.length - 1);
+
+        var data = { transactionData: IdsAndNumbers};
+        event.preventDefault();
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("PrintTransactions", "Shared")' + '?transactionId=' + TransactionId + "&transactionNumber=" + Number,
+            data: data,
+            cache: false,
+            success:
+
+                function (data) {
+                    if (data.MessageType != 2) {
+                        var TransactionWindow = window.open('', '_blank', 'width=900,height=500');
+
+                        TransactionWindow.document.write(data);
+                        TransactionWindow.document.close();
+                        TransactionWindow.focus();
+                    }
+                    else {
+                        ShowErrorMessage(data.MessageText);
+                    }
+                }
+        });
+    }
+
+    function ShowPrintDialog(id) {
+        var params = { transactionId: id };
+        ShowDialogAjaxPrintingBarcodes('@Url.Action("PrinttingBarcodes","Shared")' + "?" + $.param(params), {}, 'OpenPrintDialogSuccess', 'dialogbox col-md-12 ');
+        }
+
+    function OpenPrintDialogSuccess(data, $obj) {
+        if (data.MessageType != 2) {
+            $obj.setContent(data.Html);
+        }
+        else {
+            __dialog.close();
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function ShowVisitTickect(id) {
+        var actionUrl = '@Url.Action("PrintTicket", "Shared")' + "?transactionId=" + id;
+
+        PrintButton(actionUrl);
+
+    }
+
+    function Open(Id) {
+
+        var url = "";
+
+        url = '@Url.Action("Edit", "Inbound", new { id = "-1" })';
+
+        url = url.replace("-1", Id);
+
+        window.location.href = url;
+    }
+
+    function Reactivate(Id) {
+        var data = { transactionId: Id };
+        $.ajax({
+            url: '@Url.Action("Reactivate","Search")',
+            type: 'POST',
+            data: data,
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    ShowSuccesMessage(data.MessageText);
+                    window.location.href = '@Url.Action("Index", "Search")';
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            },
+            error: function (a) {
+            }
+        });
+        }
+
+    function CreateOutboundHub(Id, EncryptedId) {
+
+            urlActionPage = '@Url.Action("Add", "OutboundExternal")?baseTransactionId=' + EncryptedId + '&isHubOutbound=true';
+            ExecuteTargetFunction();
+            return;
+        }
+
+    function ExecuteTargetFunction() {
+        window.location.href = urlActionPage;
+    }
+
+    function ShowVisitTickect(id) {
+
+        var actionUrl = '@Url.Action("PrintTicket", "Shared")' + "?transactionId=" + id;
+
+        PrintButton(actionUrl);
+
+    }
+</script>

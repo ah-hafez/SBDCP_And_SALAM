@@ -1,0 +1,14 @@
+﻿
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="app-content content">
+    @RenderBody()
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#MasterLayoutBody").removeClass("vertical-menu");
+    });
+</script>

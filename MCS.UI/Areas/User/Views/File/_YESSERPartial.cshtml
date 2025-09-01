@@ -1,0 +1,267 @@
+﻿@using MCS.Common
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.File
+@model IList<TransactionTrayInfoVM>
+
+@{int trayId = (int)TrayType.YESSER;
+    string subject = string.Empty;
+    string ect = string.Empty;}
+
+<!-- Bootstrap Core JavaScript -->
+<script src=@Url.Content("~/Content/User/lib/js/jquery.matchHeight-min.js")></script>
+<script src=@Url.Content("~/Content/User/lib/js/app.min.js")></script>
+
+@*<div class="mx-3 mx-md-5 header-container d-flex flex-row align-items-center">
+    <div class="d-flex flex-column flex-lg-row align-items-lg-center flex-grow-1 mb-3 mb-lg-0 mt-md-5 mt-auto">
+        <h3 class="site-color mb-3 mb-lg-4">@DbRes.TResource("User.File.YESSER")</h3>
+        @Html.Partial("~/Areas/User/Views/File/_CreateTransactionButtonsPartial.cshtml", null)
+    </div>
+</div>*@
+
+<div class="content_container site_border">
+    <div class="d-block d-lg-flex mx-3 mx-sm-5 my-2">
+        <ul class="nav nav-tabs custom-sub-nav-tabs mb-2 mb-sm-auto d-block d-sm-flex" role="tablist">
+            <li role="presentation" class="active">
+                <a href="#sub-tab-1" aria-controls="sub-tab-1" role="tab" data-toggle="tab" onclick="GetTransactionsAndCopies(this ,'@((int)OutboundClassification.Original)')" id="original">المعاملات</a>
+            </li>
+            <li>
+                <a href="#sub-tab-2" aria-controls="sub-tab-2" role="tab" data-toggle="tab" onclick="GetTransactionsAndCopies(this , '@((int)OutboundClassification.Copy)')" id="copies">النسخ</a>
+            </li>
+        </ul>
+        <div class="filter-link  ml-md-auto mr-lg-3 mt-3 mt-lg-auto">
+            <div class="toggling-menu">
+                @*@if ((bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser))
+                {
+                    <a onclick="goTableView(event)" href="#" class="active"  data-type="Table" title="@DbRes.TResource("User.File.Table")"><i class="icon-list"></i></a>
+                    <a onclick="goCardsView(event)" href="#" data-type="Card" title="@DbRes.TResource("User.File.Cards")"><i class="icon-grid"></i></a>
+
+                }
+                else
+                {
+                <a onclick="goCardsView(event)" href="#" class="active" data-type="Card" title="@DbRes.TResource("User.File.Cards")"><i class="icon-grid"></i></a>
+
+                }*@
+
+            </div>
+        </div>
+    </div>
+    <div class="content_container content_container--body" id="dvContent">
+        @Html.Partial("~/Areas/User/Views/File/_YesserTransactionsPartial.cshtml", Model)
+    </div>
+</div>
+
+<script>
+
+    var transactionDetails = {};
+    $('.btnShowRejectionPopup').click((e) => {
+        transactionDetails.transactionNumber = $(e.currentTarget).data('transactionnumber');
+        transactionDetails.OrgUnitId = $(e.currentTarget).data('orgunitid');
+        ShowRejectTransactionPopup('رفض المعاملة','', 'يرجى ادخال سبب الرفض','', 'رفض');
+    });
+
+    $(document).on("RejectButtonPopupClicked", function (event, param) {
+        var token = $('form:first').find("input[name='__RequestVerificationToken']").val();
+        if ($('#rejectionReason').val().trim() == '') {
+            $('#errorMessageValidate').html("* أدخل سبب الرفض");
+        } else {
+
+            $.ajax({
+                url: '@Url.Action("SendReject", "Hub")',
+                type: 'POST',
+                cache: false,
+                data: { transactionNumber: transactionDetails.transactionNumber, OrgUnitId: transactionDetails.OrgUnitId, rejectionReason: $('#rejectionReason').val(), __RequestVerificationToken: token },
+                success: function (data) {
+                    if (data.includes('الجهة')) {
+                        ShowErrorMessage(data);
+                        return;
+                    }
+                    else if (data != "Success") {
+                        var message = "حدث خطأ  ("+ data +") الرجاء المحاولة لاحقاً";
+                        ShowErrorMessage(message);
+                        return;
+                    }
+                    window.location.reload();
+                },
+                error: function (a,b,c,d) {
+                    ShowErrorMessage('حدث خطأ');
+                }
+            });
+        }
+
+    });
+
+    function Confirm(obj) {
+        var transactionNumber = $(obj).data('transactionnumber');
+        var OrgUnitId = $(obj).data('orgunitid');
+        var token = $('form:first').find("input[name='__RequestVerificationToken']").val();
+        $.ajax({
+            url: '@Url.Action("CreateInbound", "Hub")',
+            type: 'POST',
+            cache: false,
+            data: { transactionNumber: transactionNumber, OrgUnitId: OrgUnitId, __RequestVerificationToken: token},
+            success: function (data) {
+                if (data != "Success") {
+                    ShowErrorMessage('حدث خطأ');
+                    return;
+                }
+
+                //ShowInformationMessage('تم الاستلام');
+                window.location.reload();
+                //window.location.href = '@Url.Action("YESSERTransactions" , "File")';
+            },
+            error: function (a,b,c,d) {
+                ShowErrorMessage('حدث خطأ');
+            }
+        });
+    }
+
+    function ViewTransaction(obj) {
+        debugger;
+        var id = $(obj).data("transactionid");
+        window.location.href = '@Url.Action("ViewTransaction" ,"Hub")?TransactionId=' + id;
+    }
+
+    function MarkAsSeen(obj) {
+        var id = $(obj).data("transactionid");
+        var token = $('form:first').find("input[name='__RequestVerificationToken']").val();
+        $.ajax({
+            url: '@Url.Action("MarkCopyAsSeen", "Hub")',
+            type: 'Get',
+            cache: false,
+            data: { transactionId: id, __RequestVerificationToken: token},
+            success: function (data) {
+
+                if (data.message == "Success") {
+                    $('#copies').trigger("click");
+                } else {
+                    ShowErrorMessage(data.message);
+                }
+            },
+            error: function (a) {
+
+            }
+        });
+    }
+
+
+    $(document).ready(function () {
+        $("#list_transaction").find(".view_group:first").trigger("click");
+
+        $('.btnView').click(function () {
+
+            var id = $(this).data("transactionid");
+
+            window.location.href = '@Url.Action("ViewTransaction" ,"Hub")?TransactionId=' + id;
+        });
+
+        $('.CreateInternalOutbound').click(function () {
+
+        });
+
+        $('.MarkAsSeen').click(function () {
+
+        });
+
+    })
+    $(".view_group").click(function (e) {
+
+        $(".view_group").removeClass("select");
+        $(this).addClass("select");
+
+
+        var type = $(this).data("type");
+        var id = $(this).data("id");
+        var trayId = $(this).data("tray");
+
+        var data = {
+            trayId: trayId, transactionId: id, transactionCategoryId: type
+        };
+
+        $.ajax({
+            url: '@Url.Action("Index","Editor")',
+            type: 'Get',
+            cache: false,
+            data: data,
+            success: function (data) {
+                $("#editor_transaction").html("");
+                $("#editor_transaction").html(data);
+                jQuery.validator.unobtrusive.parse('#editor_transaction');
+            },
+            error: function (a) {
+            }
+        });
+    })
+    $(".aRevert").click(function (e) {
+        e.stopPropagation();
+
+        var trayid = parseInt($("#hdnTrayId").val());
+        var page = $("#hdnCurrentPage").val();
+        var orderBy = $("#hdnOrderBy").val();
+        var dir = $("#hdnDirection").val();
+        var filter = $("#hdnFilter").val();
+        var fromDate = $("#hdnFromDateValue").val();
+        var toDate = $("#hdnToDateValue").val();
+        var number = $("#hdnSearchTransactionNumberValue").val();
+        var viewType = $("#hdnViewFile").val();
+        var dateType = $("#hdnFilterDateType").val();
+        var transactionId = $(this).data("id");
+        var trayActionType = $(this).data("type");
+        var PageSize = $("#ddlPaging").val();
+
+        var data = {
+            trayId: trayid, page: page, gridColumn: orderBy, dir: dir, filter: filter, fromDate: fromDate,
+            toDate: toDate, searchColumn: number, viewType: viewType, transactionId: transactionId, trayActionType: trayActionType
+            , dateType: dateType, pageSize: PageSize
+        };
+
+        $.ajax({
+            url: '@Url.Action("MoveTransaction","File")',
+            type: 'POST',
+            data: data,
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    $("#dvTransactionsContainer").html("");
+                    $("#dvTransactionsContainer").html(data.Html);
+                    $("#txtCurrentPage").val(page);
+                    $("#hdnCurrentPage").val(page);
+                    $("#ddlPaging option[value=" + PageSize + "]").attr('selected', 'selected');
+
+                    $("li#_UserFileMenu").html("");
+                    $("li#_UserFileMenu").html(data.FileMenuHtml);
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+
+            },
+            error: function (a) {
+            }
+        });
+    })
+
+    function GetTransactionsAndCopies(obj, tabId) {
+        $("div.mr-auto.filter-link a").removeClass("active");
+        $(obj).addClass('active');
+        var typeId = tabId;
+        var Url = '@Url.Action("GetAll" , "Hub")';
+        $.ajax({
+            type: "GET",
+            contentType: "application/json; charset=utf-8",
+            data: { 'typeId': typeId },
+            url: Url,
+            success: function (result) {
+                if (result.Html != "") {
+                    $('#dvContent').html("");
+                    $('#dvContent').html(result.Html);
+                }
+
+
+            },
+            error: function (xhr, status, error) {
+                alert(xhr.responseText);
+            }
+        });
+    }
+
+
+</script>

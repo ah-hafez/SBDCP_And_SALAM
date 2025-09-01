@@ -1,0 +1,152 @@
+﻿@using MCS.Common
+@using MCS.UI.Areas.User.Models.File
+@model IList<TransactionTrayInfoVM>
+
+@{
+    bool isVIP = (bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser);
+    DefaultDisplay defaultDisplay = (DefaultDisplay)SessionInfo.GetObjectFromSession(Constants.DefaultDisplay);
+    Session["viewType"] = "Followup";
+}
+
+<input type="hidden" id="transId" />
+
+<script>
+
+    
+	$(document).on("RejectButtonPopupClicked", function (event, param) {
+		if ($('#rejectionReason').val().trim() == '') {
+			$('#errorMessageValidate').html("* @DbRes.TResource("User.FollowUp.EnterFollowUpNotes")");
+		} else {
+            if ($('#transId').val() != "") {
+                ShowConfirmMessage("هل انت متأكد من الاضافة؟", 'addFollowUpConfirmed');
+            }
+		}
+	});
+
+    function addFollowUpConfirmed() {
+        RejectTransaction($('#transId').val(), $('#rejectionReason').val().trim());
+        $('.close-button-popup').click();
+    }
+
+    function RejectTransaction(transactionId, rejectionReason) {
+     
+		var trans = parseInt(transactionId);
+
+		$.ajax({
+			url: '@Url.Action("FollowUpAddNote", "File")',
+			type: 'POST',
+			data: {transactionId: trans, note: rejectionReason},
+			success: function (data) {
+				$('#transId').val("");
+				$('#rejectionReason').val("");
+				$('#errorMessageValidate').html("");
+				$('.close-button-popup').click();
+				@*ShowSuccesMessage("@DbRes.TResource("User.FollowUp.AddNotesSuccess")");*@
+			}
+		});
+    }
+</script>
+<script>
+    function UnFollowUp(Id) {
+     
+        ShowConfirmMessage('@DbRes.TResource("User.FollowUp.AreYouUnFollowUp")', "ConfirmUnFollow");
+        $("#transId").val(Id);
+    }
+    function ConfirmUnFollow()
+    {
+        var id = $("#transId").val();
+        $.ajax({
+            type: 'GET',
+            data: { transactionId: id },
+            url: '@Url.Action("FollowUpUpdate", "File")',
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    $("#divContainer__frmAddTransactionType").remove();
+                    $("#divForm__frmAddTransactionType").html("");
+                    $("#divForm__frmAddTransactionType").html(data.Html);
+                    jQuery.validator.unobtrusive.parse('#divForm__frmAddTransactionType');
+                    $('#transId').val("");
+                    //ShowSuccesMessage(data.MessageText);
+                    window.location.href = '@Url.Action("FollowUp", "File")';
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            }
+        });
+    }
+</script>
+<script>
+    $(document).ready(function () {
+         var isVIPUser = '@SessionInfo.GetObjectFromSession(Constants.IsVIPUser)';
+        if ($('#selectAll').is(":checked")) {
+            $('#selectAll').click();
+        }
+        if (isVIPUser.toLowerCase() == 'true') {
+            goTableView();
+        }
+        else {
+            var type = localStorage.getItem('CurrentTypeView');
+            if (type) {
+                if (type === "Table") {
+                    goTableView();
+                }
+                else if (type === "Card") {
+                    goCardsView();
+                }
+            }
+        }
+    });
+</script>
+
+@if (defaultDisplay == DefaultDisplay.Cards@*&& !isVIP*@)
+{
+    <div class="col-xs-12">
+        <div class="boxes">
+            <div class="row" id="TransactionsBoxes">
+                @{
+                    Session["renderType"] = "cardItem";
+                    Html.RenderPartial("~/Areas/User/Views/File/_FileGrid.cshtml",
+                            Model,
+                            new ViewDataDictionary {
+                        { "ListItemName", "_FollowUp_Item" },
+                        { "GridName", "FollowUpGrid" },
+                                { "dateType", ViewData["dateType"] },
+
+                        { "renderType", "cardItem" }
+});}
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    Session["renderType"] = "tableItem";
+    Html.RenderPartial("~/Areas/User/Views/File/_FileGrid.cshtml", Model,
+        new ViewDataDictionary {
+        { "ListItemName", "_FollowUp_TableItem" },
+        { "GridName", "FollowUpGrid" },
+        { "dateType", ViewData["dateType"] },
+        { "renderType", "tableItem" }
+                              });
+}
+<script>
+    var FollowUpGridEventHandler = "@Html.Raw(Url.Action("UpdateTrayTransactions", "File", new { trayId = ViewData["TrayType"] ?? 1, dateType = ViewData["dateType"] ?? 1 }))";
+    debugger;
+    function prepareTransactionsGrid() {
+        if (!pageGrids.FollowUpGrid) {
+            $(".grid-mvc").gridmvc();
+        }
+        pageGrids.FollowUpGrid.ajaxify({
+            getPagedData: FollowUpGridEventHandler,
+            getData: FollowUpGridEventHandler,
+            requestType: "POST",
+            callbackClientFunctionAfter: ["goToViewAfterPaging"],
+
+        });
+    }
+
+    $(document).ready(function () {
+        prepareTransactionsGrid();
+    });
+</script>

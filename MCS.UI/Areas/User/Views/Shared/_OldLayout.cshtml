@@ -1,0 +1,1117 @@
+﻿@using YESSER.NCS.Framework.Localization
+@using YESSER.NCS.MCS.UI.Common
+@using YESSER.NCS.MCS.Common
+@using YESSER.NCS.MCS.UI.Areas.User.Models.Assignment;
+@using YESSER.NCS.MCS.UI.Areas.User.Models.Shared;
+@using YESSER.NCS.Framework.Controls.Mvc;
+
+@using MvcSiteMapProvider.Web.Html;
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <title>@ViewBag.Title</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="icon" href="~/Content/User/OldDesign/lib/favicon.ico" type="image/x-icon" />
+
+    <!-- END META SECTION
+    <!-- CSS INCLUDE -->
+    <link rel="stylesheet" type="text/css" id="theme" href=@Url.Content("~/Content/User/OldDesign/lib/css/theme_" + SessionInfo.CultureShortName + ".css") />
+    @if (SessionInfo.CultureShortName == Constants.Languages.Arabic)
+    {
+        <link rel="stylesheet" type="text/css" id="theme" href="~/Content/User/OldDesign/lib/css/rtl.css" />
+    }
+    <!-- EOF CSS INCLUDE -->
+    <!-- Theme -->
+    <link rel="stylesheet" type="text/css" href=@Url.Content("~/Content/User/OldDesign/lib/fonts/fonts.css") />
+    <link rel="stylesheet" type="text/css" href=@Url.Content("~/Content/User/OldDesign/lib/css/style_" + SessionInfo.CultureShortName + ".css") />
+    <link rel="stylesheet" type="text/css" href=@Url.Content("~/Content/User/OldDesign/lib/css/responsive_table_" + SessionInfo.CultureShortName + ".css") />
+    <link rel="stylesheet" type="text/css" href=@Url.Content("~/Content/User/OldDesign/lib/css/circle_" + SessionInfo.CultureShortName + ".css") />
+    <!-- END Theme-->
+    <!-- jquery-confirm -->
+    <link rel="stylesheet" type="text/css" href=@Url.Content("~/Content/User/OldDesign/lib/js/theme/jquery-confirm/css/jquery-confirm.css") />
+    <!--END jquery-confirm -->
+    <!-- Slidebars CSS -->
+    <link rel="stylesheet" href=@Url.Content("~/Content/User/OldDesign/lib/js/theme/pushslide/css/slidebars.min_" + SessionInfo.CultureShortName + ".css")>
+    <link rel="stylesheet" href=@Url.Content("~/Content/User/OldDesign/lib/js/theme/pushslide/css/slidebars-theme_" + SessionInfo.CultureShortName + ".css")>
+
+    <!-- Owl Carousel -->
+
+    <link rel="stylesheet" href=@Url.Content("~/Content/User/OldDesign/lib/js/theme/owlcarousel/docs.theme.min.css")>
+    <link rel="stylesheet" href=@Url.Content("~/Content/User/OldDesign/lib/js/theme/owlcarousel/owl.carousel.min.css")>
+    <link rel="stylesheet" href=@Url.Content("~/Content/User/OldDesign/lib/js/theme/owlcarousel/owl.theme.default.min.css")>
+    <link rel="stylesheet" href=@Url.Content("~/Content/User/OldDesign/Site_" + SessionInfo.CultureShortName + ".css")>
+
+
+    <!-- ToastMessage -->
+    <link type="text/css" href=@Url.Content("~/Content/User/OldDesign/lib/js/theme/toastmessage/jquery.toastmessage-min_" + SessionInfo.CultureShortName + ".css") rel="stylesheet" />
+    <!--<script type="text/javascript" src="~/Content/User/OldDesign/lib/js/theme/toastmessage/jquery-1.5.min.js"></script>-->
+    @*<script type="text/javascript" src=@Url.Content("~/Content/User/OldDesign/lib/js/theme/toastmessage/jquery.toastmessage-min.js")></script>*@
+    <!-- END JS Tree -->
+
+    @System.Web.Optimization.Scripts.Render("~/bundles/jquery")
+    @System.Web.Optimization.Scripts.Render("~/bundles/jqueryui")
+    @System.Web.Optimization.Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+        var AllowSend=false;
+        var __dateformat = '@System.Web.Configuration.WebConfigurationManager.AppSettings["CalendarDateFormat"]';
+        var __dialogNoText = '@Html.Raw(DbRes.TResource("Global.Dialog.No"))';
+        var __dialogYesText = '@Html.Raw(DbRes.TResource("Global.Dialog.Yes"))';
+        var __dialogCloseText = '@Html.Raw(DbRes.TResource("Global.Dialog.Close"))';
+        var __cultureName = '@SessionInfo.CultureShortName';
+
+        $.validator.setDefaults({ ignore: null });
+
+        $(document).ajaxStart(function () {
+            $(".spinner").show();
+            AllowSend=false;
+
+        });
+        $(document).ajaxComplete(function () {
+            $(".spinner").hide();
+
+        });
+
+        function PostTransactionLog(actionCode, transactionId) {
+
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("LogTransactionAction")',
+                data: { auditingActionCode: actionCode, transactionId: transactionId },
+                success:
+               function (data) {
+
+               }
+            })
+        }
+
+    </script>
+
+    @System.Web.Optimization.Scripts.Render("~/bundles/lib")
+    @System.Web.Optimization.Scripts.Render("~/bundles/plugin")
+    @System.Web.Optimization.Scripts.Render("~/bundles/custom")
+
+    @*@RenderSection("scripts", required: false)*@
+    @*@System.Web.Optimization.Scripts.Render("~/bundles/custom")
+        @System.Web.Optimization.Scripts.Render("~/bundles/lib")*@
+
+
+    <!--rendering framework scripts -->
+    @Html.RenderCalendarResources()
+    @Html.RenderAutoCompleteResources()
+    @Html.RenderTextEditorResources()
+    @Html.RenderSignatureResources()
+    @Html.RenderChartResources()
+    @Html.RenderGridViewResources()
+    @Html.RenderOrgStructureResources()
+
+
+
+    @*@RenderSection("CustomScripts", required: false)*@
+
+
+
+</head>
+<body>
+
+
+
+
+
+    <nav class="navbar navbar-default navbar-fixed-top sb-slide" role="navigation">
+        <ul class="x-navigation">
+            <li class="xn-logo">
+                <a href="#" class="xn-logo-area">Logo</a>
+                <a href="#" class="sb-toggle-right"></a>
+            </li>
+        </ul>
+    </nav>
+    <div class="spinner" style="display:none;">
+        <div class="bounce1"></div>
+        <div class="bounce2"></div>
+        <div class="bounce3"></div>
+    </div>
+    <div id="sb-site">
+
+        <!-- START PAGE CONTAINER -->
+        <div id="menu_toggled" class="page-container page-navigation-toggled page-navigation-top-fixed page-mode-rtl page-content-rtl">
+
+            <!-- START PAGE SIDEBAR -->
+            <div class="page-sidebar page-sidebar-fixed scroll">
+                <!-- START X-NAVIGATION -->
+
+                <ul class="x-navigation">
+                    <li class="xn-logo">
+                        <a id="navigation_minimize" class="x-navigation-minimize"><span class="fa fa-bars"></span></a>
+                    </li>
+                    @Html.Partial("~/Areas/User/Views/Shared/_UserMenuPartial.cshtml")
+                </ul>
+                <!-- END X-NAVIGATION -->
+            </div>
+            <!-- END PAGE SIDEBAR -->
+            <!-- PAGE CONTENT -->
+            <div class="page-content">
+
+                <!-- START X-NAVIGATION VERTICAL -->
+                <ul class="x-navigation x-navigation-horizontal x-navigation-panel">
+                    <!-- POWER OFF -->
+                    @{UserVM userVM = SessionInfo.CurrentUser;}
+
+
+                    <li class="xn-icon-button pull-right last">
+                        <a data-bs-toggle="tooltip" data-placement="bottom" title="@DbRes.TResource("Global.Logout")" href="~/User/Login/Logout"><span class="fa fa-power-off"></span></a>
+                    </li>
+                    @if (userVM.Claims != null && userVM.Claims.Contains(UserClaims.Admin.Administrator))
+                    {
+                        <li class="xn-icon-button pull-right">
+                            <a data-bs-toggle="tooltip" data-placement="bottom" title="@DbRes.TResource("Global.AdminWebSite")" target="_blank" href="~/Admin/Home/Index"><span class="glyphicon glyphicon-user"></span></a>
+                        </li>
+                    }
+                    <li class="xn-icon-button pull-right">
+                        <a data-bs-toggle="tooltip" data-placement="bottom" title="@DbRes.TResource("Global.Chat")" class="sb-toggle-left"><span class="fa fa-comments"></span></a>
+                        <div class="informer informer-danger chat-Notification" style="display:none">0</div>
+                    </li>
+                    <li class="xn-icon-button pull-right" onclick="BrowsNotifications(this)">
+                        @Html.Partial("~/Areas/User/Views/Shared/_NotificationPartial.cshtml")
+                    </li>
+                    <li class="xn-icon-button pull-right">
+                        <a data-bs-toggle="tooltip" data-placement="bottom" title="@DbRes.TResource("Global.Language")" href="#"><span class="fa fa-globe"></span></a>
+                        <ul class="xn-drop-white animated zoomIn">
+                            <li><a onclick="ChangeCulture('@Constants.Languages.English')">@DbRes.TResource("Global.English")</a></li>
+                            <li><a onclick="ChangeCulture('@Constants.Languages.Arabic')">@DbRes.TResource("Global.Arabic")</a></li>
+                        </ul>
+                    </li>
+
+                    @if (userVM.UserOrgUnits != null)
+                    {
+                        UserOrgUnitVM selectedOrgUnit = userVM.UserOrgUnits.Where(o => o.IsSelected).FirstOrDefault();
+
+                        if (selectedOrgUnit != null)
+                        {
+                            <li class="departments_list pull-right">
+                                <a href="#"><span class="fa fa-caret-down"></span> @selectedOrgUnit.LoclizationName.Where(l => l.CultureName == SessionInfo.CultureShortName).FirstOrDefault().Text</a>
+                                <ul class="xn-drop-white animated zoomIn right_ul">
+                                    @foreach (UserOrgUnitVM orgUnit in userVM.UserOrgUnits)
+                                    {
+                                        @*<li>@Ajax.ActionLink(orgUnit.Name, "Index", "Home", new { orgUnitId = orgUnit.Id }, new AjaxOptions { HttpMethod = "POST" }, new { @class = "mb-control" })</li>*@
+                                        <li><a onclick="CallHomePage(@orgUnit.Id)" class="mb-control" data-id="@orgUnit.Id">@orgUnit.LoclizationName.Where(l => l.CultureName == SessionInfo.CultureShortName).FirstOrDefault().Text</a></li>
+                                    }
+                                    @*<li><a href="" class="mb-control" data-box="#mb-signout">الإدارة الفرعية</a></li>*@
+                                </ul>
+                            </li>
+                        }
+                    }
+
+
+
+                    @*<li class="xn-advance_search  pull-right">
+        <a href="~/User/Search/Index"><span class="fa fa-advance_search"></span></a>
+    </li>*@
+                    <li class="xn-logo pull-right"><a href="~/User/Home/Index" class="xn-logo-area">e-Morasalat</a></li>
+                    @*<li class="xn-search  pull-right">
+        <input type="text" name="search" id="searchCertificate" placeholder="@DbRes.TResource("User.Layout.SearchHere")" />
+
+    </li>*@
+                    <li class="response">
+                        <div class="xn-search">
+                            <form role="form">
+                                <input type="text" name="search" id="searchCertificate" placeholder="@DbRes.TResource("User.Layout.SearchHere")" />
+                            </form>
+                        </div>
+                        <div class="xn-advance_search">
+                            <a href="~/User/Search/Index"><span class="fa fa-advance_search"></span></a>
+                        </div>
+                    </li>
+                </ul>
+                <!-- END X-NAVIGATION VERTICAL -->
+                <!-- START BREADCRUMB -->
+                <ul class="breadcrumb">
+                    @*@Html.MvcSiteMap().Menu(false, true, true)*@
+                    <div class="widget widget_clock">
+                        @{string date = SessionInfo.CultureShortName == Constants.Languages.Arabic ? DateTimeUtility.ConvertToUmAlQuraCalendar(DateTime.Now) : DateTime.Now.ToString("dd/MM/yyyy"); }
+
+                        <div class="widget-subtitle widget-big-int">@date</div>
+                        <div class="widget-subtitle widget-big-int timeplugin-clock"></div>
+                    </div>
+                </ul>
+                <!-- END BREADCRUMB -->
+
+                <div class="content">
+                    @RenderBody()
+                </div>
+
+                <!-- Footer Page -->
+                <div class="footer_page">
+                    <div class="footer_page-content">
+                        @*<ul class="footer_page-links">
+                                <li><a href="">الدعم</a></li>
+                                <li><a href="">شروط الاستخدام</a></li>
+                                <li><a href="">سياسة الخصوصية</a></li>
+                            </ul>*@
+
+                        <div class="logo_morasalat">
+                            <a href="#"><img src="~/Content/User/OldDesign/lib/img/morasalat/logo_morasalat.png"></a>
+                        </div>
+                        <div class="copyright">
+                            @DbRes.TResource("User.Layout.CopyRightFor")
+                            <a href="http://www.sssit.net/" target="_blank">@DbRes.TResource("User.Layout.CompanyName")</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- END Footer Page -->
+
+
+
+            </div>
+            <!-- END PAGE CONTENT -->
+
+        </div>
+        <!-- END PAGE CONTAINER -->
+    </div>
+    <div class="page-sidebar_bg"></div>
+
+    <!-- Left Slidebar -->
+    <div class="sb-slidebar sb-chat sb-left sb-style-overlay scroll">
+        <div class="tabs ">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#tab1" data-toggle="tab"><i class="fa fa-comments-o"></i></a></li>
+                @*<li><a href="#tab2" data-toggle="tab"><i class="fa fa-cog"></i></a></li>*@
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane active" id="tab1">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="chat-search">
+                                <form role="form">
+                                    <input type="text" name="search" id="ChatSearch" placeholder="">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" style="height:50%;">
+
+                        <div class="row">
+                            <div class="col-md-11">
+                                <div class="title_chat">
+                                    الموظفين
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+
+                            </div>
+                        </div>
+
+                        <div class="section_chat row">
+
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!-- /.sb-slidebar .sb-left -->
+    <!-- /.sb-slidebar .sb-left -->
+    <!-- Right Slidebars -->
+    <div class="page-container page-content-rtl  page-mode-rtl sb-slidebar sb-right scroll page-container-wide x-navigation-minimized" id="no_mini_wide">
+
+        <div class="shadow_sb-slidebar"></div>
+        <div class="page-sidebar sb ">
+            <!-- START X-NAVIGATION -->
+            <ul class="x-navigation" id="no_mini">
+                @Html.Partial("~/Areas/User/Views/Shared/_UserMenuPartial.cshtml")
+            </ul>
+            <!-- END X-NAVIGATION -->
+        </div>
+    </div><!-- /.sb-slidebar .sb-right -->
+    <!-- Conversation -->
+    <div class="conversations">
+
+    </div>
+    <script type="text/javascript" src="~/Content/User/OldDesign/lib/js/actions.js"></script>
+</body>
+
+</html>
+
+
+
+
+
+@*@System.Web.Optimization.Scripts.Render("~/bundles/lib")
+    @System.Web.Optimization.Scripts.Render("~/bundles/custom")*@
+
+
+
+
+
+
+<!--rendering framework scripts -->
+@*@Html.RenderCalendarResources()
+    @Html.RenderAutoCompleteResources()
+    @Html.RenderTextEditorResources()
+    @Html.RenderSignatureResources()*@
+@*@Html.RenderChartResources()*@
+@*@Html.RenderGridViewResources()
+    @Html.RenderOrgStructureResources()*@
+
+
+
+<script>
+    autosize(document.querySelectorAll('textarea'));
+</script>
+
+<script>
+    (function($) {
+        $(document).ready(function() {
+            $.slidebars();
+        });
+    }) (jQuery);
+</script>
+
+<script type="text/javascript">
+
+    function notyConfirm(){
+        noty({
+            text: 'Do you want to continue?',
+            layout: 'topRight',
+            buttons: [
+                    {addClass: 'btn btn-success btn-clean', text: 'Ok', onClick: function($noty) {
+                        $noty.close();
+                        noty({text: 'You clicked "Ok" button', layout: 'topRight', type: 'success'});
+                    }
+                    },
+                    {addClass: 'btn btn-danger btn-clean', text: 'Cancel', onClick: function($noty) {
+                        $noty.close();
+                        noty({text: 'You clicked "Cancel" button', layout: 'topRight', type: 'error'});
+                    }
+                    }
+            ]
+        })
+    }
+</script>
+<!-- END NOTY -->
+<!-- END THIS PAGE PLUGINS -->
+<!-- START TEMPLATE -->
+
+<script>
+    $(window).on('resize', function () {
+        if ($(window).width() < 1025) {
+            $("#no_mini_wide").removeClass('page-container-wide');
+            $("#no_mini").removeClass('x-navigation-minimized');
+        }
+    });
+</script>
+
+@*<script type='text/javascript' src=@Url.Content("~/Content/User/lib/js/plugins/validationengine/languages/jquery.validationEngine-en.js")></script>
+    <script type='text/javascript' src=@Url.Content("~/Content/User/lib/js/plugins/validationengine/jquery.validationEngine.js")></script>
+    <script type='text/javascript' src=@Url.Content("~/Content/User/lib/js/plugins/maskedinput/jquery.maskedinput.min.js")></script>*@
+<script>
+
+
+    $("#navigation_minimize").click(function(){
+        if (localStorage.getItem('navigation') == undefined) {
+            localStorage.setItem('navigation',"1");
+        }
+        else{
+            if (localStorage.getItem('navigation') == "0")
+                localStorage.setItem('navigation',"1");
+            else
+                localStorage.setItem('navigation',"0");
+        }
+    });
+
+    $(function(){
+        if (localStorage.getItem('navigation') != undefined && localStorage.getItem('navigation') == "1") {
+            $(".page-container").removeClass("page-navigation-toggled");
+            x_navigation_minimize("open");
+
+        }
+        else{
+            $(".page-container").addClass("page-navigation-toggled");
+            //x_navigation_minimize("close");
+        }
+
+        if (!$(".page-container").hasClass("page-navigation-toggled")) {
+            $(".x-navigation").find('a.active_ok').parent().addClass('active_ok');
+            $(".x-navigation").find('li.active_ok').parents('li:first').addClass('active');
+        }
+
+    });
+    //$(".x-navigation").find('li.active').parents('li:first').addClass('active');
+</script>
+<script>
+    $('.change_your_password').click(function () {
+
+        ShowDialogAjax('@Url.Action("RenderChangePasswordPartial","UserProfile")', {}, 'OpenChangePasswordDialogSuccess');
+    });
+
+    function OpenChangePasswordDialogSuccess(data, $obj) {
+
+        $obj.setContent(data.View);
+        jQuery.validator.unobtrusive.parse('#frmChangePassword');
+    }
+
+
+    $("#searchCertificate").keydown(function (e) {
+        if (e.keyCode == 13)
+        {
+            getCertificate();
+
+            return false;
+        }
+    });
+
+    function getCertificate()
+    {
+        var codeValue = $('#searchCertificate').val();
+        if (codeValue != "") {
+            ShowDialogAjax('@Url.Action("GetCertificate")', { transactionCode: codeValue }, 'OpenCertificateDialog');
+            $('#searchCertificate').val("");
+        }
+    }
+
+    function OpenCertificateDialog(data, $obj)
+    {
+        if (data.MessageType != 2)
+        {
+            $obj.setContent(data.Html);
+        }
+        else{
+            __dialog.close();
+            ShowErrorMessage(data.MessageText);
+            return false
+        }
+    }
+
+    function CallHomePage(id) {
+        $.ajax({
+            url: '@Url.Action("SetOrgUnit", "Home")',
+            type: 'POST',
+            data: { 'orgUnitId': id },
+            success: function (data) {
+                window.location.href = '@(YESSER.NCS.MCS.UI.UrlHelper.GetBaseUri() + "/User/Home/Index")';
+            },
+            error: function (a) {
+            }
+        });
+    }
+
+    function ChangeCulture(name) {
+        $.ajax({
+            url: '@Url.Action("SetCultureName", "Home")',
+            type: 'POST',
+            data: { 'cultureName': name },
+            success: function (data) {
+                window.location.href = data.ReturnUrl;
+            },
+            error: function (a) {
+            }
+        });
+    }
+</script>
+<script>
+    var custom_templatePlugins = function () {
+
+        var custom_tp_clock = function () {
+
+            function custom_tp_clock_time() {
+                var now = new Date();
+                var hour = now.getHours();
+                var minutes = now.getMinutes();
+                var suffix = (hour >= 12) ? '@DbRes.TResource("Global.Time.PM")' : '@DbRes.TResource("Global.Time.AM")';
+
+                hour = ((hour + 11) % 12 + 1);
+                hour = hour < 10 ? '0' + hour : hour;
+                minutes = minutes < 10 ? '0' + minutes : minutes;
+
+                $(".timeplugin-clock").html(hour + "<span>:</span>" + minutes + " " + suffix);
+            }
+            if ($(".timeplugin-clock").length > 0) {
+
+                custom_tp_clock_time();
+
+                window.setInterval(function () {
+                    custom_tp_clock_time();
+                }, 10000);
+
+            }
+        }
+
+        return {
+            init: function () {
+                custom_tp_clock();
+            }
+        }
+    }();
+
+    $(function () {
+        custom_templatePlugins.init();
+    });
+
+</script>
+
+@*<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>*@
+<script src=@string.Format("{0}/signalr/hubs", SystemConfigurations.WebApiUrl)></script>
+@*<script src="~/Scripts/Collaboration.js"></script>*@
+
+<script>
+
+    var selectedUserId
+    var notificationPageSize=5;
+    var pageIndex=1;
+    var messageBroadCastHub;
+    @*var UrlChatData= '@Url.Action("GetChatHistory")';*@
+    var UrlInitChatData= '@Url.Action("GetIntitialChatDataHistory")';
+    var IsBindingWithTransaction=false;
+    var SelectedTransactionId=null;
+    var pageSize=5;
+
+    var AllUsers =new Array();
+
+    ShowNotification();
+
+    GetInitialNotifications();
+
+    GetChatNotifications();
+
+    GetAllUsers();
+
+    HideNotificationChat();
+
+    $(document).on("keyup","#ChatSearch",function(message) {
+
+        var searchedText=$(this).val();
+        ClearChatSection();
+
+        for(i=0; i < AllUsers.length ; i++){
+            var userName=$(AllUsers[i]).attr("data-online-userName");
+            if(userName.indexOf(searchedText) != -1){
+                AddToChatSection(AllUsers[i]);
+            }
+        }
+    });
+
+    function ShowNotification(){
+
+        if(!CheckNotificationCookies())
+        {
+            return false ;
+        }
+
+        var  notificationCount= getCookie("NotificationCount");
+
+        $(".informer-danger").html(notificationCount);
+
+        var notificationCount=parseInt(notificationCount)
+
+        if(notificationCount <= 0)
+        {
+            setCookie("NotificationCount" , "0" , 10);
+
+            return false ;
+        }
+
+        $(".redBullon").show();
+    }
+
+    function BrowsNotifications(element)
+    {
+        AllowSend=true;
+
+        setCookie("NotificationCount" , "0" , 10);
+
+        $(".redBullon").hide();
+
+        $(".redBullon").html("0");
+
+        GetNotifications();
+    }
+
+    function AddInstanceMessageToChatWindow(userId,design){
+
+        $('*[data-userid-stage-chat="' + userId + '"]').append(design);
+
+    }
+
+    $(window).scroll(function()
+    {
+        GetNotifications();
+    });
+
+    function setCookie(c_name, value, exdays) {
+        var exdate = new Date();
+        exdate.setDate(exdate.getDate() + exdays);
+        var c_value = escape(value) + ((exdays == null) ? "" : "; expires=" + exdate.toUTCString());
+        document.cookie = c_name + "=" + c_value;
+    }
+
+    function createCookie(name,value,days) {
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days*24*60*60*1000));
+            var expires = "; expires=" + date.toGMTString();
+        }
+        else var expires = "";
+        document.cookie = name + "=" + value + expires + "; path=/";
+    }
+
+    function getCookie(c_name) {
+        var i, x, y, cookies = document.cookie.split(";");
+        for (i = 0; i < cookies.length; i++) {
+            x = cookies[i].substr(0, cookies[i].indexOf("="));
+            y = cookies[i].substr(cookies[i].indexOf("=") + 1);
+            x = x.replace(/^\s+|\s+$/g, "");
+            if (x == c_name) {
+                return unescape(y);
+            }
+        }
+    }
+
+    function readCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0;i < ca.length;i++) {
+            var c = ca[i];
+            while (c.charAt(0)==' ') c = c.substring(1,c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+        }
+        return null;
+    }
+
+    function eraseCookie(name) {
+        document.cookie = name + '=; Max-Age=0'
+    }
+
+    function  SetNotificationCookies(count)
+    {
+        var  notificationCooies= readCookie("NotificationCount");
+
+        if (notificationCooies==null)
+        {
+            createCookie("NotificationCount" , "0" , 10);
+
+            return false;
+        }
+
+        setCookie("NotificationCount" , count , 10);
+
+    }
+
+    function  CheckNotificationCookies()
+    {
+
+        var  notificationCooies= readCookie("NotificationCount");
+
+
+
+        if (notificationCooies==null)
+        {
+            createCookie("NotificationCount" , "0" , 10);
+
+            return false;
+        }
+
+        return true;
+
+    }
+
+
+    function GetChatNotifications()
+    {
+        if(pageIndex==0)
+            return false;
+
+        $.ajax({
+            type: 'get',
+            url: '@Url.Action("GetChatNotifications")',
+            data: { },
+            Async:true  ,
+            global: false,
+            success:
+               function (data)
+               {
+                   if(data.ChatNotifications.Result.TotalChatNotifications== null)
+                       return ;
+
+                   if(data.ChatNotifications.Result.TotalChatNotifications > 0 )
+                   {
+                       UpdateChatNotification(data.ChatNotifications.Result.TotalChatNotifications);
+                   }
+               }
+        });
+    }
+
+    function GetAllUsers()
+    {
+        $.ajax({
+            type: 'get',
+            url: '@Url.Action("GetCollaborationUsers")',
+            data: { },
+            Async:true,
+            global: false,
+            success:
+               function (data)
+               {
+                   data.Users.Result.forEach(function(entry) {
+                       var id= @userVM.Id;
+
+                       if(entry.UserId != id ){
+
+                           if ( $( "#User"+ entry.UserId).length < 1 )
+                           {
+                               CreateNewUserOffline(entry.UserName,entry.UserId, entry.NotificationCount);
+
+                               AllUsers.push($('.onlineUser[data-online-userid="' + entry.UserId + '"]'));
+
+                           }
+
+                           InitializeUserNotifysCount(entry.UserId,entry.NotificationCount);
+                       }
+
+                   });
+               }
+        });
+
+    }
+
+
+    function GetInitialNotifications()
+    {
+        if(pageIndex==0)
+            return false;
+
+        $.ajax({
+            type: 'get',
+            url: '@Url.Action("GetNotifications")',
+            data: { index : pageIndex , pageSize: notificationPageSize},
+            Async:true,
+            global: false,
+            success:
+               function (data) {
+                   if(data.Notifications==undefined)
+                   {
+                       return ;
+                   }
+
+                   if(data.Notifications.length==0)
+                   {
+                       pageIndex=0;
+                       return false ;
+                   }
+                   data.Notifications.forEach(function(body) {
+                       $("#mCSB_2_container").append(body);
+                   });
+                   pageIndex= pageIndex + 1;
+               }
+        });
+    }
+
+
+    function GetNotifications()
+    {
+        if(pageIndex==0)
+            return false;
+
+        if(AllowSend)
+        {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetNotifications")',
+                data: { index : pageIndex , pageSize: notificationPageSize},
+                Async:true,
+                global: false,
+                success:
+                   function (data) {
+
+                       if(data.Notifications==undefined){
+                           return ;
+                       }
+                       if(data.Notifications.length==0)
+                       {
+                           pageIndex=0;
+                           return false ;
+                       }
+                       data.Notifications.forEach(function(body) {
+                           $("#mCSB_2_container").append(body);
+                           AllowSend=true;
+                       });
+                       pageIndex= pageIndex + 1;
+                   }
+            });
+
+        }
+    }
+
+    function SetNotification(text)
+    {
+        var htmlNotification = $(".informer-danger").html();
+
+        var notificationCount=parseInt(htmlNotification)
+
+        notificationCount=notificationCount + 1
+
+        $(".redBullon").html( notificationCount);
+
+        $(".redBullon").show();
+
+        SetNotificationCookies(notificationCount);
+
+        $("#mCSB_2_container").prepend(text);
+    }
+
+    function CreateNewNotification(text)
+    {
+        var row="<a href='#' class='list-group-item'><div class='list-group-status status-online'></div><p>"+ text + "</p></a>";
+
+        return row;
+    }
+
+    function SetScrollToTop(elemnt)
+    {
+        $(elemnt).scrollTop($(elemnt)[0].scrollHeight);
+    }
+
+    function AppearOnlineUser(userId)
+    {
+        $('.appear[data-online-userid="' + userId + '"]').addClass("online").addClass("onlineUser");
+    }
+
+    function DisabledOnlineUser(userId)
+    {
+        $('.appear[data-online-userid="' + userId + '"]').removeClass("online");
+    }
+
+    function ComfirmBindingChat(transactionId)
+    {
+
+        SelectedTransactionId=transactionId;
+        IsBindingWithTransaction= true;
+    }
+
+    function ResetChatBinding()
+    {
+        IsBindingWithTransaction= false;
+    }
+
+    function SetChatAsExplanation(userId)
+    {
+        var element=$('.messageRow[data-userid-chat-window="' + userId + '"]');
+        element.addClass("TransactionRowMessage");
+        element.removeClass("messageRow");
+    }
+
+    function SetChatBinding(userId, transactionId)
+    {
+        var element=$('.messageRow[data-userid-chat-window="' + userId + '"]');
+        element.addClass("TransactionRowMessage");
+        element.removeClass("messageRow");
+        element.data("transactionId",transactionId)
+        element.attr('data-transactionId', transactionId);
+        $('.TransactionRowMessage[data-userid-chat-window="' + userId + '"]').data("transactionId",transactionId);
+        $('.TransactionRowMessage[data-userid-chat-window="' + userId + '"]').attr('data-transactionId', transactionId);
+    }
+
+    $(function () {
+
+        var connection = $.hubConnection('@SystemConfigurations.WebApiUrl');
+
+        connection.start({jsonp:true}).done(function () {
+            messageBroadCastHub=messageBroadCast
+            messageBroadCast.invoke("onConnected",@userVM.Id ,"@userVM.LoclizationName.Where(l => l.CultureName == SessionInfo.CultureShortName).FirstOrDefault().Text" , @SessionInfo.OrgUnitId);
+
+            $(document).on("click",".onlineUser",function(message) {
+
+                var userId=$(this).data("online-userid");
+
+                if(IsUserChatWindowOpened(userId))
+                    return;
+
+                var notificationCount=GetUserNotifysCount(userId);
+
+                ResetUserNotifysCount(userId);
+
+                DecreaseChatNotification(notificationCount);
+
+                var chatWindow=$('*[data-userid-chat-window="' + userId + '"]');
+
+                var userName=$(this).data("online-username");
+
+                GetIntitialChatHistory(UrlInitChatData,userId, userName, function(){
+
+                    SetChatBinding(userId, SelectedTransactionId)
+                    SelectedTransactionId=null;
+                });
+
+                messageBroadCast.invoke("AddChatWindow",userId);
+
+            });
+
+            $(document).on("click",".close_conversation",function(message) {
+                var userId = $(this).data("userid-close-chat-window");
+                $('*[data-userid-chat-window="' + userId + '"]').hide();
+
+                messageBroadCast.invoke("RemoveChatWindow",userId);
+            });
+
+
+            $(document).on("keypress",".TransactionRowMessage",function(message) {
+
+                var key = window.event.keyCode;
+
+                var textValue=$(this).val();
+
+                textValue=textValue.trim()
+
+                if (key == 13 && textValue !="") {
+                    var userId= $(this).data("userid-chat-window");
+                    var transactionId= $(this).data("transactionId");
+                    messageBroadCast.invoke("onSendChatMessage",userId,textValue,transactionId);
+                    var instanceMessageDesign=CreateInstanceMessageDesign("@userVM.Name",textValue,new Date().toLocaleString());
+                    AddInstanceMessageToChatWindow(userId,instanceMessageDesign);
+                    $(this).val("");
+
+                    SetScrollToTop("stage_chat_userId_" + userId)
+                }
+
+            });
+
+            $(document).on("keypress",".messageRow",function(message) {
+
+                var key = window.event.keyCode;
+
+                var textValue=$(this).val();
+
+                textValue=textValue.trim()
+
+                if (key == 13 && textValue !="") {
+                    var userId= $(this).data("userid-chat-window");
+                    messageBroadCast.invoke("onSendChatMessage",userId,textValue,null);
+                    var instanceMessageDesign=CreateInstanceMessageDesign("@userVM.Name",textValue,new Date().toLocaleString());
+                    AddInstanceMessageToChatWindow(userId,instanceMessageDesign);
+                    $(this).val("");
+
+                    SetScrollToTop("stage_chat_userId_" + userId)
+                }
+
+            });
+        });
+
+        var messageBroadCast = connection.createHubProxy('notificationService');
+
+        var messageBroadCast2 = connection.createHubProxy('signalRNotificationService');
+
+        messageBroadCast.on("displayNotification", function (message) {
+
+
+            showSuccessToast(message.Body);
+
+        });
+
+        messageBroadCast2.on("displayNotification", function (message) {
+
+            message.Body = message.Body.replace("{BaseUrl}", "@YESSER.NCS.MCS.UI.UrlHelper.GetBaseUri()");
+            showSuccessToast(message.Body);
+            SetNotification(message.Body);
+        });
+
+
+        messageBroadCast.on("showMessage", function (fromUser,message, date , transactionId) {
+
+            if(!IsUserChatWindowOpened(fromUser.UserId)){
+
+                if(GetUserNotifysCount(fromUser.UserId) == 0 ){
+                    IncreaseChatNotification();
+                }
+                IncreaseUserNotifysCount(fromUser.UserId);
+                return ;
+            }
+            var stageChat=  $("#stage_chat_userId_" + fromUser.UserId);
+            var instanceMessageDesign=CreateInstanceMessageDesign(fromUser.UserName,message,date);
+            AddInstanceMessageToChatWindow(fromUser.UserId,instanceMessageDesign);
+            SetScrollToTop("stage_chat_userId_" + fromUser.UserId)
+
+            if(transactionId > 0){
+                SetChatBinding(fromUser.UserId,transactionId);
+            }
+
+        });
+
+        messageBroadCast.on("getOnlineUsers", function (message) {
+            message=eval(message)
+            message.forEach(function(entry) {
+
+                var id= @userVM.Id;
+
+                if(entry.UserId != id ){
+
+                    if ( $( "#User"+ entry.UserId).length < 1 )
+                    {
+                        CreateNewUserOnline(entry.UserName,entry.UserId);
+
+                        AllUsers.push($('.onlineUser[data-online-userid="' + entry.UserId + '"]'));
+                    }
+                    else {
+
+                        $( "#name_other_"+ entry.UserId).val("");
+
+                        $( "#name_other_"+ entry.UserId).val(entry.UserName);
+                    }
+
+                    AppearOnlineUser(entry.UserId);
+                }
+
+            });
+
+        });
+
+        messageBroadCast.on("newUserConnected", function (message) {
+
+            message=eval(message)
+            $( "#name_other_"+ message.UserId).html("");
+            $( "#name_other_"+ message.UserId).html(message.UserName+'<div class="appear online"></div>');
+            AppearOnlineUser(message.UserId);
+        });
+
+        messageBroadCast.on("ShowMessageDate", function (date) {
+
+            $('.time_other').each(function (index, value) {
+
+                var text=$(this).text().trim();
+                if(text == "") {
+                    $(this).text(date)
+                }
+            });
+
+        });
+
+        messageBroadCast.on("disconnectUser", function (userId) {
+
+            $("#name_other_"+ userId).html($("#name_other_"+ userId).html() + '<div class="appear"></div>');
+            DisabledOnlineUser(userId);
+        });
+
+    });
+
+    function showSuccessToast(message) {
+
+        $().toastmessage({
+            text: message,
+            sticky:false,
+            stayTime:10000,
+            position : 'top-right',
+            type     : 'success',
+            closeText: '',
+            close    : function () {
+                console.log("toast is closed ...");
+            }});
+
+        $().toastmessage('showSuccessToast', message);
+    }
+</script>

@@ -1,0 +1,26 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Common
+@using MCS.Framework.Controls.Mvc
+@using MCS.Framework.Controls.DocumentViewer
+@model MCS.UI.Areas.User.Models.Shared.DocumentVM
+
+    <div class="panel-heading">
+        <h3 class="panel-title">@DbRes.TResource("User.Editor.Archive.ArchivingAndScanning")</h3>
+    </div>
+    <div id="dvDocumentData">
+        @Html.HiddenGroupFor(model => model.Id, null, "Archiving")
+    </div>
+
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                @{
+                    string sessionKey = ViewData["EditorMainDocumentSessionKey"] != null ? ViewData["EditorMainDocumentSessionKey"].ToString() : null;
+                }
+                @Html.DocumentViewer("EditorArchivingframeViewer", AnnotationsMode.ReadOnly, sessionKey)
+
+
+            </div>
+        </div>
+    </div>
+

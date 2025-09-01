@@ -1,0 +1,71 @@
+﻿@model AjaxGrid<MCS.UI.Areas.User.Models.Transaction.TransactionArchiveVM>
+
+@{
+    var operationType = ViewData["IsEnableAction"] ?? true;
+    string controller = TempData.Peek("ControllerName") != null ? TempData.Peek("ControllerName").ToString() : ViewContext.RouteData.Values["controller"].ToString();
+    ViewData.TemplateInfo.HtmlFieldPrefix = "TransactionArchive";
+}
+
+@Html.Grid(Model).CollectionName("Archives").Named("grdArchiving").Columns(columns =>
+{
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Id, new { id = "IdArchiving_" + model.Id + "_" + model.DocumentId + "_" + model.Key + "_" + model.Archivable + "_" + model.ArcivingTypeName}).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Id, new { id = "Id_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Key, new { id = "Key_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.IsNew, new { id = "IsNew_" + model.IsNew }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.ArcivingTypeName, new { id = "ArcivingTypeName_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.AttachmentTypeId, new { id = "AttachmentTypeId_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.DocumentId, new { id = "DocumentId_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.EncryptDocumentId, new { id = "EncryptDocumentId_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Number, new { id = "Number_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.AttachmentName, new { id = "AttachmentName_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Archivable, new { id = "Archivable_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.AttachmentSource, new { id = "AttachmentSource_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.FileName, new { id = "FileName_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.FromEntityId, new { id = "FromEntityId_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.FromUserId, new { id = "FromUserId_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.IsNewFile, new { id = "IsNewFile_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.JFile, new { id = "JFile_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.DocumentId, new { id = "DocumentId_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+
+    columns.Add(model => model.ArcivingTypeName).Titled(DbRes.TResource("User.Transaction.Archive.ArchiveType"));
+    columns.Add(model => model.Number).Titled(DbRes.TResource("User.Transaction.Attachment.Number"));
+    columns.Add(model => model.AttachmentName).Titled(DbRes.TResource("User.Transaction.Attachment.Attachments"));
+
+    if ((bool)operationType)
+    {
+        columns.Add().Titled("حذف").Encoded(false).Sanitized(false).Css("").RenderValueAs(model =>
+
+         MvcHtmlString.Create(
+         "<div class='table-icon d-flex align-items-center'>" +
+        ((model.UserId == SessionInfo.CurrentUser.Id || !model.ReadOnly) ? MvcHtmlString.Create(@Html.ClientLinkTag("", cssClass: "edit_link",
+        clientFunctionToCall: "DeleteActionGrid(" + "'grdArchiving'," + model.Key + ",'" + DbRes.TResource("Grid.DeleteMassage") + "','dvAttachmentsForm','DeleteArchive','" + model.Id + "')",
+        innerHtml: "<i class='glyphicon glyphicon-trash color-danger'></i>").ToHtmlString()) : MvcHtmlString.Empty)
+         +
+         "</div>"));
+
+        columns.Add().Titled("تعديل").Encoded(false).Sanitized(false).Css("").RenderValueAs(model =>
+
+         MvcHtmlString.Create(
+        "<div class='table-icon d-flex align-items-center'>" +
+      ((model.UserId == SessionInfo.CurrentUser.Id || !model.ReadOnly) ? MvcHtmlString.Create(@Html.ClientLinkTag("", cssClass: "edit_link",
+      clientFunctionToCall: "EditGridRow('" + model.Id + "'," + model.DocumentId + "," + model.Key + ")",
+
+      innerHtml: "<i class='fa fa-edit'></i>").ToHtmlString()) : MvcHtmlString.Empty)
+      +
+         "</div>"));
+        columns.Add().Titled("استعراض").Encoded(false).Sanitized(false).Css("").RenderValueAs(model =>
+
+         MvcHtmlString.Create(
+        "<div class='table-icon d-flex align-items-center'>" +
+    /*(model.UserId == SessionInfo.CurrentUser.Id || !model.ReadOnly) ?*/ MvcHtmlString.Create(@Html.ClientLinkTag("", cssClass: "edit_link",
+         clientFunctionToCall: "ViewGridRow('" + model.Id + "' , " + model.DocumentId + " , " + model.Key + ")",
+         innerHtml: "<i class='fa fa-solid fa-eye'></i>").ToHtmlString()) /*: MvcHtmlString.Empty)*/ +
+         "</div>"));
+
+
+
+
+
+    }
+})

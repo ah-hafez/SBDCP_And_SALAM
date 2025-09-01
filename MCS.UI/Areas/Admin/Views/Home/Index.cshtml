@@ -1,0 +1,32 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI
+
+@{
+    ViewBag.Title = DbRes.TResource("Admin.Home.Title");
+    Layout = "~/Areas/Admin/Views/Shared/_BaseLayout.cshtml";
+}
+
+@section Body
+{
+    <div class="page-content-wrap">
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="welcome">
+                    <div class="logo-welcome">
+                        <img src="~/Content/User/lib/images/GAMI_Logo_Color-01.svg" alt="" width="300">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3"></div>
+        </div>
+
+    </div>
+    <style>
+        .logo-welcome {
+            position: fixed;
+            top: 35%;
+            right: 40%
+        }
+    </style>
+}

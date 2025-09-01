@@ -1,0 +1,66 @@
+﻿@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<AuditVM>
+@using MCS.Framework.Controls.Mvc
+@using MCS.Framework.Controls
+
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" id="theme" href="@Url.Content("~/Content/User/lib/css/theme_" + SessionInfo.CultureShortName + ".css")" />
+    @if (SessionInfo.CultureShortName == "ar")
+    {
+        <link rel="stylesheet" type="text/css" id="theme" href="@Url.Content("~/Content/User/lib/css/rtl.css")" />
+    }
+    <!-- EOF CSS INCLUDE -->
+    <!-- Theme -->
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/User/lib/fonts/fonts.css")" />
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/User/lib/css/style.css")" />
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/User/lib/css/responsive_table_" + SessionInfo.CultureShortName + ".css")" />
+</head>
+<body>
+    <table class="table table-striped" border="1">
+        <thead>
+            <tr>
+                <th>@DbRes.TResource("User.TransactionCertificate.ModifiedDate")</th>
+                <th>@DbRes.TResource("User.TransactionCertificate.OperationType")</th>
+                <th>@DbRes.TResource("User.TransactionCertificate.ModifiedBy")</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.GridItems)
+            {
+                <tr>
+                    <td>@item.Date</td>
+                    <td>@DbRes.TResource("User.Audit.TransactionLog." + item.OperationType)</td>
+                    <td>@item.UserName</td>
+                </tr>
+                <tr class="hidden_" data-state="0">
+                    <td colspan="3">
+                        <center>
+                            <table class="table table-striped" border="1" style="width:85%;">
+                                <thead>
+                                    <tr>
+                                        <th>@DbRes.TResource("User.TransactionCertificate.PropertyName")</th>
+                                        <th>@DbRes.TResource("User.TransactionCertificate.PropertyOldValue")</th>
+                                        <th>@DbRes.TResource("User.TransactionCertificate.PropertyNewValue")</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var _item in item.AuditDetails)
+                                    {
+                                        <tr>
+                                            <td>@DbRes.TResource("User.Audit.TransactionLog." + _item.PropertyName)</td>
+                                            <td>@_item.PropertyOldValue</td>
+                                            <td>@_item.PropertyNewValue</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </center>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,0 +1,61 @@
+﻿
+@using MCS.GridMvc.Columns
+@model MCS.GridMvc.IGrid
+@if (Model == null) { return; }
+@if (Model.RenderOptions.RenderRowsOnly)
+{
+    @RenderGridBody();
+}
+else
+{
+    <div class="grid formAction noBorder noMarginTop noAnimation grid-mvc" style="opacity: 1; left: -15px;" data-lang="@Model.Language" data-gridname="@Model.RenderOptions.GridName" data-selectable="@Model.RenderOptions.Selectable.ToString().ToLower()" data-multiplefilters="@Model.RenderOptions.AllowMultipleFilters.ToString().ToLower()">
+        <div class="grid-wrap">
+            @RenderGridHeader()
+            <div class="tbody">
+                @RenderGridBody()
+            </div>
+            @RenderGridPager()
+        </div>
+    </div>
+}
+@helper RenderGridBody()
+{
+    if (!Model.ItemsToDisplay.Any())
+    {
+        <div class="grid-empty-text text-center">
+            @Model.EmptyGridText
+        </div>
+    }
+    else
+    {<div id="bar-chart" class="position: relative; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+            @foreach (object item in Model.ItemsToDisplay)
+            {
+                using (Html.BeginCollectionItem(Model.CollectionName))
+                {
+                    foreach (IGridColumn column in Model.Columns)
+                    {
+                        @column.CellRenderer.Render(column, column.GetCell(item), item)
+                    }
+                }
+            }
+        </div>
+    }
+}
+@helper RenderGridHeader()
+{
+    <div class="row">
+        @foreach (IGridColumn column in Model.Columns)
+        {
+            @column.HeaderRenderer.Render(column)
+        }
+    </div>
+}
+@helper RenderGridPager()
+{
+    if (Model.EnablePaging && Model.Pager != null)
+    {
+        <div class="row">
+            @Html.Partial(Model.Pager.TemplateName, Model.Pager)
+        </div>
+    }
+}

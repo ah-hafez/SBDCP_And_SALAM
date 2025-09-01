@@ -1,0 +1,340 @@
+﻿@using MCS.UI.Areas.User.Models
+@using MCS.UI.Areas.User.Models.UserPreferences
+@using MCS.Framework.Localization
+@using MCS.Common
+@using MCS.UI.Areas.User.Models.OrgUnit
+@model DistributionListVM
+
+@{
+    /**/
+
+    /**/
+
+    string controller = "UserPreferences";
+    ViewBag.Title = DbRes.TResource("User.UserPreferences.DefineCopiesSheet");
+    Layout = "~/Areas/User/Views/Shared/_SearchLayout.cshtml";
+}
+<div class="d-flex mb-3 mx-5 mx-xs-3 header-container mt-5">
+    <div class="filter-link">
+        <h3 class="site-color">@DbRes.TResource("User.UserPreferences.DefineCopiesSheet")</h3>
+    </div>
+</div>
+
+<div class="content_container">
+    <div class="white-container mx-5 mx-xs-3">
+        <div>
+            <div id="DistributionListsContainer">
+                <form id="frmDistributionList">
+                    @Html.AntiForgeryToken()
+                    <div id="dvAddedEntitesToDistributionList">
+                        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                            <label class="w-100">@DbRes.TResource("User.UserPreferences.DistributionListArabicName")<span class="stark NotIndividual">*</span></label>
+                            @Html.TextBox("ArabicDistributionListName", "", new { @class = "form-control" ,@id= "ArabicName" })
+                        </div>
+                        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                            <label class="w-100">@DbRes.TResource("User.UserPreferences.DistributionListEnglishName")<span class="stark NotIndividual">*</span></label>
+                            @Html.TextBox("EnglishDistributionListName", "", new { @class = "form-control" })
+                        </div>  
+                        <div class="form-group col-lg-6 col-md-4 col-sm-6 col-xs-12">
+                            <label class="w-100">@DbRes.TResource("مستوى الادارة")<span class="stark NotIndividual">*</span></label>
+                            <div class="form-check form-check-inline w-100 ">
+                                @Html.CheckBox("IsPublic", false, new { @class = "form-check-label" })
+                            </div>
+                            </div>
+                            <div class="col-xs-12">
+                                <label id="DistributionListValidationLabel" style="color:red;"></label>
+                            </div>
+                            <div class="col-xs-12">
+                                <p class="stark">@DbRes.TResource("Admin.User.MustFill") * </p>
+                            </div>
+                        </div>
+                </form>
+                <div class="row">
+                    <div class="col-sm-12 panel-body text-right">
+                        @Html.ClientActionButton(DbRes.TResource("User.Transaction.Copies.Add"), Url.Action("AddDistributionList", "UserPreferences"), "dvAddedEntitesToDistributionList", "AddDistributionListSuccess", null, null, "btnAddDistributionList","dvAddedEntitesToDistributionList", "btn-site", null, "checkInputs", UserClaims.UserPreferences.DistributionList, "<i class='glyphicon glyphicon-plus'></i>")
+                    </div>  <hr />
+                </div>
+
+                <div>
+                    @Html.Partial("~/Areas/User/Views/UserPreferences/DistributionList/_DistributionListSettingsGridPartial.cshtml", ViewData["DistributionListGrid"])
+                </div>
+                <div class="text-right">
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 row text-right">
+                        @*@Html.ConfirmAction(OperationType.Save, "btnAddDistributionList", DbRes.TResource("Admin.User.Save"), Url.Action("AddDistributionList", "UserPreferences"), null, null, null, null, null, DbRes.TResource("User.UserPreferences.Save"), "post", "frmDistributionList", "BasicInformation", "btn-site", null)*@
+                    </div>
+                </div>
+            </div>
+
+            <hr />
+            <form>
+                @Html.AntiForgeryToken()
+                <div id="frmDetails" class="hidden_">
+                    <div id="DistributionListForm">
+                        <div class="d-flex mb-3 mx-xs-3 header-container">
+                            <div class="filter-link">
+                                <h3 class="site-color">@DbRes.TResource("User.DistrubutionList.EditDistrubutionList")</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <label>@DbRes.TResource("User.UserPreferences.DistributionListName") : </label>
+                            <label id="DistributionListEditedName"></label>
+                        </div>
+
+                        <div class="form-group col-lg-6 col-md-4 col-sm-6 col-xs-12 mb-3">
+                            @Html.HiddenFor(model => model.OrgUnitName, new { id = "hdnOrgUnitName" })
+                            <div id="dvDepartmentsTree">
+                                @*@Html.DepartmentsTree(ViewData["OrgUnitItems"] as TreeViewModel, model => model.OrgUnitId, TreeMode.Single, "dvDepartmentsTree", true, "GetUsersByOrgUnitId", "", "dvDepartmentsTree")*@
+                                <div id="dvDepartmentsTree2">
+                                    @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.OrgUnitId, TreeMode.Single, "treeDirectedToOrgUnit2", true, "GetUsersByOrgUnitId", "BasicInformation", "dvDepartmentsTree2")
+                                </div>
+                                @*@Html.EditorFor(model => model.OrgUnitId, "OrgHierarchyCaller", additionalViewData: new { treeId = "dvDepartmentsTree", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Shared"), GetNodeInfoByIdActionURL = @Url.Action("GetInternalPartyInfoById", "Shared"), GetNodeInfoByNumActionURL = @Url.Action("GetInternalPartyInfoByNumber", "Shared"), onClickfunction = "GetUsersByOrgUnitId", ValidationGroup = "AddDistList", ShowAddPartyButton = false })*@
+                            </div>
+                        </div>
+                        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+
+                            @Html.LabelFor(model => model.UserId, new { @class = "control-label" })<span class="stark">*</span>
+                            @Html.AutoCompleteBuilder("ddlOrgUnitUsers", "hdnOrgUnitUsers", null, null, true, "form-control")
+                            @Html.HiddenFor(model => model.UserName, new { id = "hdnOrgUnitUserName", @class = "UserName" })
+                            @Html.HiddenGroupFor(model => model.UserId, new { id = "hdnOrgUnitUsers", @Value = "", @class = "UserId" }, "AddDistList")
+                            <span class="help-block"></span>
+                        </div>
+
+                    </div>
+                    <div class="col-md-12">
+                        <label id="DistributionListDetailsValidationLabel" style="color:red;"></label>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 panel-body text-right">
+                            @Html.StickyHiddenFor(model => model.Key, new { id = "hdnEditKey" })
+                            @Html.ClientActionButton(DbRes.TResource("User.UserPreferences.AddDepartment"), Url.Action("AddEntityToDistributionList", controller), "dvEntitiesGrid", "AddEntityOnSuccess", null, "AddDistList", "btnAddEntityToDistributionList", "frmDetails", "btn-site", null, "collectData", UserClaims.UserPreferences.DistributionList, "<i class='glyphicon glyphicon-plus'></i>")
+                            @Html.ClientActionButton(DbRes.TResource("User.Transaction.Copies.Edit"), Url.Action("EditDistributionListDetails", controller), "dvEntitiesGrid", "DistributionListOnEditSuccess", null, "AddDistList", "btnEditDistributionList", "frmDetails", " btn-site hidden_", null, "collectData", UserClaims.UserPreferences.DistributionList)
+                            <a class="btn-site" style="display:none" id="aCancelDistributionList" onclick="CancelDistributionListEdit(); return false;">@DbRes.TResource("User.Transaction.Name.Cancel")</a>
+
+                        </div>
+                    </div>
+                    <hr />
+
+                    <div id="dvEntitiesGrid">
+                        @Html.Partial("~/Areas/User/Views/UserPreferences/DistributionList/_DistributionListDetailsGridPartial.cshtml", ViewData["DistributionListDetailsGrid"])
+                    </div>
+                    @Html.Hidden("EditedDistributionListId")
+                    <div class="content_container content_container--footer">
+                        <div class="col-xs-12 text-right preview-mini-options">
+                            @Html.ClientActionButton(DbRes.TResource("User.UserPreferences.Save"), Url.Action("SaveDistributionListDetails", controller), "dvEntitiesGrid", "SaveEntityOnSuccess", null, null, "btnSaveDistributionListDetails", "frmDetails", "btn btn-st1 btn-lg pull-right", null, "DisableInputs", UserClaims.UserPreferences.DistributionList)
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    function DisableInputs() {
+        $(".hdnDepartmentId").attr("disabled", true);
+        $("#hdnOrgUnitUsers").attr("disabled", true);
+        return true;
+    }
+
+    function checkInputs() {
+
+        if ($("#ArabicDistributionListName").val() == "" || $("#EnglishDistributionListName").val() == "") {
+            @*ShowErrorMessage('@DbRes.TValidation("User.DistrubutionList.AddValidation")');*@
+            $("#DistributionListValidationLabel").html("");
+            $("#DistributionListValidationLabel").html("* @DbRes.TValidation("User.DistrubutionList.AddValidation")");
+            return false;
+        }
+        return true;
+    }
+
+    $("#ArabicName").on("keyup change", function () {
+        debugger;
+        $("#DistributionListValidationLabel").html("");
+    });
+    function collectData() {
+        if ($('#dvDepartmentsTree_txtDepartmentName').val() == "") {
+            $('#dvDepartmentsTree_txtDepartmentName, #dvDepartmentsTree_txtDepartmentNumber').addClass("RedBorder");
+            $('.validation-error').show();
+        }
+        else {
+            $('#dvDepartmentsTree_txtDepartmentName, #dvDepartmentsTree_txtDepartmentNumber').removeClass("RedBorder");
+        }
+        if ($('#ddlOrgUnitUsers').val()== "")
+        {
+            $('#ddlOrgUnitUsers').addClass("invalid-input");
+            $('.validation-error').show();
+        }
+        $("#hdnOrgUnitUserName").val($("#ddlOrgUnitUsers").val());
+        return true;
+    }
+
+    function AddEntityOnSuccess(data){
+        if (data.MessageType != 2) {
+            $("#dvEntitiesGrid").html("");
+            $("#dvEntitiesGrid").html(data.Html);
+            ClearInputs('DistributionListForm');
+            $('#ddlOrgUnitUsers').removeClass("invalid-input");
+            $('.validation-error').hide();
+
+        }
+        else {
+            $("#DistributionListDetailsValidationLabel").html("");
+            $("#DistributionListDetailsValidationLabel").html("* " + data.MessageText);
+        }
+
+    }
+
+    function AddDistributionListSuccess(data) {
+        if (data.message == "Duplicate") {
+            $("#DistributionListValidationLabel").html("");
+            $("#DistributionListValidationLabel").html("* @DbRes.TValidation("User.DistrubutionList.DistrubutionListExist")");
+        } else {
+            window.location.reload();
+        }
+    }
+    function SaveEntityOnSuccess(data)
+    {
+        if (data.MessageType != 2) {
+            window.location.reload();
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+    function GetDistributionListById(id) {
+         $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetDistributionListById", "UserPreferences")',
+                data: { id: id },
+                success:
+               function (data) {
+                   if (data.MessageType != 2) {
+                       $("#dvEntitiesGrid").html("");
+                       $("#dvEntitiesGrid").html(data.Html);
+                       $("#EditedDistributionListId").val(id);
+                       $("#DistributionListEditedName").html("");
+                       $("#DistributionListEditedName").html(data.DistributionListName);
+                       $("#frmDetails").removeClass("hidden_");
+
+                   }
+                   else {
+                       ShowErrorMessage(data.MessageText);
+                   }
+               }
+            });
+
+    }
+
+    function GetUsersByOrgUnitId() {
+
+        if ($("#OrgUnitId").val() != '' && $("#frmDetails .OrgUnitId").val() != '') {
+            $("#hdnOrgUnitUsers").val('');
+            $("#ddlOrgUnitUsers").val('');
+            $("#hdnOrgUnitUserName").val('');
+            $('#hdnOrgUnitName').val($('#frmDetails .txtDepartmentName').val());
+            if ($("#OrgUnitId").val() != '' && $("#OrgUnitId").val() != undefined)
+            {
+                 $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetUnitUsers", "Editor")',
+                     data: { id: $("#OrgUnitId").val(), addSelectOption:true },
+                success:
+               function (data) {
+                   AutoCompleteChangeList("ddlOrgUnitUsers", data);
+                   $("#ddlOrgUnitUsers").trigger('change');
+                   $("#hdnOrgUnitUsers").trigger('change');
+                   $("#ddlOrgUnitUsers").prop('disabled', false);
+               }
+            });
+            }
+
+            return false;
+        }
+        else {
+            AutoCompleteChangeList("ddlOrgUnitUsers", "[]");
+            $("#hdnOrgUnitUsers").val('');
+            $("#ddlOrgUnitUsers").trigger('change');
+            $("#hdnOrgUnitUsers").trigger('change');
+            $("#ddlOrgUnitUsers").prop('disabled', true);
+        }
+    }
+
+
+    function CancelDistributionListEdit() {
+        $("#btnAddEntityToDistributionList").show();
+        $("#btnEditDistributionList").addClass('hidden_');
+        $("#aCancelDistributionList").hide();
+        ClearInputs('DistributionListForm');
+        $("#ddlOrgUnitUsers").removeClass("invalid-input");
+
+    }
+
+
+    function onDeleteSuccess(data) {
+
+    }
+
+    function EditDistributionList(keyValue, OrgUnitId) {
+        $("#divForm__treeDirectedToOrgUnit2").find(".hdnDepartmentId").val($("#gridDetailsOrgUnitId_" + keyValue).val());
+        $("#frmDetails .txtDepartmentName").val($("#gridDetailsOrgUnitName_" + keyValue).val());
+        $("#frmDetails .txtDepartmentNumber").val($("#gridDetailsOrgUnitId_" + keyValue).val());
+        GetUsersByOrgUnitId();
+        SetTreeDefaultInfo("dvDepartmentsTree", OrgUnitId);
+
+        $("#ddlOrgUnitUsers").val($("#gridDetailsUserName_" + keyValue).val());
+        $("#hdnOrgUnitUserName").val($("#gridDetailsUserName_" + keyValue).val());
+        $("#hdnOrgUnitUsers").val($("#gridDetailsUserId_" + keyValue).val());
+        $("#hdnEditKey").val(keyValue);
+        $("#btnAddEntityToDistributionList").hide();
+        $("#btnEditDistributionList").show();
+        $("#aCancelDistributionList").show();
+        $("#btnEditDistributionList").removeClass("hidden_");
+    }
+
+    function DistributionListOnEditSuccess(data, div) {
+        if (data.MessageType != 2) {
+            if (data.Key != "") {
+                $('#grid-table-grdDistributionListDetails').find('#Key_' + data.Key).closest('tr').replaceWith(data.Html);
+            }
+            ClearInputs('DistributionListForm');
+            $("#btnAddEntityToDistributionList").show();
+            $("#btnEditDistributionList").hide();
+            $("#aCancelDistributionList").hide();
+            $('#ddlOrgUnitUsers').removeClass("invalid-input");
+            $('.validation-error').hide();
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function DeleteDistributionList(distributionListId) {
+        ShowCustomConfirmMessage('@DbRes.TResource("User.DistributionList.Delete")', 'DeleteDistributionListCallBack', distributionListId);
+    }
+
+    function DeleteDistributionListCallBack(distributionListId) {
+        var token = $("#frmDistributionList").find("input[name='__RequestVerificationToken']").val();
+         $.ajax({
+            type: 'post',
+            url: '@Url.Action("DeleteDistributionList", controller)',
+             data: { distributionListId: distributionListId, __RequestVerificationToken: token},
+            success:
+                function (data) {
+                    if (data.MessageType != 2) {
+                        window.location.reload();
+                    } else {
+                        ShowErrorMessage(data.MessageText);
+                    }
+                }
+        });
+    }
+</script>
+<style>
+    .RedBorder {
+        border: 1px solid #fe0000 !important
+    }
+</style>

@@ -1,0 +1,87 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Shared
+@model LoginInfoVM
+@{
+    ViewBag.Title = DbRes.TResource("Admin.Login.Title");
+    Layout = "~/Areas/Admin/Views/Shared/_EmptyLayout.cshtml";
+}
+
+
+<style>
+    html body.fixed-navbar {
+        padding: 0px;
+        height: 100vh !important;
+    }
+    #kt_login {
+        height: 100vh !important;
+        background-color: #ffffff !important;
+    }
+    .LoginBackgroundImg {
+        height:100vh !important;
+    }
+    .login.login-1.login-signin-on .login-signin {
+    
+        box-shadow: 0 4px 34px 0 rgb(0 76 154 / 34%);
+    }
+    .login-content {
+        padding: 0 50px;
+    }
+</style>
+<div class="d-flex flex-column flex-root">
+    <div class="login login-1 login-signin-on d-flex flex-column flex-lg-row flex-column-flui" id="kt_login">
+        <!--begin::Aside-->
+        <div class=" d-none d-lg-block d-xl-block">
+            <div class="login-aside d-flex flex-column flex-row-auto" id="LoginBackgroundSection">
+                <div class="d-flex flex-column-auto flex-column pt-lg-40 pt-15">
+                    <img src="~/Content/User/lib/images/LoginBackground.png" class="LoginBackgroundImg " />
+                </div>
+            </div>
+        </div>
+
+
+        <div class="login-content flex-row-fluid d-flex flex-column justify-content-center position-relative overflow-hidden p-7 mx-auto">
+            <div class="d-flex flex-column-fluid flex-center">
+                <div class="login-form login-signin">
+                    @using (Html.BeginForm("Login", "Login", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { id = "frmLogin" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.Hidden("returnUrl", Request.QueryString["returnUrl"]);
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="login-form" style="max-width: 350px; margin: 30px auto;">
+                        @*<div class="d-flex justify-content-center pb-4">
+            <div class="">
+                <img src="~/Content/User/lib/images/GAMI_Logo_Color-01.svg">
+            </div>
+        </div>*@
+                        <div class="clearfix"></div>
+                        <div class="col-lg-12">
+                            <img src="~/Content/User/lib/images/GAMI_Logo_Color-01.svg" class="pb-4" width="250" />
+                        </div>
+                        <h3 class="text-center pb-3 mt-3" style="font-size: 40px;">تسجيل الدخول</h3>
+
+                        <div class="form-group">
+                            @Html.TextBoxFor(model => model.UserName, "Login", new { placeholder = DbRes.TResource("User.Login.UserName"), @class = "form-control valid ", autofocus = "autofocus" })
+                            @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            @Html.PasswordFor(model => model.Password, new { placeholder = DbRes.TResource("User.Login.Password"), @class = "form-control valid", @Value = Model.Password, @autocomplete = "off" })
+                            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group hide">
+                            @Html.RadioButtonFor(model => model.IsWindowsLogin, "false") مستخدم عادي
+                            @Html.RadioButtonFor(model => model.IsWindowsLogin, "true", new { @checked = "checked" }) مستخدم الدليل النشط
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-block">تسجيل الدخول</button>
+                        </div>
+                    </div>
+                        <div style="clear: both;"></div>
+                    }
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+</div>

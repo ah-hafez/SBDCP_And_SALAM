@@ -1,0 +1,64 @@
+﻿@using MCS.UI.Areas.User.Models.File
+@{
+    var name = (string)ViewData["ListItemName"];
+    var gridName = (string)ViewData["GridName"];
+    var listItemName = string.Format("ListItems/{0}", name);
+}
+
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<TransactionTrayInfoVM>
+
+@if (Session["renderType"].ToString() == "cardItem")
+{
+    @Html.Grid(Model, "_CardGrid").Named(gridName).CollectionName("TransactionTrayInfoVMs").Columns(columns =>
+    {
+        columns.Add(true).Titled("").RenderValueAs(mvcgridcolumn => Html.Partial(listItemName, mvcgridcolumn, Html.ViewData))
+        .Sanitized(false).Encoded(false);
+    }).WithPaging(UIHelper.PageSize)
+}
+else
+{
+    Session["tableGridItems"] = Model.GridItems;
+
+    @Html.Grid(Model, "_CardTableGrid").Named(gridName).CollectionName("TransactionTrayInfoVMs").Columns(columns =>
+    {
+        columns.Add(true).Titled("").RenderValueAs(mvcgridcolumn => Html.Partial(listItemName, mvcgridcolumn, Html.ViewData))
+        .Sanitized(false).Encoded(false);
+    }).WithPaging(UIHelper.PageSize)
+}
+
+
+
+<script>
+    $(document).ready(function ()
+    {
+        if ($('#TransactionsBoxes input:checkbox').length > 0)
+        {
+
+            $('#CheckAllBoxes').prop("disabled", false);
+
+            $('#TransactionsBoxes input:checkbox').each(function ()
+            {
+
+                if (selectedTrans.indexOf($(this).data('id')) > -1)
+                {
+                    $(this).attr("checked", true);
+                }
+            });
+
+            if ($('#TransactionsBoxes input:checkbox:checked').length == $('#TransactionsBoxes input:checkbox').length)
+            {
+                $('#CheckAllBoxes').prop("checked", true);
+                IsAllChecked = true;
+            } else
+            {
+                $('#CheckAllBoxes').prop("checked", false);
+                IsAllChecked = false;
+            }
+        } else
+        {
+            $('#CheckAllBoxes').prop("disabled", true);
+        }
+    });
+
+
+</script>

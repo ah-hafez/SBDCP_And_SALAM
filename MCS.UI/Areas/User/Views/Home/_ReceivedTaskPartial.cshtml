@@ -1,0 +1,62 @@
+﻿@using MCS.UI.Areas.User.Models.Transaction
+@using System.Globalization
+@using MCS.Framework.Localization
+@model ReceivedTaskVM 
+          
+<li id="@String.Format("Recived_Task_{0}", Model.Id)">
+
+    @{
+        string displayStyle = "none";
+
+        if (Model.Reminders != null && Model.Reminders.Count > 0)
+        {
+            displayStyle = "normal";
+        }
+    }
+    <div class="bottom_list" style="display:@displayStyle" data-task-reminder="@String.Format("reminder{0}", Model.Id)">
+        <div class="sent_task">
+            <i data-bs-toggle="tooltip" data-placement="top" title="" class="fa fa-clock-o"></i>
+        </div>
+    </div>
+
+    <div class="subject_task">
+        <a href="#" data-task-id="@Model.Id" class="view_received_task">
+            @String.Format(CultureInfo.CurrentCulture, " {0:d} : {1} ", DbRes.TResource("User.Task.ViewReceivedTask.TaskNumber"), @Model.Id)
+        </a>
+        @String.Format(CultureInfo.CurrentCulture, " {0:d} : {1} ", DbRes.TResource("User.Task.ViewReceivedTask.TransactionNumber"), @Model.TransactionNumber)
+    </div>
+    <div class="bottom_list">
+        <div class="sent_task">
+            @String.Format(CultureInfo.CurrentCulture, "    {0} : {1}", DbRes.TResource("User.Task.RecivedTask.TaskOrgUnit"), @Model.FromOrgUnit)
+        </div>
+
+        <div class="pull-right">
+            <div class="date_task">
+                <i class="fa fa-calendar-o">
+                    <label data-received-task-delivery-date="@String.Format("delivery-date{0}", Model.Id)">@String.Format("{0}", @Model.DeliveryDateH)</label>
+                </i>
+            </div>
+
+            <div class="refusal_task">
+                <a class="transaction_certificate" data-task-id="@Model.Id" data-task-transaction-id="@Model.TransactionId" data-bs-toggle="tooltip" data-placement="top" title='@DbRes.TResource("User.Task.RecivedTask.TransactionCertificate")' href="#"><i class="fa fa-certificate"></i></a>
+            </div>
+
+            @if (Model.LevelLimitation == null && !Model.IsExclusive)
+                 {
+                <div class="refusal_task">
+                    <a class="sub_task" data-task-id="@Model.Id"  data-trans-id="@Model.TransactionId" data-bs-toggle="tooltip" data-placement="top" title='@DbRes.TResource("User.Task.RecivedTask.SubTask")' href="#"><i class="glyphicon glyphicon-flash"></i></a>
+                </div>
+                  }
+
+            <div class="accept_task" onclick=@String.Format("SelectTask({0})",Model.Id)>
+                <a class="accept_task_recive" data-bs-toggle="tooltip" data-placement="top" data-accept-task-id="@Model.Id" title='@DbRes.TResource("User.Task.RecivedTask.Accept")' href="#"><i class="fa fa-check"></i></a>
+            </div>
+
+            @Html.Partial("~/Areas/User/Views/Home/_RejectTaskPartial.cshtml", new ViewDataDictionary { { "TaskId", Model.Id } })
+
+        </div>
+    </div>
+</li>
+
+
+

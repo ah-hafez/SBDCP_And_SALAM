@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="36f4e2ca-2e12-441f-85bd-eeb950367579" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="C:\Users\ahmadz\Desktop\New folder (4)\YESSER.NCS.MCS.Integration.HUB\Connected Services\CSIAgencyOutboundServicesRef\CSIAgencyOutboundServices.wsdl" Protocol="file" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="AgencyServices.xsd" MetadataType="Schema" ID="626c01f5-1e64-4d15-a33f-ba31bce3292d" SourceId="1" SourceUrl="file:///C:/Users/ahmadz/Desktop/New folder (4)/YESSER.NCS.MCS.Integration.HUB/Connected Services/CSIAgencyOutboundServicesRef/AgencyOutboundServices.xsd" />
+    <MetadataFile FileName="CSIAgencyOutboundServices.wsdl" MetadataType="Wsdl" ID="1af3dcae-16ae-4eb3-b951-cd14b9b32a4f" SourceId="1" SourceUrl="file:///C:/Users/ahmadz/Desktop/New folder (4)/YESSER.NCS.MCS.Integration.HUB/Connected Services/CSIAgencyOutboundServicesRef/CSIAgencyOutboundServices.wsdl" />
+    <MetadataFile FileName="HUBDataTypes.xsd" MetadataType="Schema" ID="aebb4d01-dae9-4a52-ae8a-abc4b1bcede7" SourceId="1" SourceUrl="file:///C:/Users/ahmadz/Desktop/New folder (4)/YESSER.NCS.MCS.Integration.HUB/Connected Services/CSIAgencyOutboundServicesRef/CSIHUBDataTypes.xsd" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

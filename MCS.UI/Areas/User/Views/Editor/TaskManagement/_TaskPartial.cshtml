@@ -1,0 +1,35 @@
+﻿@using MCS.UI.Areas.User.Models.Transaction;
+@using MCS.Framework.Localization
+
+
+<div class="col-xs-12">
+    <div class="single-wrapper">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-xs-12">
+                    <h4 class="title4"> @DbRes.TResource("User.Task.Tasks.AddTask") </h4>
+
+                </div>
+            </div>
+        </div>
+        @using (Html.BeginForm("", "", FormMethod.Post, new { id = "frmEditorTask" }))
+        {
+            @Html.AntiForgeryToken()
+            <div id="dvEditorTask" class="panel-body">
+                @{ViewData.TemplateInfo.HtmlFieldPrefix = "taskAddVM";}
+                @Html.Partial("~/Areas/User/Views/Editor/TaskManagement/_AddTaskPartial.cshtml", new TaskAddVM())
+                @{ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+            </div>
+            <div id="dvEditorTaskGrid" class="panel-body">
+                <div id="dvGridContainer" class="row">
+                    @Html.Partial("~/Areas/User/Views/Editor/TaskManagement/_TasksGridPartial.cshtml", ViewData["TasksGridData"])
+                </div>
+            </div>
+            <div id="dvEditorCurrentTaskGrid" class="panel-body">
+                <div id="dvCurrentTasksGridContainer" class="row">
+                    @Html.Partial("~/Areas/User/Views/Editor/TaskManagement/_CurrentTasksGridPartial.cshtml", ViewData["CurrentTransactionTasksGrid"])
+                </div>
+            </div>
+        }
+    </div>
+</div>

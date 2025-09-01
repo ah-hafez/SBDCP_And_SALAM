@@ -1,0 +1,199 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Lookups
+@using MCS.Common
+@model MCS.UI.Areas.User.Models.ExternalParties.ExternalPartyEditVM
+@{
+    Layout = null;
+}
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmEditParty", @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+<div class="row col-md-12">
+    <div class="col-md-4">
+        <fieldset>
+            <label class="control-label">@DbRes.TResource("User.ExternalParty.Number")</label><span class="stark">*</span>
+            <div class="form-group">
+                @Html.NumericTextBoxFor(model => model.PartyNumber, new { @class = "form-control empty", maxlength = "10" })
+                <span id="dvpartyNumberMessage" style="color:red"></span>
+            </div>
+        </fieldset>
+    </div>
+
+    @{List<CultureVM> Culture = (List<CultureVM>)ViewData["Culture"];}
+    @for (int i = 0; i < Culture.Count; i++)
+    {
+        <div class="col-md-4">
+            <fieldset>
+                @Html.CustomLabelFor(model => model.Name[i].CultureName, new { @class = "control-label" }, DbRes.TResource("User.ExternalParty.Name." + Culture[i].ShortName))<span class="stark">*</span>
+                <div class="form-group">
+                    @Html.HiddenFor(model => model.Name[i].Id)
+                    @Html.StickyHiddenFor(model => model.Name[i].CultureId, new { Value = Culture[i].Id })
+                    @Html.StickyHiddenFor(model => model.Name[i].CultureName, new { Value = Culture[i].ShortName })
+                    @Html.TextBoxGroupFor(model => model.Name[i].Text, null, new { @class = "form-control empty" }, DbRes.TValidation("User.ExternalParty.NameRequired." + Culture[i].ShortName))
+                </div>
+            </fieldset>
+        </div>
+    }
+
+    <div class="col-md-4">
+        <fieldset>
+            <label class=" control-label">@DbRes.TResource("User.ExternalParty.Phone")</label>
+            <div class="form-group">
+                @Html.NumericTextBoxFor(model => model.PhoneNumber, new { @class = "form-control empty", maxlength = "15" })
+            </div>
+        </fieldset>
+    </div>
+    <div class="col-md-4">
+        <fieldset>
+            <label class="control-label">@DbRes.TResource("User.ExternalParty.Fax")</label>
+            <div class="form-group">
+                @Html.NumericTextBoxFor(model => model.FaxNumber, new { @class = "form-control empty", maxlength = "10" })
+            </div>
+        </fieldset>
+    </div>
+    <div class="col-md-4">
+        <fieldset>
+            <label class="control-label">@DbRes.TResource("User.ExternalParty.Email")</label>
+            <div class="form-group">
+                @Html.TextBoxGroupFor(model => model.Email, null, new { @class = "form-control empty" })
+            </div>
+        </fieldset>
+    </div>
+
+    @for (int i = 0; i < Culture.Count; i++)
+    {
+        <div class="col-md-4">
+            <fieldset>
+                @Html.CustomLabelFor(model => model.Address[i].CultureName, new { @class = "control-label" }, DbRes.TResource("User.ExternalParty.Address." + Culture[i].ShortName))
+                <div class="form-group">
+                    @Html.HiddenFor(model => model.Address[i].Id)
+                    @Html.StickyHiddenFor(model => model.Address[i].CultureId, new { @Value = Culture[i].Id })
+                    @Html.StickyHiddenFor(model => model.Address[i].CultureName, new { @Value = Culture[i].ShortName })
+                    @Html.TextBoxGroupFor(model => model.Address[i].Text, null, new { @class = "form-control empty adrress_Text" }, DbRes.TValidation(string.Format("User.ExternalParty.AddressRequired.{0}", Culture[i].ShortName)))
+                </div>
+            </fieldset>
+        </div>
+    }
+    @Html.HiddenFor(model => model.ParentId, new { @id = "hdnParentId" })
+
+    <div class="col-md-4 panel-body">
+        <fieldset>
+            <div class="form-group">
+                <label>
+                    @Html.CheckBoxFor(model => model.IsVirtual)
+                    @DbRes.TResource("User.ExternalParty.VirtualUnit")
+                </label>
+            </div>
+        </fieldset>
+    </div>
+    <div class="col-md-2">
+        <fieldset id="Types">
+            <div class="form-group">
+                <div>
+                    <label>
+                        @Html.HiddenFor(model => model.Types[0].Id)
+                    </label>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+    <div class="form-group col-lg-6 col-md-6 col-sm-12 col-xs-12" id="divContainerExternalParties">
+        <label>الجهة<span class="stark">*</span></label>
+        @Html.EditorFor(model => model.ParentId, "OrgHierarchyCaller", additionalViewData: new { treeId = "ParentId", GetChildrenActionURL = @Url.Action("GetExternalPartyChildren", "Shared"), GetNodeInfoByIdActionURL = @Url.Action("GetExternalPartyInfoById", "Shared"), GetNodeInfoByNumActionURL = @Url.Action("GetExternalPartyInfoByNumber", "Shared"), onClickfunction = "SetData()", ValidationGroup = "", ShowAddPartyButton = false })
+        @Html.HiddenFor(model => model.ParentId, new { @id = "hdnParentId" })
+    </div>
+</div>
+    <div id="Editfooter" class="panel-footer  text-right">
+        @Html.ActionButton(DbRes.TResource("User.ExternalParty.Edit"), Url.Action("EditExternalParty"), "TreeDiv", null, null, "OnEditSuccess", null, "post", null, "btnEditParty", "frmEditParty", " btn-site", "CheckPartyNumberForEdit")
+    </div>
+    @Html.HiddenFor(model => model.Id, new { @id = "hdnParty" })
+}
+
+<script>
+
+     $(document).ready(function () {
+          
+         SetTreeDefaultInfo("ParentId",@Model.ParentId);
+    })
+
+
+    $.validator.addMethod('require-oneEdit', function (value) {
+        return $('.require-oneEdit:checked').size() > 0;
+    });
+
+    var checkboxes = $('.require-oneEdit');
+    var checkbox_names = $.map(checkboxes, function (e, i) {
+        return $(e).attr("name")
+    }).join(" ");
+
+    $('.require-oneEdit').change(function () {
+        if ($(this).is(':checked')) {
+            $("#_msgvalEdit")
+                .removeClass("field-validation-error")
+                .addClass("field-validation-valid")
+        }
+    });
+
+    $('#frmEditParty #PartyNumber').change(function () {
+        $('#frmEditParty #dvpartyNumberMessage').html('');
+    });
+
+    function OnEditSuccess(data, div) {
+        if (data.MessageType != 2) {
+            //var node = $('.externalParty #jstree_default').jstree('get_node', data.partyID);
+            //$(".externalParty #jstree_default").jstree('rename_node', node, data.Name);
+            //$('#node_' + data.partyID +'_anchor .jstree-themeicon')[0].nextSibling.nodeValue = data.Name;
+            //var id = data.partyID;
+
+
+            //$("#" + div).html("");
+            //$("#" + div).html(data.Html);
+
+            //$('*[node=' + id + ']').parent().parent().removeClass('jstree-closed');
+            //$('*[node=' + id + ']').parent().parent().addClass('jstree-open');
+            //RefreshJsTree('TreeDiv');
+            //var parentNode = $('*[node=' + id + ']').parent().parent().attr('node');
+
+            //if (parentNode != undefined && parentNode != 0)
+            //   OpenTreeNode(parentNode);
+
+            //jQuery.validator.unobtrusive.parse('#' + div);
+            ShowSuccesMessage(data.MessageText);
+            //RefreshJsTree('TreeDiv');
+            //$("._selected").find("a.jstree-anchor").addClass("jstree-clicked");
+
+
+            $("#Editfooter").addClass("middle");
+            $("#AddManager").show();
+
+            //GetExternalParties(data.Id);
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function CheckPartyNumberForEdit() {
+        var number = $('#frmEditParty #PartyNumber').val();
+        var partyId = $('#hdnParty').val();
+        var valid = false;
+        $.ajax({
+            type: 'Get',
+            url: '@Url.Action("CheckPartyNumber")',
+            data: { Number: number, partyId: partyId },
+            async: false,
+            success:
+                function (data) {
+                    if (data.Exists) {
+                        valid = true;
+                    }
+                    else {
+                        $('#frmEditParty #dvpartyNumberMessage').html('رقم الجهة مدخل مسبقا');
+                        valid = false;
+                    }
+                }
+        });
+
+        return valid;
+    }
+</script>

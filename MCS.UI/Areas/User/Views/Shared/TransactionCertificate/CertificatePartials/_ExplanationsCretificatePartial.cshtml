@@ -1,0 +1,141 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Transaction;
+@using MCS.Common;
+@using MCS.UI.Common
+
+@model AjaxGrid<ExplanationVM>
+
+
+@{
+    var doconutIframeUrl = UIConfigurations.GetFullURl() + string.Format("{0}?explanations=true&hidecontrols=true&showwatermark=true", SystemConfigurations.DoconutIframeUrl);
+
+    List<ExplanationVM> explanations = ViewData["ExplanationsData"] as List<ExplanationVM>;
+    var id = (int)ViewData["TransactionId"];
+    string GUID = Guid.NewGuid().ToString();
+}
+
+
+
+@Html.StickyHidden("hdnTransactionId", ViewData["TransactionId"].ToString(), new { id = "hdnExplanationsTransactionId", @class = "TransactionId" })
+@Html.StickyHidden("hdnExplanationDocumentSessionKey", ViewData["ExplanationDocumentSessionKey"].ToString(), new { id = "hdnExplanationDocumentSessionKey" })
+
+<div class="single-wrapper">
+    <ul class="nav nav-tabs custom-sub-nav-tabs mb-3" role="tablist">
+        @Html.StickyHidden("hdnGUID", GUID, new { @class = "hdnGUID" })
+        <li role="presentation" class="active">
+            <a href="@("#" + GUID + "_sub-tab-1")" aria-controls="@(GUID + "_sub-tab-1")" role="tab" data-toggle="tab">
+                    @DbRes.TResource("User.Audit.TransactionLog.CurrentExplanations")
+                </a>
+        </li>
+        <li role="presentation" class="hidden_">
+            <a href="@("#" + GUID + "_sub-tab-2")" aria-controls="@(GUID + "_sub-tab-2")" role="tab" data-toggle="tab">
+                @DbRes.TResource("User.Audit.TransactionLog.Edits")
+            </a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="@(GUID + "_sub-tab-1")">
+            <div class="panel-body">
+                <div id="AuditDetails" style="">
+                    @Html.Grid(Model).Named("grdEntityAudit").Columns(columns =>
+               {
+                   columns.Add(model => model.FromUser).Titled(DbRes.TResource("User.Audit.TransactionLog.UserId"));
+                   columns.Add(model => model.ConfidentialityName).Titled(DbRes.TResource("User.Editor.BasicInfo.OutboundDraft.Confidentiality"));
+                   columns.Add(model => model.DateH).Titled(DbRes.TResource("User.Editor.BasicInfo.OutboundDraft.Date"));
+                   columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => @Html.ClientAnchorWithDataPass("عرض", model.Id.ToString(), "", "showExplanation('" + model.Id + "')"));
+
+               })
+                </div>
+            </div>
+            @if (Model.ItemsCount > 0) { 
+            <a class="btn-site btn btn-st2 btn-lg pull-right mr-1" id="btnPrintExplanations" onclick="PrintExplanations(@ViewData["TransactionId"])">@DbRes.TResource("طباعة الشروحات")</a>
+            }
+            <hr />
+            <div id="dvEditorScanning" style="display:none;">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="panel-body panel-style panel-body-open">
+                            @{
+                                string sessionKey = ViewData["ExplanationDocumentSessionKey"] != null ? ViewData["ExplanationDocumentSessionKey"].ToString() : null;
+                            }
+                            <div id="doconutContainer">
+                                <iframe src="@doconutIframeUrl" class="col-md-12" style="height:500px" id="ExplanationframeViewer" sandbox="allow-modals allow-same-origin allow-scripts allow-popups allow-forms allow-downloads"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="dvText" style="display:none;">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    @Html.TextArea("Description", new { id = "txtDescription", @class = "form-control", @rows = "30", style = "background: #FFFA9E;height:120px;" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div> 
+    </div>
+</div>
+
+
+<script>
+    function showExplanation(transId) {
+
+        var id = transId;
+        var editable = $(this).data("editable");
+        var sessionKey = $("#hdnExplanationDocumentSessionKey").val()
+        $('#dvExplanationTextEditorForm').show();
+        $('#dvConfidentialityContainer').show();
+        $('#btnCancelExplanation').show();
+
+        $('#btnEditExplanation').show();
+        $('#btnEditExplanation').removeClass("hidden_");
+
+        $.ajax({
+            type: 'get',
+            cache: false,
+            url: '@Url.Action("GetExplanationById","Editor")',
+            data: { id: id, hdnExplanationDocumentSessionKey: sessionKey },
+            success: function (data) {
+
+                if (data.Type == 1) {
+
+                }
+                if (data.Type == 2) {
+                    document.getElementById('ExplanationframeViewer').contentWindow.location.reload();
+                    $('#hdnExplanationEditorType').val('2');
+                    $('#dvEditorTextEditor').hide();
+                    $('#dvText').hide();
+                    $('#dvEditorScanning').show();
+                }
+                if (data.Type == 3) {
+                    $("#txtDescription").val(data.Content);
+                    $('#hdnExplanationEditorType').val('3');
+                    $('#dvText').show();
+                    $('#dvEditorScanning').hide();
+                    $('#txtDescription').prop("readonly" , true);
+
+                }
+
+                if (data.Type == 4) {
+           var downloadDocumentUrl = '@Url.Action("DocumentDownload", "Shared")?documentId=';
+                    $("#dvExplanationTextEditor").html("");
+                    $('#hdnExplanationEditorType').val('4');
+                    $('#dvEditorTextEditor').hide();
+                    $('#dvEditorScanning').hide();
+                    $('#dvText').hide();
+                    var url = downloadDocumentUrl + EncryptionKey(data.FileId);
+                    window.open(url, '_blank');
+                    $("#Loader").hide(); 
+                    $('#btnCancelExplanation').show();
+                }
+            }
+        });
+    }
+</script>

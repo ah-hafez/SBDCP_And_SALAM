@@ -1,0 +1,100 @@
+﻿@using MCS.UI.Areas.Admin.Models
+@using MCS.Framework.Localization
+@model UserProfileVM
+
+
+<div class="box-grid">
+    <div class="box no_sorting animated zoomIn buttons-action">
+
+        <div class="correspondence-b d-flex flex-wrap">
+            <div class="correspondence-h">
+
+
+                @if (!string.IsNullOrWhiteSpace(Model.MainOrgUnitName) && @Model.MainOrgUnitName.Length > 30)
+                {
+                    <div class="title" title="@Model.MainOrgUnitName">
+                        @Model.MainOrgUnitName.Substring(0, 30)...
+                    </div>
+                }
+                else
+                {<div class="title" title="@Model.MainOrgUnitName">
+                        @Model.MainOrgUnitName
+                    </div>
+                }
+
+
+
+            </div>
+            <div class="f-line w-full contact">
+                <div class="heading">@DbRes.TResource("User.Copy.UserName") </div>
+                <div class="ml-2">@Model.LocalName</div>
+                <div class="ml-2"><i class="la la-user pr-1"></i>@Model.UserName</div>
+                <div class="ml-2"><i class="la la-briefcase pr-1"></i>@Model.RoleName</div>
+                <div class="ml-2"><i class="la la-envelope-o pr-1"></i><a href="mailto:@(Model.Email)">@Model.Email</a></div>
+                <div class="ml-2"><i class="la la-phone-square pr-1"></i>@Model.PhoneNumber</div>
+            </div>
+
+            <div class="correspondence-icon d-flex" style="width:100%">
+                <div>
+                    @if (Model.IsDeleted != true)
+                    {
+                        <a class="circle color-blue" title=" @DbRes.TResource("Admin.User.Edit")" href="@(Url.Action("GetUserProfile" , "User") + "?id=" + Model.Id)">
+                            <i class="icon-outline-edit"></i>
+                        </a>
+
+                        if (Model.IsActive)
+                        {
+                            <a class="circle color-red" title=" @DbRes.TResource("Admin.User.Deactivate")" onclick="ShowCustomConfirmMessage('@DbRes.TValidation("Admin.Confirm.Activation")', 'ActivateDeactivateUser', '@Model.Id')">
+                                <i class="icon-lamp-off"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <a class="circle color-orange" title=" @DbRes.TResource("Admin.User.Activate")" onclick="ShowCustomConfirmMessage('@DbRes.TValidation("Admin.Confirm.Activation")', 'ActivateDeactivateUser', '@Model.Id')">
+                                <i class="icon-lamp"></i>
+                            </a>
+                        }
+                        if (!Model.ExternalId.HasValue)
+                        {
+                            <a class="circle color-gray" title=" @DbRes.TResource("Admin.User.Delete")" onclick="ShowCustomConfirmMessage('@DbRes.TResource("Admin.Lookups.PriorityExceptions.ConfirmDelete")', 'DeleteUserProfile', '@Model.Id')">
+                                <i class="icon-delete"></i>
+                            </a>
+                        }
+                    }
+                    else
+                    {
+                        <a class="circle color-orange" title=" @DbRes.TResource("Admin.User.ActivateDeleteUser")" onclick="ShowCustomConfirmMessage('@DbRes.TValidation("Admin.Confirm.Activation")', 'ActivateDeleteUser', '@Model.Id')">
+                            <i class="icon-lamp"></i>
+                        </a>
+                    }
+                </div>
+                <div class="ml-auto">
+                    @if (Model.IsDeleted != true)
+                    {
+                        if (!Model.IsActive)
+                        {
+                            <div class="text-danger">
+                                <i class="icon-inactive "></i>
+                                <span>@DbRes.TResource("Admin.Link.Status.Deactive")</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-success">
+                                <i class="icon-check-right"></i>
+                                <span>@DbRes.TResource("Admin.Link.Status.Active")</span>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="circle color-red">
+                            <i class="icon-delete"></i>
+                            <span>محذوف</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

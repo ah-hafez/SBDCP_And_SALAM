@@ -1,0 +1,31 @@
+﻿
+@{
+    Layout = null;
+}
+
+@model MCS.Common.TreeViewModel
+
+
+@{
+    string containerName = "dvDestinationTree";
+
+    if (ViewData["containerName"] != null)
+    {
+        containerName = ViewData["containerName"].ToString();
+    }
+
+    string onClickFunc = "GetUsersByPartyId";
+
+    if (ViewData["onClickFunc"] != null)
+    {
+        onClickFunc = ViewData["onClickFunc"].ToString();
+    }
+    string additionalClass = "";
+
+    if (ViewData["additionalClass"] != null)
+    {
+        additionalClass = ViewData["additionalClass"].ToString();
+    }
+}
+
+@Html.DepartmentsTreeNodeOnDemandCheckbox(Model.RootNode, "DestinationId", MCS.Common.TreeMode.Single, containerName, onClickFunc, Model.RootNode.CheckboxFunction,false, additionalClass)

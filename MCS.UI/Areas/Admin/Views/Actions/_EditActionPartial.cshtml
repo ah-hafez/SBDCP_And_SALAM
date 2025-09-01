@@ -1,0 +1,107 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.Lookups
+@using MCS.Common
+@model MCS.UI.Areas.Admin.Models.Actions.EditActionVM
+@{
+    ViewBag.Title = "_ActionEditPartial";
+    Layout = null;
+}
+
+
+<div class="d-flex flex-column flex-md-row align-items-md-center flex-grow-1">
+    <h3 class="site-color mb-4">@DbRes.TResource("Admin.Actions.EditAction")</h3>
+</div>
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmEditAction" }))
+{
+    @Html.AntiForgeryToken()
+    <div id="EditActionContent" class="form-row">
+        @{List<MCS.UI.Areas.User.Models.Lookups.CultureVM> cultureVMs = ViewData["Culture"] as List<MCS.UI.Areas.User.Models.Lookups.CultureVM>;}
+        @if (cultureVMs != null)
+        {
+            for (int m = 0; m < cultureVMs.Count; m++)
+            {
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            @Html.CustomLabelFor(model => model.Description[m].CultureName, new { @class = "" }, DbRes.TResource(string.Format("Admin.Lookups.Actions.Name.{0}", cultureVMs[m].ShortName)))<span class="stark">*</span>
+            @Html.StickyHiddenFor(model => model.Description[m].CultureId, new { Value = cultureVMs[m].Id, id = "EditDescription" })
+            @Html.HiddenFor(model => model.Description[m].Id)
+            @Html.TextBoxGroupFor(model => model.Description[m].Text, "", new { @class = "form-control", id = "EditText" }, DbRes.TValidation("Admin.Actions.NameRequired." + cultureVMs[m].ShortName))
+        </div>
+            }
+        }
+        @*<div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            @Html.Label(@DbRes.TResource("Admin.Lookups.Actions.AssignmentType"), new { @class = "w-100" })
+            <div class="form-check form-check-inline">
+                @Html.RadioButtonFor(model => model.IsAsCopy, false, new { @class = "form-check-input",id= "EditIsTransaction" })
+                @Html.Label(DbRes.TResource("Admin.Lookups.Actions.IsTransaction"), new { @class = "form-check-label",id = "EditIsCopy" })
+            </div>
+            <div class="form-check form-check-inline">
+                @Html.RadioButtonFor(model => model.IsAsCopy, true, new { @class = "form-check-input" })
+                @Html.Label(DbRes.TResource("Admin.Lookups.Actions.IsCopy"), new { @class = "form-check-label" })
+            </div>
+        </div>*@
+    </div>
+    List<LookupVM> ActionTypes = ViewData["ActionTypes"] as List<LookupVM>;
+    @Html.HiddenFor(model => model.TypeId, new { @Value = ActionTypes[0].Id, id = "hdnEditTypeId" })
+    <div class="mx-3 mx-md-5 mb-4 d-flex">
+        <div class="ml-auto">
+            @Html.ActionButton(DbRes.TResource("Admin.Actions.Edit"), "EditAction", "dvGrid", null, null, "OnEditSuccess", null, "post", null, "btnEdit", "frmEditAction", "btn btn-lg btn-st3 mx-1")
+            <a class="btn btn-lg btn-st3 mx-1" id="btnCancel" onclick="HideEditDiv()">@DbRes.TResource("Admin.User.Cancel")</a>
+        </div>
+    </div>
+    @Html.HiddenFor(model => model.Id, new { id = "hdnEditId" })
+}
+
+
+
+@*@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmEditAction", @class = "form-horizontal form-row" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="panel-heading">
+            <h3 class="panel-title">@DbRes.TResource("Admin.Actions.EditAction")</h3>
+        </div>
+        <div id="EditActionContent" class="panel-body">
+            <p>@DbRes.TResource("Global.Forms.MandatoryFields")</p>
+            <div class="row">
+                <div class="col-md-6">
+                    @{List<MCS.UI.Areas.User.Models.Lookups.CultureVM> Culture = ViewData["Culture"] as List<MCS.UI.Areas.User.Models.Lookups.CultureVM>;}
+                    @if (Culture != null)
+                    {
+                        for (int i = 0; i < Culture.Count; i++)
+                        {
+                            <div class="form-group">
+                                @Html.CustomLabelFor(model => model.Description[i].CultureName, new { @class = "col-md-4 control-label" }, DbRes.TResource("Admin.Actions.Description." + Culture[i].ShortName))
+                                @Html.StickyHiddenFor(model => model.Description[i].CultureId, new { Value = Culture[i].Id })
+                                @Html.HiddenFor(model => model.Description[i].Id)
+                                <div class="col-md-8">
+                                    <div class="">
+                                        @Html.TextBoxGroupFor(model => model.Description[i].Text, null, new { @class = "form-control" }, DbRes.TValidation(string.Format("Admin.Actions.DescriptionRequired.{0}", Culture[i].ShortName)))
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="col-md-4 control-label">@DbRes.TResource("Admin.Actions.Updating")</label>
+                        <div class="col-md-8">
+                            <div class="checkbox">
+                                <label>
+                                    @Html.CheckBoxFor(model => model.UpdateActionName)
+                                    @DbRes.TResource("Admin.Actions.UpdateAction")
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    @{List<LookupVM> ActionTypes = ViewData["ActionTypes"] as List<LookupVM>;}
+                    @Html.HiddenFor(model => model.TypeId, new { @Value = ActionTypes[0].Id, id = "hdnTypeId" })
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer middle">
+            @Html.ActionButton(DbRes.TResource("Admin.Actions.Edit"), "EditAction", "divGrid", null, null, "OnEditSuccess", null, "post", null, "btnEditAction", "frmEditAction", "btn btn-save pull-right")
+            <a class="btn-link pull-right" id="btnCancel" onclick="HideEditDiv()">@DbRes.TResource("Admin.User.Cancel")</a>
+        </div>
+        @Html.HiddenFor(model => model.Id, new { id = "hdnEditId" })
+    }*@

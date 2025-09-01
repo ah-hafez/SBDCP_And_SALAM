@@ -1,0 +1,60 @@
+﻿@using MCS.Framework.Localization
+@{
+    Layout = null;
+}
+
+<script>
+    $(document).ready(function () {
+        $("#btnUpload").click(function () {
+            var files = $("input:file").get(0).files;
+            if (files.length > 0) {
+                if (window.FormData !== undefined) {
+                    var data = new FormData();
+                    for (i = 0; i < files.length; i++) {
+                        data.append("file" + i, files[i]);
+                    }
+                    var names = $("#filesNames").val();
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("ImportUsers")',
+                        contentType: false,
+                        processData: false,
+                        data: data,
+                        success: function (result) {
+                            if (result.MessageType != 2) {
+                                $("#divGridContainer").html("");
+                                $("#divGridContainer").html(result.Html);
+                                jQuery.validator.unobtrusive.parse('#divGridContainer');
+                                ShowSuccesMessage(result.MessageText);                               
+                            }
+                            else {
+                                ShowErrorMessage(result.MessageText);
+                            }
+                        }
+                    });
+                } else {
+                    alert("Your browser doesn't support HTML5 multiple file uploads! Please use some decent browser.");
+                }
+            }
+        });
+
+        $("#BtnReset").click(function () {
+            $("#uploader").find("span").text("");
+            $("input:file").val("");
+        });
+    });
+</script>
+<div class="panel-body">
+    <div class="row all_types_title">
+        <strong>@DbRes.TResource("Admin.User.Or")</strong>
+    </div>
+    <p>@DbRes.TResource("Admin.User.UploadFile")</p>
+
+    <div id="uploader" class="form-group">
+        <input type="file" class="fileinput upload_design" name="" id="" data-filename-placement="inside" title="@DbRes.TResource("Admin.User.UploadExcel")" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
+    </div>
+</div>
+<div class="panel-footer middle">
+    <button type="button" id="btnUpload" class="btn btn-save pull-right">@DbRes.TResource("Admin.User.Add")</button>
+    <button type="button" id="BtnReset" class="btn btn-default">@DbRes.TResource("Admin.User.Rewrite")</button>
+</div>

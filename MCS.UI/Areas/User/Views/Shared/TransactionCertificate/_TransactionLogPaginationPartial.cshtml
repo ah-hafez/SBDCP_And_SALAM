@@ -1,0 +1,40 @@
+﻿@model MCS.UI.Areas.User.Models.Pagination
+
+
+@if (Model.TotalCount > UIHelper.PageSize)
+{
+    <div class="w-100 p-2 text-center">
+        <nav aria-label="Page navigation">
+            <ul class="pagination custom-pagination">
+                @if (Model.Page > 1)
+                {
+                    <li class="change-page" onclick="GoToPreviousPage()">
+                        <a aria-label="Previous">
+                            <i class="fa fa-caret-right"></i>
+                        </a>
+                    </li>
+                }
+                @for (int i = 1; i <= Math.Ceiling(Convert.ToDecimal(Model.TotalCount) / UIHelper.PageSize); i++)
+                {
+                    if (Model.Page == i)
+                    {
+                        <li id="PageNode_@i" class="active"><a onclick="GetPageNo(@i)">@i</a></li>
+                    }
+                    else
+                    {
+                        <li id="PageNode_@i"><a onclick="GetPageNo(@i)">@i</a></li>
+                    }
+
+                }
+                @if (Model.Page < (Model.TotalCount / Model.PageSize) + 1)
+                {
+                    <li class="change-page" onclick="GoToNextPage()">
+                        <a aria-label="Next">
+                            <i class="fa fa-caret-left"></i>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+}

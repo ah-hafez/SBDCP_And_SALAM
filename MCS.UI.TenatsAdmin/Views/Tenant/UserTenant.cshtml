@@ -1,0 +1,76 @@
+﻿@using MCS.Framework.Localization
+@model MCS.UI.TenantsAdmin.Models.Tenant.UserTenantVM
+
+@{
+    ViewBag.Title = "_TenantAddUserPartial";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="page-title">
+    <h2><span class="fa fa-arrow-circle-o-left"></span>@DbRes.TResource("UserTenant")</h2>
+</div>
+<div class="page-content-wrap" style="height: calc(100vh - 100px) !important;
+    overflow: auto;">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-horizontal">
+                <div class="panel panel-default">
+                    <div id="dvUserTenantContent">
+                        @Html.Partial("~/Views/Tenant/_AddEditUserTenantPartial.cshtml", Model, Html.ViewData)
+                    </div>
+                    <div id="dvUserTenantGrid">
+                        <div class="panel-body">
+                            <div class="row">
+                                @Html.Partial("~/Views/Tenant/_UserTenantGridPartial.cshtml", ViewData["UserTenantGridData"])
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function ClearInputsUserTenant(formId) {
+        jQuery.validator.unobtrusive.parse('#' + formId);
+        ClearInputs(formId);
+    }
+    function OnSuccessAddUserTenant(data, div) {
+        if (data.MessageType != 2) {
+            if (data.MessageType == undefined) {
+                window.location.href = __loginPageUrl;
+            }
+            else {
+                $("#" + div).html("");
+                $("#" + div).html(data.Html);
+                jQuery.validator.unobtrusive.parse('#' + div);
+                ShowSuccesMessage(data.MessageText);
+                ClearInputs('DivUserTenant');
+            }
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+    function OnDeleteSuccessUserTenant(data, divUpdatData) {
+        
+        if (data.MessageType != 2) {
+            if (data.MessageType == undefined) {
+                window.location.href = __loginPageUrl;
+            }
+            else {
+                $("#" + divUpdatData).html("");
+                $("#" + divUpdatData).html(data.Html);
+                jQuery.validator.unobtrusive.parse('#' + divUpdatData);
+                ShowSuccesMessage(data.MessageText);
+            }
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+</script>
+

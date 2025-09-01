@@ -1,0 +1,74 @@
+﻿@using MCS.Common
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.File
+@model IList<TransactionTrayInfoVM>
+@{
+    bool isVIP = (bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser);
+    DefaultDisplay defaultDisplay = (DefaultDisplay)SessionInfo.GetObjectFromSession(Constants.DefaultDisplay);
+    Session["viewType"] = "MyTransactions";     
+}
+<script>
+
+    $(document).ready(function () {
+        var isVIPUser = '@isVIP';
+
+        if ($('#selectAll').is(":checked")) {
+            $('#selectAll').click();
+        }
+
+        if (isVIPUser.toLowerCase() == 'true') {
+            goTableView();
+        }
+        else {
+            goCardsView();
+        }
+    });
+</script>
+
+@if (defaultDisplay == DefaultDisplay.Cards@*&& !isVIP*@)
+{
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="sub-tab-1">
+
+            @{
+                Session["renderType"] = "cardItem";
+                Html.RenderPartial("~/Areas/User/Views/File/_FileGrid.cshtml", Model,
+                      new ViewDataDictionary {
+                          { "ListItemName", "_MyTransactions_Item" },
+                          { "GridName", "MyTransactionsGrid" },
+                          { "dateType", ViewData["dateType"] },
+                          { "renderType", "cardItem" }
+});
+            }
+        </div>
+    </div>
+                }
+
+                else
+                {
+                    Session["renderType"] = "tableItem";
+                    Html.RenderPartial("~/Areas/User/Views/File/_FileGrid.cshtml", Model,
+                        new ViewDataDictionary {
+                        //{ "ListItemName", "_MyTransactions_TableItem" },
+                        { "GridName", "MyTransactionsGrid" },
+                        //{ "dateType", ViewData["dateType"] },
+                        //{ "renderType", "tableItem" }
+                        });
+                }
+<script>
+    var myTransactionGridEventHandler = "@Html.Raw(Url.Action("MyTransactionsGridEventHandler","File",new { transactionId= "transactionIdToReplace",  transactionTypeId= "transactionTypeIdToReplace" }))";
+    function prepareTransactionsGrid() {
+        if (!pageGrids.MyTransactionsGrid) {
+            $(".grid-mvc").gridmvc();
+        }
+        pageGrids.MyTransactionsGrid.ajaxify({
+            getPagedData: myTransactionGridEventHandler.replace("transactionIdToReplace", "@ViewData["TransactionId"]").replace("transactionTypeIdToReplace", "@ViewData["TransactionTypeId"]"),
+            getData: myTransactionGridEventHandler.replace("transactionIdToReplace", "@ViewData["TransactionId"]").replace("transactionTypeIdToReplace", "@ViewData["TransactionTypeId"]"),
+            callbackClientFunctionAfter: ["goToViewAfterPaging"]
+        });
+    }
+
+    $(document).ready(function () {
+        prepareTransactionsGrid();
+    });
+</script>

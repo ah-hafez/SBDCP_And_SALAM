@@ -1,0 +1,47 @@
+﻿@using MCS.Common
+@using MCS.UI.Common
+@model MCS.UI.Areas.User.Models.Shared.DocumentVM
+@{
+    Layout = "~/Views/Shared/_DialogLayout.cshtml";
+    var doconutIframeUrl = UIConfigurations.GetFullURl() + string.Format("{0}?hidecontrols=true&showwatermark=true", SystemConfigurations.DoconutIframeUrl);
+    //var doconutIframeWrd = UIConfigurations.GetFullURl() + string.Format("{0}?hidecontrols=true&showwatermark=true", "/DocoNut/ConvertWordToPdf");
+    Session["DocoNutDocument"] = Model.Content;
+    //ConvertWordToPdf
+
+
+}
+
+<div class="panel-body">
+    <div class="text-center">
+        @if (Model.Mode)
+        {
+            <h4B class="title6"> @DbRes.TResource("User.TransactionCertificate.LetterOfOrigin")</h4B>
+        }
+        else
+        {
+            <h4B class="title6"> @DbRes.TResource("User.TransactionCertificate.LinkedTransactions")</h4B>
+        }
+    </div>
+
+
+    @if (Model.MimeType == System.Net.Mime.MediaTypeNames.Application.Pdf || Model.MimeType == System.Net.Mime.MediaTypeNames.Application.Octet)
+    {
+        <div id="doconutContainer">
+            <iframe src="@doconutIframeUrl" class="" style="width:100%; height:1200px;" id="frameViewer" sandbox="allow-modals allow-same-origin allow-scripts allow-popups allow-forms allow-downloads"></iframe>
+        </div>
+    }
+    else
+    {
+
+        <div>
+
+            <a onclick="DownloadFile('@Model.Key')">اضغط هنا لتحميل الملف</a>
+
+        </div>
+
+    }
+</div>
+
+<script>
+
+</script>

@@ -1,0 +1,162 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.Lookups;
+@using MCS.GridMvc.Ajax.GridExtensions
+@model AttachmentTypeViewModel
+@{
+    ViewBag.Title = DbRes.TResource("Admin.Lookups.AttachmentType.Title");
+    Layout = "~/Areas/Admin/Views/Shared/_LookupsLayout.cshtml";//comment out with ajax call
+}
+
+<div class="mx-3 mx-md-5 header-container d-flex flex-row align-items-center">
+    <div class="d-flex flex-column flex-md-row align-items-md-center flex-grow-1">
+        <h3 class="site-color mb-4">@DbRes.TResource("Admin.Lookups.AttachmentType.Title")</h3>
+    </div>
+</div>
+<div class="white-container mx-3 mx-md-5">
+    <div id="dvAdd">
+        @Html.Partial("~/Areas/Admin/Views/Lookups/_AttachmentTypeAddPartial.cshtml", Model.AddAttachmentType)
+    </div>
+    <div id="dvEdit" style="display:none;">
+        @Html.Partial("~/Areas/Admin/Views/Lookups/_AttachmentTypeEditPartial.cshtml", Model.EditAttachmentType)
+    </div>
+    <hr />
+    <div id="dvGrid">
+        <div class="w-100 d-flex align-items-center mt-2 mb-2">
+            <h3 class="white-c-title">@DbRes.TResource("Admin.Grid.AttachmentType")</h3>
+            <span class="roundedred ml-3">@(((AjaxGrid<AttachmentTypeVM>)ViewData["GridData"]).ItemsCount)</span>
+            <span class="pl-2 gray4">@DbRes.TResource("Admin.Grid.Records")</span>
+        </div>
+        <div class="table-responsive mt-3">
+            @Html.Partial("~/Areas/Admin/Views/Lookups/_AttachmentTypeGridPartial.cshtml", ViewData["GridData"])
+        </div>
+    </div>
+</div>
+
+<script>
+    function ShowEditDiv() {
+        $("#dvEdit").css("display", "block");
+        $("#dvAdd").css("display", "none");
+    }
+
+    function HideEditDiv() {
+        $("#dvEdit").css("display", "none");
+        $("#dvAdd").css("display", "block");
+    }
+
+    function OnEditSuccess(data, div) {
+        if (data.MessageType != 2) {
+            $("#dvEdit").css("display", "none");
+            $("#dvAdd").css("display", "block");
+            $("#" + div).html("");
+            $("#" + div).html(data.Html);
+           /* jQuery.validator.unobtrusive.parse('#' + div);*/
+            ClearInputs('EditAttachmentTypeContent');
+            ShowSuccesMessage(data.MessageText);
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function OnAddSuccess(data, div) {
+        if (data.MessageType != 2) {
+            $("#" + div).html("");
+            $("#" + div).html(data.Html);
+          /*  jQuery.validator.unobtrusive.parse('#' + div);*/
+            ShowSuccesMessage(data.MessageText);
+            ClearInputs('AddAttachmentTypeContent');
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function OnDeleteSuccess(data, divUpdatData, deletedList) {
+        if (data.AttachmentTypeUsedList.length == 0) {
+
+            ShowSuccesMessage(data.MessageText);
+        }
+        else {
+
+            var msg = '';
+
+            for (var i = 0; i < data.AttachmentTypeUsedList.length; i++) {
+
+                if (msg == '')
+                    msg = data.AttachmentTypeUsedList[i];
+                else
+                    msg = msg + '</br>' + data.AttachmentTypeUsedList[i];
+            }
+
+            msg = '@DbRes.TResource("Admin.AttachmentType.DeleteAttachmentTypesErrorMsg")' + '</br>' + msg;
+
+            ShowErrorMessage(msg);
+        }
+
+        var deletedArray = deletedList.split(',');
+
+        for (var i = 0; i < deletedArray.length; i++) {
+
+            var deleted = true;
+
+            for (var y = 0; y < data.AttachmentTypeUsedList.length; y++) {
+
+                if (deletedArray[i] == data.AttachmentTypeUsedList[y]) {
+
+                    deleted = false;
+                }
+            }
+
+            if (deleted)
+                if (deletedArray[i] == $('#hdnEditId').val())
+                    HideEditDiv();
+        }
+    }
+
+
+     function LockUnlockLookup(LookupType, LookupOperationType, FormId) {
+         var token = $("#dvAdd input[name='__RequestVerificationToken']").val()
+        var data = { lookupType: LookupType, lookupOperationType: LookupOperationType, lookUpId: FormId, __RequestVerificationToken: token};
+        $.ajax({
+            type: "post",
+            url: '@Url.Action("LockUnlockLookup", "Lookups")',
+            data: data,
+            success:
+                function (data) {
+                    if (data.MessageType != 2) {
+                        $("#dvGrid").html("");
+                        $("#dvGrid").html(data.Html);
+                        //ShowInformationMessage("OK");
+                    }
+                    else {
+                        ShowErrorMessage(data.MessageType);
+                    }
+                },
+            error: function (data) {
+            }
+        });
+    }
+
+    function ActiveDeactiveLookup(LookupType, LookupOperationType, FormId) {
+        var token = $("#dvAdd input[name='__RequestVerificationToken']").val()
+        var data = { lookupType: LookupType, lookupOperationType: LookupOperationType, lookUpId: FormId, __RequestVerificationToken: token};
+        $.ajax({
+            type: "post",
+            url: '@Url.Action("ActiveDeactiveLookup", "Lookups")',
+            data: data,
+            success:
+                function (data) {
+                    if (data.MessageType != 2) {
+                        $("#dvGrid").html("");
+                        $("#dvGrid").html(data.Html);
+                        //ShowInformationMessage("OK");
+                    }
+                    else {
+                        ShowErrorMessage(data.MessageType);
+                    }
+                },
+            error: function (data) {
+            }
+        });
+    }
+</script>

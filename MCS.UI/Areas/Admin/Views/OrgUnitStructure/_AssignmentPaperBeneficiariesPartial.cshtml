@@ -1,0 +1,96 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Common;
+@model MCS.UI.Areas.Admin.Models.OrgUnit.AssignmentPaperBeneficiaryVM
+
+@using (Html.BeginForm("AssignmentPaperAddBeneficiary", "OrgUnitStructure", FormMethod.Post, new { id = "frmAssignmentPaperBeneficiaries" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.StickyHidden("orgUnitKey", ViewData["OrgUnitKey"].ToString());
+    @Html.StickyHidden("departmentsStructure", null, new { id = "hdnBeneficiariesDepartmentsStructure" });
+    <script>
+        $('#hdnBeneficiariesDepartmentsStructure').val($('#hdnSaveDepartmentsData').val());
+    </script>
+    <legend> @DbRes.TResource("Admin.AssignmentPaperBeneficiaries.Beneficiaries")</legend>
+    <div class="panel-body">
+        <div class="row">
+            <div class="panel-group accordion">
+                <!-- ACCORDION -->
+                <div class="col-md-12" id="dvDepartmentsTree">
+                    @Html.DepartmentsTree(ViewData["ListOfDepartments"] as TreeViewModel, model => model.BeneficiaryOrgUnitId, TreeMode.Single, "dvDepartmentsTree", Request.IsAjaxRequest(), "OnSelectDepartment", "AssignmentPaperBeneficiaries")
+                    @Html.Hidden("UnitName", null, new { id = "hdnOrgUnitName" })
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label class="col-md-4 control-label">@DbRes.TResource("Admin.AssignmentPaperBeneficiaries.User")</label>
+                        <div class="col-md-8">
+                            @Html.AutoCompleteBuilder("ddlOrgUnitUsers", "hdnOrgUnitUsers", null, null, true, "form-control")
+                            @Html.Hidden("UserName", null, new { id = "hdnOrgUnitUserName" })
+                            @Html.HiddenGroupFor(model => model.UserId, new { id = "hdnOrgUnitUsers", @Value = "" })
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel-footer middle">
+        @Html.ActionButton(DbRes.TResource("Admin.AssignmentPaperBeneficiaries.Add"), "AssignmentPaperAddBeneficiary", null, null, null, "BeneficiariesSuccess", null, "post", "AssignmentPaperBeneficiaries", "btnAddBeneficiary", "frmAssignmentPaperBeneficiaries", "btn btn-permissions pull-right")
+    </div>
+}
+
+<script>
+    $("#ddlOrgUnitUsers").prop('disabled', true);
+
+    $(document).on('focusout', '#ddlOrgUnitUsers', function () {
+
+        $('#hdnOrgUnitUserName').val($('#ddlOrgUnitUsers').val());
+    });
+
+    function OnSelectDepartment() {
+
+        if ($("#BeneficiaryOrgUnitId").val() != '' && $(".txtDepartmentName").val() != '') {
+
+            $("#hdnOrgUnitUsers").val('');
+            $("#ddlOrgUnitUsers").val('');
+            $("#hdnOrgUnitUserName").val('');
+            $('#hdnOrgUnitName').val($('.txtDepartmentName').val());
+
+            var listOfUsers = [];
+
+            var departmentArray = $.parseJSON($('#hdnSaveDepartmentsData').val());
+
+            var key = $("#BeneficiaryOrgUnitId").val();
+
+            if (key != null && key != '') {
+
+                var index = ElementIndex(departmentArray, key);
+
+                for (var i = 0; i < departmentArray[index].Users.length; i++) {
+
+                    listOfUsers.push({ label: departmentArray[index].Users[i].UserName, value: departmentArray[index].Users[i].Id.toString() });
+                }
+            }
+
+            AutoCompleteChangeList("ddlOrgUnitUsers", JSON.stringify(listOfUsers));
+            $("#ddlOrgUnitUsers").prop('disabled', false);
+        }
+        else {
+
+            AutoCompleteChangeList("ddlOrgUnitUsers", "[]");
+            $("#ddlOrgUnitUsers").prop('disabled', true);
+        }
+    }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+

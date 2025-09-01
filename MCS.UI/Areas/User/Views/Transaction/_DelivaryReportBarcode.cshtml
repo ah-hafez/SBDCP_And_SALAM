@@ -1,0 +1,27 @@
+﻿@model MCS.UI.Areas.User.Models.Transaction.BarcodeVM
+@using MCS.Common
+
+@{
+    var Barcode = String.Format("Barcode_{0}_{1}", Model.Type.ToString(), Model.Value);
+    <div class="col-md-3" style="width:auto; border-left:solid; border-width:1px;">
+        <div class="dia_print">
+            <div class="checkgroup">
+                <div class="label" for=@Barcode>
+                    <label style="width:auto;" for=@Barcode>
+                        <div class="img_ck" data-print=@Barcode data-print-type="@Model.Type" style="width:200px;height:140px">
+                            <img id="imageTransaction" src="data:image;base64,@System.Convert.ToBase64String(Model.Content)" style="max-width:100%;max-height:100%" />
+                            <div id='@(String.Format("{0}{1}", "Content", Barcode))' style="display:none;width:@ViewData["Width"]px;height:@ViewData["Height"]px">
+                                @Html.Raw(Model.Templete)
+                            </div>
+
+                        </div>
+                        <div class="name_ch btn-site">
+                            @ViewData["Source"]
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+

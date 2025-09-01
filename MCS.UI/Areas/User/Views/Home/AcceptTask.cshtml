@@ -1,0 +1,75 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Framework.Controls;
+@using MCS.UI.Areas.User.Models.Transaction
+@using MCS.Framework.Controls.Mvc
+@model TaskActionVM
+
+@{
+    Layout = "~/Views/Shared/_DialogLayout.cshtml";
+    int SelectedPageIndex = Int16.Parse(ViewData["SelectedPageIndex"].ToString());
+}
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmAccepTask", @class = "form-horizontal form-row" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("pageIndex", SelectedPageIndex)
+
+    @Html.HiddenFor(model => model.TaskId)
+    <div class="content-rtl panel panel-default dialogbox_panel">
+        <div class="panel-heading">
+            <h3 class="panel-title"> @DbRes.TResource("User.Task.AcceptTask.CompleteTask")</h3>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label">@DbRes.TResource("User.Task.AcceptTask.Subject") </label>
+                    <div class="col-md-8">
+                        <div class="">
+                            @Html.TextAreaGroupFor(model => model.Subject, new { @class = "form-control" })
+                        </div>
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label">@DbRes.TResource("User.Task.AcceptTask.Description")</label>
+                    <div class="col-md-8">
+                        <div class="">
+                            @Html.TextAreaFor(model => model.Description, new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label"> @DbRes.TResource("User.Task.AcceptTask.DownloadFile")</label>
+                    <div class="col-md-8">
+                        <a class="file-input-wrapper  btn-site fileinput upload_design none_push">
+                            <span>@DbRes.TResource("User.Task.AcceptTask.DownloadFile")</span>
+                            <input type="file" class="fileinput upload_design none_push valid" name="filename2" id="filename2" data-filename-placement="inside" title="@DbRes.TResource("User.Task.AcceptTask.DownloadFile")">
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="panel-footer">
+
+            @Html.ActionButton(DbRes.TResource("User.Task.AcceptTask.Send"), "GetAcceptTask", "dvReceivedTasksContainer", null, null, "AcceptTask", null, "post", null, "btnAcceptTask", "frmAccepTask", "btn btn-save pull-right")
+
+            <button type="button" class="btn btn-default" onclick="return __dialog.close();">@DbRes.TResource("User.Task.AcceptTask.Close")</button>
+        </div>
+    </div>
+}
+
+<script>
+    var uploadFileText = '@DbRes.TResource("User.Task.AcceptTask.DownloadFile")';
+
+    $("#filename2").change(function () {
+        if ($(this)[0].files.length > 0) {
+            $("a.fileinput").find("span").html($('input[type=file]')[0].files[0].name);
+        }
+        else {
+            $("a.fileinput").find("span").html(uploadFileText);
+        }
+    })
+</script>

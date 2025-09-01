@@ -1,0 +1,90 @@
+﻿@using MCS.Framework.Localization
+@model List<MCS.UI.Areas.User.Models.Assignment.TransactionAssignmentVM>
+
+@{
+    Layout = "~/Views/Shared/_DialogLayout.cshtml";
+}
+
+@{string controller = ViewData["ControllerName"] != null ? ViewData["ControllerName"].ToString() : ViewContext.RouteData.Values["controller"].ToString();}
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmAssignmentGroupData" }))
+{
+    @Html.AntiForgeryToken()
+    if (Model != null)
+    {
+        for (int i = 0; i < Model.Count; i++)
+        {
+            @Html.HiddenFor(model => model[i].ActionId, new { @Value = "", id = "hdnActionId" + Model[i].Id })
+            @Html.HiddenFor(model => model[i].ActionTypeId, new { @Value = "", id = "hdnActionType" + Model[i].Id, @class = "_hdnActionType" })
+            @Html.HiddenFor(model => model[i].ActionName, new { @Value = "", @class = "_hdnActionName" })
+            @Html.HiddenFor(model => model[i].IsAssigned, new { @Value = true, id = "IsAssigned" + Model[i].Id })
+            @Html.HiddenFor(model => model[i].Id)
+            @Html.HiddenFor(model => model[i].GroupId)
+        }
+    }
+    <div class="dia_inbound_class content-rtl panel panel-default dialogbox_panel">
+        <div class="panel-heading">
+            <h3 class="panel-title">@ViewData["GroupName"]</h3>
+        </div>
+
+        <div class="modal-body">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="table-responsive">
+                        @Html.Partial("~/Areas/User/Views/Editor/Assignments/_AssignmentGroupDetailsEditGridPartial.cshtml", ViewData["AssignmentGroupGrid"])
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!---->
+        <div class="modal-footer">
+            @Html.ActionButton(DbRes.TResource("User.Transaction.AssignmentGroup.Save"), Url.Action("UpdateEditorGroupDetails", controller), null, null, null, "UdateDetailsOnSuccess", null, "post", null, "btnAddAssignmentGroup", "frmAssignmentGroupData", "btn btn-save pull-right")
+            <button type="button" class="btn btn-default" data-dismiss="modal">إغلاق</button>
+        </div>
+        @Html.StickyHidden("hdnGroupDataEdit", "[]")
+        @Html.StickyHidden("hdnGroupEdit", "[]")
+    </div>
+}
+
+<script>
+    $("._isAssigned").change(function () {
+        var id = $(this).attr('id');
+        $(":hidden#" + id).val($(this).is(':checked'))
+    })
+
+    $("._ddlActionId").change(function () {
+        $("._hdnActionName").val($(this).val())
+    })
+
+    $("#ddlHeaderActionId").change(function () {
+        $(this).parents('table:first').find("._ddlActionId").val($(this).val());
+        $(this).parents('table:first').find("._ddlActionId").trigger("change");
+    })
+
+
+    $(document).ready(function () {
+        $("#hdnGroupDataEdit").val($("#hdnDetailAssignmentGroupData").val())
+        $("#hdnGroupEdit").val($("#hdnAssignmentGroupData").val())
+        $("._ddlActionId").trigger("change");
+    })
+
+    function UdateDetailsOnSuccess(data) {
+        $("table#grdAssignmentGroup").find("tr").each(function () {
+            if ($(this).find("td").eq(1).html() == data.GroupId) {
+
+                if (!data.CheckSameValue) {
+                    $(this).find("td").eq(3).html("");
+                }
+                else {
+                    $(this).find("td").eq(3).html(data.ActionName);
+                }
+                $(this).find("td").eq(5).html(data.Count);
+            };
+        })
+
+        $("#hdnDetailAssignmentGroupData").val(data.Details);
+        $("#hdnAssignmentGroupData").val(data.Groups);
+        __dialog.close();
+    }
+</script>

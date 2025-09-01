@@ -1,0 +1,592 @@
+﻿@using MCS.Common
+@using MCS.Framework.Localization
+@using MCS.Framework.Controls.Mvc
+@using MCS.Framework.Controls
+@using MCS.UI.Areas.User.Models.File
+@model IList<TransactionTrayInfoVM>
+
+
+@{int trayId = (int)TrayType.SentTransactions;
+    string subject = string.Empty;
+    string ect = string.Empty;}
+
+<div class="mb-3 mb-lg-0 mt-md-5 mt-auto">
+    @*<h3 class="site-color"> @DbRes.TResource("User.File.SentTransactions") </h3>*@
+    @Html.Partial("~/Areas/User/Views/File/_SentTransactionColorExplainPartial.cshtml", null)
+</div>
+<div class="content_container site_border">
+    <div class="">
+        <div class="d-block d-lg-flex mx-3 mx-md-5 mb-3 mt-5">
+            <div class="ml-auto align-items-baseline options p-0">
+                <div class="filter-link ml-md-auto mr-lg-3 my-2 mt-lg-auto">
+                    <div class="checkbox">
+                        <label for="CheckAllBoxes">
+                            <input id="CheckAllBoxes" type="checkbox" value="">
+                            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                            <span class="Darkgreen bold">
+                                @DbRes.TResource("User.File.SelectAll")
+                            </span>
+                        </label>
+                    </div>
+                    <a class="dashed-circle sort-target" href="javascript:toggleOrderBox()">
+                        <i class="uicon icon_order Darkgreen"></i>
+                        <span class="Darkgreen font-size-16">
+                            @DbRes.TResource("User.File.SortBy")
+
+                        </span>
+                    </a>
+                    <a href="javascript:toggleFilterBox()" class="dashed-circle filter-target">
+                        <i class="uicon icon_filter Darkgreen"></i>
+                        <span class="Darkgreen font-size-16">
+                            @DbRes.TResource("User.Layout.Search")
+
+                        </span>
+                    </a>
+                    @if ((bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser))
+                    {
+                        <a data-type="Card" onclick="goToView(1)" href="#" class=" system_1 Darkgreen font-size-16">
+                            <i class="uicon icon_cards Darkgreen font-size-16"></i>
+                            <span class="Darkgreen font-size-16">
+                                بطاقات
+
+                            </span>
+                        </a>
+                        <a data-type="Table" onclick="goToView(2)" href="#" class="active grid_system Darkgreen font-size-16">
+                            <i class="uicon icon_table Darkgreen font-size-16"></i>
+                            <span class="Darkgreen font-size-16">
+                                جدول
+                            </span>
+                        </a>
+                    }
+                    else
+                    {
+                        <a data-type="Card" onclick="goToView(1)" href="#" class="active system_1">
+                            <i class="uicon icon_cards Darkgreen font-size-16"></i>
+                            <span class="Darkgreen font-size-16">
+                                بطاقات
+                            </span>
+                        </a>
+                        <a data-type="Table" onclick="goToView(2)" href="#" class="active grid_system">
+                            <i class="uicon icon_table Darkgreen font-size-16"></i>
+                            <span class="Darkgreen font-size-16">
+                                جدول
+                            </span>
+                        </a>
+                    }
+                    <div class="toggling-menu">
+                        @*@if ((bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser))
+                            {
+                                <a data-type="Card" onclick="goCardsView(event)" href="#" class=" system_1" title="@DbRes.TResource("User.File.Cards")"><i class="icon-grid"></i></a>
+                                <a data-type="Table" onclick="goTableView(event)" href="#" class="active grid_system" title="@DbRes.TResource("User.File.Table")"><i class="icon-list"></i></a>
+
+                            }
+                            else
+                            {
+                            <a data-type="Card" onclick="goCardsView(event)" href="#" class="active system_1" title="@DbRes.TResource("User.File.Cards")"><i class="icon-grid"></i></a>
+
+                            }*@
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-lg-12 d-flex justify-content-between">
+            <div class="d-flex">
+                <ul class="nav nav-pills MCShomeTabs"></ul>
+            </div>
+
+        </div>
+    </div>
+    <hr class="mb-3" />
+
+
+
+    <div class="search mx-5 mx-xs-3 white-container mt-2 pb-2 filter-box">
+        <div class="form-row">
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <label class="control-label">@DbRes.TResource("User.Transaction.Link.TransactionNumber")</label>
+                <input type="text" id="TransId" class="form-control trans-input" onkeypress="return IsNumeric(event);" />
+
+            </div>
+
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 with-icon">
+                <label class="control-label ">@DbRes.TResource("User.File.AssignDate")</label>
+                @Html.Calendar("AssignDate", "hdnAssignDate", "hdnHasDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), "", "form-control")
+                <a class=" date-icon2 " onclick="showCalender('AssignDate')"><img src="~/Content/User/lib/images/SystemIcon/main bar-08.svg" width="30" /></a>
+                @Html.StickyHidden("hdnAssignDate", "", null)
+            </div>
+
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <label class="control-label ">@DbRes.TResource("User.Inbound.BasicInfo.Subject")</label>
+                @Html.TextBox("Descri", "", "", new { @class = "form-control", @id = "Descri" })
+            </div>
+            <div class="col-xs-12 panel-body row text-right">
+                <input type="button" value="@DbRes.TResource("User.Search.SubmitSearch")" class="btn btn-st2" onclick="FilterBy()" />
+            </div>
+        </div>
+    </div>
+
+    <form>
+        <div class="search mx-5 mx-xs-3 white-container mt-2 pb-2 order-box">
+            <div class="form-row">
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                    <label class="control-label ">@DbRes.TResource("User.File.AssignDate")</label>
+                    @Html.AutoCompleteBuilder("Date", "hdnDate", ViewData["SortByDate"].ToString(), "", true, "form-control", onChangeCallback: "doSort")
+                    @Html.StickyHidden("hdnDate", "", new { @Value = "", id = "hdnDate" })
+                </div>
+            </div>
+        </div>
+    </form>
+    @Html.StickyHidden("transactionsAssignmentIds", "", new { id = "transactionsAssignmentIds" })
+    @Html.StickyHidden("transactionsIds", "", new { id = "transactionsIds" })
+    @Html.StickyHidden("hdnFilter")
+    <div class="content_container content_container--body" id="transBoxes">
+        @Html.Partial("~/Areas/User/Views/File/_SentTransactionsBoxesPartial.cshtml", Model)
+    </div>
+
+    <!--<div class="sidebarMultiOptions invisible transparent-bg">
+        <div class="options-list d-flex">
+            <div class="d-flex mr-auto info-bottom">
+            </div>
+            <div class="d-flex bottom-actions text-right">
+
+                <div class="d-flex text-center">
+                    <a style="width:50%" onclick="HideTransaction();return false;" id="btnPrintGroupTransactionsDeliveryReportIcon" class="boardered-circle-transparent"><img src="~/Content/User/lib/images/SystemIcon/main bar-29.svg" width="20" /></a>
+                    <a style="width:80%" onclick="HideTransaction();return false;" id="btnPrintGroupTransactionsDeliveryReport">إخفاء</a>
+                </div>-->
+    @*<div class="d-flex text-center">
+            <a onclick="ExportTransactionReportToPdf()" class="boardered-circle-transparent"><i class="la la-file-pdf-o"></i></a>
+            <a onclick="ExportTransactionReportToPdf()">@DbRes.TResource("User.Transaction.Reports.Export")</a>
+        </div>*@
+
+    <!--<a href="javascript:closeSendActionShowMessage()" class="close-box close-box-md hidden-success"><i class="uicon icon_close"></i></a>
+                </div>
+            </div>
+            <div class="bottom-white selected-papers-wrapper">
+                <div class="col-xs-12">
+                    <ul class="papers-selected"></ul>
+                </div>
+            </div>
+        </div>
+    </div>-->
+    <div class="sidebarMultiOptions invisible transparent-bg">
+        <div class="options-list d-flex">
+
+            <div class="d-flex mr-auto info-bottom">
+                <a class="align-self-start close-box" href="javascript:toggleSelectedPaperBox()">
+                    <i class="uicon icon_arrow_down"></i>
+                </a>
+                <span class="paper_count"></span>
+                <span>@DbRes.TResource("User.Transaction.Count")</span>
+            </div>
+            <div class="col-sm-10 bottom-actions text-right">
+
+                <div class="d-flex text-center">
+                    <a style="width:50%" onclick="HideTransactionAll();return false;" id="btnHiddentIcon" class="boardered-circle-transparent"><img src="~/Content/User/lib/images/SystemIcon/main bar-29.svg" width="20" /></a>
+                    <a style="width:80%" onclick="HideTransactionAll();return false;" id="btnHiddentTransaction">إخفاء</a>
+                </div>
+                <a href="javascript:closeSendActionShowMessage()" class="close-box close-box-md hidden-success"><i class="uicon icon_close"></i></a>
+            </div>
+
+
+
+
+        </div>
+        <div class="bottom-white selected-papers-wrapper">
+            <div class="col-xs-12">
+                <ul class="papers-selected"></ul>
+            </div>
+        </div>
+
+
+
+
+    </div>
+    <script>
+    function checkNumber()
+    {
+
+        if ($('.boxes input:checked').length > 0)
+        {
+            $('.sidebarMultiOptions').removeClass('invisible')
+        }
+        else
+        {
+            $('.sidebarMultiOptions').addClass('invisible')
+        }
+
+
+
+        if (!IsAllChecked)
+        {
+            $("#transactionsAssignmentIds").val("");
+
+
+        } else
+        {
+
+            var assignmentSelectedList = [];
+
+            $('.boxes input:checkbox').each(function ()
+            {
+                assignmentSelectedList.push($(this).data("assignmentid"));
+
+            });
+
+            $("#transactionsAssignmentIds").val(assignmentSelectedList.join(","));
+
+
+        }
+
+
+        }
+
+
+
+    var sentTransactionEventHandler = "@Html.Raw(Url.Action("UpdateTrayTransactions", "File",new { trayId = "TrayType", dateType = ViewData["dateType"] ?? 1584 }))";
+    function prepareSentTransaction(trayId, optionalData) {
+
+        $(".grid-mvc").gridmvc();
+        var newURL = sentTransactionEventHandler.replace("TrayType", trayId);
+        pageGrids.SentTransactionGrid.ajaxify(
+            {
+                getPagedData: newURL,
+                getData: newURL,
+                requestType: "POST",
+                callbackClientFunctionAfter: ["goToViewAfterPaging", "reRegisterRevertButton"],
+                optionalData: optionalData
+            });
+    }
+
+    $(document).ready(function () {
+        $('#AssignDate').attr('autocomplete', 'off');
+        $("#list_transaction").find(".view_group:first").trigger("click");
+        reRegisterRevertButton();
+        $('#CheckAllBoxes').prop("disabled", false);
+
+        $('#CheckAllBoxes').change(function ()
+        {
+            checkNumber();
+        });
+
+
+        $('#checkbox .FillIds').click(function ()
+        {
+            if (!$(this).is(':checked'))
+            {
+                return confirm("Are you sure?");
+            }
+        });
+
+
+
+    });
+
+
+    $(".view_group").click(function (e) {
+
+        $(".view_group").removeClass("select");
+        $(this).addClass("select");
+
+        var type = $(this).data("type");
+        var id = $(this).data("id");
+        var trayId = $(this).data("tray");
+
+        var data = {
+            trayId: trayId, transactionId: id, transactionCategoryId: type
+        };
+
+        $.ajax({
+            url: '@Url.Action("Index","Editor")',
+            type: 'Get',
+            cache: false,
+            data: data,
+            success: function (data) {
+                $("#editor_transaction").html("");
+                $("#editor_transaction").html(data);
+                jQuery.validator.unobtrusive.parse('#editor_transaction');
+            },
+            error: function (a) {
+            }
+        });
+    })
+
+    var dataToMoveTransaction;
+    function reRegisterRevertButton() {
+
+        $(".aRevert").click(function (e) {
+
+            e.stopPropagation();
+            var currentTarget = $(event.currentTarget);
+            var isViewed = currentTarget.data('viewed');
+            var deliveryMethodId = currentTarget.data('deliverymethodid');
+            var transactionType = currentTarget.data('transactiontypeid');
+            var Id = currentTarget.data('id');
+
+            var trayid = parseInt($("#hdnTrayId").val());
+            var page = $("#hdnCurrentPage").val();
+            var orderBy = $("#hdnOrderBy").val();
+            var dir = $("#hdnDirection").val();
+            var filter = $("#hdnFilter").val();
+            var fromDate = $("#hdnFromDateValue").val();
+            var toDate = $("#hdnToDateValue").val();
+            var number = $("#hdnSearchTransactionNumberValue").val();
+            var viewType = $("#hdnViewFile").val();
+            var dateType = $("#hdnFilterDateType").val();
+            var transactionId = $(this).data("id");
+            var trayActionType = $(this).data("type");
+            var PageSize = $("#ddlPaging").val();
+
+            dataToMoveTransaction = {
+                trayId: trayid, page: page, gridColumn: orderBy, dir: dir, filter: filter, fromDate: fromDate,
+                toDate: toDate, searchColumn: number, viewType: viewType, transactionId: transactionId, trayActionType: trayActionType
+                , dateType: dateType, pageSize: PageSize
+            };
+
+            @*if (JSON.parse(isViewed.toLowerCase()) == false && deliveryMethodId == DeliveryMethodType.ElectronicPaper) {
+                ShowVerifyTransactionNumberOrBarcode('@Url.Action("VerifyTransactionNumberOrBarcode", "Inbound")', Id, transactionType);
+            }
+            else {
+                MoveTransactionFile(dataToMoveTransaction)
+            }*@
+
+            MoveTransactionFile(dataToMoveTransaction)
+        });
+    }
+
+    function ExecuteTargetFunction() {
+
+        MoveTransactionFile(dataToMoveTransaction);
+    }
+
+    function MoveTransactionFile(dataToMoveTransaction) {
+        debugger
+        $.ajax({
+            url: '@Url.Action("MoveTransaction","File")',
+            type: 'POST',
+            data: dataToMoveTransaction,
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    //$("#dvTransactionsContainer").html("");
+                    //$("#dvTransactionsContainer").html(data.Html);
+                    //$("#txtCurrentPage").val(page);
+                    //$("#hdnCurrentPage").val(page);
+                    //$("#ddlPaging option[value=" + PageSize + "]").attr('selected', 'selected');
+
+                    //$("li#_UserFileMenu").html("");
+                    //$("li#_UserFileMenu").html(data.FileMenuHtml);
+                    window.location.href = '@Url.Action("SentTransactions", "File")';
+                    UpdateMenuFileInformation('@Url.Action("GetMenuFile", "Shared")');
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            }
+        });
+    }
+    var sortingOrders = [];
+    var currentIndex = 1;
+
+    function updateSortingData(index, ascending, obj) {
+
+        var objIndex = checkIfExist(obj, ascending);
+
+        if (obj.value == "") {
+            sortingOrders.splice(objIndex, 1);
+        } else {
+            if (objIndex == -1) {
+                sortingOrders.push({ Index: index, Ascending: ascending, ColunmName: obj.id });
+                currentIndex++;
+            } else {
+                sortingOrders[objIndex].Ascending = ascending;
+            }
+        }
+    }
+
+    function checkIfExist(obj) {
+
+        var index = -1;
+        for (var i = 0; i < sortingOrders.length; i++) {
+            if (sortingOrders[i].ColunmName == obj.id) {
+                index = i;
+                break;
+            }
+        }
+        return index;
+    }
+    function doSort(obj) {
+
+
+        var SortData = $('#hdn' + obj.id).val();
+        updateSortingData(currentIndex, SortData, obj);
+
+        var filters = $("#hdnFilter").val();
+        var sortDataResult = { trayId: @trayId, sortType: obj.id, dir: SortData, searchData: SortData, SortingOrders: sortingOrders, filter: filters };
+
+        $.ajax({
+            url: '@Url.Action("UpdateTrayTransactions", "File")',
+            type: 'POST',
+            cache: false,
+            data: sortDataResult,
+            success: function (data) {
+                $('#transBoxes').html("");
+                $('#transBoxes').html(data.Html);
+                goToViewAfterPaging();
+                prepareSentTransaction(@trayId, sortDataResult);
+                reRegisterRevertButton();
+            }
+        });
+    }
+    function fillHidden(obj) {
+
+        $('#hdn' + obj.id).val("");
+        $('#hdn' + obj.id).val(obj.value);
+    }
+
+    function FilterBy() {
+
+        var trayid = @trayId;
+        var filter = "";
+        if ($("#TransId").val() != "" && $("#TransId").val() != null) {
+
+            if (filter.length > 0) {
+                filter += "&";
+            }
+            filter += "Number__1__" + $("#TransId").val();
+        }
+
+        if ($("#hdnAssignDate").val() != "" && $("#hdnAssignDate").val() != null) {
+
+            if (filter.length > 0) {
+                filter += "&";
+            }
+            filter += "AssignDate__1__" + $("#hdnAssignDate").val();
+        }
+        if ($("#Descri").val() != "" && $("#Descri").val() != null) {
+
+            if (filter.length > 0) {
+                filter += "&";
+            }
+            filter += "Subject__2__" + $("#Descri").val();
+        }
+        $("#hdnFilter").val(filter);
+
+        var filterData = { trayId: trayid, filter: filter, SortingOrders: sortingOrders };
+        $.ajax({
+            url: '@Url.Action("UpdateTrayTransactions","File")',
+            type: 'POST',
+            data: filterData,
+            success: function (data) {
+                $('#transBoxes').html("");
+                $('#transBoxes').html(data.Html);
+                goToViewAfterPaging();
+                reRegisterRevertButton();
+                prepareSentTransaction(@trayId, filterData);
+            }
+        });
+    }
+
+    function OpenTransaction(transId) {
+
+        var trayid = 4;
+        var filter = "";
+
+        if (transId != "" && transId != null && transId > 0) {
+
+            if (filter.length > 0) {
+                filter += "&";
+            }
+            filter += "Id__1__" + transId;
+        }
+
+        var data = {
+            trayId: trayid, filter: filter
+
+        };
+
+        window.location.href = '@Url.Action("GetTransactionDetails", "File")?trayId=' + trayid + '&transId=' + transId;
+    }
+
+    function ShowTransactionLog(transactionId) {
+
+     var trxId=   EncryptionKey(transactionId);
+        var url = '@Url.Action("Index", "TransactionLog")' + '?transactionId=' + trxId.toString() + "&transactionCategory=" + @((int)TransactionCategory.Inbound);
+        ShowDialog(url, 'dialogbox col-md-12');
+    }
+
+
+    function HideTransaction(id, transactionId ) {
+          $.ajax({
+            url: '@Url.Action("HideTransactionAssignment", "Editor")',
+            type: 'POST',
+              data: { id: id, transactionId: transactionId },
+              success: function (data) {
+
+                if (data.MessageType == 2) {
+                    ShowErrorMessage(data.MessageText);
+                } else {
+                    window.location.reload();
+                }
+            }
+        });
+    }
+
+    function HideTransactionAll()
+        {
+            var transactionIds = $('#transactionsIds').val();
+            var assignmentIds = $('#transactionsAssignmentIds').val();
+          $.ajax({
+            url: '@Url.Action("HideTransactionAssignments", "Editor")',
+            type: 'POST',
+              data: { assignmentIds: assignmentIds, transactionIds: transactionIds },
+              success: function (data) {
+
+                if (data.MessageType == 2) {
+                    ShowErrorMessage(data.MessageText);
+                } else {
+                    window.location.reload();
+                }
+            }
+        });
+    }
+
+    function goToView(id) {
+
+        var dateType= parseInt('@Convert.ToInt32(TransactionDateType.Any)');
+        var TypeData = { trayId: '@Convert.ToInt32(TrayType.SentTransactions)', dateType: dateType, PageSize: @ViewData["PageSize"]!= null ?@ViewData["PageSize"]: '@UIHelper.PageSize', renderType : id};
+        $("#transBoxes").html("");
+            $.ajax({
+                url: '@Url.Action("UpdateTrayTransactions","File")',
+                type: 'POST',
+                data: TypeData,
+                 success: function (data) {
+                $('#transBoxes').html("");
+                $('#transBoxes').html(data.Html);
+                goToViewAfterPaging();
+                     prepareSentTransaction(@trayId, TypeData);
+                reRegisterRevertButton();
+            },
+                error: function (a) {
+                }
+            });
+        }
+
+
+        function SentCheckboxChange(chk)
+        {
+            var oldIds = $("#transactionsAssignmentIds").val();
+            var trainindIdArray = oldIds.split(',');
+            var assignmentId = $(chk).data("assignmentid");
+
+            if ($(chk).is(':checked'))
+            {
+                trainindIdArray.indexOf(assignmentId) === -1 ? trainindIdArray.push(assignmentId) : "";
+            } else
+            {
+                trainindIdArray.splice($.inArray(assignmentId, trainindIdArray), 1);
+            }
+
+            $("#transactionsAssignmentIds").val(trainindIdArray.join(","));
+        }
+    </script>

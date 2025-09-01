@@ -1,0 +1,136 @@
+﻿@using MCS.UI.Areas.User.Models
+@using MCS.UI.Areas.User.Models.UserPreferences
+@using MCS.Framework.Localization
+@using MCS.Common
+@using MCS.UI.Areas.User.Models.OrgUnit
+@model TransactionPathVM
+
+@{
+                /**/
+
+                string controller = "UserPreferences";
+                ViewBag.Title = DbRes.TResource("User.UserPreferences.TransactionPath");
+                Layout = "~/Areas/User/Views/Shared/_SearchLayout.cshtml";
+}
+
+<div class="content_container site_border">
+    @Html.StickyHiddenFor(model => model.Id, new { id = "hdnPathId" })
+    <div id="TransactionPathContainer">
+        <div id="dvTransactionPathGrid">
+            <div class="mx-3 mx-sm-5 header-container d-flex d-flex flex-column flex-md-row align-items-md-center">
+                <h3 class="site-color p-xs-0">@DbRes.TResource("User.UserPreferences.TransactionPath") </h3>
+                <div class="filter-link d-flex d-xs-block ml-md-auto mr-lg-3 mt-xs-3 align-items-end">
+                    <div class="toggling-menu">
+
+                        @*@if ((bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser))
+                        {
+                            <a href="#"  onclick="goCardsView(event);"><i class="icon-grid"></i>@DbRes.TResource("User.File.Cards")</a>
+                            <a href="#" class="active" onclick="goTableView(event);"><i class="icon-list"></i>@DbRes.TResource("User.File.Table")</a>
+                        }
+                        else
+                        {
+                            <a href="#" class="active" onclick="goCardsView(event);"><i class="icon-grid"></i>@DbRes.TResource("User.File.Cards")</a>
+                        }*@
+
+                    </div>
+                    <button type="submit" class="btn btn-st1 btn-lg mt-xs-2 w-xs-100 adds" onclick="OpenAddPathPartial();">
+                        <i class="icon-buttons-add pr-3"></i>@DbRes.TResource("User.Transaction.Path.AddPathTitle")
+                    </button>
+                </div>
+
+            </div>
+            @Html.Partial("~/Areas/User/Views/UserPreferences/TransactionPath/_TransactionPathGridPartial.cshtml", Model.TransactionPathsGrid)
+        </div>
+        <div id="dvTransactionPathPartial" style="display:none;">
+            @Html.Partial("~/Areas/User/Views/UserPreferences/TransactionPath/_TransactionPathAddPartial.cshtml", Model)
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/jquery-sortable.js"></script>
+
+<script type="text/javascript">
+
+    $(document).on("click", "span[data-node-id]", function () {
+        var elemnt = $(this);
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('InternalLoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetOrgUnitsNodes")',
+                data: { parentId: $(this).data("node-id"), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+                success:
+                    function (data) {
+
+                        $(elemnt).closest('li').children('ul').last().empty()
+
+                        $(elemnt).closest('li').children('ul').last().append(data);
+
+                        $(elemnt).removeClass("InternalLoadedData");
+                    }
+            });
+        }
+    });
+
+    function OpenAddPathPartial() {
+        $('#dvTransactionPathGrid').hide();
+        $('#dvTransactionPathPartial').fadeIn();
+        $('#pathDetailsRow').show();
+        $('#btnCancelPathEdit').show();
+    }
+
+    function CloasAddPathPartial() {
+        window.location.reload();
+    }
+
+    function GetPathDetailsById(pathId) {
+        $('#hdnPathId').val(pathId);
+        $.ajax({
+            url: '@Url.Action("GetTransactionPathById", "UserPreferences")',
+            type: 'GET',
+            cache: false,
+            //contentType: "application/json",
+            data: { pathId: pathId },
+            success: function (data) {
+                if (data.MessageType == 2) {
+                    ShowErrorMessage(data.MessageText);
+                    return;
+                }
+                $('#dvTransactionPathPartial').html(data.Html);
+                $('#dvTransactionPathGrid').hide();
+                $('#dvTransactionPathPartial').fadeIn();
+                $('#pathDetailsRow').show();
+                $('#btnCancelPathEdit').show();
+            },
+            error: function (a, b, c, d) {
+                ShowErrorMessage('حدث خطأ');
+            }
+        });
+    }
+
+    function ConfirmDeletePathById(pathId) {
+        ShowCustomConfirmMessage('@DbRes.TResource("Grid.DeleteMassage")', 'DeletePathById', pathId);
+    }
+
+    function DeletePathById(pathId) {
+
+        $.ajax({
+            url: '@Url.Action("DeleteTransactionPath", "UserPreferences")',
+            type: 'GET',
+            cache: false,
+            //contentType: "application/json",
+            data:{ pathId: pathId },
+            success: function (data) {
+
+                if (data.MessageType == 2) {
+                    ShowErrorMessage(data.MessageText);
+                    return;
+                }
+                window.location.reload();
+            },
+            error: function (a, b, c, d) {
+                ShowErrorMessage('حدث خطأ');
+            }
+        });
+    }
+
+</script>

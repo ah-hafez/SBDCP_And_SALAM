@@ -1,0 +1,139 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Report;
+@model SearchAssignmentVM
+@{
+    Html.ViewData.TemplateInfo.HtmlFieldPrefix = "SearchAssignmentVM";
+}
+<div id="hidden_fields_Five" class="" style="display: none;">
+    <h3 class="site-color sub-title ml-3">@DbRes.TResource("User.Transaction.Search.TransferredTransactions")</h3>
+    <div class="row">
+        <div class="col-sm-4">
+            <div id="dvDepartmentsTree_1">
+                @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.FromOrgUnitId, TreeMode.Single, "TreeFromOrgUnit", true,
+               "GetDirectedToUsersByOrgUnitIdOne", "", "dvDepartmentsTree_1")
+
+
+
+                @*<label>@Html.DisplayNameFor(model => model.FromOrgUnitId)<span class="stark">*</span></label
+                @Html.EditorFor(model => model.FromOrgUnitId, "OrgHierarchyCaller", additionalViewData: new { treeId = "TreeFromOrgUnit", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Shared"), GetNodeInfoByIdActionURL = @Url.Action("GetInternalPartyInfoById", "Shared"), GetNodeInfoByNumActionURL = @Url.Action("GetInternalPartyInfoByNumber", "Shared"), onClickfunction = "GetDirectedToUsersByOrgUnitIdOne", ValidationGroup = "", ShowAddPartyButton = false })*@
+
+
+
+
+                @Html.StickyHiddenFor(model => model.FromOrgUnitId)
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <fieldset>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.FromEmployeeId, new { @class = "control-label" })
+                    <div>
+                        @Html.AutoCompleteBuilder("ddlFromEmployeeId", "SearchAssignmentVM_FromEmployeeId", ViewData["OrgUnitsUsersData"].ToString(), null, false, "form-control")
+                        @Html.StickyHiddenFor(model => model.FromEmployeeId)
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-4">
+            <div id="dvDepartmentsTree_2">
+
+                @*<label>@Html.DisplayNameFor(model => model.ToOrgUnitId)<span class="stark">*</span></label>
+                @Html.EditorFor(model => model.OrgUnitId, "OrgHierarchyCaller", additionalViewData: new { treeId = "OrgUnitId", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Shared"), onClickfunction = "GetCopyUsersByOrgUnitId", ValidationGroup = "Copies", ShowAddPartyButton = false })
+                @Html.EditorFor(model => model.ToOrgUnitId, "OrgHierarchyCaller", additionalViewData: new { treeId = "TreeToOrgUnit", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Shared"), GetNodeInfoByIdActionURL = @Url.Action("GetInternalPartyInfoById", "Shared"), GetNodeInfoByNumActionURL = @Url.Action("GetInternalPartyInfoByNumber", "Shared"), onClickfunction = "GetDirectedToUsersByOrgUnitIdTwo", ValidationGroup = "", ShowAddPartyButton = false })*@
+
+                @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.ToOrgUnitId, TreeMode.Single, "TreeToOrgUnit", true,
+               "GetDirectedToUsersByOrgUnitIdTwo", "", "dvDepartmentsTree_2")
+                @Html.StickyHiddenFor(model => model.ToOrgUnitId)
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <fieldset>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ToEmployeeId, new { @class = "control-label" })
+                    <div>
+                        @Html.AutoCompleteBuilder("ddlToEmployeeId", "SearchAssignmentVM_ToEmployeeId", ViewData["OrgUnitsUsersData"].ToString(), null, true, "form-control")
+                        @Html.StickyHiddenFor(model => model.ToEmployeeId)
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+</div>
+<hr />
+<script>
+    $(document).on("click", "span[data-node-id]", function () {
+        var elemnt = $(this);
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('InternalLoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetOrgUnitsNodes")',
+                data: { parentId: $(this).data("node-id"), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+                success: function (data) {
+                    $(elemnt).closest('li').children('ul').last().empty()
+                    $(elemnt).closest('li').children('ul').last().append(data);
+                    $(elemnt).removeClass("InternalLoadedData");
+                }
+            });
+        }
+    });
+    function GetDirectedToUsersByOrgUnitIdOne() {
+        var FromOrgUnitId = $('#TreeFromOrgUnit_hdnDepartmentId').val();
+        var token = $("#frmOrgUnitsList").find("input[name='__RequestVerificationToken']").val();
+        if (FromOrgUnitId != "") {
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("GetUsersByOrgUnitId", "Reports")',
+                data: { id: FromOrgUnitId, __RequestVerificationToken: token },
+                cache: false,
+                success: function (data) {
+                    $("#ddlFromEmployeeId").val("");
+                    $("#FromEmployeeId").val("");
+                    AutoCompleteChangeList("ddlFromEmployeeId", data);
+                    $("#ddlFromEmployeeId").prop('disabled', false);
+                },
+                error: function (jqXHR) {
+                    console.log(jqXHR.responseText);
+                }
+            });
+            return false;
+        }
+        else {
+            $("#ddlFromEmployeeId").prop('disabled', true);
+            $("#ddlFromEmployeeId").val("");
+            $("#FromEmployeeId").val("");
+            AutoCompleteChangeList("ddlFromEmployeeId", "[]");
+        }
+    }
+
+    function GetDirectedToUsersByOrgUnitIdTwo() {
+         
+        var ToOrgUnitId = $('#TreeToOrgUnit_hdnDepartmentId').val();
+        var token = $("#frmOrgUnitsList").find("input[name='__RequestVerificationToken']").val();
+        if (ToOrgUnitId != "") {
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("GetUsersByOrgUnitId","Reports")',
+                data: { id: ToOrgUnitId, __RequestVerificationToken: token},
+                cache: false,
+                success: function (data) {
+                    $("#ddlToEmployeeId").val("");
+                    $("#ToEmployeeId").val("");
+                    AutoCompleteChangeList("ddlToEmployeeId", data);
+                    $("#ddlToEmployeeId").prop('disabled', false);
+                },
+                error: function (jqXHR) {
+                    console.log(jqXHR.responseText);
+                }
+            });
+            return false;
+        }
+        else {
+            $("#ddlToEmployeeId").prop('disabled', true);
+            $("#ddlToEmployeeId").val("");
+            $("#ToEmployeeId").val("");
+            AutoCompleteChangeList("ddlToEmployeeId", "[]");
+        }
+    }
+</script>

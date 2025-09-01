@@ -1,0 +1,94 @@
+﻿@using MCS.Common
+@using MCS.UI.Areas.User.Models.File
+@model TrayDetailsVM
+
+
+@if (Model.IsVIPUser)
+{
+    {
+        ViewBag.Title = ViewData["FileTitle"];
+        Layout = "~/Areas/User/Views/Shared/_VIPLayout.cshtml";
+    }
+
+}
+else
+{
+
+    {
+        ViewBag.Title = ViewData["FileTitle"];
+        Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
+    }
+
+}
+@{ViewData["RowsCount"] = Model.AllTransactionCount;}
+
+@Html.HiddenFor(x => x.IsVIPUser)
+@{
+    TrayType traytype = (TrayType)Model.Id;
+
+    @Html.Hidden("hdnTrayId", Model.Id, new { id = "hdnTrayId" })
+
+    switch (traytype)
+    {
+        case TrayType.MyTransactions:
+            @Html.Partial("~/Areas/User/Views/File/_MyTransactionsPartial.cshtml", Model.TransactionTrayInfoVMs)
+            break;
+        case TrayType.DraftOutbound:
+        case TrayType.DeletedDraftOutbound:
+            @Html.Partial("~/Areas/User/Views/File/_DraftOutboundPartial.cshtml", Model.TransactionTrayInfoVMs)
+            break;
+        case TrayType.ElcOutBound:
+        case TrayType.OutboundExternal:
+            @Html.Partial("~/Areas/User/Views/File/_ElcOutBoundPartial.cshtml", Model.TransactionTrayInfoVMs)
+            break;
+        case TrayType.SentTransactions:
+            @Html.Partial("~/Areas/User/Views/File/_SentTransactionsPartial.cshtml", Model.TransactionTrayInfoVMs)
+            break;
+        case TrayType.Saved:
+        case TrayType.SavedCopies:
+            @Html.Partial("~/Areas/User/Views/File/_SavedPartial.cshtml", Model.TransactionTrayInfoVMs)
+            break;
+        case TrayType.Manager:
+            @Html.Partial("~/Areas/User/Views/File/_ManagerPartial.cshtml", Model.TransactionTrayInfoVMs)
+            break;
+        case TrayType.Copies:
+        case TrayType.InternalInboundCopies:
+            @Html.Partial("~/Areas/User/Views/File/_CopiesPartial.cshtml", Model.TransactionTrayInfoVMs)
+            break;
+        @*case TrayType.Tasks:
+            @Html.Partial("~/Areas/User/Views/File/_TransactionTasksPartial.cshtml", Model.TransactionTrayInfoVMs)
+            break;*@
+        case TrayType.FollowUp:
+        case TrayType.FollowUpUnderProcess:
+        case TrayType.FollowUpComplete:
+        case TrayType.FollowUpCanceld:
+        case TrayType.FollowUpEscalation:
+        case TrayType.FollowUpLate:
+        case TrayType.FollowUpReminder:
+            @Html.Partial("~/Areas/User/Views/File/_FollowupPartial.cshtml", Model.TransactionTrayInfoVMs)
+            break;
+        case TrayType.Reservation:
+            @Html.Partial("~/Areas/User/Views/File/_ReservationPartial.cshtml", Model.TransactionTrayInfoVMs)
+            break;
+    }
+}
+
+<script>
+    $(document).ready(function () {
+        if ($("#IsVIPUser").val() == 'True') {
+            $("#divBtn").html("");
+        } else {
+            $("#divBtn").show();
+        }
+
+        switch (localStorage.getItem('CurrentTypeView')) {
+            case 'Card': goCardsView(event);
+                break;
+            case 'Table': goTableView(event);
+                break;
+            default: goCardsView(event);
+        }
+
+
+    });
+</script>

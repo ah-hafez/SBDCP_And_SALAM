@@ -1,0 +1,678 @@
+@using MCS.Framework.Localization
+@using MCS.Common
+@using MCS.UI.Areas.User.Models.Shared;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.UI.Common;
+@{UserVM userVM = SessionInfo.CurrentUser;}
+@{
+    var controllerName = HttpContext.Current.Request.RequestContext.RouteData.Values["controller"].ToString();
+    var actionName = ViewContext.RouteData.GetRequiredString("action").ToString();
+
+    var tenantLogoSrc = MCS.UI.UrlHelper.GetBaseUri() + "/Content/User/lib/images/logo-morasalat.png";
+    if (Session["TenantLogo"] != null)
+    {
+        tenantLogoSrc = String.Format("data:image/png;base64,{0}", Session["TenantLogo"].ToString());
+    }
+
+    bool isUserSession = SessionInfo.CurrentUser != null;
+    bool myTransactionPermission = isUserSession && SessionInfo.CurrentUser.Claims.Contains(UserClaims.Files.MyTransactions);
+    bool draftPermission = isUserSession && SessionInfo.CurrentUser.Claims.Contains(UserClaims.Files.DraftOutbound);
+    bool sentPermission = isUserSession && SessionInfo.CurrentUser.Claims.Contains(UserClaims.Files.SentTransactions);
+    bool savedPermission = isUserSession && SessionInfo.CurrentUser.Claims.Contains(UserClaims.Files.Saved);
+    bool managerPermission = isUserSession && SessionInfo.CurrentUser.Claims.Contains(UserClaims.Files.Manager);
+    bool copiesPermission = isUserSession && SessionInfo.CurrentUser.Claims.Contains(UserClaims.Files.Copies);
+    bool tasksPermission = isUserSession && SessionInfo.CurrentUser.Claims.Contains(UserClaims.Files.Tasks);
+    bool followupPermission = isUserSession && SessionInfo.CurrentUser.Claims.Contains(UserClaims.Files.FollowUp);
+    bool reservationPermission = isUserSession && SessionInfo.CurrentUser.Claims.Contains(UserClaims.Files.Reservation);
+    bool orgUnitPermission = isUserSession && SessionInfo.CurrentUser.Claims.Contains(UserClaims.Files.OrgUnit);
+
+    bool transactionReportPermission = isUserSession && SessionInfo.CurrentUser.Claims.Contains(UserClaims.Reports.TransactionReports);
+    bool performanceReportPermission = isUserSession && SessionInfo.CurrentUser.Claims.Contains(UserClaims.Reports.UserPerformanceReports);
+}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="SSSiT">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="Content-Language" content="ar" />
+    <meta name="msapplication-TileColor" content="#F5F7FA">
+    <meta name="theme-color" content="#262B56">
+
+    <title>@ViewBag.Title</title>
+
+    <link type="image/x-icon" rel="shortcut icon" href="~/Content/User/lib/images/favicon.png">
+
+    <!-- Bootstrap RTL -->
+    @if (SessionInfo.CultureShortName == "ar")
+    {
+        <link href="~/Content/User/lib/bootstrap/css/bootstrap.min.rtl.css" rel="stylesheet">
+        <link href="~/Content/User/lib/bootstrap/css/bootstrap.form.rtl.css" rel="stylesheet">
+        <link href="~/Content/User/lib/bootstrap/css/bootstrap.grid.rtl.css" rel="stylesheet">
+    }
+    else
+    {
+        <link href="~/Content/User/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="~/Content/User/lib/bootstrap/css/bootstrap.form.css" rel="stylesheet">
+        <link href="~/Content/User/lib/bootstrap/css/bootstrap.grid.css" rel="stylesheet">
+    }
+    <link href="~/Content/User/lib/css/style.css" rel="stylesheet">
+    <!-- Main -->
+    <link href="~/Content/User/lib/css/main.css" rel="stylesheet">
+    <link href="~/Content/User/lib/css/jquery-ui.css" rel="stylesheet">
+
+    <!-- jquery Plugins Style -->
+    <link rel="stylesheet" type="text/css" href="~/Content/User/lib/plugins/vertical-menu/vertical-menu.min.css">
+    <link rel="stylesheet" type="text/css" href="~/Content/User/lib/plugins/vertical-menu/vertical-menu.min-source.css">
+    <link rel="stylesheet" type="text/css" href="~/Content/User/lib/plugins/confirm/jquery-confirm.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/User/lib/plugins/splitter/splitpanelscss.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/User/lib/plugins/calendar/jquery.calendars.picker.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/User/lib/plugins/calendar/ui.calendars.picker.css" />
+    <!-- RTL -->
+    @if (SessionInfo.CultureShortName == "ar")
+    {
+        <link href="~/Content/User/lib/css/d-rtl.css" rel="stylesheet">
+    }
+    else
+    {
+        <link href="~/Content/User/lib/css/d-ltr.css" rel="stylesheet">
+    }
+    <link href=@Url.Content("~/Content/Admin/lib/css/theme-" + @Session["ThemePath"] + ".css") rel="stylesheet">
+
+    <!-- jQuery -->
+    <script src="~/Content/User/lib/js/jquery/jquery.js"></script>
+    <script src="~/Content/User/lib/js/jquery/jquery-ui.js"></script>
+
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="~/Content/User/lib/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/Content/User/lib/js/aos.js"></script>
+    <script src="~/Content/User/lib/js/app.js"></script>
+    <script src="~/Content/User/lib/js/Common.js"></script>
+    <script src="~/Scripts/HtmlHelper.js"></script>
+    <script src="~/Scripts/HtmlHelper.min.js"></script>
+
+    <!-- jquery Plugins -->
+    <script type="text/javascript" src="~/Content/User/lib/plugins/jquery.plugin.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/plugins/splitter/jquery-resizable.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/plugins/confirm/jquery-confirm.min.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/plugins/confirm/jquery-confirm.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/plugins/resize-textarea/autosize.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/plugins/grid/gridmvc.min.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/plugins/grid/gridmvc-ext.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/plugins/sideBarControl/SideBarControl.min.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/plugins/AutoCompleteScript.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/plugins/URI.min.js"></script>
+
+    <script type="text/javascript" src="~/Content/User/lib/plugins/Tree/Tree.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/plugins/Tree/NewTree.js"></script>
+
+    <script type="text/javascript" src="~/Content/User/lib/plugins/jquery.slimscroll.min.js"></script>
+    <script type="text/javascript" src="~/Views/Shared/Scripts/GridViewActions.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/plugins/calendar/jquery.calendars.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/plugins/calendar/jquery.calendars.plus.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/plugins/calendar/jquery.calendars.picker.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/plugins/calendar/jquery.calendars.picker-ar.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/plugins/calendar/jquery.calendars.ummalqura.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/plugins/calendar/jquery.calendars.ummalqura-ar.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/plugins/calendar/CalendarScript.js"></script>
+
+    <script type="text/javascript" src="~/Content/User/lib/plugins/ActionButtonsHelper.js"></script>
+
+    <script type="text/javascript" src="~/Content/User/lib/plugins/customValidation/jquery.validate.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/plugins/customValidation/jquery.validate.unobtrusive.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/plugins/customValidation/CustomValidation.js"></script>
+
+    <script type="text/javascript" src="~/Content/User/lib/plugins/texteditor/TextEditorScript.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/plugins/texteditor/tinymce/tinymce.min.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/plugins/jquery.cookie.js"></script>
+
+    @Html.RenderTextEditorResources()
+
+
+    <script>
+        function ViewMoreDelegations() {
+            if ($("#UserDelegationsList").find('Ul').hasClass('oneItem')) {
+                $('.ViewMoreDelegations').find('i').removeClass('fa-angle-down').addClass('fa-angle-up');
+                $("#UserDelegationsList").find('Ul').removeClass('oneItem');
+            }
+            else {
+                $('.ViewMoreDelegations').find('i').removeClass('fa-angle-up').addClass('fa-angle-down');
+                $("#UserDelegationsList").find('Ul').addClass('oneItem');
+            }
+        }
+        $(function () {
+            var DelegationsList = '';
+            var del = "أنت مفوض بالعمل عن الموظف  {0} من تاريخ {1} إلى تاريخ {2} ."
+             $.ajax({
+                   url: '@Url.Action("GetLoggedInUserDelegations" , "Shared")',
+                   type: 'GET',
+
+                 success: function (data) {
+                     if (data.result != null) {
+                         if (data.result.length > 0) {
+                             data.result.forEach(element => {
+                                 var Msg = del;
+                                 Msg = Msg.replace('{0}', element.UserPreferenceName);
+                                 Msg = Msg.replace('{1}', new Date(parseInt(element.FromDate.replace('/Date(', '').replace(')/', ''))).toLocaleDateString());
+                                 Msg = Msg.replace('{2}', new Date(parseInt(element.ToDate.replace('/Date(', '').replace(')/', ''))).toLocaleDateString());
+
+                                 DelegationsList = DelegationsList + '<li>' + Msg + '</li>'
+                             });
+                             $("#UserDelegationsList").show();
+                             $("#UserDelegationsList").find('Ul').append(DelegationsList);
+                         }
+                         else {
+                             $("#UserDelegationsList").hide();
+                         }
+                         if (data.result.length == 1) {
+                             $('.ViewMoreDelegations').hide();
+                         }
+                     }
+
+
+
+            },
+            error: function (a) {
+            }
+        });
+    });
+
+    </script>
+    <script type="text/javascript">
+            var AllowSend=false;
+            var __dateformat = '@System.Web.Configuration.WebConfigurationManager.AppSettings["CalendarDateFormat"]';
+            var __dialogNoText = '@Html.Raw(DbRes.TResource("Global.Dialog.No"))';
+            var __dialogYesText = '@Html.Raw(DbRes.TResource("Global.Dialog.Yes"))';
+            var __dialogCloseText = '@Html.Raw(DbRes.TResource("Global.Dialog.Close"))';
+            var __dialogCancelText = '@Html.Raw(DbRes.TResource("Global.Dialog.Cancel"))';
+            var __cultureName = '@SessionInfo.CultureShortName';
+
+            var __ExternalPartyDataByIdAction = '@Url.Action("GetExternalPartyNodeById")';
+            var __ExternalPartyAutoCompleteAction = '@Url.Action("GetExternalPartyNodesAutoComplete")';
+
+            var __OrgUnitDataByIdAction = '@Url.Action("GetOrgUnitNodeById")';
+            var __OrgUnitsDataByIdsAction = '@Url.Action("GetOrgUnitsNodesByIds")';
+            var __OrgUnitsAutoCompleteAction = '@Url.Action("GetOrgUnitsAutoComplete")';
+
+            var DeliveryMethodType = { Paper: @(DeliveryMethodType.Paper.LookupIdentity(LookupCategory.DeliveryMethod, SessionInfo.CultureShortName)), Electronic: @(DeliveryMethodType.Electronic.LookupIdentity(LookupCategory.DeliveryMethod, SessionInfo.CultureShortName)), ElectronicPaper: @(DeliveryMethodType.ElectronicPaper.LookupIdentity(LookupCategory.DeliveryMethod, SessionInfo.CultureShortName)) };
+            var TransactionCategory = { None: @((int)TransactionCategory.None), Inbound: @(TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName)), ExternalOutbound: @(TransactionCategory.ExternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName)), InternalOutbound: @(TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName)), DraftOutbound: @(TransactionCategory.DraftOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName)) };
+
+            $.validator.setDefaults({ ignore: ".data-val-ignore" });
+
+            $(document).ajaxStart(function () {
+                $("#Loader").show();
+                AllowSend=false;
+
+            });
+        window.onbeforeunload = function (e) {
+            $("#Loader").show();
+        };
+            $(document).ajaxComplete(function () {
+               $("#Loader").hide();
+
+                $(".hover-area").click(function () {
+                    $(".hover-area ~ .more-info").removeClass("more-info-visible");
+                    $(this).next(".more-info").addClass("more-info-visible");
+                });
+                $(".hover-area ~ .more-info").click(function () {
+                    $(this).removeClass("more-info-visible");
+                });
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+
+        function PostTransactionLog(actionCode, transactionId) {
+
+                $.ajax({
+                    type: 'post',
+                    url: '@Url.Action("LogTransactionAction")',
+                    data: { auditingActionCode: actionCode, transactionId: transactionId },
+                    success:
+                   function (data) {
+
+                   }
+                })
+            }
+
+            @*var signalROptions = {
+                WebApiUrl: '@( SystemConfigurations.EnableSSL? MCS.UI.UrlHelper.GetBaseUri().ToString().Replace("http://","https://") : MCS.UI.UrlHelper.GetBaseUri().ToString())   '+'-SERVICE',
+                BaseUri: '@MCS.UI.UrlHelper.GetBaseUri()',
+                GetNotificationsUrl: '@Url.Action("GetNotifications", "Shared")',
+                UserId: '@userVM.Id',
+                UserName: '@userVM.LoclizationName.Where(l => l.CultureName == SessionInfo.CultureShortName).FirstOrDefault().Text',
+                OrgUnitId: '@SessionInfo.OrgUnitId',
+                LocalDateTime: new Date().toLocaleString(),
+                NotificationPageSize: 5,
+                PageIndex: 1,
+                MarkAsReadMessage: '@DbRes.TResource("User.Home.MarkAsRead")',
+                ChatTokenUrl: '@Url.Action("GetUserToken", "Chat")',
+                CultureShortName: '@SessionInfo.CultureShortName'
+            };*@
+
+    autosize(document.querySelectorAll('textarea'));
+
+     // confirmation
+        $('.dialog-dashoard').on('click', function () {
+            $.confirm({
+                title: false,
+                theme: 'yasser-theme',
+                content: 'url:callback.html',
+                rtl: true,
+                //icon: 'fa fa-question-circle',
+                animation: 'scale',
+                closeAnimation: 'scale',
+                opacity: 1.0,
+                draggable: true,
+                //type: 'red',
+                closeIcon: true,
+                columnClass: 'col-md-12 col-md-offset-0 col-xs-12 col-xs-offset-0',
+                buttons: {
+                    info: {
+                        text: 'info else',
+                        btnClass: 'btn btn-primary btn-lg mx-1',
+                        keys: ['enter', 'space'],
+                        action: function () { }
+                    },
+                }
+            });
+        });
+
+    $(document).ready(function () {
+       $(".chatbtn").click(function () {
+        $(".carddiv").css("display", "flex");
+        $(".firstcard").fadeIn();
+        $(this).addClass("active_notification");
+    });
+
+    $(".showpopchat").click(function () {
+        if ((screen.width >= 768)) {
+            $(".carddiv").css("width", "50%");
+            $(".sendfield").css("display", "flex");
+            $(".firstcard").css("width", "50%");
+            $(".popchat").fadeIn();
+            $(".purple").css("width", "200%");
+            $(".showpopchat").removeClass("highlight");
+            $(this).toggleClass("highlight");
+            $(".purple .la-close").css("left", "5px");
+        }
+    });
+    $(".purple .la-close").click(function () {
+        if ($(".popchat").css('display') == 'block') {
+            $(".popchat").css("display", "none");
+            $(".carddiv").css("width", "25%");
+            $(".firstcard").css("width", "100%");
+            $(".purple").css("width", "100%");
+            $(".showpopchat").removeClass("highlight");
+
+
+        }
+        else {
+            $(".carddiv").css("display", "none");
+            $("a.chatbtn").removeClass("active_notification");
+        }
+
+    });
+    $(".showpopchat").click(function () {
+        if ((screen.width < 768)) {
+            $(".carddiv").css("width", "100%");
+            $(".sendfield").css("display", "flex");
+            $(".firstcard").css("display", "none");
+            $(".popchat").css("width", "100%");
+            $(".popchat").css("top", "0");
+            $(".popchat").fadeIn();
+            $(".showpopchat").removeClass("highlight");
+            $(this).toggleClass("highlight");
+            $(".card-header2").css("display", "block");
+        }
+    });
+
+        $(".purple2 .fa-times").click(function () {
+            if ($(".popchat").css('display') == 'block') {
+                $(".popchat").css("display", "none");
+                $(".firstcard").css("display", "block");
+                $(".showpopchat").removeClass("highlight");
+
+            }
+            else {
+                $(".carddiv").css("display", "none");
+                $("a.chatbtn").removeClass("active_notification");
+            }
+        });
+
+         $(".help").click(function () {
+        $(".split").toggleClass("appear");
+        $(".panel-left").resizable({
+            resizeHeight: false,
+            handleSelector: ".splitter",
+        });
+         });
+
+    $(".help2").click(function () {
+        $(".split").toggleClass("appear");
+
+    });
+
+    $(".exit").click(function () {
+        $(".split").toggleClass("appear");
+    });
+        $(".full-screen").click(function () {
+            window.open("help.html", "help");
+            $(".split").toggleClass("appear");
+        });
+
+        $(".right-arrow").click(function () {
+    $("div .top-icons").toggleClass("show-icons");
+    $(".right-arrow").toggleClass("la-rotate");
+    $(".right-arrow").toggleClass("left-arrow");
+    $(".la-angle-right").toggleClass("pl-2");
+
+        });
+
+        $(".hover-area").click(function () {
+            $(".hover-area ~ .more-info").removeClass("more-info-visible");
+            $(this).next(".more-info").addClass("more-info-visible");
+        });
+        $(".hover-area ~ .more-info").click(function () {
+            $(this).removeClass("more-info-visible");
+        });
+    });
+
+    function CallHomePage(id) {
+        var token = $("#frmOrgUnitsList").find("input[name='__RequestVerificationToken']").val();
+        $.ajax({
+            url: '@Url.Action("SetOrgUnit", "Home")',
+            type: 'POST',
+            data: { 'orgUnitId': id, __RequestVerificationToken: token },
+            success: function (data) {
+                location.reload();
+            },
+            error: function (a) {
+            }
+        });
+    }
+
+    function ChangeCulture(name) {
+        $.ajax({
+            url: '@Url.Action("SetCultureName", "Home")',
+            type: 'POST',
+            data: { 'cultureName': name },
+            success: function (data) {
+                window.location.href = data.ReturnUrl;
+            },
+            error: function (a) {
+            }
+        });
+    }
+        function OpenUrlMenu(Url) {
+            window.location.href = Url;
+        }
+
+        function OpenUrlMenuPermission(menuType) {
+            if (menuType == 1) {
+                if ('@myTransactionPermission' == 'True') {
+                    OpenUrlMenu('@Url.Action("MyTransactions", "File", new { area = "user" })');
+                }
+                else if ('@draftPermission' == 'True') {
+                    OpenUrlMenu('@Url.Action("DraftOutbound", "File", new { area = "user" })');
+                }
+                else if ('@sentPermission' == 'True') {
+                    OpenUrlMenu('@Url.Action("SentTransactions", "File", new { area = "user" })');
+                }
+                else if ('@savedPermission' == 'True') {
+                    OpenUrlMenu('@Url.Action("Saved", "File", new { area = "user" })');
+                }
+                else if ('@managerPermission' == 'True') {
+                    OpenUrlMenu('@Url.Action("Manager", "File", new { area = "user" })');
+                }
+                else if ('@copiesPermission' == 'True') {
+                    OpenUrlMenu('@Url.Action("Copies", "File", new { area = "user" })');
+                }
+                else if ('@tasksPermission' == 'True') {
+                    OpenUrlMenu('@Url.Action("Tasks", "File", new { area = "user" })');
+                }
+                else if ('@followupPermission' == 'True') {
+                    OpenUrlMenu('@Url.Action("FollowUp", "File", new { area = "user" })');
+                }
+                else if ('@reservationPermission' == 'True') {
+                    OpenUrlMenu('@Url.Action("Reservation", "File", new { area = "user" })');
+                }
+            }
+            else if (menuType == 2) {
+                if ('@orgUnitPermission' == 'True') {
+                    OpenUrlMenu('@Url.Action("OrgUnit","File",new { area = "user" })');
+                }
+                else {
+                    OpenUrlMenu('@Url.Action("GetAll","Hub",new { area = "user" })');
+                }
+            }
+            else if (menuType == 3) {
+                if ('@transactionReportPermission' == 'True') {
+                    OpenUrlMenu('@Url.Action("TransactionReport", "Reports",new { area = "user" })');
+                }
+                else if ('@performanceReportPermission' == 'True') {
+                    OpenUrlMenu('@Url.Action("PerformanceMeasurementReport", "Reports",new { area = "user" })');
+                }
+            }
+        }
+
+        function setMenuState()
+        {
+            if ($("body").hasClass("menu-expanded")) {
+                $.cookie('currentMenuState', 'invisible', { path: '/' });
+            }
+            else {
+                 $.cookie('currentMenuState', 'visible', { path: '/' });
+            }
+        }
+
+        function getMenuState() {
+                if ($.cookie('currentMenuState') === 'invisible') {
+                    $.app.menu.collapse();
+                }
+                else {
+                   $.app.menu.expand();
+                }
+        }
+
+        var inactiveTimer;
+
+        function setInactiveTimer() {
+            clearTimeout(inactiveTimer);
+            inactiveTimer = setTimeout(function () {
+                $('.la-power-off').parent()[0].click()
+            }, 1200000); // 20mins of inactive will leade to logout
+        }
+
+        $(document).ready(function () {
+            setInactiveTimer();
+
+            $(document).mousemove(function () {
+                setInactiveTimer();
+            });
+
+            $(document).keydown(function () {
+                setInactiveTimer();
+            });
+        });
+
+        function OpenNewTab(url) {
+            debugger
+            event.preventDefault()
+            window.open(url, '_blank').focus();
+            return false;
+        }
+
+    </script>
+</head>
+
+<body onload="getMenuState()" class="@(IsSectionDefined("Header") ? "" : "vertical-menu 2-columns menu-flipped fixed-navbar") @(IsSectionDefined("Menu") ? "vertical-layout"  :  "menu-expanded")" data-open="click" data-menu="vertical-menu" data-col="2-columns" dir="rtl">
+    <div id="Loader" style="display:none">
+        <div class="spinner"></div>
+    </div>    @*<div class="all-panel-container appear split">
+            <div class="panel-container">
+                <div class="panel-right">
+                </div>
+                <div class=" splitter pointer-events: all">
+                </div>
+                <div class="panel-left">
+                    <div class="d-flex m-2">
+                        <i class="la la-close exit align-self-center"   data-placement="bottom" title="خروج"></i>
+                        <i class="la la-external-link full-screen align-self-center px-2"   data-placement="bottom" title="فتح في صفحة جديدة"></i>
+                    </div>
+                    <hr>
+                    <div class="help-text ml-3 mr-2">
+                    </div>
+                </div>
+            </div>
+        </div>*@
+
+    @if (IsSectionDefined("Header"))
+    {
+        @RenderSection("Header", false)
+    }
+    else
+    {
+        <div class="fixed-top @(IsSectionDefined("Menu") ? "" :  "no-menu")">
+            <div class="top-headerOne">
+                <div class="mx-3 mx-md-5">
+                    <div class="d-flex flex-row">
+                        @if (!IsSectionDefined("Menu"))
+                        {
+                            @*<img src="~/Content/User/lib/images/@Session["ThemePath"]/logo-white.png" style="max-height:47px" title="" alt="" class="logo-mobile">*@
+                        }
+                        <div class="ml-auto mr-0 align-content-around h-side d-flex flex-nowrap align-content-center align-items-center">
+                            <img src="~/Content/User/lib/images/GAMI_Logo_Color-01.svg" class="pb-4" width="200" style=" position: fixed; right: 0; top: 8px; margin-right: 15px;">
+
+
+                            @{UserVM user = SessionInfo.CurrentUser;}
+
+                          
+
+                            <div class="user-settings dropdown  px-1 px-md-2 ml-0" style="border-right: 1px solid #d7d7d7; position: fixed; top: 20px; right: 225px; z-index: 1">
+                                    @{UserVM loginUser = SessionInfo.GetObjectFromSession(Constants.LoggedInUserKey) as UserVM;}
+                                    <div class="name d-inline">@((userVM.LoclizationName != null) ? userVM.LoclizationName.Where(l => l.CultureName == SessionInfo.CultureShortName).FirstOrDefault().Text : string.Empty)</div>
+
+                             
+                            </div>
+
+                            <div class="top-icons new-view" style="position:fixed; top:5px; left:40px; z-index:1">
+                                <div class="d-flex flex-nowrap">
+                                    @*<div class="searchbox pr-2 pl-5 flex-grow-1">
+            <div class="h-search">
+                <i onclick="focusMethod()"   data-placement="bottom" title="" class="la la-search" data-original-title="@DbRes.TResource("User.QuickSearch")"></i>
+                <input class="myTextField" type="text" name="search" id="QuickSearch" placeholder="@DbRes.TResource("User.SearchHere")">
+            </div>
+            <script>
+                focusMethod = function getFocus() {
+                    $('.myTextField').focus();
+                }
+            </script>
+        </div>*@
+                                    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Admin.Administrator))
+                                    {
+                                        @*<div class="pl-0 pr-0 nav-button">
+                                            <a href="@Url.Action("Index", "Home", new { area = "admin" })" target="_blank"   data-placement="bottom" title="@DbRes.TResource("Admin.Layout.Admin")">
+                                                <i class="la la-cog"></i>
+                                            </a>
+                                        </div>*@
+                                    }
+
+
+                                    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.UserPreferences.Language))
+                                    {
+                                        @*<div class="pl-0 pr-0 nav-button">
+                                            <a href="@Url.Action("ConvertLanguage", "Shared")"   data-placement="bottom" title="@DbRes.TResource("User.ConvertLanguage")">
+                                                <i class="la la-globe"></i>
+                                            </a>
+                                        </div>*@
+                                    }
+
+                                    @*<div class="pl-0 pr-0 nav-button">
+            <a href="@Url.Action("RequestRole","UserPreferences",new { area="User"})"   data-placement="bottom" title="@DbRes.TResource("Global.RequestRole")">
+                <i class="la la-key"></i>
+            </a>
+        </div>*@
+                                    <div class="pl-0 pr-0 nav-button">
+                                        <a href="@Url.Action("Logout","Login",new { area="User"})"   data-placement="bottom" title="@DbRes.TResource("Global.Logout")">
+                                            <i class="la la-power-off"></i>
+                                        </a>
+                                    </div>
+                                    <div class="pl-0 pr-0 nav-button" style="border-left:none;">
+                                        <a href="@Url.Action("Systems","Shared")"   data-placement="bottom" title="@DbRes.TResource("Global.Logout")">
+                                            <i class="fa fa-arrow-circle-left" style="font-size:large"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="right-arrow mr-auto">
+                                <i class="la la-angle-right pl-2"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @RenderSection("Menu", false)
+
+
+
+    <div class="app-content content">
+
+        <div class="container-fluid">
+            @if (SessionInfo.CurrentUser != null)
+            {
+                <div class="col-lg-12" id="UserDelegationsList" style="display:none;">
+                    <div class="alert alert-warning" role="alert">
+
+                        <div class="d-flex">
+                            <div>
+                                <button onclick="ViewMoreDelegations()" type="button" class="btn btn-outline-primary btn-sm m-2 pb-1 ViewMoreDelegations">
+                                    <i class="fa fa-angle-down fa-5" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            <div class="flex-grow-1">
+                                <ul class="pl-4 oneItem" style="list-style: circle;">
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            }
+        </div>
+
+
+
+
+        @RenderSection("Body", false)
+    </div>
+    <style>
+
+        .modal-backdrop {
+            z-index: 99999999 !important;
+        }
+
+        .modal {
+            z-index: 999999999 !important;
+        }
+        /* ul > li {
+            height:30px;
+        }*/
+        .dropdown-menu > li > a {
+            padding: 0 20px !important;
+        }
+    </style>
+    @*@Html.Partial("~/Areas/User/Views/Shared/_ChatCollaboration.cshtml")*@
+
+    <script type="text/javascript" src="~/Content/User/lib/plugins/vertical-menu/vendors.min.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/plugins/vertical-menu/app-menu.min.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/plugins/vertical-menu/app.min.js"></script>
+</body>
+</html>

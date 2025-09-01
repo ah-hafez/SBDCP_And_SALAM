@@ -1,0 +1,89 @@
+﻿@using MCS.Framework.Localization
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <style>
+        .ui-autocomplete {
+            z-index: 2147483647;
+        }
+    </style>
+    <link href="~/Content/Admin/lib/css/cropper/cropper.min.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href=@Url.Content("~/Content/Admin/lib/css/jstree/jstree.min_" + SessionInfo.CultureShortName + ".css") />
+    <script src="~/Scripts/URI.js"></script>
+    <script src="~/Scripts/grid/gridmvc-ext.js"></script>
+    <script src="~/Scripts/gridmvc.customwidgets.js"></script>
+    <script src="~/Scripts/gridmvc.customwidgetsText.js"></script>
+    <script src="~/Scripts/gridmvcAR.js"></script>
+    <script src="~/Content/User/lib/js/jstree.min.js"></script>
+    <script type="text/javascript">
+        var __dateformat = '@System.Web.Configuration.WebConfigurationManager.AppSettings["CalendarDateFormat"]';
+        var AllowSend=false;
+        var __dateformat = '@System.Web.Configuration.WebConfigurationManager.AppSettings["CalendarDateFormat"]';
+        var __dialogNoText = '@Html.Raw(DbRes.TResource("Global.Dialog.No"))';
+        var __dialogYesText = '@Html.Raw(DbRes.TResource("Global.Dialog.Yes"))';
+        var __dialogCloseText = '@Html.Raw(DbRes.TResource("Global.Dialog.Close"))';
+        var __dialogCancelText = '@Html.Raw(DbRes.TResource("Global.Dialog.Cancel"))';
+        var __cultureName = '@SessionInfo.CultureShortName';
+    </script>
+    <link href="~/Content/User/lib/plugins/scrollbar/trackpad-scroll-emulator.css" rel="stylesheet" />
+    <link href="~/Content/User/lib/css/splitpanelscss.css" rel="stylesheet" />
+    <link href="~/Content/User/lib/css/qbs.css" rel="stylesheet" />
+    @if (SessionInfo.CultureShortName == "ar")
+    {
+        <link href="~/Content/User/lib/bootstrap/css/bootstrap.min.rtl.css" rel="stylesheet">
+        <link href="~/Content/User/lib/bootstrap/css/bootstrap.form.rtl.css" rel="stylesheet">
+        <link href="~/Content/User/lib/bootstrap/css/bootstrap.grid.rtl.css" rel="stylesheet" />
+        <!-- Main -->
+        <link href="~/Content/User/lib/css/main.css" rel="stylesheet" />
+        <!-- Vertical Menu -->
+        <link href="~/Content/User/lib/plugins/vertical-menu/vertical-menu.min.css" rel="stylesheet" />
+        <!-- Confirm -->
+        <!-- RTL -->
+        <link href="~/Content/User/lib/css/d-rtl.css" rel="stylesheet" />
+        <link href=@Url.Content("~/Content/User/lib/css/theme-" + @Session["ThemePath"] + ".css") rel="stylesheet">
+    }
+    else
+    {
+        <link href="~/Content/User/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="~/Content/User/lib/bootstrap/css/bootstrap.form.css" rel="stylesheet">
+        <link href="~/Content/User/lib/bootstrap/css/bootstrap.grid.css" rel="stylesheet" />
+        <!-- Main -->
+        <link href="~/Content/User/lib/css/main.css" rel="stylesheet" />
+        <!-- Vertical Menu -->
+        <link href="~/Content/User/lib/plugins/vertical-menu/vertical-menu.min.css" rel="stylesheet" />
+        <!-- Confirm -->
+        <link href="~/Content/User/lib/plugins/confirm/jquery-confirm.min.css" rel="stylesheet" />
+        <!-- RTL -->
+        <link href="~/Content/User/lib/css/d-ltr.css" rel="stylesheet" />
+        <link href=@Url.Content("~/Content/User/lib/css/theme-" + @Session["ThemePath"] + ".css") rel="stylesheet">
+    }
+    <script>
+               function ShowAttachmentViewer(documentId, documentSessionKey) {
+        var url = '@Url.Action("ShowAttatchmentViewer", "Shared")' + '?documentId=' + documentId + "&documentSessionKey=" + documentSessionKey;
+        ShowDialog(url,'dialogbox col-md-12');
+        }
+
+        function EncryptionKey(value)
+        {
+            var key = CryptoJS.enc.Utf8.parse('8080808080818181');
+            var iv = CryptoJS.enc.Utf8.parse('8080808080818181');//8080808080808080
+            var encryptedlogin = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(value), key,
+                {
+                    keySize: 128 / 8,
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+            return encryptedlogin;
+
+        }
+    </script>
+</head>
+<body>
+
+    @RenderBody()
+</body>
+</html>

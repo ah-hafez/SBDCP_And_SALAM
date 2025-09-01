@@ -1,0 +1,210 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.Lookups
+@model List<SubjectClassificationVM>
+@{
+    ViewBag.Title = "_TopicGridParial";
+}
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmTreeClassification", @class = "form-horizontal form-row" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.StickyHidden("hdnSubjectClassifications", ViewData["SubjectClassifications"] != null ? ViewData["SubjectClassifications"].ToString() : null)
+    <div class="panel-body">
+        <h3 class="push-up-20">@DbRes.TResource("Admin.SubjectClassification.AllClassifications")</h3>
+        <p>@DbRes.TResource("Admin.SubjectClassification.SortGroups")</p>
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="dd" id="nestable3">
+
+                    @if (Model != null)
+                    {
+
+                        <ol class="dd-list">
+                            @RenderTree(Model)
+                        </ol>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel-footer">
+        @Html.ActionButton(DbRes.TResource("Admin.SubjectClassification.Save"), "SaveSubjectClassification", "dvSave", null, null, "OnSaveSuccess", null, "post", null, "btnSave", "frmTreeClassification", "btn btn-save pull-right")
+    </div>
+}
+
+<script>
+    function OnSaveSuccess(data, div) {
+        if (data.MessageType != 2) {
+
+            $("#" + div).html("");
+            $("#" + div).html(data.Html);
+            ShowSuccesMessage(data.MessageText);
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+
+    }
+
+    $(".dd3-content").click(function () {
+        $(this).parents("li:first").toggleClass("select_dd");
+    });
+
+
+    var item;
+
+    $(function () {
+        $.contextMenu({
+            selector: '.dd-item',
+            build: function ($trigger, e) {
+                if (!$($trigger).hasClass("select_dd")) {
+                    $(".select_dd").toggleClass("select_dd");
+                }
+
+                if ($(".select_dd").length > 1) {
+                    item = {
+                        "delete": { name: "@DbRes.TResource("Admin.SubjectClassification.Delete")" },
+                    };
+                }
+                else {
+                    item = {
+                        "edit": { name: "@DbRes.TResource("Admin.SubjectClassification.Edit")" },
+                        "delete": { name: "@DbRes.TResource("Admin.SubjectClassification.Delete")" },
+                    };
+                }
+                return {
+                    callback: function (key, options) {
+                        switch (key) {
+                            case "edit":
+                                GetSubjectClassification(options.$trigger);
+                                break;
+
+                            case "delete":
+                                if ($(".select_dd").length > 1) {
+                                    DeleteSubjectClassifications($(".select_dd"));
+                                }
+                                else {
+                                    DeleteSubjectClassifications(options.$trigger);
+                                }
+                        }
+                    },
+                    items: item
+                };
+            }
+        });
+
+
+
+
+        $('#nestable3').nestable({ dropCallback: CheckType });
+    });
+
+    function DeleteSubjectClassifications(elements) {
+
+        var deletedList = new Array();
+        $(elements).each(function () {
+            deletedList.push(parseInt($(this).data("id")));
+        });
+
+        $.ajax({
+            cache: false,
+            type: 'post',
+            url: '@Url.Action("DeleteSubjectClassifications")',
+            data: { subjectClassifications: $("#hdnSubjectClassifications").val(), ids: deletedList },//$(input).serializeArray(),//"{id:1}",
+            success:
+               function (data) {
+
+                   if (data.MessageType != 2) {
+                       $("#dvSave").html("");
+                       $("#dvSave").html(data.Html);
+                       $("#hdnSubjectClassifications").val(data.Data);
+                       $("#hdnAddSubjectClassifications").val(data.Data);
+                       $("#hdnEditSubjectClassifications").val(data.Data);
+                       CloseEditMode();
+                   }
+               },
+            error: function (data) {
+            }
+
+        });
+    }
+
+    function GetSubjectClassification(element) {
+        var id = $(element).data("id");
+        var items = $("#hdnSubjectClassifications").val();
+        $.ajax({
+            type: "post",
+            url: '@Url.Action("GetSubjectClassification")',
+            cache: false,
+            data: { id: id, subjectClassifications: items },
+            success:
+               function (data) {
+
+                   if (data.MessageType != 2) {
+                       $("#dvEdit").html("");
+                       $("#dvEdit").html(data.Html);
+                       $("#hdnEditSubjectClassifications").val(items);
+                       jQuery.validator.unobtrusive.parse('#dvEdit');
+                       $("#dvAdd").hide();
+                       $("#dvEdit").show();
+                   }
+                   else {
+                       ShowErrorMessage(data.MessageText);
+                   }
+               }
+        });
+    }
+
+    function CheckType(details) {
+        var data = $.parseJSON($("#hdnSubjectClassifications").val());
+
+        jQuery.each(data, function (i, val) {
+            if (val.Id == details.sourceId) {
+                data[i].ParentId = details.destId;
+            }
+        });
+
+        $("#hdnSubjectClassifications").val(JSON.stringify(data));
+        $("#hdnAddSubjectClassifications").val(JSON.stringify(data));
+        $("#hdnEditSubjectClassifications").val(JSON.stringify(data));
+    }
+
+
+</script>
+
+
+
+
+@helper RenderTree(List<SubjectClassificationVM> subjectClassificationVMs)
+{
+    for (int i = 0; i < subjectClassificationVMs.Count; i++)
+    {
+        string itemClass = string.Empty;
+
+        if (!subjectClassificationVMs[i].IsDeleted)
+        {
+
+            if (!subjectClassificationVMs[i].IsGroup)
+            {
+                itemClass = "item_confirm dd-nodrop";
+            }
+
+            if (subjectClassificationVMs[i].Childs != null && subjectClassificationVMs[i].Childs.Count > 0)
+            {
+                <li class="dd-item dd3-item @itemClass" data-id="@subjectClassificationVMs[i].Id">
+                    <div class="dd-handle dd3-handle"></div><div class="dd3-content">@subjectClassificationVMs[i].Description.Where(l => l.CultureName == SessionInfo.CultureShortName).FirstOrDefault().Text</div>
+                    <ol class="dd-list">
+                        @RenderTree(subjectClassificationVMs[i].Childs)
+                    </ol>
+                </li>
+            }
+            else
+            {
+                <li class="dd-item dd3-item @itemClass" data-id="@subjectClassificationVMs[i].Id">
+                    <div class="dd-handle dd3-handle"></div><div class="dd3-content">@subjectClassificationVMs[i].Description.Where(l => l.CultureName == SessionInfo.CultureShortName).FirstOrDefault().Text</div>
+                </li>
+            }
+        }
+
+    }
+}

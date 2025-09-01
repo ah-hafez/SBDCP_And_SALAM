@@ -1,0 +1,521 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ActionSendCopyToViewNotFound" xml:space="preserve">
+    <value>Action for view not found for this department</value>
+  </data>
+  <data name="ActionSendMainTransactionNotFound" xml:space="preserve">
+    <value>Action send main transaction not found fo this unit, please contact the system adminstrator</value>
+  </data>
+  <data name="AssignmentGroupNotFound" xml:space="preserve">
+    <value>Populariazation destination not found</value>
+  </data>
+  <data name="AssignmentsAssign" xml:space="preserve">
+    <value>Connot Assign the transaction</value>
+  </data>
+  <data name="AssignmentsWithdrawTransaction" xml:space="preserve">
+    <value>Connot revent the transaction</value>
+  </data>
+  <data name="AssignmentTasksNotCompleted" xml:space="preserve">
+    <value>There is tasks not finished so you can't assign the (transaction/transactions)</value>
+  </data>
+  <data name="BarcodeDesignNotFound" xml:space="preserve">
+    <value>Barcode desgin not found, please contact system administrator</value>
+  </data>
+  <data name="BarcodeNotAvailable" xml:space="preserve">
+    <value>Barcode desgin not available</value>
+  </data>
+  <data name="ConnotUpdateTransactionBasicInfo" xml:space="preserve">
+    <value>Connot edit transaction basic information</value>
+  </data>
+  <data name="DeletePermissionNotAllow" xml:space="preserve">
+    <value>Delete this permission Not Allowed</value>
+  </data>
+  <data name="DocumentNumberAlreadyExist" xml:space="preserve">
+    <value>Document number already exist</value>
+  </data>
+  <data name="DocumentNumberRequired" xml:space="preserve">
+    <value>Document number required</value>
+  </data>
+  <data name="DraftOutboundNotAuthorized" xml:space="preserve">
+    <value>Draft outbound not authorized</value>
+  </data>
+  <data name="DuplicateUserDeligation" xml:space="preserve">
+    <value>Connot Add Duplicate Delegation</value>
+  </data>
+  <data name="ExplanationConfidentialityRequired" xml:space="preserve">
+    <value>Must enter confidentiality level</value>
+  </data>
+  <data name="GeneralError" xml:space="preserve">
+    <value>System error occurred, please contact system administrator</value>
+  </data>
+  <data name="InvalidActionType" xml:space="preserve">
+    <value>Must enter Action for Assignments</value>
+  </data>
+  <data name="InvalidExtendTaskDate" xml:space="preserve">
+    <value>Entered date not correct , must be greater than end date for task</value>
+  </data>
+  <data name="InvalidOldPassword" xml:space="preserve">
+    <value>Invalid Old Password</value>
+  </data>
+  <data name="InvalidOrgUnit" xml:space="preserve">
+    <value>Invalid unit</value>
+  </data>
+  <data name="InvalidParentTask" xml:space="preserve">
+    <value>Number of parent task not correct</value>
+  </data>
+  <data name="InvalidPasswordRequiredLength" xml:space="preserve">
+    <value>Password length must be greter than or equal 6 character</value>
+  </data>
+  <data name="InvalidTask" xml:space="preserve">
+    <value>Invalid task</value>
+  </data>
+  <data name="InvalidTaskWorkflow" xml:space="preserve">
+    <value>Invalid task workflow</value>
+  </data>
+  <data name="InvalidUserTask" xml:space="preserve">
+    <value>The user invalid</value>
+  </data>
+  <data name="LimitaionSubTask" xml:space="preserve">
+    <value>Connot sub tasking for more than one level</value>
+  </data>
+  <data name="MaxOrgunitsReached" xml:space="preserve">
+    <value>You can not add new orgnunit due to max orgunits limitations </value>
+  </data>
+  <data name="MaxUsersReached" xml:space="preserve">
+    <value>You can not  add user due to reache the max users limitations</value>
+  </data>
+  <data name="ModelNotValid" xml:space="preserve">
+    <value>Data sent not correct</value>
+  </data>
+  <data name="MyTransactionNotAuthorized" xml:space="preserve">
+    <value>My transaction not authorized</value>
+  </data>
+  <data name="NoOrgUnitRootDefiened" xml:space="preserve">
+    <value>No OrgUnit Root Defiened</value>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>The operation is succeeded</value>
+  </data>
+  <data name="OrgunitNotAuthorized" xml:space="preserve">
+    <value>The unit not authorized</value>
+  </data>
+  <data name="OrgUnitRequired" xml:space="preserve">
+    <value>Must enter the unit</value>
+  </data>
+  <data name="NoCounter" xml:space="preserve">
+    <value>Must the unit has a counter</value>
+  </data>
+  <data name="PasswordRequired" xml:space="preserve">
+    <value>Password Required</value>
+  </data>
+  <data name="PasswordRequireDigit" xml:space="preserve">
+    <value>Password must require digit</value>
+  </data>
+  <data name="PasswordRequireLowercase" xml:space="preserve">
+    <value>Password must be lowercase</value>
+  </data>
+  <data name="PasswordRequireNonLetterOrDigit" xml:space="preserve">
+    <value>Password must be Require non Letter or digit</value>
+  </data>
+  <data name="PasswordRequireUppercase" xml:space="preserve">
+    <value>Password must be uppercase</value>
+  </data>
+  <data name="PermissionCreateInbound" xml:space="preserve">
+    <value>Connent create inbound</value>
+  </data>
+  <data name="PermissionEditInbound" xml:space="preserve">
+    <value>Connot edit the inbound</value>
+  </data>
+  <data name="PermissionEditor" xml:space="preserve">
+    <value>Connot display editor</value>
+  </data>
+  <data name="PermissionEditorAssignments" xml:space="preserve">
+    <value>Connot display assignments</value>
+  </data>
+  <data name="PermissionEditorDraft" xml:space="preserve">
+    <value>Connot display outbound draft</value>
+  </data>
+  <data name="PermissionEditorExplanations" xml:space="preserve">
+    <value>Connot display the explanations</value>
+  </data>
+  <data name="PermissionEditorViewTransactions" xml:space="preserve">
+    <value>Connot display transactions</value>
+  </data>
+  <data name="PermissionInboundAddAttachments" xml:space="preserve">
+    <value>Connot add attachments</value>
+  </data>
+  <data name="PermissionInboundAddNames" xml:space="preserve">
+    <value>Connot add names</value>
+  </data>
+  <data name="PermissionInboundDeleteAttachments" xml:space="preserve">
+    <value>Connet delete inbound attachments</value>
+  </data>
+  <data name="PermissionInboundDeleteNames" xml:space="preserve">
+    <value>Connet delete inbound names</value>
+  </data>
+  <data name="PermissionLinkAddLink" xml:space="preserve">
+    <value>Connot add links</value>
+  </data>
+  <data name="PermissionLinkDeleteLink" xml:space="preserve">
+    <value>Connet delete outbound links</value>
+  </data>
+  <data name="PermissionOutbound" xml:space="preserve">
+    <value>Connot create external outbound </value>
+  </data>
+  <data name="PermissionOutboundAddAttachments" xml:space="preserve">
+    <value>Connot add attachments</value>
+  </data>
+  <data name="PermissionOutboundAddCopies" xml:space="preserve">
+    <value>Connot add copies</value>
+  </data>
+  <data name="PermissionOutboundAddNames" xml:space="preserve">
+    <value>Connot add names</value>
+  </data>
+  <data name="PermissionOutboundDeleteAttachments" xml:space="preserve">
+    <value>Connet delete outbound attachments</value>
+  </data>
+  <data name="PermissionOutboundDeleteCopies" xml:space="preserve">
+    <value>Connet delete outbound copies</value>
+  </data>
+  <data name="PermissionOutboundDeleteNames" xml:space="preserve">
+    <value>Connet delete outbound names</value>
+  </data>
+  <data name="PermissionOutboundEditOutbound" xml:space="preserve">
+    <value>Connet edit the outbound</value>
+  </data>
+  <data name="PermissionOutboundOutboundDraft" xml:space="preserve">
+    <value>Connot create outbound draft</value>
+  </data>
+  <data name="PermissionPrintDeliveryData" xml:space="preserve">
+    <value>Connot print delivery data</value>
+  </data>
+  <data name="PermissionRelatedToExplanation" xml:space="preserve">
+    <value>Delete permission related to explanation not allowed</value>
+  </data>
+  <data name="PermissionRelatedToTransactions" xml:space="preserve">
+    <value>Delete permission related to transaction not allowed</value>
+  </data>
+  <data name="PermissionTasksInsertionAddTask" xml:space="preserve">
+    <value>Connot add task</value>
+  </data>
+  <data name="PermissionTasksInsertionDeleteTask" xml:space="preserve">
+    <value>Connot delete task</value>
+  </data>
+  <data name="PermissionTasksInsertionEditTaskDate" xml:space="preserve">
+    <value>Connot edit date for task</value>
+  </data>
+  <data name="PermissionTasksInsertionSubTasking" xml:space="preserve">
+    <value>Connot sub tasking</value>
+  </data>
+  <data name="ResetPasswordOperationFailed" xml:space="preserve">
+    <value>An error occurred during the execution process</value>
+  </data>
+  <data name="ResetTokenInvalid" xml:space="preserve">
+    <value>Email token incorrect</value>
+  </data>
+  <data name="RestCodeInvalid" xml:space="preserve">
+    <value>Varification code incorrect</value>
+  </data>
+  <data name="RevertAssignmentToYou" xml:space="preserve">
+    <value>Connet revert this transaction because it's assigned to you</value>
+  </data>
+  <data name="SentTransactionsNotAuthorized" xml:space="preserve">
+    <value>Sent transactions not authorized</value>
+  </data>
+  <data name="SubjectClassificationRelatedToTransactions" xml:space="preserve">
+    <value>Subject classifications related to transactions</value>
+  </data>
+  <data name="SystemExpired" xml:space="preserve">
+    <value>System Expired</value>
+  </data>
+  <data name="TenantNotActive" xml:space="preserve">
+    <value>This tenant not active, please contact the system administrator</value>
+  </data>
+  <data name="TransactionAlreadyExist" xml:space="preserve">
+    <value>Transaction Already Exist</value>
+  </data>
+  <data name="DraftAlreadyExist" xml:space="preserve">
+    <value>Draft Already Exist</value>
+  </data>
+  <data name="TransactionAssignmentsCannotBeNullOrEmpty" xml:space="preserve">
+    <value>Transaction assignments cannot be empty</value>
+  </data>
+  <data name="TransactionConfidentialityRequired" xml:space="preserve">
+    <value>Transaction confidentiality required</value>
+  </data>
+  <data name="TransactionCycleLinked" xml:space="preserve">
+    <value>Connot cycle linked</value>
+  </data>
+  <data name="TransactionDoubleLinked" xml:space="preserve">
+    <value>Connot double linked</value>
+  </data>
+  <data name="TransactionDraftAlreadyCreated" xml:space="preserve">
+    <value>Transaction draft already created</value>
+  </data>
+  <data name="TransactionNotFound" xml:space="preserve">
+    <value>This transaction not found</value>
+  </data>
+  <data name="TransactionSourceTypeConfidentialityTransactionSourceTypeConfidentialityRequired" xml:space="preserve">
+    <value>Transaction source type confidentiality required</value>
+  </data>
+  <data name="UpdateNotAllow" xml:space="preserve">
+    <value>The delivery report is already printed, you cannot update this transaction</value>
+  </data>
+  <data name="UpdateNotAllowDueToActionAsCopy" xml:space="preserve">
+    <value>Connot edit the transaction's copy</value>
+  </data>
+  <data name="UsedCounter" xml:space="preserve">
+    <value>Connot change values for counter used in transactions</value>
+  </data>
+  <data name="UserEmailAlreadyExist" xml:space="preserve">
+    <value>User email is already exist</value>
+  </data>
+  <data name="UserGroupNameAlreadyExist" xml:space="preserve">
+    <value>Group name already defined</value>
+  </data>
+  <data name="UserNameAlreadyExist" xml:space="preserve">
+    <value>User name is already exist</value>
+  </data>
+  <data name="UsernameOrEmailNotCorrect" xml:space="preserve">
+    <value>Username Or Email Incorrect</value>
+  </data>
+  <data name="UserNameOrPasswordNotCorrect" xml:space="preserve">
+    <value>Username or password incorrect</value>
+  </data>
+  <data name="UserNotAuthorised" xml:space="preserve">
+    <value>User not authorised</value>
+  </data>
+  <data name="UserNotFound" xml:space="preserve">
+    <value>User not found in the system</value>
+  </data>
+  <data name="VisitTicketNotAvailable" xml:space="preserve">
+    <value>Visit ticket desgin not found, please contact the system administrator</value>
+  </data>
+  <data name="String1" xml:space="preserve">
+    <value>Cannot return the transaction, This is the peak source</value>
+  </data>
+  <data name="PermissionAssignTo" xml:space="preserve">
+    <value>You dont have permissions to assign organization unit transactions</value>
+  </data>
+  <data name="Lockout" xml:space="preserve">
+    <value>This account has been locked out, please try again later.</value>
+  </data>
+  <data name="ActionIsUsed" xml:space="preserve">
+    <value>This Action used in system, can't delete them.</value>
+  </data>
+  <data name="RepoterExist" xml:space="preserve">
+    <value>This Repoter added already .</value>
+  </data>
+  <data name="TransactionPathConfidentialityRequired" xml:space="preserve">
+    <value>Some users in the transaction path, missing confiedentiality required</value>
+  </data>
+  <data name="TaskNotFound" xml:space="preserve">
+    <value>This task not found</value>
+  </data>
+  <data name="DeleteCounterDetail" xml:space="preserve">
+    <value>Cannot be deleted  counter used in transactions</value>
+  </data>
+  <data name="CounterExisted" xml:space="preserve">
+    <value>Cannot add pre-existing transaction category</value>
+  </data>
+  <data name="OTPInvalid" xml:space="preserve">
+    <value>Sorry, Your code is Invalid. try again, please.</value>
+  </data>
+  <data name="OTPVeryOld" xml:space="preserve">
+    <value>Sorry, but your code is very old. get a new one</value>
+  </data>
+  <data name="CanNotMoveEntityToItself" xml:space="preserve">
+    <value>Can Not Move EntityT o Itself</value>
+  </data>
+  <data name="OrgUnitsHaveSameName" xml:space="preserve">
+    <value>There is a duplication in name between the unit to-be-moved, and the targeted unit or/and one of its sub-units</value>
+  </data>
+  <data name="CanNotMergeEntityToItself" xml:space="preserve">
+    <value>Can Not Merge Entity To Itself</value>
+  </data>
+  <data name="CanNotMergeParentEntityToChildEntity" xml:space="preserve">
+    <value>Can Not Merge Parent Entity To Child Entity</value>
+  </data>
+  <data name="OrgUnitsToBeMergedHaveSameName" xml:space="preserve">
+    <value />
+  </data>
+  <data name="OrgUnitHasTransactionsFromExternalParties" xml:space="preserve">
+    <value>This entity cannot be combined because of transactions in the transaction fund and copies received from external parties</value>
+  </data>
+  <data name="ThisRoleIsAlreadyExist" xml:space="preserve">
+    <value>This role is already exist, please enter another role</value>
+  </data>
+  <data name="CanNotDeactivateRoleThereAreUsersUseThisRole" xml:space="preserve">
+    <value>Can Not Deactivate Role Because There Are Users Use This Role</value>
+  </data>
+  <data name="TenantNotFound" xml:space="preserve">
+    <value>This tenant not exist, please contact the system administrator</value>
+  </data>
+  <data name="InActiveUser" xml:space="preserve">
+    <value>User Not Active</value>
+  </data>
+  <data name="CanNotMergeExternalEntity" xml:space="preserve">
+    <value>Can not merge entity related to external system</value>
+  </data>
+  <data name="CanNotMoveExternalEntity" xml:space="preserve">
+    <value>Can not move entity related to external system</value>
+  </data>
+  <data name="PermissionAssignToEmployeeInOtherDepartment" xml:space="preserve">
+    <value>Cannot assign to another entity, without the required permission</value>
+  </data>
+  <data name="PermissionAssignToOtherDepartment" xml:space="preserve">
+    <value>Cannot assign to another entity, without the required permission</value>
+  </data>
+  <data name="PermissionAssignmentsWithdrawTransaction" xml:space="preserve">
+    <value>Cannot withdraw transaction, permission is required</value>
+  </data>
+  <data name="SignatureNotFound" xml:space="preserve">
+    <value>Sorry ! , you do not define a signature of this type</value>
+  </data>
+  <data name="TransactionHasActiveFollowup" xml:space="preserve">
+    <value>sorry !, all follow-ups of the transaction must be completed before it is transferred to the completed one</value>
+  </data>
+  <data name="MarkFramIsMandatory" xml:space="preserve">
+    <value>Sorry, you need to add a mark box on the form</value>
+  </data>
+  <data name="SigFramIsMandatory" xml:space="preserve">
+    <value>Sorry, you need to add a signature box on the form</value>
+  </data>
+  <data name="DuplicateFormName" xml:space="preserve">
+    <value>Sorry, the form name is already used</value>
+  </data>
+  <data name="ArchivesNotFound" xml:space="preserve">
+    <value>Sorry !, please add file to attachment</value>
+  </data>
+  <data name="ErrorNoPermissionToReceiveTransaction," xml:space="preserve">
+    <value>Sorry ! The specified user does not have permission to view this transaction.</value>
+  </data>
+  <data name="WarningNoPermissionToReceiveTransaction" xml:space="preserve">
+    <value>Warning !
+
+The specified user does not have permission to view this transaction
+
+Do you want to grant him permission ?</value>
+  </data>
+  <data name="ErrorNoPermissionToReceiveTransaction" xml:space="preserve">
+    <value>Sorry, the process could not be completed
+The specified employee does not have confidentiality permission</value>
+  </data>
+</root>

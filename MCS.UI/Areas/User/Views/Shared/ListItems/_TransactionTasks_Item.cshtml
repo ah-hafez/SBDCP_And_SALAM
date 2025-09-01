@@ -1,0 +1,263 @@
+﻿@using MCS.UI.Helpers
+@using MCS.Common
+@using MCS.UI.Areas.User.Models.Transaction
+@model ReceivedTaskVM
+@{
+    ViewData["dateType"] = ViewData["dateType"] ?? TransactionDateType.Any;
+    string colorType = string.Empty;
+}
+<script>
+    $(document).ready(function () {
+     var isVIPUser = '@SessionInfo.GetObjectFromSession(Constants.IsVIPUser)';
+        if (isVIPUser.toLowerCase() == 'true') {
+            goTableView();
+        }
+        else {
+            var type = localStorage.getItem('CurrentTypeView');
+            if (type) {
+                if (type === "Table") {
+                    goTableView();
+                }
+                else if (type === "Card") {
+                    goCardsView();
+                }
+            }
+        }
+    });
+</script>
+<style>
+    .description {
+        text-align: center;
+        color: white;
+    }
+
+    .correspondence-icon .info {
+        color: white !important;
+    }
+
+    .taskborder {
+        border: 2px solid #869AB7;
+    }
+</style>
+
+
+<div class="box-grid" data-id="@Model.Id">
+    <div class="box no_sorting animated zoomIn buttons-action taskborder">
+        <div class="correspondence-t">
+            <div class="d-flex">
+                <div class="col-lg-9">
+                    <div class="mr-auto d-flex">
+                        <div id="Number_@Model.Id">@Model.TransactionNumber</div>
+                    </div>
+                    <div class="title" id="entityName_@Model.Id">
+                        @if (Model.FromOrgUnit.Length > 20)
+                        {
+                            <div>
+                                @Model.FromOrgUnit.Substring(0, 20)...
+                            </div>
+                        }
+                        else
+                        {
+                            @Model.FromOrgUnit
+                        }
+
+                    </div>
+                    <div class="correspondence-h">
+                        <div class="date" style="margin-top:-10px;">
+                            @DateHelper.GetDate(@Model.DeliveryDateH)
+                            @Model.DeliveryDate.ToShortTimeString()
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr style="margin-top:-8px;" />
+
+        @*<div class="correspondence-h">
+                <div class="title" id="entityName_@Model.Id">@Model.FromOrgUnit</div>
+                <div class="date">
+                    @DateHelper.GetDate(@Model.DeliveryDateH)
+                    @Model.DeliveryDate.ToShortTimeString()
+                </div>
+            </div>*@
+    <div class="correspondence-t hover-area">
+       
+            <div class="correspondence-b d-flex flex-wrap">
+                <div class="f-line w-full f-w-full">
+                    <div class="heading"></div>
+                    @if (Model.Subject != null && Model.Subject != "")
+                    {
+                        if (Model.Subject.Length > 20)
+                        {
+
+                            <div id="example" class="description"  title="@Model.Subject">
+                                @Model.Subject.Substring(0, 20)...
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="description">
+                                @Model.Subject
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        
+            
+
+
+        <div class="correspondence-b d-flex flex-wrap cardTable">
+            <table class="table table-bordered section1" style="margin-top:10px;">
+                <tbody>
+                    <tr>
+                        <th scope="row" class="headerAddress">@DbRes.TResource(" المرسل")</th>
+                        <td class="result">
+                            @if (@Model.FromUser.Length > 11)
+                            {
+                                <div id="Employee_@Model.Id" title="@Model.FromUser">@Model.FromUser.Substring(0, 8)...</div>
+
+                            }
+                            else
+                            {
+                                <div id="Employee_@Model.Id" title="@Model.FromUser">@Model.FromUser</div>
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        @if (Model.TaskDescription != null && Model.TaskDescription != "")
+                        {
+                            <th scope="row" class="headerAddress"> @DbRes.TResource("User.Task.TaskAdd.TaskDescription") </th>
+                            if (Model.TaskDescription.Length > 11)
+                            {
+                                <td class="result" title="@Model.TaskDescription">
+                                    @Model.TaskDescription.Substring(0, 8)...
+                                </td>
+                            }
+                            else
+                            {
+                                <td class="result">
+                                    @Model.TaskDescription
+                                </td>
+                            }
+                        }
+                    </tr>
+                    <tr>
+                        <th scope="row" class="headerAddress">@DbRes.TResource("تاريخ الانهاء")</th>
+                        <td class="result">
+                            @DateHelper.GetDate(@Model.DeliveryDateH)
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        @*<div class="f-line w-full f-w-full">
+            <div class="name3" id="Employee_@Model.Id">@Model.FromUser</div>
+        </div>*@
+        @*<div class="f-line w-full w-f-40">
+            <div class="heading"></div>
+            @if (Model.Subject != null && Model.Subject != "")
+            {
+                if (Model.Subject.Length > 20)
+                {
+
+                    <div id="example" class="" data-bs-toggle="tooltip" data-placement="bottom" title="@Model.Subject">
+                        @Model.Subject.Substring(0, 20)
+                        ...
+                    </div>
+                }
+                else
+                {
+                    <div class=" ">
+                        @Model.Subject
+                    </div>
+                }
+            }
+        </div>*@
+        @*<div class="f-line w-full w-f-40">
+            @if (Model.TaskDescription != null && Model.TaskDescription != "")
+            {
+                <div class="heading">
+                    @DbRes.TResource("User.Task.TaskAdd.TaskDescription")
+                </div>
+                if (Model.TaskDescription.Length > 20)
+                {
+                    <div id="example" class="" data-bs-toggle="tooltip" data-placement="bottom" title="@Model.TaskDescription">
+                        @Model.TaskDescription.Substring(0, 20)
+                        ...
+                    </div>
+                }
+                else
+                {
+                    <div class="">
+                        @Model.TaskDescription
+                    </div>
+                }
+            }
+        </div>*@
+        @*<div class="f-line w-full w-f-20">
+            <div class="heading">@DbRes.TResource("User.Task.TaskAdd.EndDate")</div>
+            <div>
+                @DateHelper.GetDate(@Model.DeliveryDateH)
+            </div>
+        </div>*@
+    </div>
+        <div class="correspondence-t">
+            <div class="correspondence-icon d-flex" style="padding-right: 2px;">
+
+                @if (Model.ReceivedTaskType == ReceivedTasksType.NewTasks)
+                {
+                    <div class="w-50">
+                        <button type="button" class="w-100 btn btn-light-blue border-0 border-radius-0 p-3" onclick="AcceptTask(@Model.Id)">@DbRes.TResource("User.Task.TaskAdd.Accept")</button>
+                    </div>
+                    <div class="w-50">
+                        <button type="button" class="w-100 btn btn-gray border-0 border-radius-0 p-3" onclick="showRejectionPopup(@Model.Id)">@DbRes.TResource("User.Task.TaskAdd.Reject")</button>
+                    </div>
+                }
+
+
+                @if (Model.ReceivedTaskType == ReceivedTasksType.AcceptedTasks)
+                {
+
+
+                    <a data-bs-toggle="tooltip" title=" @DbRes.TResource("User.Task.TaskAdd.ViewTransaction")"
+                       onclick="ViewTransaction(@Model.TransactionId , @Model.TransactionCategoryId.LookupInternalID(LookupCategory.TransactionCategory,SessionInfo.CultureShortName))">
+                        <img src="~/Content/User/lib/images/SystemIcon/main bar-14.svg" width="30" />
+                    </a>
+                    <div style="border-left: 3px solid white;"></div>
+                    if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Tasks.Edit))
+                    {
+                        <a data-bs-toggle="tooltip" title=" @DbRes.TResource("User.Task.TaskAdd.AssignToUser")"
+                           onclick="AssignToUser(@Model.Id)">
+                            <img src="~/Content/User/lib/images/SystemIcon/main bar-28.svg" width="35" />
+                        </a>
+                        <div style="border-left: 3px solid white;"></div>
+                    }
+                    if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Tasks.Replay))
+                    {
+                        <a data-bs-toggle="tooltip" title=" @DbRes.TResource("User.Task.TaskAdd.Reply")"
+                           onclick="showReplyTaskPopup(@Model.Id)">
+                            <img src="~/Content/User/lib/images/SystemIcon/main bar-36.svg" width="25" />
+                        </a>
+
+                    }
+                }
+
+
+                @if (Model.ReceivedTaskType == ReceivedTasksType.EndTasks)
+
+                 {
+                    <div class="mr-auto d-flex">
+                        <a data-bs-toggle="tooltip" title=" @DbRes.TResource("User.Task.TaskAdd.ViewTransaction")"
+                           onclick="ViewTransaction(@Model.TransactionId , @Model.TransactionCategoryId.LookupInternalID(LookupCategory.TransactionCategory,SessionInfo.CultureShortName))">
+                            <img src="~/Content/User/lib/images/SystemIcon/main bar-14.svg" width="30" />
+                        </a>
+                    </div>
+                 }
+
+            </div>
+        </div>
+
+    </div>
+</div>
+

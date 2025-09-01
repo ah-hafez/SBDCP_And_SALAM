@@ -1,0 +1,41 @@
+﻿@using MCS.UI.Helpers
+@model AjaxGrid<MCS.UI.Areas.User.Models.Transaction.TaskAddVM>
+
+@{string controller = ViewData["ControllerName"] != null ? ViewData["ControllerName"].ToString() : ViewContext.RouteData.Values["controller"].ToString();}
+
+@Html.Grid(Model).CollectionName("TasksGrid").Named("grdTasks").Columns(columns =>
+{
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Key, new { id = "Key_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Id, new { id = "grdTasksId_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.SentToOrgUnitId, new { id = "grdTasksSentToOrgUnitId_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.SentToUserId, new { id = "grdTasksSentToUserId_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.SentToOrgUnitName, new { id = "grdTasksSentToOrgUnitName_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.SentToUserName, new { id = "grdTasksSentToUserName_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.TaskDescription, new { id = "grdTasksTaskDescription_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.DeliveryDateH, new { id = "grdTasksDeliveryDateH_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.DeliveryDate, new { id = "grdTasksDeliveryDate_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Status, new { id = "grdTasksStatus_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+
+    columns.Add(model => model.SentToOrgUnitName).Titled(DbRes.TResource("User.Task.TaskAdd.ToOrgUnit"));
+    columns.Add(model => model.SentToUserName).Titled(DbRes.TResource("User.Task.TaskAdd.ToUser"));
+    columns.Add(model => model.TaskDescription).Titled(DbRes.TResource("User.Task.TaskAdd.TaskDescription"));
+    columns.Add(false).RenderValueAs(model => @DateHelper.GetDate(model.DeliveryDateH)).Titled(DbRes.TResource("User.Task.TaskAdd.EndDate"));
+    columns.Add(model => model.Status).Titled(DbRes.TResource("User.OutboundCertificate.Status"));
+})
+<hr />
+
+<script>
+    function OpenTaskWorkflowSuccess(data, $obj) {
+
+        $obj.setContent(data.Html);
+    }
+
+    function GetTaskWorkflow(index) {
+
+        var tasks = $.parseJSON($('#hdnTaskArray').val());
+
+        var task = tasks[index - 1]
+
+        ShowDialogAjax('@Url.Action("TaskWorkflow", controller)', { taskIndex: index, orgSettings: task.OrgSettings, orgStructure: task.OrgStructure, taskAddVM: task }, 'OpenTaskWorkflowSuccess', 'dialogbox col-md-12 ');
+    }
+</script>

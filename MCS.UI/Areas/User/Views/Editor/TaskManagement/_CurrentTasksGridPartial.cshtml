@@ -1,0 +1,11 @@
+﻿@model AjaxGrid<MCS.UI.Areas.User.Models.Transaction.TaskAddVM>
+
+@{string controller = ViewData["ControllerName"] != null ? ViewData["ControllerName"].ToString() : ViewContext.RouteData.Values["controller"].ToString();}
+@{int index = 0;}
+@Html.Grid(Model).Named("CurrentTasks").Columns(columns =>
+{
+    columns.Add(true).RenderValueAs(m => (index++).ToString());
+    columns.Add(model => model.SentToOrgUnitName).Titled(DbRes.TResource("User.Task.TaskAdd.ToOrgUnit"));
+    columns.Add(model => model.SentToUserName).Titled(DbRes.TResource("User.Task.TaskAdd.ToUser"));
+
+}).WithPaging(GridHelper.PageSize).Sortable().Filterable().UpdateActionUrl(Url.Action("UpdateGridTasks", controller))

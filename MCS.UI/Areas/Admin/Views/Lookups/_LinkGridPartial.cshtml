@@ -1,0 +1,56 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.Lookups
+@using MCS.GridMvc.Helpers;
+@using MCS.GridMvc.Html;
+@using MCS.Common;
+
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<LinkVM>
+@{
+    ViewBag.Title = "_LinkGridParial";
+}
+
+
+@Html.Grid(Model).Named("Link").Columns(columns =>
+{
+    columns.Add(model => model.Id).Titled(DbRes.TResource("Admin.Link.Id")).Css("hidden_");
+    columns.Add(model => model.Description[0].Text, "DescriptionAr").Titled(DbRes.TResource("Admin.Link.LinkType.ar"));
+    columns.Add(model => model.Description[1].Text, "DescriptionEn").Titled(DbRes.TResource("Admin.Link.LinkType.en"));
+    columns.Add().Titled(DbRes.TResource("Admin.Link.Status")).RenderValueAs(model => MvcHtmlString.Create(model.IsActive ? DbRes.TResource("Admin.Link.Status.Active") : DbRes.TResource("Admin.Link.Status.Deactive")));
+
+    columns.Add().Encoded(false).Sanitized(false).Css("").RenderValueAs(model =>
+
+       MvcHtmlString.Create(
+           "<div class='table-icon d-flex align-items-center'>" +
+               (model.IsLocked && (model.LockedBy == SessionInfo.CurrentUser.Id || SessionInfo.CurrentUser.Claims.Contains(UserClaims.Admin.LookupsUnLock)) ?
+               @Html.ClientLinkTag("", null, "color-blue", null, DbRes.TResource("Admin.Lookups.UnLock"), "LockUnlockLookup(" + (int)LookupType.Link + "," + (int)LookupOperationType.UnLock + " , " + model.Id + ")", null, "<i class='icon-tables-unlock'></i>")
+               : !model.IsLocked ? @Html.ClientLinkTag("", null, "color-grey", null, DbRes.TResource("Admin.Lookups.Lock"), "LockUnlockLookup(" + (int)LookupType.Link + "," + (int)LookupOperationType.Lock + " , " + model.Id + ")", null, "<i class='icon-tables-lock'></i>") : MvcHtmlString.Empty) +
+               (!model.IsLocked && !model.IsActive ?
+               @Html.ClientLinkTag(text: "", cssClass: "color-orange", title: DbRes.TResource("Admin.Lookups.Activate"), clientFunctionToCall: "ActiveDeactiveLookup(" + (int)LookupType.Link + "," + (int)LookupOperationType.Active + " , " + model.Id + ")", innerHtml: "<i class='icon-tables-lamp'></i>") : MvcHtmlString.Empty) +
+               (!model.IsLocked && model.IsActive ?
+               @Html.ClientLinkTag(text: "", cssClass: "color-grey", title: DbRes.TResource("Admin.Lookups.Deactivate"), clientFunctionToCall: "ActiveDeactiveLookup(" + (int)LookupType.Link + "," + (int)LookupOperationType.Deactivate + " , " + model.Id + ")", innerHtml: "<i class='icon-tables-lamp-off'></i>") : MvcHtmlString.Empty) +
+               (!model.IsLocked ?
+               @Html.GridImageButton("GetLink", "Link", 0, OperationType.Update, "dvEdit", null, null, "ShowEditDiv", "", "get") : MvcHtmlString.Empty) +
+               (!model.IsLocked ?
+               @Html.GridImageButton("DeleteLink", "Link", 0, OperationType.Delete, "dvGrid", "EditLinkContent", null, "OnDeleteSuccess") : MvcHtmlString.Empty) +
+            "</div>"));
+}).WithPaging(GridHelper.PageSize)
+
+
+
+<script>
+    var token = $("#dvAdd input[name='__RequestVerificationToken']").val()
+    var myLinkGridEventHandler = "@Url.Action("UpdateLinkGrid", "Lookups")?__RequestVerificationToken=" + token;
+        function prepareLinkReportGrid() {
+            $(".grid-mvc").gridmvc();
+            pageGrids.Link.ajaxify({
+                getPagedData: myLinkGridEventHandler,
+                requestType: "get",
+                getData: myLinkGridEventHandler
+            });
+        }
+
+        $(document).ready(function () {
+            prepareLinkReportGrid();
+        });
+</script>
+

@@ -1,0 +1,38 @@
+﻿@using MCS.DoconutMVC.Helpers;
+<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" style="color:#333738">
+                    @Html.GlobalResource("UploadDocument")
+                </h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+
+
+                <div id="dropZoneForm" class="dropzone">
+                    <div class="dz-message">
+                        @Html.GlobalResource("ClickOrDragToUpload")
+                    </div>
+                    <div>
+                        <div class="fallback">
+                            <input name="file" id="file" type="file" />
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class=" btn 
+                        btn-st1 btn-lg" data-dismiss="modal">
+                    @Html.GlobalResource("Exitbtn")
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>

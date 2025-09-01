@@ -1,0 +1,173 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Framework.Controls.Mvc;
+@model MCS.UI.Areas.Admin.Models.AssignmentPaper.AssignmentPaperViewModel
+
+@{
+
+    Layout = null;
+}
+
+@Html.RenderGridViewResources()
+
+<script>
+    var paramArray = $.parseJSON($('#hdnSaveDepartmentsData').val());
+    var paramElementIndex = ElementIndex(paramArray, @ViewData["OrgUnitKey"]);
+
+    $('#ckIsCreateGroupAllowed').change(function () {
+
+        if ($(this).is(':checked')) {
+
+            var array = $.parseJSON($('#hdnSaveDepartmentsData').val());
+
+            array[paramElementIndex].AssignmentPaper.IsCreateGroupAllowed = "true";
+
+            $('#hdnSaveDepartmentsData').val(JSON.stringify(array));
+            $('#hdnActionsDepartmentsStructure').val($('#hdnSaveDepartmentsData').val());
+            $('#hdnBeneficiariesDepartmentsStructure').val($('#hdnSaveDepartmentsData').val());
+        }
+        else {
+
+            var array = $.parseJSON($('#hdnSaveDepartmentsData').val());
+
+            array[paramElementIndex].AssignmentPaper.IsCreateGroupAllowed = "false";
+
+            $('#hdnSaveDepartmentsData').val(JSON.stringify(array));
+            $('#hdnActionsDepartmentsStructure').val($('#hdnSaveDepartmentsData').val());
+            $('#hdnBeneficiariesDepartmentsStructure').val($('#hdnSaveDepartmentsData').val());
+        }
+    });
+
+    pageGrids.grdAssignmentPaperActions.param = new Array();
+    pageGrids.grdAssignmentPaperActions.param.push(JSON.stringify(paramArray[paramElementIndex]));
+
+    pageGrids.grdAssignmentPaperBeneficiaries.param = new Array();
+    pageGrids.grdAssignmentPaperBeneficiaries.param.push(JSON.stringify(paramArray[paramElementIndex]));
+
+    function ActionsSuccess(departmentData) {
+
+        if (departmentData.MessageType != 2) {
+
+            $('#hdnSaveDepartmentsData').val(departmentData.departmentsStructure);
+
+            $('#hdnActionsDepartmentsStructure').val($('#hdnSaveDepartmentsData').val());
+            $('#hdnBeneficiariesDepartmentsStructure').val($('#hdnSaveDepartmentsData').val());
+
+            $('#hdnDepartmentsStructureBeneficiaryGrid').val($('#hdnSaveDepartmentsData').val());
+            $('#hdnDepartmentsStructureActionGrid').val($('#hdnSaveDepartmentsData').val());
+
+            $('#dvAssignmentPaperActionsGrid').html(departmentData.Html);
+
+            var paramArray = $.parseJSON($('#hdnSaveDepartmentsData').val());
+
+            pageGrids.grdAssignmentPaperActions.param[0] = JSON.stringify(paramArray[paramElementIndex]);
+
+            ClearInputs('frmAssignmentPaperActions');
+        }
+
+        else{
+
+            ShowWarningMessage(departmentData.MessageText);
+        }
+    }
+
+    function DeleteAction(departmentData, divUpdatData) {
+
+        $('#hdnSaveDepartmentsData').val(departmentData.departmentsStructure);
+        $('#hdnActionsDepartmentsStructure').val($('#hdnSaveDepartmentsData').val());
+
+        $('#hdnDepartmentsStructureBeneficiaryGrid').val($('#hdnSaveDepartmentsData').val());
+        $('#hdnDepartmentsStructureActionGrid').val($('#hdnSaveDepartmentsData').val());
+
+        $('#hdnBeneficiariesDepartmentsStructure').val($('#hdnSaveDepartmentsData').val());
+        $('#dvAssignmentPaperActionsGrid').html(departmentData.Html);
+
+        var paramArray = $.parseJSON($('#hdnSaveDepartmentsData').val());
+        pageGrids.grdAssignmentPaperActions.param[0] = JSON.stringify(paramArray[paramElementIndex]);
+    }
+
+    function BeneficiariesSuccess(departmentData) {
+
+        if (departmentData.MessageType != 2) {
+
+            $('#hdnSaveDepartmentsData').val(departmentData.departmentsStructure);
+
+            $('#hdnActionsDepartmentsStructure').val($('#hdnSaveDepartmentsData').val());
+            $('#hdnBeneficiariesDepartmentsStructure').val($('#hdnSaveDepartmentsData').val());
+
+            $('#hdnDepartmentsStructureBeneficiaryGrid').val($('#hdnSaveDepartmentsData').val());
+            $('#hdnDepartmentsStructureActionGrid').val($('#hdnSaveDepartmentsData').val());
+
+            $('#dvAssignmentPaperBeneficiariesGrid').html(departmentData.Html);
+
+            var paramArray = $.parseJSON($('#hdnSaveDepartmentsData').val());
+            pageGrids.grdAssignmentPaperBeneficiaries.param[0] = JSON.stringify(paramArray[paramElementIndex]);
+
+            ClearInputs('frmAssignmentPaperBeneficiaries');
+            $(".txtDepartmentNumber").trigger('keyup');
+        }
+
+        else{
+
+            ShowWarningMessage(departmentData.MessageText);
+        }
+    }
+
+    function DeleteBeneficiary(departmentData, divUpdatData) {
+
+        $('#hdnSaveDepartmentsData').val(departmentData.departmentsStructure);
+
+        $('#hdnActionsDepartmentsStructure').val($('#hdnSaveDepartmentsData').val());
+        $('#hdnBeneficiariesDepartmentsStructure').val($('#hdnSaveDepartmentsData').val());
+
+        $('#hdnDepartmentsStructureBeneficiaryGrid').val($('#hdnSaveDepartmentsData').val());
+        $('#hdnDepartmentsStructureActionGrid').val($('#hdnSaveDepartmentsData').val());
+
+        $('#dvAssignmentPaperBeneficiariesGrid').html(departmentData.Html);
+
+        var paramArray = $.parseJSON($('#hdnSaveDepartmentsData').val());
+        pageGrids.grdAssignmentPaperBeneficiaries.param[0] = JSON.stringify(paramArray[paramElementIndex]);
+    }
+
+</script>
+    @Html.Hidden("hdnOrgUnitKey", ViewData["OrgUnitKey"], new { id = "hdnOrgUnitKey" })
+    <div class="modal-body">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <fieldset class="attachments">
+                        @Html.Partial("_AssignmentPaperBeneficiariesPartial", Model.BeneficiaryVM)
+                        <div class="panel-body">
+                            <div class="row" id="dvAssignmentPaperBeneficiariesGrid">
+                                @Html.Partial("_AssignmentPaperBeneficiariesGridPartial", ViewData["BeneficiaryGridData"])
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-6">
+                    <fieldset class="attachments">
+                        @Html.Partial("_AssignmentPaperActionsPartial", Model.ActionVM)
+                        <div class="panel-body">
+                            <div class="row" id="dvAssignmentPaperActionsGrid">
+                                @Html.Partial("_AssignmentPaperActionsGridPartial", ViewData["ActionGridData"])
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <br>
+                        <label class="check">
+                            @Html.CheckBoxFor(model => model.IsCreateGroupAllowed, new { @class = "icheckbox", id = "ckIsCreateGroupAllowed" })
+                            @Html.LabelFor(model => model.IsCreateGroupAllowed, DbRes.TResource("Admin.AssignmentPaper.CreateGroupAllowable"), new { @class = "none" })
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+    </div>
+
+

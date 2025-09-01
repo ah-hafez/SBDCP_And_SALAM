@@ -1,0 +1,19 @@
+﻿@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.Common
+@using MCS.Framework.Localization
+@model MCS.UI.Areas.User.Models.Search.SearchCriteriaByDailyVM
+
+    <div class="panel-body panel_dark">
+   
+    
+                @Html.EncryptedStickyHidden("EncryptedFalse", "false", new { id = "EncryptedFalse" })
+                @Html.EncryptedStickyHidden("EncryptedTrue", "true", new { id = "EncryptedTrue" })
+            </div>
+
+            <script>
+    $(function () {
+        $('#btnSearch').removeClass('hidden_');
+    });
+  
+            </script>

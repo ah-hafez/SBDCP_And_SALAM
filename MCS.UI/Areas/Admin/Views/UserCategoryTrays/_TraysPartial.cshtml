@@ -1,0 +1,36 @@
+﻿@using MCS.UI.Areas.Admin.Models.Tray
+@using MCS.Framework.Localization
+
+@model List<TrayVM>
+<div class="row all_types_title">
+    @DbRes.TResource("Admin.UsersTrays.Trays")
+</div>
+@*<div class="row row_input">
+        <input type="text" class="form-control">
+    </div>*@
+
+<div class="scroll maxheight_types">
+    @{ foreach (var item in Model)
+        {
+            if (item.IsSelected == true)
+            {
+                <div id="tray_@item.Id" class="row all_types select" data-type="@UsersAndTraysReportType.Tray" data-id="@item.Id" onclick="getTrayUsers(@item.Id);">
+                    <span>@item.LocalName</span>
+                </div>
+            }
+            else
+            {
+                <div id="tray_@item.Id" class="row all_types" data-type="@UsersAndTraysReportType.Tray" data-id="@item.Id" onclick="getTrayUsers(@item.Id);">
+                    <span>@item.LocalName</span>
+                </div>
+            }
+        }
+    }
+</div>
+<script>
+    $(document).ready(function () {
+        if ($(".scroll").length > 0) {
+            $(".scroll").mCustomScrollbar({ axis: "y", autoHideScrollbar: true, scrollInertia: 20, advanced: { autoScrollOnFocus: false } });
+        }
+    });
+</script>

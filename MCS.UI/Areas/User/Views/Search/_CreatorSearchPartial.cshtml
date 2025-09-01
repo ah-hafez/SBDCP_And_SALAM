@@ -1,0 +1,312 @@
+﻿@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.Common
+@using MCS.Framework.Localization
+@model MCS.UI.Areas.User.Models.Search.SearchCriteriaByCreatorVM
+    <div>
+
+
+        <div class="row">
+            <div class="col-md-4 col-xs-6">
+                <fieldset>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.UserId, new { @class = " control-label" })<span class="stark">*</span>
+                        <div>
+                            @Html.AutoCompleteBuilder("ddlDirectedToId", "hdnDirectedToId", ViewData["OrgUnitsUsersData"] != null ? ViewData["OrgUnitsUsersData"].ToString() : null, Model != null ? Model.UserId.ToString() : null, true, "form-control")
+                            @Html.HiddenGroupFor(model => model.UserId, new { @Value = "", id = "hdnDirectedToId" }, "Search")
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+
+            <div class="col-md-4 col-xs-6">
+                <fieldset>
+                    <label class="control-label">@DbRes.TResource("User.InboundSearch.DateBetween")</label>
+                    @*<div class="form-group input-group">
+                        @Html.Hidden("hdnFromDateUm", "", new { id = "hdnFromDateUm" })
+                        @Html.CalendarCustom("fromDateCal", "hdnFromDateGreg", "hdnFromDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+                        <span class="input-group-addon add-on"> - </span>
+                        @Html.Hidden("hdnToDateUm", "", new { id = "hdnToDateUm" })
+                        @Html.CalendarCustom("toDateCal", "hdnToDateGreg", "hdnToDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+                    </div>*@
+
+                    <div class="input-group">
+                        @Html.Hidden("hdnFromDateUm", "", new { id = "hdnFromDateUm" })
+                        @Html.CalendarCustom("fromDateCal", "hdnFromDateGreg", "hdnFromDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">-</span>
+                        </div>
+                        @Html.Hidden("hdnToDateUm", "", new { id = "hdnToDateUm" })
+                        @Html.CalendarCustom("toDateCal", "hdnToDateGreg", "hdnToDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+                    </div>
+
+
+                </fieldset>
+                @Html.HiddenGroupFor(model => model.DateTo, new { id = "hdnToDateGreg" }, "Search")
+                @Html.HiddenGroupFor(model => model.DateFrom, new { id = "hdnFromDateGreg" }, "Search")
+            </div>
+        </div>
+
+
+
+        <div class="panel-body">
+            <div class="col-md-1 col-xs-3">
+                <div class="radio">
+                    <label>
+                        @Html.CustomRadioButtonFor(model => model.TransactionCategory, (int)TransactionCategory.All, new { @class = "iradio", id = "chkAll", @onclick = "SetType(this)", Checked = "checked" })
+                        @DbRes.TResource("User.TransactionType.All")
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-2 col-xs-3">
+                <div class="radio">
+                    <label>
+                        @Html.CustomRadioButtonFor(model => model.TransactionCategory, (int)TransactionCategory.Inbound, new { @class = "iradio", @onclick = "SetType(this)", id = "chkInbound" })
+                        @DbRes.TResource("User.SubjectSearch.Inbound")
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-2 col-xs-3">
+                <div class="radio">
+                    <label>
+                        @Html.CustomRadioButtonFor(model => model.TransactionCategory, (int)TransactionCategory.ExternalOutbound, new { @class = "iradio", @onclick = "SetType(this)", id = "chkOutbound" })
+                        @DbRes.TResource("User.OutboundExternal.ExternalOutbound")
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-2 col-xs-3">
+                <div class="radio">
+                    <label>
+                        @Html.CustomRadioButtonFor(model => model.TransactionCategory, (int)TransactionCategory.InternalOutbound, new { @class = "iradio", @onclick = "SetType(this)", id = "chkOutboundInternal" })
+                        @DbRes.TResource("User.Editor.InternalOutbound")
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-2 col-xs-3">
+                <div class="radio">
+                    <label>
+                        @Html.CustomRadioButtonFor(model => model.TransactionCategory, (int)TransactionCategory.DraftOutbound, new { @class = "iradio", @onclick = "SetType(this)", id = "chkOutboundDraft" })
+                        @DbRes.TResource("User.OutboundDraft.OutboundDraft")
+                    </label>
+                </div>
+            </div>
+
+        </div>
+        <!--<div class="col-md-4 col-xs-6">
+    <fieldset>
+        <label class="control-label">@DbRes.TResource("User.InboundSearch.DateBetween")</label>-->
+        @*<div class="form-group input-group">
+            @Html.Hidden("hdnFromDateUm", "", new { id = "hdnFromDateUm" })
+            @Html.CalendarCustom("fromDateCal", "hdnFromDateGreg", "hdnFromDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+            <span class="input-group-addon add-on"> - </span>
+            @Html.Hidden("hdnToDateUm", "", new { id = "hdnToDateUm" })
+            @Html.CalendarCustom("toDateCal", "hdnToDateGreg", "hdnToDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+        </div>*@
+
+        <!--<div class="input-group">
+                @Html.Hidden("hdnFromDateUm", "", new { id = "hdnFromDateUm" })
+                @Html.CalendarCustom("fromDateCal", "hdnFromDateGreg", "hdnFromDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+                <div class="input-group-prepend">
+                    <span class="input-group-text">-</span>
+                </div>
+                @Html.Hidden("hdnToDateUm", "", new { id = "hdnToDateUm" })
+                @Html.CalendarCustom("toDateCal", "hdnToDateGreg", "hdnToDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+            </div>
+
+
+        </fieldset>
+        @Html.HiddenGroupFor(model => model.DateTo, new { id = "hdnToDateGreg" }, "Search")
+        @Html.HiddenGroupFor(model => model.DateFrom, new { id = "hdnFromDateGreg" }, "Search")
+    </div>-->
+        <!--<div class="col-md-4 col-xs-6 TimeBetween">
+    <fieldset>
+
+        <label class=" control-label">@DbRes.TResource("User.InboundSearch.TimeBetween")</label>-->
+        @*<div class="input-group form-group">
+            @Html.AutoCompleteBuilder("ddlMinuteFrom", "hdnMinuteFromId", LookupCategory.Minute, null, true, "form-control time", null, null, false, null, DbRes.TResource("Global.MinuteSymbole"), 20)
+            @Html.HiddenFor(model => model.MinuteFrom, new { @Value = "", id = "hdnMinuteFrom" })
+            @Html.Hidden("hdnMinuteFromId", "", new { id = "hdnMinuteFromId" })
+            <span class="input-group-addon add-on anchored">:</span>
+            @Html.AutoCompleteBuilder("ddlHourFrom", "hdnHourFromId", LookupCategory.Hour, null, true, "form-control time", null, null, false, null, DbRes.TResource("Global.HourSymbole"), 20)
+            @Html.HiddenFor(model => model.HourFrom, new { @Value = "", id = "hdnHourFrom" })
+            @Html.Hidden("hdnHourFromId", "", new { id = "hdnHourFromId" })
+
+            <span class="input-group-addon add-on"> - </span>
+            @Html.AutoCompleteBuilder("ddlMinuteTo", "hdnMinuteToId", LookupCategory.Minute, null, true, "form-control time", null, null, false, null, DbRes.TResource("Global.MinuteSymbole"), 20)
+            @Html.HiddenFor(model => model.MinuteTo, new { @Value = "", id = "hdnMinuteTo" })
+            @Html.Hidden("hdnMinuteToId", "", new { id = "hdnMinuteToId" })
+            <span class="input-group-addon anchored">:</span>
+            @Html.AutoCompleteBuilder("ddlHourTo", "hdnHourToId", LookupCategory.Hour, null, true, "form-control time", null, null, false, null, DbRes.TResource("Global.HourSymbole"), 20)
+            @Html.HiddenFor(model => model.HourTo, new { @Value = "", id = "hdnHourTo" })
+            @Html.Hidden("hdnHourToId", "", new { id = "hdnHourToId" })
+
+
+        </div>*@
+
+        <!--<div class="input-group">
+                @Html.AutoCompleteBuilder("ddlMinuteFrom", "hdnMinuteFromId", LookupCategory.Minute, null, true, "form-control time", null, null, false, null, DbRes.TResource("Global.MinuteSymbole"), 20)
+                @Html.HiddenFor(model => model.MinuteFrom, new { @Value = "", id = "hdnMinuteFrom" })
+                @Html.Hidden("hdnMinuteFromId", "", new { id = "hdnMinuteFromId" })
+                <div class="input-group-prepend">
+                    <span class="input-group-text">:</span>
+                </div>
+                @Html.AutoCompleteBuilder("ddlHourFrom", "hdnHourFromId", LookupCategory.Hour, null, true, "form-control time", null, null, false, null, DbRes.TResource("Global.HourSymbole"), 20)
+                @Html.HiddenFor(model => model.HourFrom, new { @Value = "", id = "hdnHourFrom" })
+                @Html.Hidden("hdnHourFromId", "", new { id = "hdnHourFromId" })
+                <div class="input-group-append">
+                    <span class="input-group-text">:</span>
+                </div>
+                @Html.AutoCompleteBuilder("ddlMinuteTo", "hdnMinuteToId", LookupCategory.Minute, null, true, "form-control time", null, null, false, null, DbRes.TResource("Global.MinuteSymbole"), 20)
+                @Html.HiddenFor(model => model.MinuteTo, new { @Value = "", id = "hdnMinuteTo" })
+                @Html.Hidden("hdnMinuteToId", "", new { id = "hdnMinuteToId" })
+                <div class="input-group-prepend">
+                    <span class="input-group-text">:</span>
+                </div>
+                @Html.AutoCompleteBuilder("ddlHourTo", "hdnHourToId", LookupCategory.Hour, null, true, "form-control time", null, null, false, null, DbRes.TResource("Global.HourSymbole"), 20)
+                @Html.HiddenFor(model => model.HourTo, new { @Value = "", id = "hdnHourTo" })
+                @Html.Hidden("hdnHourToId", "", new { id = "hdnHourToId" })
+            </div>
+
+
+        </fieldset>
+        @Html.HiddenTimeSpanFor(model => model.TimeFrom, "ddlHourFrom", "ddlMinuteFrom", "Search")
+        @Html.HiddenTimeSpanFor(model => model.TimeTo, "ddlHourTo", "ddlMinuteTo", "Search")
+    </div>-->
+        <div class="col-md-4">
+            <div class="form-group">
+                <div class="col-md-8">
+                    @Html.HiddenFor(model => model.TransactionCategory, new { id = "hdnTypeID" })
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12 mt-3">
+            <h4>
+                <a role="button" style="display:flex" onclick="GetAdvancedSearch(@Convert.ToInt32(SearchType.SearchByCreator))">
+                    <span onclick="CollapseDiv('AdvancedDiv'); return false;" style="cursor: pointer;">
+                        <img src="~/Content/User/lib/images/plus-icon.svg" id="AdvancedDivPlusIcon" width="25" />
+                        <img src="~/Content/User/lib/images/Dash-icon.svg" id="AdvancedDivDashIcon" width="25" style="display: none;" />
+                    </span>
+                    <span class="ml-3 mt-1">@DbRes.TResource("User.Names.ExtraOptions")</span>
+                </a>
+            </h4>
+            <div role="tabpanel" class="tab-pane" id="AdvancedDiv" style="display:none">
+            </div>
+        </div>
+
+        @*<a class="btn btn-st2 btn-lg pull-right mr-1 " id="btnAdvancedSearch" onclick="GetAdvancedSearch(@Convert.ToInt32(SearchType.SearchByCreator))">اضافية</a>
+        <a class="btn btn-st2 btn-lg pull-right mr-1 hidden" id="btnCloseAdvancedSearch" onclick="CloseAdvancedSearch()">أغلاق</a>*@
+
+
+        @Html.EncryptedStickyHidden("EncryptedFalse", "false", new { id = "EncryptedFalse" })
+        @Html.EncryptedStickyHidden("EncryptedTrue", "true", new { id = "EncryptedTrue" })
+    </div>
+
+<script>
+    $(document).ready(function () {
+          $("#hdnTypeID").val(-1); 
+        $('#fromDateCal').attr('autocomplete', 'off');
+        $('#toDateCal').attr('autocomplete', 'off');
+        $('#btnSearch').removeClass('hidden_');
+
+    var year = @DateTimeUtility.GetHijriYear(DateTime.Now).ToString();
+        var type = '@CalenderType.Ummalqura.ToString().ToLower()';
+        SetStartEndDate(year, 'fromDateCal', 'toDateCal', type);
+    });
+
+    function CollapseDiv(divName) {
+        if ($('#' + divName).css('display') == 'block') {
+            $('#' + divName).css("display", "none");
+            $('#' + divName + 'PlusIcon').css("display", "inline-block");
+            $('#' + divName + 'DashIcon').css("display", "none");
+        }
+        else {
+            $('#' + divName).css("display", "block");
+            $('#' + divName + 'PlusIcon').css("display", "none");
+            $('#' + divName + 'DashIcon').css("display", "inline-block");
+        }
+    }
+
+        function GetDirectedToUsersByOrgUnitId() {
+            if ($("#OrgUnitId").val() != "") {
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("GetUsersByOrgUnitId")',
+                data: { id: $("#OrgUnitId").val() },
+                success:
+               function (data) {
+                   $("#ddlDirectedToId").val("");
+                   $("#hdnDirectedToId").val("");
+                   AutoCompleteChangeList("ddlDirectedToId", data);
+                   $("#ddlDirectedToId").prop('disabled', false);
+               }
+            });
+            return false;
+        }
+        else {
+            $("#ddlDirectedToId").prop('disabled', true);
+            $("#ddlDirectedToId").val("");
+            $("#hdnDirectedToId").val("");
+            AutoCompleteChangeList("ddlDirectedToId", "[]");
+        }
+    }
+
+    $(document).ready(function () {
+        $('#fromDateCal').attr('autocomplete', 'off');
+        $('#toDateCal').attr('autocomplete', 'off');
+    });
+
+    $('#fromDateCal, #toDateCal').change(function () {
+
+        var dateFrom = $('#hdnFromDateUm').val();
+        var dateTo = $('#hdnToDateUm').val();
+    });
+        
+    $('#ddlHourTo').change(function () {
+
+        $('#hdnHourTo').val($('#ddlHourTo').val());
+    });
+
+    $('#ddlMinuteTo').change(function () {
+
+        $('#hdnMinuteTo').val($('#ddlMinuteTo').val());
+    });
+
+    $('#ddlHourFrom').change(function () {
+
+        $('#hdnHourFrom').val($('#ddlHourFrom').val());
+    });
+
+    $('#ddlMinuteFrom').change(function () {
+
+        $('#hdnMinuteFrom').val($('#ddlMinuteFrom').val());
+    });
+
+           function SetType(e) { 
+               $("#hdnTypeID").val(e.value); 
+               $("#AdvancedDiv").html("");
+                 $("#btnAdvancedSearch").removeClass("hidden");
+                    $("#btnCloseAdvancedSearch").addClass("hidden");
+    }
+   function CloseAdvancedSearch() {
+          $("#AdvancedDiv").html("");
+        $("#btnAdvancedSearch").removeClass("hidden");
+           $("#btnCloseAdvancedSearch").addClass("hidden");
+
+    }
+   function GetAdvancedSearch(id)
+       {
+      
+        $.ajax({
+            type: 'Get',
+            url: '@Url.Action("GetAdvancedSearchView")',
+            data: { SearchTypeId: id , TransactionCategoryId :   $("#hdnTypeID").val()},
+            success:
+                function (response) { 
+                    $("#AdvancedDiv").html(response.html);
+                     $("#btnAdvancedSearch").addClass("hidden");
+                    $("#btnCloseAdvancedSearch").removeClass("hidden");
+               
+           }
+        });
+    }
+</script>

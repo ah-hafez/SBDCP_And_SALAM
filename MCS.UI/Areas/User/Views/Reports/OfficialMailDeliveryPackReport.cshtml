@@ -1,0 +1,252 @@
+﻿@model List<MCS.UI.Areas.User.Models.Transaction.DeliveryReportVM>
+@using MCS.Framework.Localization
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" id="theme" href="@Url.Content("~/Content/User/lib/css/theme_" + SessionInfo.CultureShortName + ".css")" />
+    @if (SessionInfo.CultureShortName == "ar")
+    {
+        <link rel="stylesheet" type="text/css" id="theme" href="@Url.Content("~/Content/User/lib/css/rtl.css")" />
+    }
+    <!-- EOF CSS INCLUDE -->
+    <!-- Theme -->
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/User/lib/fonts/fonts.css")" />
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/User/lib/css/style.css")" />
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/User/lib/css/responsive_table_" + SessionInfo.CultureShortName + ".css")" />
+
+    <style>
+        .pagebreak {
+            page-break-after: always;
+        }
+
+        table.rprt {
+            width: 100%;
+            border: 1px solid #000000;
+        }
+
+            table.rprt td {
+                padding: 5px;
+                text-align: center;
+            }
+    </style>
+
+</head>
+<body>
+    @for (int i = 0; i < Model.Count; i++)
+    {
+        <table class="rprt">
+            <tr>
+                <td colspan="2">
+                    <div class="report_logo">
+                        <img src="~/Content/User/lib/images/logo-morasalat.png">
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div class="style_a">@DbRes.TResource("User.Transaction.OfficialMailDeliveryReport")</div>
+                    <div class="style_b">@DbRes.TResource("User.Transaction.PackageMaterialType")</div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="">@DbRes.TResource("User.Transaction.ReportNumber")<span>@Model[i].ReportNumber</span></div>
+                    <div class="">@DbRes.TResource("User.Transaction.Date")<span>@Model[i].DateH</span></div>
+                </td>
+                <td>
+                    <div class="style_b">@DbRes.TResource("User.Transaction.OrgUnitName")<span>@Model[i].OrgUnitName</span></div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div class="row">
+                        @Html.Partial("~/Areas/User/Views/Shared/_OfficialMailDeliveryPackReportGridPartial.cshtml", Model[i].Transactions)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div class="row">
+                        <table class="rprtGrid">
+                            <tr>
+                                <td style="text-align: right">ب</td>
+                                <td width="30%">بيانات شخص المندوب</td>
+                                <td width="70%" colspan="2">تعبأ بمعرفة موظف مكتب قبول البريد</td>
+                            </tr>
+                            <tr>
+                                <td width="30%" colspan="2">
+                                    <div class="row rowReport">
+                                        اسم المندوب :
+                                    </div>
+                                    <div class="row rowReport">
+                                        التوقيع :
+                                    </div>
+                                    <div class="row rowReport">
+                                        ختم الجهة :
+                                    </div>
+                                    <div class="row rowReport">
+                                        التاريخ :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/
+                                    </div>
+                                </td>
+                                <td width="40%">
+                                    <div class="row rowReport">
+                                        اسم موظف القبول :
+                                    </div>
+                                    <div class="row rowReport">
+                                        التوزيع :
+                                    </div>
+                                    <div class="row rowReport">
+                                        التاريخ  :
+                                    </div>
+                                </td>
+                                <td width="30%">
+                                    ختم البريد
+                                    <br />
+                                    <br />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div class="row">
+                        <table class="rprtGrid">
+                            <tr>
+                                <td style="text-align: right">ج</td>
+                                <td width="30%">تعبأ بمعرفة مدقق القبول</td>
+                                <td width="40%"></td>
+                                <td width="30%">الحاسب الآلي</td>
+                            </tr>
+                            <tr>
+                                <td width="70%" colspan="3">
+                                    <table class="rprtGridInternal">
+                                        <tr>
+                                            <td width="40%">
+                                                <div class="row rowReport">
+                                                    اسم مدقق البيانات :
+                                                </div>
+                                                <div class="row rowReport">
+                                                    التوقيع :
+                                                </div>
+                                                <div class="row rowReport">
+                                                    التاريخ :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/
+                                                </div>
+                                                <div class="row rowReport">
+                                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;الختم
+                                                    <br />
+                                                    <br />
+                                                </div>
+                                            </td>
+                                            <td width="60%">
+                                                <table class="rprtGridSubInternal">
+                                                    <tr>
+                                                        <td colspan="5">
+                                                            ملخص الكشف / البيانات الرسمية
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="3">
+                                                            عدد المطبوعات
+                                                        </td>
+                                                        <td colspan="2">
+                                                            الفئة والرسوم
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td width="20%">
+                                                            داخلي
+                                                        </td>
+                                                        <td width="20%">
+                                                            عربي
+                                                        </td>
+                                                        <td width="20%">
+                                                            أجنبي
+                                                        </td>
+                                                        <td width="20%">
+                                                            الفئة
+                                                        </td>
+                                                        <td width="20%">
+                                                            الرسوم
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td width="20%">&nbsp;</td>
+                                                        <td width="20%"></td>
+                                                        <td width="20%"></td>
+                                                        <td width="20%"></td>
+                                                        <td width="20%"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td width="20%">&nbsp;</td>
+                                                        <td width="20%"></td>
+                                                        <td width="20%"></td>
+                                                        <td width="20%"></td>
+                                                        <td width="20%"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td width="20%">&nbsp;</td>
+                                                        <td width="20%"></td>
+                                                        <td width="20%"></td>
+                                                        <td width="20%"></td>
+                                                        <td width="20%"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td width="20%">&nbsp;</td>
+                                                        <td width="20%"></td>
+                                                        <td width="20%"></td>
+                                                        <td width="20%"></td>
+                                                        <td width="20%"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td width="20%">&nbsp;</td>
+                                                        <td width="20%"></td>
+                                                        <td width="20%"></td>
+                                                        <td width="20%"></td>
+                                                        <td width="20%"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="3">
+                                                            إجمالي رسوم الكشف
+                                                        </td>
+                                                        <td colspan="2" align="left">
+                                                            ريال
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td width="30%">
+                                    <div class="row rowReport">
+                                        اسم مدخل البيانات :
+                                    </div>
+                                    <div class="row rowReport">
+                                        التوقيع :
+                                    </div>
+                                    <div class="row rowReport">
+                                        التاريخ :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/
+                                    </div>
+                                    <div class="row rowReport">
+                                        <br />
+                                        رقم القيد :
+                                        <br />
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    }
+</body>
+</html>

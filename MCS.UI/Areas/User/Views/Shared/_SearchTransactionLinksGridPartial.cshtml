@@ -1,0 +1,43 @@
+﻿@using MCS.UI.Helpers
+@using MCS.UI.Areas.User.Models.Transaction
+@model AjaxGrid<TransactionDetailsVM>
+
+@Html.Grid(Model).CollectionName("SearchTrans").Named("grdSearchTransLinks").Columns(columns =>
+{
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Id, new { id = "Id_" + model.Id }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Number, new { id = "Key_" + model.Id }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.HijriDate, new { id = "TransactionId_" + model.Id }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Subject, new { id = "TransactionSources_" + model.Id }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.TransactionTypeId, new { id = "TransactionType_" + model.Id }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+
+columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").Titled(DbRes.TResource("User.Transaction.Link.TransactionNumber"))
+.RenderValueAs(o => @<a class="trans_Number" data-id="@o.Id" data-transactionTypeId="@o.TransactionTypeId">@o.Number</a>);
+    columns.Add(false).RenderValueAs(model => @DateHelper.GetDate(model.HijriDate)).Titled(DbRes.TResource("User.Inbound.BasicInfo.RecordDate"));
+    columns.Add(model => model.Subject).Titled(DbRes.TResource("User.OutboundExternal.BasicInfo.Subject"));
+    columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => @Html.ClientLinkTag("", cssClass: "edit_link", title: DbRes.TResource("User.Transaction.Link.Add"), clientFunctionToCall: "AddLinkByTransaction(" + model.Number +","+ model.Year + "," + model.TransactionTypeId + ")", innerHtml: "<i class='glyphicon glyphicon-plus'></i>"));
+})
+
+<script type="text/javascript"> 
+    $(".trans_Number").click(function () { 
+
+        var transactionId = $(this).data("id");
+        var trx = EncryptionKey(transactionId);
+      var linkTypeId = $("#LinkTypeId").val();
+        var transactionCategory = $(this).data("transactioncategory");
+        switch (transactionCategory) {
+            case @(TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName)):
+                var url = '@Url.Action("Index", "TransactionLog")' + '?transactionId=' + trx + "&transactionCategory=" + @((int)TransactionCategory.Inbound);
+                break;
+            case @(TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName)):
+                var url = '@Url.Action("Index", "TransactionLog")' + '?transactionId=' + trx + "&transactionCategory=" + @((int)TransactionCategory.InternalOutbound);
+                break;
+            case @(TransactionCategory.ExternalOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName)):
+            case @(TransactionCategory.DraftOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName)):
+                var url = '@Url.Action("Index", "TransactionLog")' + '?transactionId=' + trx + "&transactionCategory=" + @((int)TransactionCategory.ExternalOutbound);
+                break;
+        }
+
+        ShowDialog(url, 'dialogbox col-md-12 ');
+    });
+</script>

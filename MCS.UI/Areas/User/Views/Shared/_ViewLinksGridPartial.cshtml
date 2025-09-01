@@ -1,0 +1,78 @@
+﻿@using MCS.UI.Helpers
+@using MCS.UI.Areas.User.Models.Transaction
+@model AjaxGrid<TransactionLinkVM>
+@using MCS.Common;
+@using MCS.Framework.Localization
+@{
+    var operationType = ViewData["IsEnableAction"] ?? true;
+}
+<div class="p-4">
+    @Html.Grid(Model).CollectionName("ViewLinks").Named("grdViewLinks").Columns(columns =>
+{
+
+    columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").Titled(DbRes.TResource("User.Transaction.Link.TransactionNumber"))
+    .RenderValueAs(model => MvcHtmlString.Create(
+        "" +
+    (model.HasPermission && (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Links.DisplayLink)) ?
+    "<a class='trans_Number' data-transactioncategory='" + model.TransactionCategory + "'data-linktypeid='" + model.LinkTypeId + "'data-id='" + model.TransactionId + "'>" + model.TransactionNumber + "</a>" :
+    "<a>" + model.TransactionNumber + "</a>")
+    + ""
+    ));
+
+    columns.Add(model => model.OrgunitName).Titled(DbRes.TResource("Admin.OrgUnitStructure.OrgName"));
+    columns.Add(model => model.TransactionCategoryName).Titled(DbRes.TResource("User.Transaction.Link.TransactionType"));
+    columns.Add(false).RenderValueAs(model => @DateHelper.GetDate(model.DateH)).Titled(DbRes.TResource("User.Inbound.BasicInfo.RecordDate"));
+    columns.Add(model => model.Subject).Titled(DbRes.TResource("User.OutboundExternal.BasicInfo.Subject"));
+
+    if ((bool)operationType)
+    {
+        columns.Add().Encoded(false).Sanitized(false).Css("").RenderValueAs(model =>
+
+        MvcHtmlString.Create(
+        "<div class='table-icon d-flex align-items-center'>" +
+        (model.HasPermission && (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Links.DisplayLink)) ?
+        @Html.ClientLinkTag("", cssClass: "edit_link", title: DbRes.TResource("Grid.Preview"), clientFunctionToCall: "PreviewTransactionDocument(" + model.TransactionId + ")", permissionCode: UserClaims.Links.Edit, innerHtml: "<i class='fa fa-solid fa-eye'></i>")
+        : MvcHtmlString.Empty) +
+
+        "</div>"));
+    }
+})
+
+</div>
+
+
+
+<script>
+
+    $(".trans_Number").click(function () {
+        var transactionId = $(this).data("id");
+        var trx = EncryptionKey(transactionId);
+        var linkTypeId = $(this).data("linktypeid");
+        var transactionCategory = $(this).data("transactioncategory");
+        switch (transactionCategory) {
+            case @(TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName)):
+                var url = '@Url.Action("Index", "TransactionLog")' + '?transactionId=' + trx + "&transactionCategory=" + @((int)TransactionCategory.Inbound);
+                break;
+            case @(TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName)):
+                var url = '@Url.Action("Index", "TransactionLog")' + '?transactionId=' + trx + "&transactionCategory=" + @((int)TransactionCategory.InternalOutbound);
+                break;
+            case @(TransactionCategory.ExternalOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName)):
+            case @(TransactionCategory.DraftOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName)):
+                var url = '@Url.Action("Index", "TransactionLog")' + '?transactionId=' + trx + "&transactionCategory=" + @((int)TransactionCategory.ExternalOutbound);
+                break;
+        }
+
+        ShowDialog(url, 'dialogbox col-md-12 ');
+    });
+
+</script>
+<style>
+    .table-icon a {
+        display: block;
+        color: #353C77;
+        text-decoration: none;
+        margin: 0px 5px;
+        font-size: 13px;
+        line-height: 1.9rem;
+    }
+</style>

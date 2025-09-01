@@ -1,0 +1,83 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.UserCategories
+@model UserCategoryTraysViewModel
+
+@{
+    ViewBag.Title = DbRes.TResource("Admin.UsersTrays.usersTrays");
+    Layout = "~/Areas/Admin/Views/Shared/_UsersTraysLayout.cshtml";
+}
+<script>
+    $(document).ready(function () {
+        //$("ul li:nth-child(2)").addClass("active");
+        $(".tab-pane:first").addClass("active");
+        $(".title_intab").next("li").addClass("active");
+    });
+    function OnSuccess(data, div) {
+        if (data.MessageType != 2) {            
+            ShowSuccesMessage(data.MessageText);
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+    function RemoveTag(id, modelId) {
+        var checkedStatus = $("#check_" + id).is(':checked');
+        var name = $("#span_" + id).text();
+        if (checkedStatus) {
+            $("#tags_" + modelId).append('<span id="tag_' + id + '" class="tag"><span>' + name + '</span><a href="#" title="Removing tag" onclick="RemoveItem(' + id + ')"></a></span>')
+        } else {
+            $("#tag_" + id).remove();
+        }
+    }
+    function RemoveItem(id) {
+        
+        $("#tag_" + id).remove();
+        $("#" + id).find('input[type = "checkbox"]').prop('checked', false);
+        $("#check_" + id).val(false);
+        $("#" + id).find('div:first-child').removeClass("checked");
+    }
+</script>
+<div class="page-title">
+    <h2><span class="fa fa-arrow-circle-o-left"></span>@DbRes.TResource("Admin.UsersTrays.usersTrays")</h2>
+</div>
+<div class="page-content-wrap">
+    <div class="row">
+        <div class="col-md-12">
+            @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmUserCategoryTrays", @class = "form-horizontal form-row" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">@DbRes.TResource("Admin.UsersTrays.AddTrays")</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="nav-tabs-vertical users_baskets">
+                                <div class="tabs">
+                                    <ul class="nav nav-tabs">
+                                        <li class="title_intab">@DbRes.TResource("Admin.UsersTrays.UserCategory")</li>
+                                        @for (var i = 0; i < Model.UserCategoryTrays.Count; i++)
+                                        { 
+                                            <li><a href="#tab_@Model.UserCategoryTrays[i].Id" data-toggle="tab">@Model.UserCategoryTrays[i].CategoryText</a>@Html.HiddenFor(model => model.UserCategoryTrays[i].Id)</li>
+                                        }
+                                    </ul>
+                                    <div class="panel-body tab-content">
+                                        @for (var i = 0; i < Model.UserCategoryTrays.Count; i++)
+                                        {
+                                            <div class="tab-pane" id="tab_@Model.UserCategoryTrays[i].Id">
+                                                @Html.Partial("_UserCategoryTraysPartial", Model.UserCategoryTrays[i], new ViewDataDictionary { TemplateInfo = new System.Web.Mvc.TemplateInfo() { HtmlFieldPrefix = Html.NameFor(model => model.UserCategoryTrays[i]).ToString() } })
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-footer">                      
+                        @Html.ActionButton(DbRes.TResource("Admin.UsersTrays.Save"), "Index", "", null, null,"OnSuccess", null, "post", null, "btnPost", "frmUserCategoryTrays", "btn btn-save pull-right")                      
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

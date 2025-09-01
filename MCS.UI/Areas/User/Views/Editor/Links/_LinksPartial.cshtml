@@ -1,0 +1,199 @@
+﻿@model MCS.UI.Areas.User.Models.Transaction.TransactionLinkVM
+@using MCS.Common;
+@using MCS.Framework.Localization
+@{
+    /**/
+
+    Layout = null;
+}
+
+<div class="content_container  ">
+    <div class="content_container content_container--header extra-padding">
+        <div class="row">
+            <div class="col-xs-12">
+                <h3 class="title2"> @DbRes.TResource("User.Editor.Links")</h3>
+            </div>
+        </div>
+    </div>
+    @using (Html.BeginForm("Index", "Editor", FormMethod.Post, new { id = "frmEditorLinks" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="content_container content_container--body white-bg">
+            <div class="col-xs-12">
+                <div class="single-paper">
+                    <div class="row">
+
+                        <div class="col-sm-12">
+                            <!-- Paper info -->
+                            <div class="animated zoomIn">
+
+
+                                <div class="row row-multi-fields">
+                                    <div class="col-xs-4">
+                                        <div class="light-text">
+                                            @Html.LabelFor(model => model.LinkTypeId, new { @class = "control-label", id = "lblLinkType" })
+                                        </div>
+                                        <div class="indent-text">
+                                            @Html.AutoCompleteBuilder("ddlEditorLinkType", "hdnEditorLinkTypeId", ViewData["LinkTypeData"].ToString(), null, true, "form-control")
+                                            @Html.HiddenGroupFor(model => model.LinkTypeId, new { @Value = "", id = "hdnEditorLinkTypeId" }, "Links")
+                                            @Html.HiddenGroupFor(model => model.LinkTypeName, new { @Value = "", id = "hdnEditorLinkTypeName" }, "Links")
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xs-8">
+                                        <div class="light-text">
+                                            @Html.LabelFor(model => model.TransactionCategory, new { @class = " control-label", id = "chlinks" })
+                                        </div>
+                                        <div class="indent-text">
+                                            <div class="col-xs-4">
+
+                                                <div class="indent-text">
+                                                    @Html.RadioButtonFor(model => model.TransactionCategory, TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName), new { id = "ChType", onchange = "OnRadiochange()", @checked = "checked" })
+                                                    @DbRes.TResource("User.Transaction.Link.Inbound")
+
+                                                    @Html.HiddenFor(model => model.TransactionCategoryName, new { id = "hdnTypeName" })
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-4">
+                                                <div class="indent-text">
+                                                    @Html.RadioButtonFor(model => model.TransactionCategory, TransactionCategory.ExternalOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName), new { id = "ChType", onchange = "OnRadiochange()" })
+                                                    @DbRes.TResource("User.Transaction.Link.Outbound")
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xs-4">
+                                        <div class="light-text">
+                                            @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.OrgUnitId, TreeMode.Single, "EditordvCabinetTree", true, null, "Links")
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.TransactionCategory, "", new { @class = "_msgval" })
+                                    </div>
+
+
+                                    <div class="col-xs-4">
+                                        <div class="light-text">
+                                            @Html.LabelFor(model => model.TransactionNumber, new { @class = " control-label" })
+                                        </div>
+                                        <div class="indent-text">
+                                            @Html.NumericTextBoxFor(model => model.TransactionNumber, new { @class = "form-control", @Value = "", maxlength = "12" }, "Links")
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-xs-4">
+                                        <div class="light-text">
+                                            @Html.LabelFor(model => model.Year, new { @class = " control-label" })
+                                        </div>
+                                        <div class="indent-text">
+                                            @Html.AutoCompleteBuilder("ddlEditorYear", "hdnEditorLinkYear", LookupCategory.Year, null, true, "form-control")
+                                            @Html.HiddenGroupFor(model => model.Year, new { @Value = "", id = "hdnEditorLinkYear" }, "Links")
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-4">
+                                        <div class="light-text">
+                                            @Html.LabelFor(model => model.Subject, new { @class = " control-label" })
+                                        </div>
+                                        <div class="indent-text">
+                                            @Html.TextAreaGroupFor(model => model.Subject, new { @class = "form-control", @rows = "3", @Value = "" }, "Links")
+                                        </div>
+                                    </div>
+
+                                    @*@Html.StickyHidden("hdnEditorLinks", ViewData["hdnLinkArray"].ToString())*@
+                                    @Html.StickyHidden("hdnTransactionId", ViewData["TransactionId"].ToString(), new { id = "hdnLinksTransactionId", @class = "TransactionId" })
+
+
+
+                                </div>
+
+                                <!-- Paper info #END# -->
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 text-center">
+                    @Html.ClientActionButton(DbRes.TResource("User.Transaction.Link.Add"), Url.Action("AddEditorLink", "Editor"), "dvEditorLinksGrid", "EditorLinkOnSuccess", null, "Links", "btnLink", "dvEditorLinksBody", " btn-site")
+                    @Html.ResetButton("ClearInputs('dvEditorLinksBody')")
+                </div>
+            </div>
+            <div class="row">
+                <div id="dvEditorLinksGrid">
+                    @Html.Partial("~/Areas/User/Views/Editor/Links/_LinksGridPartial.cshtml", ViewData["LinksData"])
+                </div>
+            </div>
+            <div class="">
+            </div>
+            <div class="content_container">
+                <div class="row">
+                    <div class="col-xs-12 text-center">
+                        <button class="btn-site" type="submit"><i class="glyphicon glyphicon-send"></i> ارسال</button>
+                        @Html.ConfirmAction(OperationType.Save, "btnSaveLinks", DbRes.TResource("User.Editor.Links.Save"), Url.Action("SaveTransactionLinks", "Editor"), null, null, null, "OnSaveLinksSuccess", null, DbRes.TResource("User.Editor.Explanation.SaveMessage"), "post", "frmEditorLinks", null, "btn-site", null, UserClaims.Editor.Link)
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+    <script>
+    function OnRadiochange() {
+        var text = $("input:checked").parent('label').text();
+        $("#hdnTypeName").val(text.trim());
+
+        switch ($("#ChType").val()) {
+            case "15":
+                $("label[for='TransactionNumber']").text(__LinkOutboundNumber);
+                break;
+            case "14":
+                $("label[for='TransactionNumber']").text(__LinkInboundNumber);
+                break;
+            default:
+                $("label[for='TransactionNumber']").text(__LinkTransactionNumber);
+        }
+    }
+    function EditorLinkOnSuccess(data, div) {
+
+        if (data.MessageType != 2) {
+            $("#" + div).html("");
+            $("#" + div).html(data.Html);
+            ClearInputs('dvEditorLinksBody')
+            $("#dvEditorLinksBody #hdnEditorLinks").val(data.hdnValue);
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+    function OnDeleteEditorLinksSuccess(data, div) {
+        $("#dvEditorLinksBody #hdnEditorLinks").val(data.hdnValue);
+    }
+
+    var __LinkOutboundNumber = '@Html.Raw(DbRes.TResource("User.Transaction.Link.OutboundNumber"))';
+    var __LinkInboundNumber = '@Html.Raw(DbRes.TResource("User.Transaction.Link.InboundNumber"))';
+    var __LinkInboundDocumentNumber = '@Html.Raw(DbRes.TResource("User.Transaction.Link.InboundDocumentNumber"))';
+    var __LinkTransactionNumber = '@Html.Raw(DbRes.TResource("User.Transaction.Link.TransactionNumber"))';
+
+    $("#ddlEditorLinkType").change(function () {
+        $("#hdnEditorLinkTypeName").val($(this).val());
+        switch ($("#hdnEditorLinkTypeId").val()) {
+            case "1004":
+            case "1006":
+                $("label[for='TransactionNumber']").text(__LinkOutboundNumber);
+                break;
+            case "1005":
+                $("label[for='TransactionNumber']").text(__LinkInboundNumber);
+                break;
+            case "1007":
+                $("label[for='TransactionNumber']").text(__LinkInboundDocumentNumber);
+                break;
+            default:
+                $("label[for='TransactionNumber']").text(__LinkTransactionNumber);
+        }
+    });
+
+
+    </script>
+

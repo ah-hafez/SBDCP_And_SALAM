@@ -1,0 +1,215 @@
+﻿<style>
+    .toolbar {
+        z-index: 100;
+        position: relative;
+    }
+
+    .btn-group {
+        margin-left: 5px;
+    }
+
+        .btn-group button {
+            font-size: 20px !important;
+        }
+
+    .btnAnnCancel, .btnAnnSave {
+        color: #333;
+        background-color: #fff;
+        border-color: #ccc;
+        display: none;
+        padding: 6px 12px;
+        margin: 5px;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 1.42857143;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: middle;
+        -ms-touch-action: manipulation;
+        touch-action: manipulation;
+        cursor: pointer;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        background-image: none;
+        border: 1px solid transparent;
+        border-radius: 4px;
+    }
+</style>
+@using MCS.DoconutMVC.Helpers;
+
+
+@{
+    bool annotationonly = Request.QueryString.AllKeys.Contains("annotationonly") ? Convert.ToBoolean(Request.QueryString["annotationonly"]) : false;
+    bool showbarcode = Request.QueryString.AllKeys.Contains("showbarcode") ? Convert.ToBoolean(Request.QueryString["showbarcode"]) : true;
+    bool printDocumentPermission = Convert.ToBoolean(Session["PrintDocumentPermission"].ToString());
+    bool deleteDocumentPermission = Convert.ToBoolean(Session["DeleteDocumentPermission"].ToString());
+    bool colorDocumentPermission = Convert.ToBoolean(Session["ColorDocumentPermission"].ToString());
+    bool annotationDocumentPermission = Convert.ToBoolean(Session["AnnotactionDocumentPermission"].ToString());
+}
+<div class="toolbar">
+    @if (!annotationonly)
+    {
+        <div class="btn-group">
+            <select id="ddlUploadMode" class="form-control">
+                <option value="1" selected="selected">@Html.GlobalResource("RegulerArchiving")</option>
+                <option value="2">@Html.GlobalResource("ReplacePage")</option>
+                <option value="3">@Html.GlobalResource("PrePage")</option>
+                <option value="4">@Html.GlobalResource("AfterPage")</option>
+            </select>
+        </div>
+        <div class="btn-group" role="group" aria-label="Acquire Image">
+            @*Open Upload*@
+            <button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="bottom"
+                    title=@Html.GlobalResource("UploadFileToolTip") onclick="OpenUpload();" data-title="Upload">
+                <i class="fas fa-file-upload"></i>
+            </button>
+            @*Acquire Image*@
+            @if (!Request.QueryString.AllKeys.Contains("hidecontrols"))
+            {
+                <button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="bottom"
+                        title=@Html.GlobalResource("ScannerToolTip") onclick="AcquireImage(1);" data-title="Scan">
+                    <i class="fas fa-print"></i>
+                </button>
+                if (colorDocumentPermission)
+                {
+                    <button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="bottom "
+                            title=@Html.GlobalResource("ScannerWithColorsToolTip") onclick="AcquireImage(2);" data-title="Color Scan">
+                        <i class="fas fa-fill-drip" style="background-image:linear-gradient(141deg, #e52f4bb0 0%, #cee510 44%, #09afed 75%)"></i>
+                    </button>
+                }
+            }
+            @if (printDocumentPermission && !Request.QueryString.AllKeys.Contains("hideAllcontrols"))
+            {
+                <button id="btnPrintDocument" type="button" class="btn btnEdit btn-default" data-toggle="tooltip" data-placement="bottom"
+                        title=@Html.GlobalResource("PrintDocumentToolTip") onclick="PrintDocument();" data-title="Stamp">
+                    <i class="fas fa-print"></i>
+                </button>
+                <button type="button" class="btn btnEdit btn-default" data-toggle="tooltip" data-placement="bottom"
+                        title=@Html.GlobalResource("DownloadDocumentToolTip") onclick="DownloadDocument('@Session["printToken"].ToString()');" data-title="Stamp">
+                    <i class="fas fa-download"></i>
+                </button>
+            }
+        </div>
+    }
+
+
+    <div class="btn-group" role="group" aria-label="Zoom">
+        @*Zoom*@
+        <button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="bottom"
+                title=@Html.GlobalResource("ZoomInToolTip") onclick="objctlDoc.Zoom(true);" data-title="Zoom In">
+            <i class="fas fa-search-plus"></i>
+        </button>
+        <button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="bottom"
+                title=@Html.GlobalResource("ZoomOutToolTip") onclick="objctlDoc.Zoom(false);" data-title="Zoom Out">
+            <i class="fas fa-search-minus"></i>
+        </button>
+        @*<button type="button" class="btn Edit btn-default" data-toggle="tooltip" data-placement="bottom"
+                    title=@Html.GlobalResource("RotateToolTip") onclick="RotateDocument();" data-title="Edit">
+                <i class="fas fa-edit"></i>
+            </button>*@
+
+    </div>
+
+    <div class="btn-group" role="group" aria-label="Signature and Stamp and Barcode">
+        @*Start Annotation*@
+        <button type="button" class="btn Edit btn-default" data-toggle="tooltip" data-placement="bottom"
+                title=@Html.GlobalResource("EditToolTip") onclick="StartAnnotation();" data-title="Edit">
+            <i class="fas fa-edit"></i>
+        </button>
+
+        @*Signature, Stamp , Barcode*@
+        <button id="btnAddSign" style="display:none;" type="button" class="btn btnEdit btn-default" data-toggle="tooltip" data-placement="bottom"
+                title=@Html.GlobalResource("SignatureToolTip") onclick="ImageSignature();" data-title="Signature">
+            <i class="fas fa-signature"></i>
+        </button>
+        <button id="btnAddStamp" style="display:none;" type="button" class="btn btnEdit btn-default" data-toggle="tooltip" data-placement="bottom"
+                title=@Html.GlobalResource("StampToolTip") onclick="ImageStamp();" data-title="Stamp">
+            <i class="fas fa-stamp"></i>
+        </button>
+        @if (showbarcode)
+        {
+            <button id="btnAddBarcode" style="display:none;" type="button" class="btn  btn-default" data-toggle="tooltip" data-placement="bottom"
+                    title=@Html.GlobalResource("BarcodeToolTip") onclick="ImageBarcode();" data-title="Barcode">
+                <i class="fas fa-barcode"></i>
+            </button>
+        }
+        <button id="btnTextNote" style="display:none;" type="button" class="btn  btn-default" data-toggle="tooltip" data-placement="bottom"
+                title="اضافة نص" onclick="AddTextNote();" data-title="Barcode">
+            <i class="fas fas fa-book fa-fw"></i>
+        </button>
+    </div>
+    @if (annotationDocumentPermission)
+    {
+        <div class="btn-group" role="group" aria-label="Custom Annotation" id="docViewerAnnotations" style="display:none;">
+            @*Custom Annotation: Rectangle etc....*@
+            <button type="button" class="btn btnEdit btn-default AnnotationButton" data-toggle="tooltip" data-placement="bottom"
+                    title=@Html.GlobalResource("RectangleToolTip") data-title="rectangle">
+                <i class="far fa-square"></i>
+            </button>
+            <button type="button" class="btn btnEdit btn-default AnnotationButton" data-toggle="tooltip" data-placement="bottom"
+                    title=@Html.GlobalResource("lineToolTip") data-title="line">
+                <i class="fas fa-grip-lines-vertical"></i>
+            </button>
+            <button type="button" class="btn btnEdit btn-default AnnotationButton" data-toggle="tooltip" data-placement="bottom"
+                    title=@Html.GlobalResource("ArrowToolTip") data-title="arrow">
+                <i class="fas fa-arrow-right"></i>
+            </button>
+            <button type="button" class="btn btnEdit btn-default AnnotationButton" data-toggle="tooltip" data-placement="bottom"
+                    title=@Html.GlobalResource("TriangleToolTip") data-title="triangle">
+                <i class="fas fa-chevron-up" style="border-bottom:2px solid #000;"></i>
+            </button>
+            <button type="button" class="btn btnEdit btn-default AnnotationButton" data-toggle="tooltip" data-placement="bottom"
+                    title=@Html.GlobalResource("CircleToolTip") data-title="circle">
+                <i class="far fa-circle"></i>
+            </button>
+
+            <button type="button" class="btn btnEdit btn-default AnnotationButton" data-toggle="tooltip" data-placement="bottom"
+                    title=@Html.GlobalResource("FreehandToolTip") data-title="freehand">
+                <i class="fas fa-pen-fancy"></i>
+            </button>
+        </div>
+    }
+
+    <div class="btn-group" role="group" aria-label="Remove Clean Annotation">
+        @*Edit,Remove,Clean Annotation*@
+        <button id="btnDeleteAnnotation" style="display:none;" type="button" class="btn btn-default" data-toggle="tooltip" data-placement="bottom"
+                title='@Html.GlobalResource("DeleteToolTip")' onclick="DeleteAnnotations();">
+            <i class="far fa-trash-alt"></i>
+        </button>
+        <button id="btnClearAnnotaions" style="display:none;" type="button" class="btn btn-default" data-toggle="tooltip" data-placement="bottom"
+                title='@Html.GlobalResource("ClearAnnotationsToolTip")' onclick="ClearAnnotations();">
+            <i class="fas fa-eraser"></i>
+        </button>
+        <button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="bottom"
+                title='@Html.GlobalResource("DeletePageToolTip")' onclick="DeletePage();">
+            <i class="fas fa-remove"></i>
+        </button>
+        <button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="bottom"
+                title='@Html.GlobalResource("MovePageUpToolTip")' onclick="ChangePageOrder(true);">
+            <i class="fas fa-sort-numeric-up"></i>
+        </button>
+        <button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="bottom"
+                title='@Html.GlobalResource("MovePageDownToolTip")' onclick="ChangePageOrder(false);">
+            <i class="fas fa-sort-numeric-down"></i>
+        </button>
+
+            <button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="bottom"
+                    title='@Html.GlobalResource("DeleteDocumentToolTip")' onclick="DeleteDocumentTemp();">
+                <i class="fas fa-folder-minus"></i>
+            </button>
+        
+    </div>
+</div>
+
+
+@*<script>
+        $(document).ready(function () {
+
+            $(".btnEdit").attr("disabled", true);
+        });
+        $(".Edit").click(function () {
+            $('.btnEdit').removeAttr("disabled");
+        });
+    </script>*@

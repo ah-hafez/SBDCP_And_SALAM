@@ -1,0 +1,110 @@
+﻿@using MCS.Common
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.File
+@model IList<TransactionTrayInfoVM>
+
+@{
+    bool isVIP = (bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser);
+    DefaultDisplay defaultDisplay = (DefaultDisplay)SessionInfo.GetObjectFromSession(Constants.DefaultDisplay);
+    Session["viewType"] = "Outbound";
+}
+<script>
+    $(document).ready(function () {
+          var isVIPUser = '@SessionInfo.GetObjectFromSession(Constants.IsVIPUser)';
+
+        @*$('.view_Editor').click(function (e) {
+        if ($(e.target).hasClass('aSave'))
+            return;
+
+        var type = $(this).data("type");
+        var id = $(this).data("id");
+
+        var IsDraft = false;
+        if (type == @(TransactionCategory.DraftOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName)))
+            IsDraft = true;
+
+        var isHubEditable = $(this).data("ishubeditable");
+            window.location.href = '@Url.Action("Edit","OutboundExternal")?id=' + id + '&IsFromDraft=' + IsDraft + '&isHubEditable=' + isHubEditable.toLowerCase();
+
+        });*@
+
+        if ($('#selectAll').is(":checked")) {
+            $('#selectAll').click();
+        }
+
+        if (isVIPUser.toLowerCase() == 'true') {
+            goTableView();
+        }
+        else {
+            goCardsView();
+        }
+    });
+</script>
+
+@if (defaultDisplay == DefaultDisplay.Cards@*&& !isVIP*@)
+{
+    <div class="col-xs-12">
+        <div class="boxes">
+            <div class="row">
+                @{
+                    Session["renderType"] = "cardItem";
+                    Html.RenderPartial("~/Areas/User/Views/File/_FileGrid.cshtml",
+                    Model,
+                    new ViewDataDictionary {
+                { "ListItemName", "_DraftOutbound_Item" },
+                { "GridName", "DraftOutboundGrid" },
+                { "renderType", "cardItem" }
+        });
+                }
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    Session["renderType"] = "tableItem";
+    Html.RenderPartial("~/Areas/User/Views/File/_FileGrid.cshtml",
+                Model,
+                new ViewDataDictionary {
+                //{ "ListItemName", "_DraftOutbound_TableItem" },
+                { "GridName", "DraftOutboundGrid" },
+                                //{ "renderType", "tableItem" }
+                            });
+}
+<script>
+    var draftOutboundGridEventHandler = "@Url.Action("DraftOutbound", "File")";
+    function prepareDraftOutboundGrid() {
+        if (!pageGrids.DraftOutboundGrid) {
+            $(".grid-mvc").gridmvc();
+        }
+        pageGrids.DraftOutboundGrid.ajaxify({
+            getPagedData: draftOutboundGridEventHandler,
+            getData: draftOutboundGridEventHandler,
+            callbackClientFunctionAfter: ["goToViewAfterPaging", "reRegisterSendInqueryButton"]
+        });
+    }
+
+    $(document).ready(function () {
+        $('.clsResend').off().on("click", ResendHub.bind(this));
+
+        $('.clsSendInquery').click((e) => {
+            var transactionId = $(e.currentTarget).data('transactionid');
+            $.ajax({
+                url: '@Url.Action("SendStatusInquiry", "Hub")',
+                data: { transactionId: transactionId },
+            }).success((data) => {
+                if (data == 'faild') {
+                    var message = "حدث خطأ رقم (" + data + ") الرجاء المحاولة لاحقاً";
+                    ShowInformationMessage(message);
+                    return;
+                }
+                ShowInformationMessage(data);
+            }).error((a, b, c, d) => {
+                ShowErrorMessage('حدث خطأ');
+            });
+            e.stopImmediatePropagation();
+
+        });
+        prepareDraftOutboundGrid();
+    });
+</script>

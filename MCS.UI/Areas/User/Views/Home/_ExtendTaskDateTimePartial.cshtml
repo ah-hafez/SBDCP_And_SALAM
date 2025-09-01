@@ -1,0 +1,35 @@
+﻿@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.Framework.Localization
+@using MCS.Common
+
+@{
+    int taskId = Convert.ToInt32(ViewData["TaskId"]);
+}
+
+<div class="sort dropdown">
+    <a class="dropdown-toggle" href="#" data-bs-toggle="dropdown">
+        <i data-bs-toggle="tooltip" data-placement="top" title='@DbRes.TResource("User.Task.ExtendTaskDateTime.ExtendDate")' class="fa fa-arrows-h"></i>
+    </a>
+    <div class="dropdown-menu animated zoomIn ">
+
+        <form role="form" class="form-horizontal form-row">
+            <div class="form-group">
+                <label class="col-md-12 control-label"></label>
+                <div class="col-md-12">
+                    <div class="">
+                        @Html.Calendar(String.Format("toDateCal{0}", taskId), String.Format("hdnToDateGreg{0}", taskId), String.Format("hdnToDateUm{0}", taskId), CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+                        @Html.Hidden(String.Format("hdnToDateGreg{0}", taskId))
+                        @Html.Hidden(String.Format("hdnToDateUm{0}", taskId))
+                    </div>
+                </div>
+            </div>
+            <div class="form-group footer_form">
+                <div class="col-md-12">
+                    @Html.ClientButton(DbRes.TResource("User.Task.ExtendTaskDateTime.Send"), "btnExtendTaskDate", "pull-right btn btn-save", string.Format("ExtendTaskDate('{0}')",taskId), UserClaims.Tasks.EditDate)
+                    <a class="btn-link pull-right"></a>
+                </div>  
+            </div>
+        </form>
+    </div>
+</div>

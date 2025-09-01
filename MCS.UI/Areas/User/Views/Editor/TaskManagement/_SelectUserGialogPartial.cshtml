@@ -1,0 +1,82 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Framework.Controls.Mvc;
+
+
+@{
+    Layout = "~/Views/Shared/_DialogLayout.cshtml";
+}   
+
+
+
+<div class="content-rtl panel panel-default dialogbox_panel">
+    <div class="panel-heading">
+        <h3 class="panel-title">@DbRes.TResource("User.Task.SelectTaskUser.SelectUnitUser")</h3>
+    </div>
+    <div class="modal-body" id="dvOrgUnitUsers">
+        @Html.StickyHidden("orgUnitKey", ViewData["OrgUnitKey"].ToString(), new { id = "hdnOrgUnitKey" })
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        @Html.Label(DbRes.TResource("User.Task.SelectTaskUser.UnitUser"), new { @class = "col-md-2 control-label" })
+                        <div class="col-md-10">
+                            <div class="">
+                                @Html.AutoComplete("ddlUser", "hdnUser", ViewData["ListOfUsers"].ToString(), true, null, "form-control")
+                                @Html.Hidden("hdnUser", new { id = "hdnUser", @Value = "" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style=" clear:both;"></div>
+        <div class="panel-footer middle">
+            @Html.ClientButton(DbRes.TResource("User.Task.TaskWorkflow.Save"), "", "btn btn-save pull-right", "PushSelectUser")
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <h3 id="selectedUser"></h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        var departmentArray = $.parseJSON($('#hdnSaveDepartmentsData').val());
+
+        var index = ElementIndex(departmentArray, $('#hdnOrgUnitKey').val());
+
+        if (departmentArray[index].Users != null) {
+            if (departmentArray[index].Users[0] != null) {
+
+                $('#hdnUser').val(departmentArray[index].Users[0].Id);
+                $('#hdnUser').trigger('change');
+
+                $('#selectedUser').html($('#ddlUser').val());
+            }
+        }
+
+    });
+
+    function PushSelectUser()
+    {
+        var departmentArray = $.parseJSON($('#hdnSaveDepartmentsData').val());
+
+        var index = ElementIndex(departmentArray, $('#hdnOrgUnitKey').val());
+
+        if (departmentArray[index].Users == null)
+        {
+            departmentArray[index].Users = [];
+        }
+
+        departmentArray[index].Users.push({ Id: $('#hdnUser').val(), UserName: $('#ddlUser').val() });
+
+        $('#selectedUser').html($('#ddlUser').val());
+
+        $('#hdnSaveDepartmentsData').val(JSON.stringify(departmentArray));
+
+        ShowSuccesMessage('@Html.Raw(DbRes.TResource("User.Task.SaveWorkFlowSuccess"))');
+    }
+</script>

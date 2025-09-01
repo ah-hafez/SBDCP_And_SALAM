@@ -1,0 +1,110 @@
+﻿@using MCS.UI.Areas.Admin.Models.ReleaseNotes;
+@{
+    ViewBag.Title = "Release Notes";
+    Layout = "~/Areas/Admin/Views/Shared/_ReleaseNotesLayout.cshtml";
+}
+@model ReleaseNotesVM
+<div class="page-title">
+    <br />
+    <h2><span class="fa fa-arrow-circle-o-left"></span>@DbRes.TResource("Admin.ReleaseNotes.Title")</h2>
+</div>
+<div class="page-content-wrap">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-horizontal">
+                <div class="panel panel-default">
+                    <div id="divAddReleaseNote">
+                        @Html.Partial("_AddReleaseNotesPartial", Model)
+                    </div>
+                    <div id="divEditReleaseNote" style="display:none;">
+                        @Html.Partial("_EditReleaseNotesPartial", Model)
+                    </div>
+                    <div id="divGrid">
+                        <div class="panel-body">
+                            <div class="row">
+                                @Html.Partial("~/Areas/Admin/Views/ReleaseNotes/_GridReleaseNotePartial.cshtml", ViewData["GridData"])
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function ShowEditDiv(data, div) {
+
+        $("#divEditReleaseNote").css("display", "block");
+        $("#divAddReleaseNote").css("display", "none");
+    }
+
+    function HideEditDiv()
+    {
+        $("#divEditReleaseNote").css("display", "none");
+        $("#divAddReleaseNote").css("display", "block");
+    }
+    function OnAddSuccess(data,div) {
+        if (data.MessageType != 2) {
+            $("#" + div).html("");
+            $("#" + div).html(data.Html);
+            jQuery.validator.unobtrusive.parse('#' + div);
+            ShowSuccesMessage(data.MessageText);
+            ClearInputs('divAddReleaseNote');
+
+
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+    function OnEditSuccess(data,div) {
+        if (data.MessageType != 2) {
+            $("#" + div).html("");
+            $("#" + div).html(data.Html);
+            jQuery.validator.unobtrusive.parse('#' + div);
+            ShowSuccesMessage(data.MessageText)
+            $("#divEditReleaseNote").css("display", "none");
+            $("#divAddReleaseNote").css("display", "block");
+            ClearInputs('divEditReleaseNote');
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+    function OnDeleteSuccess(data, divUpdatData, deletedList) {
+
+          
+
+    if (data.MessageType != 2) {
+
+            
+    if (data.ActionsUsedList.length == 0) {
+
+            $("#" + divUpdatData).html("");
+            $("#" + divUpdatData).html(data.Html);
+            ShowSuccesMessage(data.MessageText);
+        }
+        else {
+
+            var msg = '';
+
+            for (var i = 0; i < data.ActionsUsedList.length; i++) {
+
+                if (msg == '')
+                    msg = data.ActionsUsedList[i];
+                else
+                    msg = msg + '</br>' + data.ActionsUsedList[i];
+            }
+
+            msg = '@DbRes.TResource("Admin.ReleaseNotes.DeleteMsg")' + '</br>' + msg;
+
+            ShowErrorMessage(msg);
+        }
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+</script>
+

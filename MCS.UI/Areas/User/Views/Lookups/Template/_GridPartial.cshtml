@@ -1,0 +1,57 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Lookups
+@using MCS.GridMvc.Helpers;
+@using MCS.GridMvc.Html;
+@using MCS.Common;
+
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<TemplateVM>
+@{
+    ViewBag.Title = "_FormGridParial";
+}
+
+
+@Html.Grid(Model).Named("Form").Columns(columns =>
+{
+    columns.Add(model => model.Id, "Id").Css("hidden_");
+    columns.Add(model => model.Description[0].Text, "DescriptionAr").Titled(DbRes.TResource("Admin.Form.TemplateName.ar"));
+    columns.Add(model => model.Description[1].Text, "DescriptionEn").Titled(DbRes.TResource("Admin.Form.TemplateName.en"));
+    columns.Add(model => model.TransactionCategory, "SourceTransactionType").Titled(DbRes.TResource("Admin.Form.TransactionType"));
+    columns.Add().Titled(DbRes.TResource("Admin.Link.Status")).RenderValueAs(model => MvcHtmlString.Create(model.IsActive ? DbRes.TResource("Admin.Link.Status.Active") : DbRes.TResource("Admin.Link.Status.Deactive")));
+    columns.Add().Encoded(false).Sanitized(false).Css("").RenderValueAs(model =>
+
+MvcHtmlString.Create(
+    "<div class='table-icon d-flex align-items-center'>" +
+        (model.IsLocked && (model.LockedBy == SessionInfo.CurrentUser.Id || SessionInfo.CurrentUser.Claims.Contains(UserClaims.Admin.LookupsUnLock)) ?
+        @Html.ClientLinkTag("", null, "color-blue", null, DbRes.TResource("Admin.Lookups.UnLock"), "LockUnlockLookup(" + (int)LookupType.Form + "," + (int)LookupOperationType.UnLock + " , " + model.Id + ")", null, "<i class='icon-tables-unlock'></i>")
+        : !model.IsLocked ? @Html.ClientLinkTag("", null, "color-grey", null, DbRes.TResource("Admin.Lookups.Lock"), "LockUnlockLookup(" + (int)LookupType.Form + "," + (int)LookupOperationType.Lock + " , " + model.Id + ")", null, "<i class='icon-tables-lock'></i>") : MvcHtmlString.Empty) +
+        (!model.IsLocked && !model.IsActive ?
+        @Html.ClientLinkTag(text: "", cssClass: "color-orange", title: DbRes.TResource("Admin.Lookups.Activate"), clientFunctionToCall: "ActiveDeactiveLookup(" + (int)LookupType.Form + "," + (int)LookupOperationType.Active + " , " + model.Id + ")", innerHtml: "<i class='icon-tables-lamp'></i>") : MvcHtmlString.Empty) +
+        (!model.IsLocked && model.IsActive ?
+        @Html.ClientLinkTag(text: "", cssClass: "color-grey", title: DbRes.TResource("Admin.Lookups.Deactivate"), clientFunctionToCall: "ActiveDeactiveLookup(" + (int)LookupType.Form + "," + (int)LookupOperationType.Deactivate + " , " + model.Id + ")", innerHtml: "<i class='icon-tables-lamp-off'></i>") : MvcHtmlString.Empty) +
+        (!model.IsLocked ?
+        @Html.GridImageButton("GetTemplate", "Form", 0, OperationType.Update, "dvEdit", null, null, "ShowEditDiv", "", "get") : MvcHtmlString.Empty) +
+          (!model.IsLocked ?
+        @Html.GridImageButton("CopyTemplate", "Form", 0, OperationType.Copy, "dvEdit", null, null, "ShowEditDiv", "", "get") : MvcHtmlString.Empty) +
+        (!model.IsLocked ?
+        @Html.GridImageButton("DeleteTemplate", "Form", 0, OperationType.Delete, "dvGrid", "formEdit", null, "OnDeleteSuccess") : MvcHtmlString.Empty) +
+     "</div>"));
+
+}).WithPaging(GridHelper.PageSize)
+
+<script>
+    var token = $("#dvAdd input[name='__RequestVerificationToken']").val()
+    var myFormGridEventHandler = "@Url.Action("UpdateTemplateGrid", "Lookup")?__RequestVerificationToken=" + token;
+        function prepareFormReportGrid() {
+            $(".grid-mvc").gridmvc();
+            pageGrids.Form.ajaxify({
+                getPagedData: myFormGridEventHandler,
+                requestType: "GET",
+                getData: myFormGridEventHandler
+            });
+        }
+
+        $(document).ready(function () {
+            prepareFormReportGrid();
+        });
+</script>
+

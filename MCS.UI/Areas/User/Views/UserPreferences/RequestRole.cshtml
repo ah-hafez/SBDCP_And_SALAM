@@ -1,0 +1,75 @@
+﻿@using MCS.UI.Areas.User.Models
+@using MCS.Framework.Localization
+@using MCS.Common
+@model UserPendingGroupVM
+
+@{
+    /**/
+
+    ViewBag.Title = DbRes.TResource("User.UserPreferences.UserPreferences");
+    Layout = "~/Areas/User/Views/Shared/_SearchLayout.cshtml";
+}
+<script src="~/Scripts/jSignature/jSignature.js"></script>
+<script src="~/Scripts/jSignature/plugins/jSignature.UndoButton.js"></script>
+
+<div class="d-flex flex-column flex-sm-row mx-5 mx-xs-3 mb-3 header-container mt-5">
+    <h3 class="site-color">@DbRes.TResource("Global.RequestRole")</h3>
+</div>
+<div class="white-container mx-5 mx-xs-3">
+    <div class="tab-content">
+        <div class=" white-bg">
+
+            @using (Html.BeginForm("", "", FormMethod.Post, new { id = "formRequestRole" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="row">
+                    <div class="form-group col-lg-5 col-md-6 col-sm-6 col-xs-12">
+                        <label>
+                            @DbRes.TResource("Global.RequestRoleControl")<span class='red-color ml-1 ml-1'>*</span>
+                        </label>
+                        @Html.AutoCompleteBuilder("Roles", "hdnRoles", ViewData["Roles"].ToString(), Model != null ? Model.GroupId.ToString() : null, true, "form-control", "", "", "", false, "AddUser", null)
+                        @Html.HiddenGroupFor(model => model.GroupId, new { @Value = "", id = "hdnRoles" }, "AddUser")
+                    </div>
+                </div>
+
+
+            }
+        </div>
+        <div class="row d-flex mx-2">
+            <div>
+                @Html.ConfirmAction(OperationType.Save, "btnRequestRole", DbRes.TResource("user.RequestRole"), "RequestRole", null, null, null, "OnAdd", null, "", "post", "formRequestRole", null, "btn btn-lg btn-st3 mx-1", "CheckIfHasContent")
+
+            </div>
+            @if (SessionInfo.CurrentUser.UserOrgUnits.Where(x => x.Id == SessionInfo.OrgUnitId && x.ManagerId == SessionInfo.CurrentUser.Id).Count() > 0)
+            {
+                <a type="button" class="btn btn-lg btn-st3 mx-1" href="@Url.Action("PendingRoleRequest" , "UserPreferences")" data-target="">
+                    عرض طلبات الصلاحية
+                </a>
+            }
+        </div>
+
+
+    </div>
+</div>
+
+
+<script>
+
+
+    function OnAdd(data) {
+        if (data.MessageType != 2) {
+            ShowSuccesMessage('@DbRes.TResource("user.RequestRoleResult")')
+
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function CheckIfHasContent() {
+        return true;
+    }
+
+    
+</script>

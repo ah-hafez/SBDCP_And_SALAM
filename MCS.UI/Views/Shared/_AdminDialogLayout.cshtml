@@ -1,0 +1,42 @@
+﻿@using MCS.Framework.Localization
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title></title>
+    <style>
+        .ui-autocomplete {
+            z-index: 2147483647;
+        }
+    </style>
+    <link href="~/Content/Admin/lib/css/cropper/cropper.min.css" rel="stylesheet" />
+    <link type="text/css" href=@Url.Content("~/Content/Admin/Site_" + SessionInfo.CultureShortName + ".css") rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href=@Url.Content("~/Content/Admin/lib/css/jstree/jstree.min_" + SessionInfo.CultureShortName + ".css") />
+    <script src="~/Scripts/URI.min.js"></script>
+    <script src="~/Scripts/gridmvc.min.js"></script>
+    <script src="~/Scripts/gridmvc-ext.min.js"></script>
+    <script src="~/Scripts/gridmvc.customwidgets.min.js"></script>
+    <script src="~/Scripts/gridmvc.customwidgetsText.min.js"></script>
+    <script src="~/Scripts/gridmvcAR.min.js"></script>
+    <script type="text/javascript" src="@Url.Content("~/Content/Admin/lib/js/jquery/jquery.validate.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Content/Admin/lib/plugins/customValidation/jquery.validate.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Content/Admin/lib/plugins/customValidation/CustomValidation.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/Common.js")"></script>
+    <script type="text/javascript">
+        var __dateformat = '@System.Web.Configuration.WebConfigurationManager.AppSettings["CalendarDateFormat"]';
+        var AllowSend=false;
+        var __dateformat = '@System.Web.Configuration.WebConfigurationManager.AppSettings["CalendarDateFormat"]';
+        var __dialogNoText = '@Html.Raw(DbRes.TResource("Global.Dialog.No"))';
+        var __dialogYesText = '@Html.Raw(DbRes.TResource("Global.Dialog.Yes"))';
+        var __dialogCloseText = '@Html.Raw(DbRes.TResource("Global.Dialog.Close"))';
+        var __dialogCancelText = '@Html.Raw(DbRes.TResource("Global.Dialog.Cancel"))';
+        var __cultureName = '@SessionInfo.CultureShortName';
+    </script>
+</head>
+<body>
+    @RenderBody()
+</body>
+</html>

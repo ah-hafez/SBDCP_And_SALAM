@@ -1,0 +1,168 @@
+﻿@using MCS.Framework.Localization;
+@using MCS.Common
+@using MCS.UI.Areas.Admin.Models.Actions;
+@model MoveTransactionVM
+@{
+    ViewBag.Title = DbRes.TResource("Admin.Actions.MoveEntity");
+    Layout = "~/Areas/Admin/Views/Shared/_TransfersActionLayout.cshtml";
+}
+
+
+
+<div class="mx-3 mx-md-5 header-container d-flex flex-row align-items-center">
+    <div class="d-flex flex-column flex-md-row align-items-md-center flex-grow-1">
+        <h3 class="site-color mb-4">@DbRes.TResource("Admin.Actions.MoveEntity")</h3>
+    </div>
+</div>
+<div class="white-container mx-3 mx-md-5">
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmMoveEntity" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="form-row">
+            <div class="form-group col-lg-6 col-md-8 col-sm-12 col-xs-12">
+                <fieldset class="field-set" id="dvDepartmentsTree">
+                    @Html.DepartmentsTree(ViewData["orgUnitDataInfo"] as TreeViewModel, model => model.EntityFromId, TreeMode.Single, "treeDirectedToOrgUnit", true, "", "BasicInformation", "dvDepartmentsTree")
+                </fieldset>
+                @*<label>@Html.DisplayNameFor(model => model.EntityFromId)<span class="stark">*</span></label>
+                    @Html.EditorFor(model => model.EntityFromId, "OrgHierarchyCaller", additionalViewData: new { treeId = "treeDirectedToOrgUnit", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Common"), GetNodeInfoByIdActionURL = @Url.Action("GetInternalPartyInfoById", "Common"), GetNodeInfoByNumActionURL = @Url.Action("GetInternalPartyInfoByNumber", "Common"), onClickfunction = "", ValidationGroup = "BasicInformation", ShowAddPartyButton = false })*@
+                @Html.HiddenGroupFor(model => model.EntityFromId, null, "moveEntity", "test")
+                <div>
+                    <i id="FromGlyphicon" style="color:red" class="glyphicon glyphicon-exclamation-sign hide"></i>
+                    <span id="FromMessage" style="color:red"></span>
+                </div>
+            </div>
+            <div class="form-group col-lg-6 col-md-8 col-sm-12 col-xs-12">
+                <fieldset class="field-set" id="dvDepartmentsTree02">
+                    @Html.DepartmentsTree(ViewData["orgUnitDataInfo"] as TreeViewModel, model => model.EntityToId, TreeMode.Single, "treeDirectedToOrgUnit02", true, "", "BasicInformation", "dvDepartmentsTree02")
+                </fieldset>
+                @*<label>@Html.DisplayNameFor(model => model.EntityToId)<span class="stark">*</span></label>
+                    @Html.EditorFor(model => model.EntityToId, "OrgHierarchyCaller", additionalViewData: new { treeId = "treeDirectedToOrgUnit02", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Common"), GetNodeInfoByIdActionURL = @Url.Action("GetInternalPartyInfoById", "Common"), GetNodeInfoByNumActionURL = @Url.Action("GetInternalPartyInfoByNumber", "Common"), onClickfunction = "", ValidationGroup = "BasicInformation", ShowAddPartyButton = false })*@
+                @Html.HiddenGroupFor(model => model.EntityToId, null, "moveEntity", "test")
+                <div>
+                    <i id="ToGlyphicon" style="color:red" class="glyphicon glyphicon-exclamation-sign hide"></i>
+                    <span id="ToMessage" style="color:red"></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12 d-flex">
+            <small class="text-danger ml-auto">
+                @*يرجى تعبئة الحقول التي تحتوي على إشارة **@
+            </small>
+        </div>
+    }
+</div>
+<div id="ChangeNamesDialog">
+
+</div>
+
+<div class="mx-3 mx-md-5 mb-4 d-flex">
+    <div class="ml-auto">
+        <button class="btn btn-lg btn-st3 mx-1" onclick="ShowConfirmMessage('@DbRes.TValidation("Admin.Actions.MoveEntity.MoveEntityValidation")', 'OnConfirm')">@DbRes.TResource("Admin.MoveTransaction.Save")</button>
+        @Html.ActionButton(DbRes.TResource("Admin.MoveTransaction.Save"),
+                                       "MoveEntityPost",
+                                       null,
+                                       null,
+                                       null,
+                                       "onMoveEntitySuccess",
+                                       "", "post", "moveEntity", "btnMoveEntity", "frmMoveEntity", "btn btn-lg btn-st3 mx-1 hidden_", "CheckFunction")
+        @Html.ResetButton("ResetForm()", "", "btn btn-lg btn-st3 mx-1")
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    function ResetForm() {
+        ClearInputs('frmMoveEntity');
+    }
+
+    function OnConfirm() {
+        $("#btnMoveEntity").click();
+    }
+
+    function CheckFunction() {
+        if ($('#treeDirectedToOrgUnit_hdnDepartmentId').val() == "" & $('#treeDirectedToOrgUnit02_txtDepartmentNumber').val() == "") {
+            $("#FromGlyphicon").removeClass("hide");
+            $("#FromGlyphicon").show();
+            $("#FromMessage").html('@Html.Raw(DbRes.TResource("Admin.MoveTransactions.EntityFromId"))');
+            $("#ToGlyphicon").removeClass("hide");
+            $("#ToGlyphicon").show();
+            $("#ToMessage").html('@Html.Raw(DbRes.TValidation("Admin.MoveSingleTransaction.EntityToId"))');
+            return false;
+        }
+        else if ($('#treeDirectedToOrgUnit_hdnDepartmentId').val() == "") {
+            $("#FromGlyphicon").removeClass("hide");
+            $("#FromGlyphicon").show();
+            $("#FromMessage").html('@Html.Raw(DbRes.TResource("Admin.MoveTransactions.EntityFromId"))');
+            $("#ToGlyphicon").hide();
+            $("#ToMessage").html('');
+            return false;
+        }
+        else {
+            if ($('#treeDirectedToOrgUnit02_txtDepartmentNumber').val() == "") {
+                $("#ToGlyphicon").removeClass("hide");
+                $("#ToGlyphicon").show();
+                $("#ToMessage").html('@Html.Raw(DbRes.TValidation("Admin.MoveSingleTransaction.EntityToId"))');
+                $("#FromGlyphicon").hide();
+                $("#FromMessage").html('');
+                return false;
+            }
+            else {
+                $("#ToGlyphicon").hide();
+                $("#ToMessage").html('');
+                $("#FromGlyphicon").hide();
+                $("#FromMessage").html('');
+                return true;
+            }
+        }
+    }
+    function onMoveEntitySuccess(data) {
+        @*var errors = [];
+        if (data.errors.length > 0) {
+            for (var counter = 0; counter < data.errors.length; counter++) {
+                switch (data.errors[counter].Key) {
+                    case "EntityFromId":
+                        errors.push('<li>' + '@DbRes.TResource("Admin.MoveTransactions.EntityFromId")' + '</li>');
+                        break;
+                    case "EntityToId":
+                        errors.push('<li>' + '@DbRes.TResource("Admin.MoveSingleTransaction.EntityToId")' + '</li>');
+                        break;
+
+                }
+            }
+            var listOfErrors = '<ul style="list-style:none;">';
+            for (var counter = 0; counter < errors.length; counter++) {
+                listOfErrors += errors[counter];
+            }
+            listOfErrors += '</ul>';
+            ShowErrorMessage(listOfErrors);
+        }
+
+        else {
+            if (data.MessageType != 0) {
+                ShowErrorMessage('@DbRes.TResource("Admin.MoveEntity.CantMove")');
+            }
+            else {
+                ShowSuccesMessage('@DbRes.TResource("Admin.MoveEntity.Success")', redirect());
+
+            }
+        }*@
+        if (data.MessageType == 2) {
+            ShowErrorMessage(data.MessageText);
+        }
+        else if (data.MessageType == 1) {
+            //ShowErrorMessage(data.MessageText);
+            $("#ChangeNamesDialog").html(data.Html);
+            $("#errorMessage").html(data.MessageText);
+        }
+        else {
+            ShowSuccesMessage(data.MessageText, redirect());
+        }
+
+    };
+
+    function redirect() {
+        setTimeout(function () {
+            window.location.href = '@Url.Action("MoveEntity", "Actions",new { area="Admin"})';
+        }, 3000);
+    }
+</script>

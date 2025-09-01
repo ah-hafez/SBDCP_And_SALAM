@@ -1,0 +1,422 @@
+<!--
+/* ************************************************************************** */
+  TestSDKCapture.html
+   
+  Cross browser Signature Capture test
+
+  Demonstrates Signature Capture using SigCaptX
+  
+  Copyright (c) 2015 Wacom GmbH. All rights reserved.
+  
+   v4.0
+  
+/* ************************************************************************** */
+-->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+    <script src="wgssSigCaptX.js"></script> 
+    <script src="base64.js"></script>
+    <script type="text/javascript" id="myscript_1">
+    
+function Exception(txt) {
+  print("Exception: " + txt);
+}
+function print(txt) {
+  var txtDisplay = document.getElementById("txtDisplay");
+  if("CLEAR" == txt) 
+  {
+    txtDisplay.value = "";
+  }
+  else 
+  {
+    txtDisplay.value += txt + "\n";
+    txtDisplay.scrollTop = txtDisplay.scrollHeight; // scroll to end
+  }
+}
+      
+var wgssSignatureSDK = null;
+var sigObj = null;
+var sigCtl = null;
+var dynCapt = null;
+
+function OnLoad(callback)
+{
+  print("CLEAR");
+  restartSession(callback);
+}
+
+function restartSession(callback) 
+{
+  wgssSignatureSDK = null;
+  sigObj = null;
+  sigCtl = null;
+  dynCapt = null;
+  var imageBox = document.getElementById("imageBox");
+  if(null != imageBox.firstChild)
+  {
+    imageBox.removeChild(imageBox.firstChild);
+  }
+  var timeout = setTimeout(timedDetect, 1500);
+  // pass the starting service port  number as configured in the registry
+  wgssSignatureSDK = new WacomGSS_SignatureSDK(onDetectRunning, 8000);
+  
+  function timedDetect() 
+  {
+    if (wgssSignatureSDK.running) 
+    {
+      print("Signature SDK Service detected.");
+      start();
+    } 
+    else 
+    {
+      print("Signature SDK Service not detected.");
+    }
+  }
+  
+  
+  function onDetectRunning()
+  {
+    if (wgssSignatureSDK.running) 
+    {
+      print("Signature SDK Service detected.");
+      clearTimeout(timeout);
+      start();
+    }
+    else 
+    {
+      print("Signature SDK Service not detected.");
+    }
+  }
+  
+  function start()
+  {
+    if (wgssSignatureSDK.running) 
+    {
+      sigCtl = new wgssSignatureSDK.SigCtl(onSigCtlConstructor);
+    }
+  }
+  
+  function onSigCtlConstructor(sigCtlV, status)
+  {
+    if(wgssSignatureSDK.ResponseStatus.OK == status)
+    {
+      // Insert license here
+      sigCtl.PutLicence("AgAkAMlv5nGdAQVXYWNvbQ1TaWduYXR1cmUgU0RLAgOBAgJkAACIAwEDZQA", onSigCtlPutLicence);
+    }
+    else
+    {
+      print("SigCtl constructor error: " + status);
+    }
+  }
+
+  function onSigCtlPutLicence(sigCtlV, status) {
+    if (wgssSignatureSDK.ResponseStatus.OK == status) {
+      dynCapt = new wgssSignatureSDK.DynamicCapture(onDynCaptConstructor);
+    }
+    else {
+      print("SigCtl PutLicence error: " + status);
+    }
+  }
+  
+  function onDynCaptConstructor(dynCaptV, status)
+  {
+    if(wgssSignatureSDK.ResponseStatus.OK == status)
+    {
+      sigCtl.GetSignature(onGetSignature);
+    }
+    else
+    {
+      print("DynCapt constructor error: " + status);
+    }
+  }
+  
+  function onGetSignature(sigCtlV, sigObjV, status)
+  {
+    if(wgssSignatureSDK.ResponseStatus.OK == status)
+    {
+      sigObj = sigObjV;
+      sigCtl.GetProperty("Component_FileVersion", onSigCtlGetProperty);
+    }
+    else
+    {
+      print("SigCapt GetSignature error: " + status);
+    }
+  }
+  
+  function onSigCtlGetProperty(sigCtlV, property, status)
+  {
+    if(wgssSignatureSDK.ResponseStatus.OK == status)
+    {
+      print("DLL: flSigCOM.dll  v" + property.text);
+      dynCapt.GetProperty("Component_FileVersion", onDynCaptGetProperty);
+    }
+    else
+    {
+      print("SigCtl GetProperty error: " + status);
+    }
+  }
+  
+  function onDynCaptGetProperty(dynCaptV, property, status)
+  {
+    if(wgssSignatureSDK.ResponseStatus.OK == status)
+    {
+      print("DLL: flSigCapt.dll v" + property.text);
+      print("Test application ready.");
+      print("Press 'Start' to capture a signature.");
+      if('function' === typeof callback)
+      {
+        callback();
+      }
+    }
+    else
+    {
+      print("DynCapt GetProperty error: " + status);
+    }
+  }
+}
+
+function Capture()
+{
+  if(!wgssSignatureSDK.running || null == dynCapt)
+  {
+    print("Session error. Restarting the session.");
+    restartSession(window.Capture);
+    return;
+  }
+  dynCapt.Capture(sigCtl, "who", "why", null, null, onDynCaptCapture);
+
+  function onDynCaptCapture(dynCaptV, SigObjV, status)
+  {
+    if(wgssSignatureSDK.ResponseStatus.INVALID_SESSION == status)
+    {
+      print("Error: invalid session. Restarting the session.");
+      restartSession(window.Capture);
+    }
+    else
+    {
+      if(wgssSignatureSDK.DynamicCaptureResult.DynCaptOK != status)
+      {
+        print("Capture returned: " + status);
+      }
+      switch( status ) 
+      {
+          case wgssSignatureSDK.DynamicCaptureResult.DynCaptOK:
+          sigObj = SigObjV;
+          print("Signature captured successfully");
+          var flags = wgssSignatureSDK.RBFlags.RenderOutputPicture | wgssSignatureSDK.RBFlags.RenderColor32BPP;
+          var imageBox = document.getElementById("imageBox");
+          sigObj.RenderBitmap("png", imageBox.clientWidth, imageBox.clientHeight, 1, 0x00FF0000, 0x00FFFFFF, flags, 0, 0, onRenderBitmapB64);
+          break;
+        case wgssSignatureSDK.DynamicCaptureResult.DynCaptCancel:
+          print("Signature capture cancelled");
+          break;
+        case wgssSignatureSDK.DynamicCaptureResult.DynCaptPadError:
+          print("No capture service available");
+          break;
+        case wgssSignatureSDK.DynamicCaptureResult.DynCaptError:
+          print("Tablet Error");
+          break;
+        case wgssSignatureSDK.DynamicCaptureResult.DynCaptIntegrityKeyInvalid:
+          print("The integrity key parameter is invalid (obsolete)");
+          break;
+        case wgssSignatureSDK.DynamicCaptureResult.DynCaptNotLicensed:
+          print("No valid Signature Capture licence found");
+          break;
+        case wgssSignatureSDK.DynamicCaptureResult.DynCaptAbort:
+          print("Error - unable to parse document contents");
+          break;
+        default: 
+          print("Capture Error " + status);
+          break;
+      }
+    }
+  }
+  
+  function onRenderBitmap(sigObjV, bmpObj, status) 
+  {
+    if(wgssSignatureSDK.ResponseStatus.OK == status) 
+    {
+      var imageBox = document.getElementById("imageBox");
+      if(null == imageBox.firstChild)
+      {
+        imageBox.appendChild(bmpObj.image);
+      }
+      else
+      {
+        imageBox.replaceChild(bmpObj.image, imageBox.firstChild);
+      }
+      sigObjV.GetSigText(onGetSigText);
+    } 
+    else 
+    {
+      print("Signature Render Bitmap error: " + status);
+    }
+  }
+  
+  function onGetSigText(sigObjV, text, status) 
+  {
+       
+
+    if(wgssSignatureSDK.ResponseStatus.OK == status)
+    {
+      var txtSignature = document.getElementById("txtSignature");
+      txtSignature.value = text;
+	  alert(txtSignature.value);
+      //print("Printing sig text");
+      print(text);
+    }
+    else 
+    {
+      print("Signature Render Bitmap error: " + status);
+    }
+  }
+  
+  function onRenderBitmapB64(sigObjV, bmpObj, status) 
+  {
+    if(wgssSignatureSDK.ResponseStatus.OK == status) 
+    {
+      print(sigObjV.b64);
+    } 
+    else 
+    {
+      print("Signature Render Bitmap error: " + status);
+    }
+  }
+}
+
+function DisplaySignatureDetails()
+{
+  if(!wgssSignatureSDK.running || null == sigObj)
+  {
+    print("Session error. Restarting the session." );
+    restartSession(window.DisplaySignatureDetails);
+    return;
+  }
+  sigObj.GetIsCaptured(onGetIsCaptured);
+  
+  function onGetIsCaptured(sigObj, isCaptured, status)
+  {
+    if(wgssSignatureSDK.ResponseStatus.OK == status) 
+    {
+      if(!isCaptured)
+      {
+        print("No signature has been captured yet." );
+        return;
+      }
+      sigObj.GetWho(onGetWho);
+    }
+    else 
+    {
+      print("Signature GetWho error: " + status);
+      if(wgssSignatureSDK.ResponseStatus.INVALID_SESSION == status)
+      {
+        print("Session error. Restarting the session.");
+        restartSession(window.DisplaySignatureDetails);
+      }
+    }
+  }
+  
+  function onGetWho(sigObjV, who, status) 
+  {
+    if(wgssSignatureSDK.ResponseStatus.OK == status) 
+    {
+      print("  Name:   " + who);
+      var tz = wgssSignatureSDK.TimeZone.TimeLocal;
+      sigObj.GetWhen(tz, onGetWhen);
+    } 
+    else 
+    {
+      print("Signature GetWho error: " + status);
+    }
+  }
+  
+  function onGetWhen(sigObjV, when, status) 
+  {
+    if(wgssSignatureSDK.ResponseStatus.OK == status) 
+    {
+      print("  Date:   " + when.toString() );
+      sigObj.GetWhy(onGetWhy);
+    } 
+    else 
+    {
+      print("Signature GetWhen error: " + status);
+    }
+  }
+  
+  function onGetWhy(sigObjV, why, status) 
+  {
+    if(wgssSignatureSDK.ResponseStatus.OK == status) 
+    {
+      print("  Reason: " + why);
+    } 
+    else 
+    {
+      print("Signature GetWhy error: " + status);
+    }
+  }
+  
+}
+
+function exportToMorasalat()
+{
+ 
+
+	var txtSignature = document.getElementById("txtSignature");
+    text = txtSignature.value;
+    window.opener.capturedSig(text);
+
+	//window.close();
+}
+
+function AboutBox()
+{
+  if(!wgssSignatureSDK.running || null == sigCtl)
+  {
+    print("Session error. Restarting the session.");
+    restartSession(window.AboutBox);
+    return;
+  }
+  sigCtl.AboutBox(onAboutBox);
+  function onAboutBox(sigCtlV, status) 
+  {
+    if(wgssSignatureSDK.ResponseStatus.OK != status) 
+    {
+      print("AboutBox error: " + status);
+      if(wgssSignatureSDK.ResponseStatus.INVALID_SESSION == status)
+      {
+        print("Session error. Restarting the session.");
+        restartSession(window.AboutBox);
+      }
+    }
+  }
+}
+    </script>
+  </head>
+  <body onload="OnLoad()">
+    <div style="width:100%">
+      
+      <table style="padding: 10px 90px;">
+        <tr>
+          <td rowspan="2">
+            <div id="imageBox" class="boxed" style="height:35mm;width:60mm; border:1px solid #d3d3d3;" ondblclick="DisplaySignatureDetails()" title="Double-click a signature to display its details">
+            </div>
+          </td>
+          <td  style="padding: 10px 50px;">
+            <input type="button" value="ÈÏÁ" style="height:10mm;width:35mm" onclick="Capture()"
+            title="Starts signature capture" />
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 10px 50px;">
+            <input type="button" value="ÍÝÙ" style="height:10mm;width:35mm" onclick="exportToMorasalat()" />
+          </td>
+        </tr>
+      </table>
+        <br/>
+            <textarea cols="125" rows="15" id="txtDisplay"></textarea>
+			<input type="text" id="txtSignature" />
+    </div>
+  </body>
+</html>

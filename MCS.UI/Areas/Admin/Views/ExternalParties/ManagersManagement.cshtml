@@ -1,0 +1,122 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.ExternalParties
+@model ManagersManagementViewModel
+
+
+@if (Convert.ToBoolean(ViewData["AddMode"]) != true)
+{
+    <div id="AddDiv">
+        @Html.Partial("_ManagersManagementAddPartial", Model.AddManager)
+    </div>
+    <div id="EditDiv" style="display:none;">
+        @Html.Partial("_ManagersManagementEditPartial", Model.EditManager)
+    </div>
+}
+
+<div id="GridDiv">
+    @Html.Partial("_ManagersManagementGridPartial", ViewData["GridData"])
+</div>
+
+<script>
+    $(document).ready(function () {
+        pageGrids.Managers.param = new Array();
+        pageGrids.Managers.param.push('@Model.AddManager.PartyId');
+    })
+
+    function ShowEditDiv(data, div) {
+
+        $("#EditDiv").css("display", "block");
+        $("#AddDiv").css("display", "none");
+    }
+
+    
+
+
+    function HideEditDiv() {
+
+        $("#EditDiv").css("display", "none");
+        $("#AddDiv").css("display", "block");
+    }
+
+    function ClearInput(containerId) {
+
+        $('#' + containerId).find(':input').not('input:submit').not('input:button').not('input:radio').not('input:checkbox').not('input:hidden').each(function () {
+            $(this).val('');
+        })
+    }
+
+    function OnSuccess(data, div) {
+
+        if (data.MessageType != 2) {
+
+            $("#" + div).html("");
+            $("#" + div).html(data.Html);
+            jQuery.validator.unobtrusive.parse('#' + div);
+            ShowSuccesMessage(data.MessageText);
+            ClearInputs('frmAddManager');
+        }
+        else {
+
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function OnEditManagerSuccess(data, div) {
+
+        if (data.MessageType != 2) {
+
+            $("#EditDiv").css("display", "none");
+            $("#AddDiv").css("display", "block");
+            $("#" + div).html("");
+            $("#" + div).html(data.Html);
+            jQuery.validator.unobtrusive.parse('#' + div);
+            ShowSuccesMessage(data.MessageText);
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function DeleteManagersSuccess(data, divUpdatData, deletedList) {
+
+        if (data.ManagersUsedList.length == 0) {
+
+            ShowSuccesMessage(data.MessageText);
+        }
+        else {
+
+            var msg = '';
+
+            for (var i = 0; i < data.ManagersUsedList.length; i++) {
+
+                if (msg == '')
+                    msg = data.ManagersUsedList[i];
+                else
+                    msg = msg + '</br>' + data.ManagersUsedList[i];
+            }
+
+            msg = '@DbRes.TResource("Admin.ExternalParty.DeleteManagersErrorMsg")' + '</br>' + msg;
+
+            ShowErrorMessage(msg);
+        }
+
+        var deletedArray = deletedList.split(',');
+
+        for (var i = 0; i < deletedArray.length; i++) {
+
+            var deleted = true;
+
+            for (var y = 0; y < data.ManagersUsedList.length; y++) {
+
+                if (deletedArray[i] == data.ManagersUsedList[y]) {
+
+                    deleted = false;
+                }
+            }
+
+            if (deleted)
+                if (deletedArray[i] == $('#hdnEditManagerId').val())
+                    HideEditDiv();
+        }
+    }
+</script>

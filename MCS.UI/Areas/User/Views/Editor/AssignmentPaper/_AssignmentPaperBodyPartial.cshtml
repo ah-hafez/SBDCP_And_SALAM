@@ -1,0 +1,102 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Common;
+@model MCS.UI.Areas.User.Models.Assignment.TransactionAssignmentVM
+
+
+
+<div class="row" id="dvEditorTreeAssignmentPaper">
+    <div class="form-horizontal form-row">
+        @Html.HiddenGroupFor(model => model.ToOrgUnitName, new { id = "hdnAssignmentPaperToOrgUnitName" }, "AssignmentIndividual")
+
+        <div>
+            <!-- ACCORDION -->
+            <div class="col-sm-4">
+                <div class="form-group">
+                    @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.ToOrgUnitId, TreeMode.Single, "treeAssignmentPaper", true, "OnSelectAssignmentPaperOrgUnit", "AssignmentPaper", "dvEditorTreeAssignmentPaper")
+                </div>
+            </div>
+            <div class="col-md-4">
+                <fieldset>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ToUserId, new { @class = "control-label" })
+                        <div>
+                            @Html.AutoCompleteBuilder("ddlAssignmentPaperUsers", "hdnAssignmentPaperUserId", ViewData["ToUserAssignment"] != null ? ViewData["ToUserAssignment"].ToString() : null, Model != null ? Model.ToUserId.ToString() : null, true, "form-control")
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+                </fieldset>
+                @Html.HiddenFor(model => model.ToUserName, new { id = "hdnAssignmentPaperUserName" })
+                @Html.HiddenGroupFor(model => model.ToUserId, new { id = "hdnAssignmentPaperUserId" }, "AssignmentPaper")
+            </div>
+            <div class="col-md-4">
+                <fieldset>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ActionId, new { @class = "control-label" })
+                        <div>
+                            @Html.AutoCompleteBuilder("ddlAssignmentPaperAction", "hdnAssignmentPaperActionId", ViewData["ActionData"].ToString(), Model != null ? Model.ActionId.ToString() : null, true, "form-control")
+                        </div>
+                    </div>
+                </fieldset>
+                @Html.HiddenFor(model => model.ActionName, new { id = "hdnAssignmentPaperActionName" })
+                @Html.HiddenGroupFor(model => model.ActionId, new { @Value = "", id = "hdnAssignmentPaperActionId" }, "AssignmentPaper")
+            </div>
+            <div class="col-sm-12">
+                <p class="stark">@DbRes.TResource("Admin.User.MustFill") * </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@Html.StickyHidden("hdnIndexAssignmentPaper")
+
+<script>
+    $(document).ready(function () {
+        ClearInputs('dvEditorTreeAssignmentPaper');
+    });
+    function AddAssignmentPaperOnSuccess(data, div) {
+        if (data.MessageType != 2) {
+            $("#" + div).html("");
+            $("#" + div).html(data.Html);
+            //ShowSuccesMessage(data.MessageText)
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    $("#ddlAssignmentPaperUsers").change(function () {
+        $("#hdnAssignmentPaperUserName").val($(this).val());
+    })
+
+    $("#ddlAssignmentPaperAction").change( function () {
+        $("#hdnAssignmentPaperActionName").val($(this).val());
+    })
+
+    function OnSelectAssignmentPaperOrgUnit() {
+
+        if ($("#divForm__treeAssignmentPaper").find(".hdnDepartmentId").val() != "") {
+
+            $.ajax({
+                type: 'post',
+                cache: false,
+                url: '@Url.Action("GetUsersByOrgUnitId")',
+                data: { id: $("#divForm__treeAssignmentPaper").find(".hdnDepartmentId").val() },
+                success:
+                    function (data)
+                    {
+                        $("#ddlAssignmentPaperUsers").attr("disabled", "");
+                   AutoCompleteChangeList("ddlAssignmentPaperUsers", data);
+               }
+            });
+        }
+        else {
+            $("#ddlAssignmentPaperUsers").val("");
+            $("#hdnAssignmentPaperUserId").val("");
+            AutoCompleteChangeList("ddlAssignmentPaperUsers", "[]");
+        }
+    // maybe ToOrgUnitName nested ToOrgUnitName
+        $("#hdnAssignmentPaperToOrgUnitName").val($("#divForm__treeAssignmentPaper").find(".txtDepartmentName").val());
+
+    }
+</script>

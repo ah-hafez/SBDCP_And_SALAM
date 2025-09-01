@@ -1,0 +1,101 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Report;
+@using MCS.Framework.Encryption;
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<FollowupGridResultVM>
+@using MCS.UI.Helpers
+
+@{
+    List<int> columnsToGrid = ViewData["ColumnsToGrid"] == null ? new List<int>() : (List<int>)ViewData["ColumnsToGrid"];
+}
+
+@Html.Grid(Model).Named("GridTransactionReport").CollectionName("TransactionResults").Columns(columns =>
+{
+    columns.Add(model => model.Number, false).Titled(DbRes.TResource("User.SubjectSearch.Number"));
+    columns.Add(model => model.DateText, false).Titled(DbRes.TResource("User.OutboundInternal.RecordDate"));
+    columns.Add(model => model.TransactionCategoryText, false).Titled(DbRes.TResource("User.OutboundExternal.BasicInfo.Type"));
+    columns.Add(model => model.FromEntityText, false).Titled(DbRes.TResource("User.TransactionCertificate.SenderDepartmentName"));
+    columns.Add(model => model.FromUserText, false).Titled(DbRes.TResource("المرسل"));
+    columns.Add(model => model.ToEntityText, false).Titled(DbRes.TResource("User.TransactionCertificate.ReceiverDepartmentName"));
+    columns.Add(model => model.ToUserText, false).Titled(DbRes.TResource("المستلم"));
+    columns.Add(model => model.Subject, false).Encoded(false).Sanitized(false).Css("fixed_col").Titled(DbRes.TResource("User.Transaction.Subject"));
+    columns.Add(model => model.ConfidentialityText, false).Titled(DbRes.TResource("User.Transaction.ConfidentialityLevel"));
+    columns.Add(model => model.TransactionStatus, false).Titled(DbRes.TResource("User.SubjectSearch.TransactionStatus"));
+    columns.Add(model => model.PriorityText, false).Titled(DbRes.TResource("User.Transaction.PriorityLevel"));
+    columns.Add(model => model.GeneralExplanation, false).Titled(DbRes.TResource("ملاحظات الاحالة"));
+
+
+
+}).WithPaging(UIHelper.PageSize)
+<style>
+    .correspondence-icon {
+        background-color: transparent;
+        padding: 0px;
+    }
+    .subject-length{
+        max-height:40px;
+    }
+</style>
+
+<script>
+    var isHubEditable = '@AESEncrytDecry.Base64Encode("false")';
+    var myManagerGridEventHandler = "@Url.Action("FollowupSearch", "Reports")";
+    function prepareTransactionReportGrid() {
+        $(".grid-mvc").gridmvc();
+        var token = $("#FormFollowupSearch").find("input[name='__RequestVerificationToken']").val();
+        var searchCriteriaData = JSON.parse(JSON.stringify(searchCriteria.data));
+        searchCriteriaData.push({ name: '__RequestVerificationToken', value: token });
+        pageGrids.GridTransactionReport.ajaxify({
+            getPagedData: myManagerGridEventHandler,
+            requestType: "post",
+            getData: myManagerGridEventHandler,
+            optionalData: searchCriteriaData
+        });
+    }
+
+    $(document).ready(function () {
+        prepareTransactionReportGrid();
+    });
+
+    function EditTransactionByTypeId(transactionCategory, EncryptedId, EncryptedDraft) {
+        var url;
+        switch (transactionCategory) {
+            case TransactionCategory.Inbound:
+                url = '@Url.Action("Edit", "Inbound")' + "?id=-1";
+                break;
+            case TransactionCategory.ExternalOutbound:
+                url = '@Url.Action("Edit", "OutboundExternal")' + "?id=-1&IsFromDraft=" + EncryptedDraft + "&isHubEditable=" + isHubEditable;
+                break;
+            case TransactionCategory.InternalOutbound:
+                url = '@Url.Action("Edit", "OutboundInternal")' + "?id=-1";
+                break;
+            case TransactionCategory.DraftOutbound:
+                url = '@Url.Action("Edit", "OutboundExternal")' + "?id=-1&IsFromDraft=" + EncryptedDraft + "&isHubEditable=" + isHubEditable;
+                break;
+        }
+        url = url.replace("-1", EncryptedId);
+        window.location.href = url;
+    }
+
+   
+
+
+    function ShowPrintDialog(id) {
+        var params = { transactionId: id };
+        ShowDialogAjaxPrintingBarcodes('@Url.Action("PrinttingBarcodes","Shared")' + "?" + $.param(params), {}, 'OpenPrintDialogSuccess', 'dialogbox col-md-12 ');
+    }
+
+    function OpenPrintDialogSuccess(data, $obj) {
+        if (data.MessageType != 2) {
+            $obj.setContent(data.Html);
+        }
+        else {
+            __dialog.close();
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function ShowVisitTickect(id) {
+        var actionUrl = '@Url.Action("PrintTicket", "Shared")' + "?transactionId=" + id;
+        PrintButton(actionUrl);
+    }
+</script>

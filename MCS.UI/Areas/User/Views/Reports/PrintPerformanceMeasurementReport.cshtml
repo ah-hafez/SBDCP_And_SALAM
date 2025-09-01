@@ -1,0 +1,448 @@
+﻿@using MCS.UI.Areas.User.Models.Report;
+@using MCS.Framework.Localization;
+@using MCS.Framework.Controls;
+@using MCS.UI.Common;
+@using MCS.UI.Helpers;
+@using System.Reflection;
+
+@model TransactionReportResult
+@{
+    string BarchartId = Guid.NewGuid().ToString();
+    string[] ItemsExcluded = { "OrgUnitsID", "OrgUnitName", "UserProfilesID", "UserProfileName" };
+    List<List<int>> DataList = new List<List<int>>();
+    Model.PerformanceMeasurementGridResultVMs.GridItems.ToList().ForEach(i =>
+    {
+        DataList.Add(new List<int>() { i.OutboundCount, i.OutboundDraftCountCreated, i.OutboundDraftCountAssigned, i.InboundCountCreated, i.InboundCountAssigned, i.InternalOutboundCountCreated, i.InternalOutboundCountAssigned, i.DelayedCount });
+    });
+    List<int> columnsToGrid = ViewData["ColumnsToGrid"] == null ? new List<int>() : (List<int>)ViewData["ColumnsToGrid"];
+
+    string imagePath = Server.MapPath("~/Content/User/lib/images/GAMI_Logo_Color-01.svg");
+    byte[] imageBytes = System.IO.File.ReadAllBytes(imagePath);
+    string base64String = Convert.ToBase64String(imageBytes);
+    string imageSource = "data:image/png;base64," + base64String;
+
+}
+
+
+<DOCTYPE html>
+    <html lang="ar">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" id="theme" href="@UIConfigurations.GetFullLocalURl()/Content/User/lib/css/theme_@(SessionInfo.CultureShortName).css" />
+        @if (SessionInfo.CultureShortName == "ar")
+        {
+            <link rel="stylesheet" type="text/css" id="theme" href="@UIConfigurations.GetFullLocalURl()/Content/User/lib/css/rtl.css" />
+        }
+        <link type="image/x-icon" rel="shortcut icon" href="@UIConfigurations.GetFullLocalURl()/Content/User/lib/favicon.png">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <meta name="theme-color" content="#0c7c5a">
+        <title>@ViewBag.Title</title>
+        <!-- New -->
+        <link href="@UIConfigurations.GetFullLocalURl()/Content/User/lib/css/new.css" rel="stylesheet" />
+        <!-- Select2 CSS -->
+        <link href="@UIConfigurations.GetFullLocalURl()/Content/User/lib/plugins/select2/select2.min.css" rel="stylesheet" />
+        <link href="@UIConfigurations.GetFullLocalURl()/Content/User/lib/css/dawood-style.css" rel="stylesheet" />
+        <script src="@UIConfigurations.GetFullLocalURl()/Scripts/chart.min.js"></script>
+        <script src="@UIConfigurations.GetFullLocalURl()/Scripts/jquery.min.js"></script>
+        <style>
+            .pagebreak {
+                page-break-after: always;
+            }
+
+            table.rprt {
+                width: 91%;
+            }
+
+                table.rprt td {
+                    padding: 5px;
+                    text-align: center;
+                }
+
+            table.rprtGrid {
+                width: 91%;
+                border: 1px solid #000000;
+            }
+
+                table.rprtGrid td {
+                    padding: 5px;
+                    border-left: 1px #000000 solid;
+                    border-bottom: 1px #000000 solid !important;
+                    border-right: 1px #000000 solid;
+                }
+
+            .header-parent {
+                width: 190px;
+                height: 40px;
+                display: block;
+            }
+
+            .header-child {
+                float: right;
+                width: 95px;
+                height: 40px;
+                display: block;
+                text-align: center;
+            }
+
+            .morris-hover.morris-default-style div {
+                display: inline-block;
+                margin: 5px 10px;
+                position: relative;
+                padding-right: 20px;
+                min-width: 20%;
+                font-weight: 600;
+                font-size: 12px;
+                border-width: 0px;
+                border-color: transparent;
+            }
+
+            @@media print {
+                .rprtGrid {
+                    -webkit-print-color-adjust: exact;
+                }
+            }
+
+            .center {
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+                /*width: 50%;*/
+                max-height: 43px;
+                max-width: 214px;
+            }
+
+
+
+
+
+
+            .pagebreak {
+                page-break-after: always;
+            }
+
+            table.tableHeader {
+                width: 91%;
+            }
+
+                table.tableHeader td {
+                    padding: 5px;
+                    text-align: center;
+                }
+
+            table.tableHeaderGrid {
+                width: 100%;
+                border: 1px solid #000000;
+            }
+
+                table.tableHeaderGrid td {
+                    padding: 5px;
+                    border-bottom: 1px dashed #CCCCCC;
+                }
+
+            .header-parent {
+                width: 190px;
+                height: 40px;
+                display: block;
+            }
+
+            .header-child {
+                float: right;
+                width: 95px;
+                height: 40px;
+                display: block;
+                text-align: center;
+            }
+
+            .morris-hover.morris-default-style div {
+                display: inline-block;
+                margin: 5px 10px;
+                position: relative;
+                padding-right: 20px;
+                min-width: 20%;
+                font-weight: 600;
+                font-size: 12px;
+                border-width: 0px;
+                border-color: transparent;
+            }
+
+            @@media print {
+                .tableHeaderGrid {
+                    -webkit-print-color-adjust: exact;
+                }
+            }
+
+            .center {
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+                /*width: 50%;*/
+                max-height: 43px;
+                max-width: 214px;
+            }
+        </style>
+    </head>
+    <body style="background-color: #ffffff;">
+
+        <
+        <style>
+            .morris-hover.morris-default-style div {
+                display: inline-block;
+                margin: 5px 10px;
+                position: relative;
+                padding-right: 20px;
+                min-width: 20%;
+                font-weight: 600;
+                font-size: 12px;
+            }
+        </style>
+
+        @*@Html.Partial("_TransactionBasicResultPartial", Model.TransactionBasicResultVM)*@
+
+        <table class="rprt" style="direction: rtl;">
+            <tr>
+                <td>
+                    <p><strong>المملكة العربية السعودية</strong></p>
+                    <p><strong>الهيئة العامة للصناعات الحربية</strong></p>
+                    <br />
+                    <p><strong>الادارة المنشئة:</strong> @Model.TransactionBasicResultVM.CreatedEntity</p>
+                    <p><strong>الموظف المنشئ:</strong> @Model.TransactionBasicResultVM.CreatedBy</p>
+                </td>
+                <td>
+                    <img class="" width="200" src="~/Content/User/lib/images/GAMI_Logo_Color-01.svg" />
+
+                    <h3 class=""><strong>@Model.TransactionBasicResultVM.TenantName</strong></h3>
+
+                    <p><strong>تقرير / المعاملات  @Model.TransactionBasicResultVM.TransactionType</strong></p>
+                    <p>@Model.TransactionBasicResultVM.ExternalParty</p>
+                </td>
+                <td></td>
+                <td style="font-size: 12px; display: inline-block;">
+                    <br>
+                    <p style="display: inline-block; margin: 0;"><strong>عدد السجلات</strong></p>
+                    <p style="display: inline-block; margin: 0;">@Model.TransactionBasicResultVM.TotalCount</p>
+
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <p><strong>من تاريخ:</strong> @Model.TransactionBasicResultVM.DateFrom - @Model.TransactionBasicResultVM.DateFromG.ToString("dd/MM/yyyy")</p>
+                    <p><strong>الى تاريخ:</strong> @Model.TransactionBasicResultVM.DateTo - @Model.TransactionBasicResultVM.DateToG.ToString("dd/MM/yyyy")</p>
+                    <p><strong>طبع في:</strong> @DateHelper.ConvertDateCalendar(Model.TransactionBasicResultVM.CreateOn, CalenderType.Ummalqura, SessionInfo.CultureShortName)</p>
+                </td>
+            </tr>
+
+        </table>
+        <br />
+        <br />
+        <div class="w-100" style="margin-left:60px;">
+            <canvas id="@BarchartId" height="100" ></canvas>
+            <div class="morris-hover morris-default-style" style="position: relative; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+                <div class="morris-hover morris-default-style" style="left: 0px;">
+                    <div class="morris-hover-point" style="color: #387AC5">
+                        المعاملات الصادرة
+                    </div>
+                    <div class="morris-hover-point" style="color: #8FE1A1">
+                        مسودة الخطاب المنشأة
+                    </div><div class="morris-hover-point" style="color: #C3C538">
+                        مسودة الخطاب المحالة
+                    </div><div class="morris-hover-point" style="color: #C56E38">
+                        المعاملات الواردة المنشأة
+                    </div><div class="morris-hover-point" style="color: #E1D38F">
+                        المعاملات الواردة المحالة
+                    </div><div class="morris-hover-point" style="color: #8D38C5">
+                        المعاملات الداخلية المنشأة
+                    </div><div class="morris-hover-point" style="color: #E73232">
+                        المعاملات الداخلية المحالة
+                    </div><div class="morris-hover-point" style="color: #4A38C5">
+                        المعاملات المتأخرة
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+      
+        <table class="rprt" style="direction: rtl;">
+            <tr>
+                <td>
+                    <p><strong>المملكة العربية السعودية</strong></p>
+                    <p><strong>الهيئة العامة للصناعات الحربية</strong></p>
+                    <br />
+                    <p><strong>الادارة المنشئة:</strong> @Model.TransactionBasicResultVM.CreatedEntity</p>
+                    <p><strong>الموظف المنشئ:</strong> @Model.TransactionBasicResultVM.CreatedBy</p>
+                </td>
+                <td>
+                    <img class="" width="120" src="@imageSource" />
+                    @if (ViewData["LogoFile"] != null)
+                    {
+                        <img class="" width="200" src="~/Content/User/lib/images/GAMI_Logo_Color-01.svg" />
+                    }
+                    <img class="" width="200" src="~/Content/User/lib/images/GAMI_Logo_Color-01.svg" />
+
+                    <h3 class=""><strong>@Model.TransactionBasicResultVM.TenantName</strong></h3>
+
+                    <p><strong>تقرير / المعاملات  @Model.TransactionBasicResultVM.TransactionType</strong></p>
+                    <p>@Model.TransactionBasicResultVM.ExternalParty</p>
+                </td>
+                <td></td>
+                <td style="font-size: 12px; display: inline-block;">
+                    <br>
+                    <p style="display: inline-block; margin: 0;"><strong>عدد السجلات</strong></p>
+                    <p style="display: inline-block; margin: 0;">@Model.TransactionBasicResultVM.TotalCount</p>
+
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <p><strong>من تاريخ:</strong> @Model.TransactionBasicResultVM.DateFrom - @Model.TransactionBasicResultVM.DateFromG.ToString("dd/MM/yyyy")</p>
+                    <p><strong>الى تاريخ:</strong> @Model.TransactionBasicResultVM.DateTo - @Model.TransactionBasicResultVM.DateToG.ToString("dd/MM/yyyy")</p>
+                    <p><strong>طبع في:</strong> @DateHelper.ConvertDateCalendar(Model.TransactionBasicResultVM.CreateOn, CalenderType.Ummalqura, SessionInfo.CultureShortName)</p>
+                </td>
+            </tr>
+
+        </table>
+        <br />
+        <br />
+        <table class="rprtGrid">
+            <tr>
+                <td><b>@DbRes.TResource("User.Copy.OrgUnitName")</b></td>
+                @if (ViewData["ReportType"] != null && ViewData["ReportType"].ToString() == "2")
+                {
+                    <td><b>@DbRes.TResource("User.Employee")</b></td>
+                }
+                <td><b>المعاملات الصادرة</b></td>
+                <td><b>عدد المعاملات</b></td>
+                <td><b>عدد المعاملات المحاله</b></td>
+                <td><b>عدد المعاملات (تحت الاجراء)</b></td>
+                <td><b>عدد المعاملات المعلقة</b></td>
+                <td><b>المعاملات المنتهية</b></td>
+                <td><b>المعاملات المتأخرة</b></td>
+            </tr>
+            @{ var results = ((AjaxGrid<PerformanceMeasurementGridResultVM>)Model.PerformanceMeasurementGridResultVMs).GridItems.ToList(); }
+            @if (results != null && results.Count > 0)
+            {
+                foreach (var m in results)
+                {
+                    <tr>
+                        <td>@m.OrgUnitName</td>
+                        @if (ViewData["ReportType"] != null && ViewData["ReportType"].ToString() == "2")
+                        {
+                            <td>@m.UserProfileName</td>
+                        }
+                        <td><div class="text-center">@m.OutboundCount</div></td>
+                        <td>
+                            <div class="header-child">@m.InboundCountCreated</div>
+                        </td>
+                        <td>
+                            <div class="header-child">@m.AssignedCount</div>
+                        </td>
+                        <td>
+                            <div class="header-child">@m.InProgressCount</div>
+                        </td>
+                        <td>
+                            <div class="text-center">@m.SavedCount</div>
+                        </td>
+                        <td>
+                            <div class="text-center">@m.FinishedCount</div>
+                        </td>
+                        <td>
+                            <div class="text-center">@m.DelayedCount</div>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td>لا يوجد بيانات للعرض</td>
+                </tr>
+            }
+        </table>
+
+
+    </body>
+</html>
+<script>
+    $(function () {
+                                        var dataT = {
+                                            labels: ['', '', '', '', '', '', '', ''],
+            datasets: [
+                @foreach (List<int> dataset in DataList)
+                {
+                    @:{
+                        @:label: '@Model.PerformanceMeasurementGridResultVMs.GridItems.ToList()[DataList.IndexOf(dataset)].OrgUnitName',
+                        @:data: '@string.Join(",", dataset.ToArray())'.split(','),
+                        @:fill: false,
+                        @:backgroundColor: ['#387AC5', '#8FE1A1', '#C3C538', '#C56E38', '#E1D38F', '#8D38C5', '#E73232', '#4A38C5'],
+                        @:borderColor: 'rgb(0, 0, 0, 0)',
+                        @:borderWidth: 1
+                    @:},
+                }
+
+            ]
+                                        };
+                                        var ctx = $("#@BarchartId").get(0).getContext("2d");
+                                        var myNewChart = new Chart(ctx, {
+                                            type: 'bar',
+                                            data: dataT,
+                                            options: {
+                                                responsive: true,
+                title: { display: false, text: '' },
+                                                legend: { display: false },
+                                                scales: {
+                                                    xAxes: [{
+                                                        display: false,
+                                                        ticks: { beginAtZero: true }
+                                                    }],
+                                                    yAxes: [{
+                                                        display: true,
+                                                        ticks: { beginAtZero: true }
+                                                    }],
+                                                }
+                                            }
+                                        });
+    });
+                                    </script>
+
+<script>
+    $(document).ready(function () {
+        var colorsElement = '<tr>';
+
+        
+
+        for (var i = 1; i <= 8; i++) {
+            switch (i) {
+                case 5:
+                    colorsElement += '<td style="background-color:yellow !important;"></td>';
+                    break;
+                case 6:
+                    colorsElement += '<td style="background-color:gray !important;"></td>';
+                    break;
+                case 7:
+                    colorsElement += '<td style="background-color:green !important;"></td>';
+                    break;
+                case 8:
+                    colorsElement += '<td style="background-color:red !important;"></td>';
+                    break;
+                default:
+                    colorsElement += '<td></td>';
+                    break;
+                                }
+                            }
+        colorsElement += '</tr>';
+        $('.rprtGrid').find('tr').first().after(colorsElement);
+    });
+</script>

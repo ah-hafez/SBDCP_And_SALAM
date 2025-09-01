@@ -1,0 +1,581 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Transaction;
+@using MCS.Common;
+@using MCS.UI.Common
+
+@model MCS.UI.Areas.User.Models.Transaction.ExplanationVM
+
+@{
+    var doconutIframeUrl = UIConfigurations.GetFullURl() + string.Format("{0}?explanations=true", SystemConfigurations.DoconutIframeUrl);
+}
+<div>
+    @using (Html.BeginForm("", "", FormMethod.Post, new { id = "frmEditorExplanations" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.StickyHidden("hdnTransactionId", ViewData["TransactionId"].ToString(), new { id = "hdnExplanationsTransactionId", @class = "TransactionId" })
+        @Html.StickyHidden("hdnExplanationDocumentSessionKey", ViewData["ExplanationDocumentSessionKey"].ToString(), new { id = "hdnExplanationDocumentSessionKey" })
+        <div class="row enter_old">
+            <div class="enter_list-tags d-flex flex-wrap">
+                @if (ViewData["ExplanationsData"] != null)
+                {
+                    List<ExplanationVM> explanations = ViewData["ExplanationsData"] as List<ExplanationVM>;
+                    if (explanations != null)
+                    {
+                        foreach (ExplanationVM explanationVM in explanations)
+                        {
+                            if (explanationVM.CanBeDeleted)
+                            {
+                                <span class="tag">
+                                    <a class="aExplanation d-flex flex-nowrap " data-editable="@explanationVM.CanBeDeleted" data-id="@explanationVM.Id">
+                                        <span class="badgee">@explanationVM.ConfidentialityName</span>
+                                        <span class="align-self-center "> @explanationVM.FromUser </span>
+                                        @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.ExpalanationsEditor.Delete))
+                                        {
+                                            <span class="align-self-center removing_tag uicon icon_close" data-id="@explanationVM.Id" title="حذف المرفق"></span>
+                                        }
+                                    </a>
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="tag">
+                                    <a class="aExplanation d-flex flex-nowrap" data-editable="@explanationVM.CanBeDeleted" data-id="@explanationVM.Id">  <span class="badgee">@explanationVM.ConfidentialityName</span><span class="align-self-center ">@explanationVM.FromUser </span><span class="stark">*</span></a>
+                                </span>
+                            }
+                        }
+                    }
+                }
+
+            </div>
+        </div>
+        <div id="explinationDateTime"></div>
+
+        <div id="dvEditorScanning" style="display:none;">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="panel-body panel-style panel-body-open">
+                        @{
+                            string sessionKey = ViewData["ExplanationDocumentSessionKey"] != null ? ViewData["ExplanationDocumentSessionKey"].ToString() : null;
+                        }
+                        <div id="doconutContainer">
+                            <iframe src="@doconutIframeUrl" class="col-md-12" style="height:500px" id="ExplanationframeViewer" sandbox="allow-modals allow-same-origin allow-scripts allow-popups allow-forms allow-downloads"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="dvText" style="display:none;">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                @Html.TextAreaFor(model => model.Description, new { id = "txtDescription", @class = "form-control", @rows = "30", style = "background: #FFFA9E;height:120px;", maxlength = "500" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="dvUploadFile" style="display:none;">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <input type="file" class="fileinput upload_design none_push customUpload btnUpload btnM" name="UploadExplanationFile" id="btnUploadFile" data-filename-placement="inside" title="@DbRes.TResource("User.UserPreferences.UploadAttachment")" accept="application/pdf" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="dvEditorTextEditor" style="display:none;">
+            <div class="panel-body">
+
+                <div class="row">
+                    <div class="panel-group accordion accordion-dc">
+                        <div class="col-md-6">
+                            <div class="form-group" id="dvExplanationTextEditorForm">
+                                @Html.Label(DbRes.TResource("User.OutboundDraft.Forms"), new { @class = "col-md-4 control-label" })
+                                <div class="col-md-8">
+                                    <div class="">
+                                        @Html.AutoCompleteBuilder("ddlExplanationFormDocument", "hdnOrgUnitFormDocumentId", ViewData["FormDocumentList"].ToString(), null, true, "form-control")
+                                        @Html.Hidden("hdnOrgUnitFormDocument", null, new { id = "hdnOrgUnitFormDocumentId" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="panel-group accordion accordion-dc">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <div class="col-md-8">
+                                    <div class="">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group" id="dvExplanationTextEditor">
+                                @Html.Partial("~/Areas/User/Views/Editor/Explanations/_TextEditorPartial.cshtml")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 text-right panel-body">
+                @Html.HiddenFor(model => model.Id, new { id = "hdnExplanationId" })
+                @Html.HiddenFor(model => model.isCopies)
+                @Html.HiddenFor(model => model.EditorType, new { id = "hdnExplanationEditorType" })
+               
+                @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.ExpalanationsEditor.Edit))
+                {
+                    @Html.ConfirmExplanationAction(OperationType.Save, "btnEditExplanation", DbRes.TResource("User.Editor.Explanations.Edit"), Url.Action("EditExplanation", "Editor"), null, "ExplanationframeViewer", null, "OnEditExplanationSuccess", null, DbRes.TResource("User.Editor.Explanation.EditMessage"), "post", "frmEditorExplanations", "Explanations", "hidden_ btn-site", "CheckExplanationIfHasContent")
+                }
+                <a class="btn-site " style="display:none;" id="btnCancelExplanation" onclick="CancelUpdateExplanation()">@DbRes.TResource("User.Editor.Explanations.Close")</a>
+                <a class="btn-site " id="btnPrintExplanations" onclick="PrintExplanations(@ViewData["TransactionId"])">@DbRes.TResource("User.Editor.Explanations.PrintAll")</a>
+            </div>
+        </div>
+    }
+</div>
+<script>
+
+    function CheckExplanationIfHasContent() {
+
+            var docoNutFrameContent = $('#ExplanationframeViewer').contents();
+            var __docViewerToken = $('#_hdnToken', docoNutFrameContent)[0].value;
+             var token = $("#frmEditorExplanations").find("input[name='__RequestVerificationToken']").val();
+
+            if ($('#hdnTextEditorContent').val() == "" && $("#txtDescription").val() == "" &&/* __docViewerToken == "" &&*/ $('#btnUploadFile').val() == '') {
+                var IsEmptyDoc = true;
+               $.ajax({
+                type: 'post',
+                cache: false,
+                url: '@Url.Action("CheckIfHasArchive", "Editor")',
+                   data: { param: __docViewerToken, __RequestVerificationToken:token },
+                async: false,
+                success: function (data) {
+                    if (data.data == "NotEmpty") {
+                        IsEmptyDoc = false
+                     }
+                    }
+                });
+
+                if (IsEmptyDoc) {
+                    if ($("#ddlExplanationConfedentiality").val() == "") {
+                         $("#CalMessage3").removeClass("hidden_");
+                         $("#CalMessage3").show();
+                         $("#CalMessageForMainDocEdit").html('@Html.Raw(DbRes.TValidation("User.Editor.Explanations.ExplanationRequired"))');
+
+                        return true;
+                    }
+                        else {     $("#CalMessage3").removeClass("hidden_");
+                         $("#CalMessage3").show();
+                         $("#CalMessageForMainDocEdit").html('@Html.Raw(DbRes.TValidation("User.Editor.Explanations.ExplanationRequired"))');
+
+                    return false;
+                    }
+                } else {
+                    $("#CalMessage3").addClass("hidden_");
+                    $("#CalMessage3").hide();
+                    $("#CalMessageForMainDocEdit").html("")
+                    return true;
+                }
+
+            }
+            if (!($('#btnUploadFile').val() == '')) {
+
+                var ext = $('#btnUploadFile').val();
+                ext = ext.slice(ext.length - 4, ext.len);
+
+                if (!(ext.toUpperCase() == ".PDF")) {
+                    ShowErrorMessage('@Html.Raw(DbRes.TValidation("User.Editor.Explanations.OnlyPDFIsAccepted"))');
+                    return false;
+                }
+                __docViewerToken = $('#btnUploadFile').val();
+                return true;
+            }
+            else {
+                $("#CalMessage3").addClass("hidden_");
+                $("#CalMessage3").hide();
+                $("#CalMessageForMainDocEdit").html("")
+                return true;
+            }
+
+        }
+
+    function OnAddExplanationSuccess(data, div) {
+            if (data.MessageType != 2) {
+                ShowSuccesMessage(data.MessageText);
+                $(".enter_list-tags").append("<span class='tag'><a class='d-flex flex-nowrap aExplanation' data-editable='True' data-id='" + data.Id + "'>" + "<span class='align-self-center'>" + data.Name + "</span><span class='align-self-center removing_tag uicon icon_close' data-id='" + data.Id + "' title = 'حذف المرفق' ></span></a></span>");
+                document.getElementById('ExplanationframeViewer').contentWindow.location.reload();
+                $("#CalMessage3").addClass("hidden_");
+                $("#CalMessage3").hide();
+                $("#CalMessageForMainDocEdit").html("")
+                CancelUpdateExplanation();
+            }
+            else {
+                ShowErrorMessage(data.MessageText);
+            }
+        }
+
+        function OnEditExplanationSuccess(data, div) {
+            if (data.MessageType != 2) {
+                ShowSuccesMessage(data.MessageText);
+                CancelUpdateExplanation();
+            }
+            else {
+                ShowErrorMessage(data.MessageText);
+            }
+        }
+
+        $(document).ready(function () {
+            $('#aUploadFile').click(function () {
+                $('#hdnExplanationEditorType').val('4');
+                $('#dvUploadFile').show();
+                $('#dvEditorScanning').hide();
+                $('#dvText').hide();
+                $('#dvEditorTextEditor').hide();
+                $('#hdnTextEditorContent').val('');
+                $("#txtDescription").attr("readonly", false);
+                BackToAddMode();
+            });
+            $('#aEditorTextEditor').click(function () {
+
+                $('#hdnExplanationEditorType').val('1');
+                $('#dvEditorTextEditor').show();
+                $('#dvUploadFile').hide();
+                $('#dvEditorScanning').hide();
+                $('#dvText').hide();
+                $('#hdnTextEditorContent').val('');
+                BackToAddMode();
+            });
+
+            $('#aText').click(function () {
+
+                $('#hdnExplanationEditorType').val('3');
+                $('#dvText').show();
+                $('#dvUploadFile').hide();
+                $('#dvEditorTextEditor').hide();
+                $('#dvEditorScanning').hide();
+                $('#hdnTextEditorContent').val('');
+                BackToAddMode();
+            });
+
+            $('#aEditorScanning').click(function () {
+
+                $('#hdnExplanationEditorType').val('2');
+                $('#dvEditorTextEditor').hide();
+                $('#dvUploadFile').hide();
+                $('#dvText').hide();
+                $('#dvEditorScanning').show();
+                $('#hdnTextEditorContent').val('');
+                BackToAddMode();
+            });
+        });
+
+        $(document).on('change', "#ddlExplanationFormDocument", function () {
+
+            if ($("#hdnOrgUnitFormDocumentId").val() != "") {
+                $.ajax({
+                    type: 'get',
+                    cache: false,
+                    url: '@Url.Action("GetContentByFormId", "Editor")',
+                    data: { id: $("#hdnOrgUnitFormDocumentId").val() },
+                    success: function (data) {
+                        ChangeTextEditorContent("txtEditorExplanation", "hdnTextEditorContent", data);
+                    }
+                });
+                return false;
+            }
+    });
+
+
+    $(document).on('click', ".aExplanation", function () {
+        var id = $(this).data("id");
+        var editable = $(this).data("editable");
+        var sessionKey = $("#hdnExplanationDocumentSessionKey").val()
+        $('#dvExplanationTextEditorForm').show();
+        $('#dvConfidentialityContainer').show();
+        $('#btnCancelExplanation').show();
+        $('.ExplanationInput').show();
+        $("#txtDescription").attr("readonly", false);
+        $('#btnEditExplanation').show();
+        $('#btnEditExplanation').removeClass("hidden_");
+
+        $.ajax({
+            type: 'get',
+            cache: false,
+            url: '@Url.Action("GetExplanationById","Editor")',
+            data: { id: id, hdnExplanationDocumentSessionKey: sessionKey },
+            success: function (data) {
+                if (data.Type == 1) {
+                    $("#dvExplanationTextEditor").html("");
+                    $("#dvExplanationTextEditor").html(data.Html);
+                    $('#hdnExplanationEditorType').val('1');
+                    $('#dvEditorTextEditor').show();
+                    $('#dvEditorScanning').hide();
+                    $('#dvText').hide();
+                    $('#btnAddExplanation').hide();
+                    $('#aEditorTextEditor').removeClass("disable_a");
+                    $('#aEditorScanning').addClass("disable_a");
+                    $('#aText').addClass("disable_a");
+                    $('#btnCancelExplanation').show();
+
+                    if (editable == "True") {
+                        $("#hdnExplanationId").val(id);
+                        $("#hdnExplanationConfedentiality").val(data.ConfidentialityId);
+                        $("#hdnExplanationConfedentiality").trigger("change");
+                        $('#btnEditExplanation').removeClass("hidden_");
+                        $('#btnEditExplanation').show();
+                    }
+                    else {
+                        $('#dvExplanationTextEditorForm').hide();
+                        $('#dvConfidentialityContainer').hide();
+                        $('#btnEditExplanation').hide();
+                        $("#txtDescription").attr("readonly", true);
+                        $('.ExplanationInput').hide();
+                    }
+                }
+                if (data.Type == 2) {
+                    document.getElementById('ExplanationframeViewer').contentWindow.location.reload();
+                    $('#hdnExplanationEditorType').val('2');
+                    $('#dvEditorTextEditor').hide();
+                    $('#dvText').hide();
+                    $('#dvEditorScanning').show();
+                    $('#btnAddExplanation').hide();
+                    $('#hdnTextEditorContent').val('');
+                    $('#aEditorTextEditor').addClass("disable_a");
+                    $('#aEditorScanning').removeClass("disable_a");
+                    $('#aText').addClass("disable_a");
+                    $('#btnCancelExplanation').show();
+
+                    if (editable == "True") {
+                        $("#hdnExplanationId").val(id);
+                        $("#hdnExplanationConfedentiality").val(data.ConfidentialityId);
+                        $("#hdnExplanationConfedentiality").trigger("change");
+                        $('#btnEditExplanation').removeClass("hidden_");
+                        $('#btnEditExplanation').show();
+                    }
+                    else {
+                        $('#dvConfidentialityContainer').hide();
+                        $('#btnEditExplanation').hide();
+                        $("#txtDescription").attr("readonly", true);
+                        $('.ExplanationInput').hide();
+                    }
+                }
+                if (data.Type == 3) {
+                    document.getElementById('explinationDateTime').innerText = data.Date;
+                    $("#txtDescription").val(data.Content);
+                    $('#hdnExplanationEditorType').val('3');
+                    $('#dvText').show();
+                    $('#dvEditorTextEditor').hide();
+                    $('#dvEditorScanning').hide();
+                    $('#btnAddExplanation').hide();
+                    $('#hdnTextEditorContent').val('');
+                    $('#aEditorTextEditor').addClass("disable_a");
+                    $('#aEditorScanning').addClass("disable_a");
+                    $('#aText').removeClass("disable_a");
+                    $('#btnCancelExplanation').show();
+
+                    if (editable == "True") {
+                        $("#hdnExplanationId").val(id);
+                        $("#hdnExplanationConfedentiality").val(data.ConfidentialityId);
+                        $("#hdnExplanationConfedentiality").trigger("change");
+                        $('#btnEditExplanation').removeClass("hidden_");
+
+                        $('#btnEditExplanation').show();
+                    }
+                    else {
+                        $('#dvConfidentialityContainer').hide();
+                        $('#btnEditExplanation').hide();
+                        $("#txtDescription").attr("readonly", true);
+                        $('.ExplanationInput').hide();
+                    }
+                }
+
+
+                if (data.Type == 4) {
+                    $("#dvExplanationTextEditor").html("");
+                    $("#dvExplanationTextEditor").html(data.Html);
+                    $('#hdnExplanationEditorType').val('4');
+                    $('#dvEditorTextEditor').hide();
+                    $('#dvEditorScanning').hide();
+                    $('#dvText').hide();
+                    $('#btnAddExplanation').hide();
+                    $('#dvUploadFile').show();
+                    $('#aEditorTextEditor').addclass("disable_a");
+                    $('#aEditorScanning').addClass("disable_a");
+                    $('#aText').addClass("disable_a");
+                    $('#aUploadFile').removeClass("disable_a");
+                    $('#btnCancelExplanation').show();
+
+                    if (editable == "True") {
+                        $("#hdnExplanationId").val(id);
+                        $("#hdnExplanationConfedentiality").val(data.ConfidentialityId);
+                        $("#hdnExplanationConfedentiality").trigger("change");
+                        $('#btnEditExplanation').removeClass("hidden_");
+                        $('#btnEditExplanation').show();
+                    }
+                    else {
+                        $('#dvExplanationTextEditorForm').hide();
+                        $('#dvConfidentialityContainer').hide();
+                        $('#btnEditExplanation').hide();
+                        $("#txtDescription").attr("readonly", true);
+                        $('.ExplanationInput').hide();
+                    }
+                }
+            }
+        });
+    });
+
+    $(document).on('click', ".removing_tag", function () {
+            var token = $('form:first').find("input[name='__RequestVerificationToken']").val();
+            var id = $(this).data("id");
+            var element = $(this);
+            $.ajax({
+                type: 'post',
+                cache: false,
+                url: '@Url.Action("DeleteExplanationById","Editor")',
+                data: { id: id, __RequestVerificationToken: token },
+                success: function (data) {
+                    if (data.MessageType == 2) {
+                        ShowErrorMessage(data.MessageText);
+                    }
+                    else {
+                        if ($("#hdnExplanationId").val() == id) {
+                            CancelUpdateExplanation();
+                        }
+                        element.parent().remove();
+                        $('#btnCancelExplanation').hide();
+                        $('#btnEditExplanation').hide();
+                    }
+                }
+            });
+    });
+    function doReload() { }
+    function CancelUpdateExplanation() {
+        $('#aEditorTextEditor').removeClass("disable_a");
+        $('#aEditorScanning').removeClass("disable_a");
+        $('#aText').removeClass("disable_a");
+        $(".enter_list-tags a").removeClass("disable_a");
+        $("#txtDescription").attr("readonly", false);
+        ChangeTextEditorContent("txtEditorExplanation", "hdnTextEditorContent", "");
+        $('#hdnTextEditorContent').val('');
+        $("#txtDescription").val("");
+        $('#dvEditorTextEditor').hide();
+        $('#dvEditorScanning').hide();
+        $('#dvText').hide();
+        $('.ExplanationInput').show();
+        $('#dvConfidentialityContainer').show();
+        $('#btnCancelExplanation').hide();
+        $('#btnEditExplanation').hide();
+        $('#btnAddExplanation').show();
+        $("#ddlExplanationConfedentiality").val("");
+        $("#hdnExplanationConfedentiality").val("");
+        $("#ddlExplanationFormDocument").val("");
+        $("#ddlExplanationFormDocument").val("");
+        var sessionKey = $("#hdnExplanationDocumentSessionKey").val()
+        var token = $('#frmEditorExplanations').find("input[name='__RequestVerificationToken']").val();
+
+        $.ajax({
+            type: 'post',
+            url: '@Url.Action("RefreshDocumentViewer")',
+            data: { hdnExplanationDocumentSessionKey: sessionKey, __RequestVerificationToken: token },
+            success: function (data) {
+                document.getElementById('ExplanationframeViewer').contentWindow.location.reload();
+
+            }
+        });
+        document.getElementById('ExplanationframeViewer').contentWindow.location.reload();
+    }
+
+
+     var token = $('form:first').find("input[name='__RequestVerificationToken']").val();
+    //var TransactionId = $('#hdnAssignmentsTransactionId').val();
+    function PrintExplanations(TransactionId) {
+       @*var url= '@Url.Action("GetTransactionExplanationsForPrint", "Editor")' + '?transactionId=' + TransactionId
+
+        ShowDialog(url, 'dialogbox col-md-12 ');*@
+
+        var data = { transactionId: TransactionId  ,__RequestVerificationToken: token };
+        event.preventDefault();
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetTransactionExplanationsForPrint", "Editor")' + '?transactionId=' + TransactionId,
+            data: data,
+            cache: false,
+            success:
+
+                function (data) {
+                    if (data.MessageType != 2) {
+                        var TransactionExplanationsWindow = window.open('', '_blank', 'width=900,height=500');
+
+                        TransactionExplanationsWindow.document.write(data);
+                        TransactionExplanationsWindow.document.close();
+                        TransactionExplanationsWindow.focus();
+
+                        //setTimeout(function () {
+                        //    TransactionExplanationsWindow.print();
+                        //    TransactionExplanationsWindow.close();
+                        //}, 2000);
+                    }
+                    else {
+                        ShowErrorMessage(data.MessageText);
+                    }
+                }
+        });
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    function BackToAddMode() {
+        $('#btnCancelExplanation').hide();
+        $('#btnEditExplanation').hide();
+        $('#btnAddExplanation').show();
+        $("#txtDescription").val("");
+        var sessionKey = $("#hdnExplanationDocumentSessionKey").val();
+        var token = $('#frmEditorExplanations').find("input[name='__RequestVerificationToken']").val();
+          $.ajax({
+                type: 'post',
+                url: '@Url.Action("RefreshDocumentViewer" , "Editor")',
+              data: { hdnExplanationDocumentSessionKey: sessionKey, __RequestVerificationToken: token},
+                success: function (data) {
+                    document.getElementById('ExplanationframeViewer').contentWindow.location.reload();
+
+                }
+            });
+            document.getElementById('ExplanationframeViewer').contentWindow.location.reload();
+    }
+
+</script>
+<style>
+    .aExplanation {
+/*        background: khaki !important;
+*/        font-weight: 900;
+    }
+        .badgee{
+        background-color : gray;
+        font-size:9px;
+        border-radius:8px;
+        width:30px;
+        height:16px;
+        color:white;
+        margin-right:3px;
+    }
+</style>

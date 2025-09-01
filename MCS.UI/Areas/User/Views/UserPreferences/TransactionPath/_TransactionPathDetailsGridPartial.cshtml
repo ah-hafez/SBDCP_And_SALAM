@@ -1,0 +1,47 @@
+﻿@using MCS.UI.Areas.User.Models.UserPreferences;
+@model AjaxGrid<TransactionPathDetailsVM>
+
+@{
+    Layout = null;
+    int totalCount = Model.ItemsCount;
+}
+
+@Html.Grid(Model).CollectionName("TransactionPathDetailsGrid").Named("grdPathDetails").Columns(columns =>
+{
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Id, new { id = "Id_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Key, new { id = "Key_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Sort, new { id = "Sort_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.EntityId, new { id = "EntityId_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.UserId, new { id = "UserId_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.EntityName, new { id = "EntityName_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.ActionId, new { id = "ActionId_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.ActionName, new { id = "ActionName_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.UserName, new { id = "UserName_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(model => model.EntityName).Titled(DbRes.TResource("User.Transaction.PathDetails.OrgUnit"));
+columns.Add(model => model.UserName).Titled(DbRes.TResource("User.Transaction.PathDetails.User"));
+columns.Add(model => model.ActionName).Titled(DbRes.TResource("User.Transaction.PathDetails.ActionId"));
+//columns.Add().Encoded(false).Sanitized(false).Css("fixed_col text-left site-danger action-icon").RenderValueAs(model => !model.IsReadOnly && model.Sort != 1? @Html.ClientLinkTag("", cssClass: "edit_link", title: "", clientFunctionToCall: "SortPathDetailsByKey(" + model.Key + "," + "'up'" + ")", innerHtml: "<i class='fa fa-sort-up'></i>") : MvcHtmlString.Empty);
+//columns.Add().Encoded(false).Sanitized(false).Css("fixed_col text-left site-danger action-icon").RenderValueAs(model => !model.IsReadOnly && model.Sort != totalCount? @Html.ClientLinkTag("", cssClass: "edit_link", title: "", clientFunctionToCall: "SortPathDetailsByKey(" + model.Key + "," + "'down'" + ")", innerHtml: "<i class='fa fa-sort-down'></i>") : MvcHtmlString.Empty);
+columns.Add().Encoded(false).Sanitized(false).Css("").RenderValueAs(model => !model.IsReadOnly ?
+                      MvcHtmlString.Create("<div class='correspondence-icon pull-right bg-unset p-0 icons7 d-flex'>" + 
+                                                @Html.ClientLinkTag("", cssClass: "mx-1", title: DbRes.TResource("Grid.Edit"), clientFunctionToCall: "GetPathDetailsByKey(" + model.Key + "," + model.EntityId + ")", innerHtml: "<i class='icon-tables-edit'></i>").ToHtmlString() +  
+                                                @Html.ClientLinkTag("", cssClass: "mx-1", clientFunctionToCall: "DeleteActionGrid(" + "'grdPathDetails'," + model.Key + ",'" + DbRes.TResource("Grid.DeleteMassage") + "','dvAddDelegation' , 'CancelPathDetailsEdit')", innerHtml: "<i class='icon-tables-delete'></i>").ToHtmlString() + 
+                                                "</div>") : MvcHtmlString.Empty);
+    //columns.Add().Encoded(false).Sanitized(false).Css(" correspondence-icon pull-right bg-unset p-0 icons7 d-flex").RenderValueAs(model => !model.IsReadOnly? @Html.ClientLinkTag("", cssClass: "mx-1", clientFunctionToCall: "DeleteActionGrid(" + "'grdPathDetails'," + model.Key + ",'" + DbRes.TResource("Grid.DeleteMassage") + "','dvAddDelegation' , 'CancelPathDetailsEdit')", innerHtml: "<i class='icon-tables-delete'></i>") : MvcHtmlString.Empty);
+
+})
+
+<script>
+    @*$(document).ready(function () {
+        userDelegation();
+    })
+    function userDelegation() {
+        $(".grid-mvc").gridmvc();
+        pageGrids.grdCurrentDelegations.ajaxify(
+            {
+                getPagedData: '@Html.Raw(Url.Action("UpdateGridDelegations", "UserPreferences"))',
+                getData: '@Html.Raw(Url.Action("UpdateGridDelegations", "UserPreferences"))',
+                requestType: "POST"
+            });
+    }*@
+</script>

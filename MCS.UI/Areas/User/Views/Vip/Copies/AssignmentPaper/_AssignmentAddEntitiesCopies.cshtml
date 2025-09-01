@@ -1,0 +1,92 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Common;
+@using MCS.UI.Areas.User.Models.Assignment
+@model TransactionAssignmentVM
+
+@using (Html.BeginCollectionItem("TransactionAssignments"))
+{
+
+    <div>
+
+        <div class="row TransactionAssignment" id="@Model.Key">
+
+            <div class="form-group col-lg-2 col-md-4 col-sm-6 col-xs-12 mt-4 divRadio">
+                <div class="inline-radio">
+                    <div class="checkbox">
+                        <label>
+                            <input onchange="UpdateIsCopy(this); ActionChanged();" type="checkbox" id="ch_@Html.IdFor(a => a.IsCopy).ToString()">
+                            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                            <text style="color:black">صورة</text>
+                        </label>
+                    </div>
+                    <div class="radio hidden">
+                        <label>
+                            <input onchange="UpdateIsOpr(this); ActionChanged();" type="radio" class="rValue" name="Radio" id="Radio_@Html.IdFor(a => a.IsOpr).ToString()" />
+                            <span class="cr"><i class="cr-icon"></i></span>
+                            <text>OPR</text>
+                        </label>
+                    </div>
+                </div>
+                @Html.HiddenFor(a => a.IsAssigned, new { id = "hdn_" + Html.IdFor(a => a.IsAssigned).ToString(), @class = "isAssigned", @Value = false })
+                @Html.HiddenFor(a => a.IsCopy, new { id = "hdn_" + Html.IdFor(a => a.IsCopy).ToString(), @class = "IsCopy" })
+                @Html.HiddenFor(a => a.IsOpr, new { id = "hdn_" + Html.IdFor(a => a.IsOpr).ToString(), @class = "IsOpr" })
+                @Html.HiddenFor(a => a.IsBcc, new { id = "hdn_" + Html.IdFor(a => a.IsBcc).ToString(), @class = "IsBcc" })
+                @Html.HiddenFor(a => a.OprEntityId, new { id = "hdnOprEntityId", @class = "OprEntityId" })
+                @Html.HiddenFor(a => a.ToOrgUnitId)
+                @Html.HiddenFor(a => a.ToOrgUnitName)
+                @Html.HiddenFor(a => a.ToUserId)
+                @Html.HiddenFor(a => a.ToUserName)
+                @Html.HiddenFor(a => a.DeliveryMethodId, new { @Value = 2703 })
+                @Html.HiddenFor(a => a.GroupId)
+            </div>
+
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mt-4 ToOrgUnitName" style="white-space: nowrap;">
+                <div class="d-flex">
+                    <label style="white-space:break-spaces">@Model.ToOrgUnitName - </label>
+                    <div class="ToUserId">
+                        <label style="white-space:break-spaces" id="ToUserNamelabel">@Model.ToUserName</label>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                @Html.LabelFor(model => model.SpecialExplanation, new { @class = "control-lable" })
+                @Html.TextBoxFor(model => model.SpecialExplanation, new { @class = "form-control" })
+            </div>
+
+            <div class="form-group col-lg-2 col-md-4 col-sm-6 col-xs-12 mt-4 divDDl ActionId d-flex">
+                @Html.AutoCompleteBuilder("Action_" + Html.IdFor(a => a.ActionId).ToString(), Html.IdFor(a => a.ActionId).ToString(), ViewData["AllActionsData"].ToString(), Model != null ? Model.ActionId.ToString() : null, true, "form-control DDLClass", "", "", "", true, "", "ActionChanged")
+                @Html.HiddenGroupFor(model => model.ActionId, new { @Value = "", id = Html.IdFor(a => a.ActionId).ToString() }, "AssignmentPaper")
+            </div>
+            <div class="d-flex">
+                @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.CopiesInternal.BCC))
+                {
+                    <div class="checkbox mt-4">
+                        <label>
+                            <input onchange="UpdateIsBCC(this); ActionChanged();" type="checkbox" id="ch_@Html.IdFor(a => a.IsBcc).ToString()">
+                            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                            <text style="color:black">نسخة مخفية</text>
+                        </label>
+                    </div>
+                }
+                <div class="form-group mt-4 divDDl ActionId d-flex">
+                    <a class="edit_link" onclick="DeleteAssignment('@Model.Key')"> <i class="glyphicon glyphicon-remove" style="margin-top:9px; margin-right:6px; color:red"></i> </a>
+
+                </div>
+            </div>
+          
+            <hr  />
+
+        </div>
+        </div>
+        }
+        <script>
+            function DeleteAssignment(id) {
+
+                var value;
+                value = '#' + id;
+                $(value).remove();
+            }
+        </script>

@@ -1,0 +1,90 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.Lookups
+@using MCS.GridMvc.Helpers;
+@using MCS.GridMvc.Html;
+@using MCS.Common;
+
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<LetterTypeVM>
+@{
+    ViewBag.Title = "_TransactionTypeLookupGridPartial";
+}
+
+@Html.Grid(Model).Named("LetterType").Columns(columns =>
+{
+    columns.Add(model => model.Id).Titled(DbRes.TResource("Admin.LetterType.Id")).Css("hidden_");
+    columns.Add(model => model.Description[0].Text, "DescriptionAr").Titled(DbRes.TResource("Admin.LetterType.Name.ar"));
+    columns.Add(model => model.Description[1].Text, "DescriptionEn").Titled(DbRes.TResource("Admin.LetterType.Name.en"));
+    //columns.Add(model => model.LocalName, "LocalizationIdentifier").Titled(DbRes.TResource("Admin.LetterType.Description"));
+    //columns.Add(model => model.TransactionCategory, "TransactionCategory").Titled(DbRes.TResource("Admin.LetterType.TransactionCategories")).SetFilterWidgetType("CheckBoxFilterWidget");
+    columns.Add(model => model.Notify).Titled("مع اشعار").Encoded(false).Sanitized(false).Css("fixed_col notifyCheckBox").RenderValueAs(model => @Html.CheckBox("", model.Notify));
+    columns.Add(model => model.WithExtraField).Titled("مع حقل إضافي").Encoded(false).Sanitized(false).Css("fixed_col withExtraFieldCheckBox").RenderValueAs(model => @Html.CheckBox("", model.WithExtraField));
+    //columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => @Html.GridImageButton("DeleteLetterType", "LetterType", 1, OperationType.Delete, "dvGrid", "", null, "OnDeleteSuccess"));
+    //columns.Add().Encoded(false).Sanitized(false).Css("").RenderValueAs(model =>
+    // MvcHtmlString.Create(
+    //        "<div class='table-icon d-flex align-items-center'>" +
+    //           @Html.GridImageButton("GetLetterType", "LetterType", 0, OperationType.Update, "dvEdit", null, null, "ShowEditDiv", "", "get")  +
+    //           @Html.GridImageButton("DeleteLetterType", "LetterType", 0, OperationType.Delete, "dvGrid", "", null, "OnDeleteSuccess")  +
+    //        "</div>")
+    // );
+}).WithPaging(GridHelper.PageSize)
+<script>
+     var token = $("#dvAdd input[name='__RequestVerificationToken']").val()
+    var myLetterTypeGridEventHandler = "@Url.Action("UpdateLetterTypeGrid", "Lookups")?__RequestVerificationToken=" + token;
+    function prepareLetterTypeReportGrid() {
+            $(".grid-mvc").gridmvc();
+            pageGrids.LetterType.ajaxify({
+                getPagedData: myLetterTypeGridEventHandler,
+                requestType: "get",
+                getData: myLetterTypeGridEventHandler
+            });
+        }
+
+        $(document).ready(function () {
+            prepareLetterTypeReportGrid();
+        });
+
+    $('.notifyCheckBox').click(function () {
+        debugger
+        var letterTypeId = $($(event.currentTarget).closest('tr')[0]).find('.hidden_')[0].innerText;
+        var operationType = $(event.currentTarget.childNodes[0]).is(":checked");
+        $.ajax({
+                type: 'get',
+                url: '@Url.Action("UpdateLetterTypeNotifyOption")',
+                data: { letterTypeId: letterTypeId, operationType: operationType },
+                success:
+                    function (data) {
+                        if (data.MessageType != 2) {
+                            debugger
+                            ShowInformationMessage('تم التعديل');
+                        } else {
+                            debugger
+                            ShowErrorMessage('حدث خطأ');
+                            event.preventDefault();
+                        }
+                    }
+            });
+    });
+
+    $('.withExtraFieldCheckBox').click(function () {
+        debugger
+        var letterTypeId = $($(event.currentTarget).closest('tr')[0]).find('.hidden_')[0].innerText;
+        var operationType = $(event.currentTarget.childNodes[0]).is(":checked");
+        $.ajax({
+                type: 'get',
+                url: '@Url.Action("UpdateLetterTypeWithExtraFieldOption")',
+                data: { letterTypeId: letterTypeId, operationType: operationType },
+                success:
+                    function (data) {
+                        if (data.MessageType != 2) {
+                            debugger
+                            ShowInformationMessage('تم التعديل');
+                        } else {
+                            debugger
+                            ShowErrorMessage('حدث خطأ');
+                            event.preventDefault();
+                        }
+                    }
+            });
+    });
+</script>
+

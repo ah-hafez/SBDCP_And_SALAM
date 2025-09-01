@@ -1,0 +1,64 @@
+﻿@using MCS.Common
+@using MCS.Framework.Localization
+@model MCS.UI.Areas.User.Models.Assignment.TransactionAssignmentVM
+<div class="col-xs-12">
+    <div class="single-wrapper">
+        <div class="row">
+            <div class="form-horizontal form-row">
+                @Html.HiddenGroupFor(model => model.ToOrgUnitName, new { id = "hdnAssignmentToOrgUnitName" }, "AssignmentIndividual")
+                <hr />
+                <div class="col-sm-12">
+                    <div class="col-sm-12 TreeHeight" id="dvEditorTreeAssignment">
+                        @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.ToOrgUnitId, TreeMode.Single, "treeEditorAssignment", true, "GetAllUsersEditorAssignment", "AssignmentIndividual", "dvEditorTreeAssignment")
+                    </div>
+
+                    <div class="col-sm-12">
+                        <fieldset>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ToUserId, new { @class = " control-label" })
+                                <div>
+                                    @Html.AutoCompleteBuilder("ddlEditorAssginmentIndividualToUserId", "hdnEditorAssginmentIndividualToUserId", ViewData["ToUserAssignment"] != null ? ViewData["ToUserAssignment"].ToString() : null, Model != null ? Model.ToUserId.ToString() : null, true, "form-control")
+                                    @Html.HiddenGroupFor(model => model.ToUserId, new { id = "hdnEditorAssginmentIndividualToUserId" }, "AssignmentIndividual")
+                                    @Html.HiddenGroupFor(model => model.ToUserName, new { id = "hdnToEditorAssginmentIndividualUserName" }, "AssignmentIndividual")
+
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="col-sm-12">
+                        <fieldset>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ActionId, new { @class = "control-label" })<span class="stark">*</span>
+                                <div>
+                                    @Html.AutoCompleteBuilder("ddlEditorAssginmentIndividualActionId", "hdnEditorAssginmentIndividualActionId", ViewData["AllActionsData"] != null ? ViewData["AllActionsData"].ToString() : null, Model != null ? Model.ActionId.ToString() : null, true, "form-control", "hdnEditorAssginmentIndividualActionTypeId")
+                                    @Html.HiddenGroupFor(model => model.ActionId, new { @Value = "", id = "hdnEditorAssginmentIndividualActionId" }, "AssignmentIndividual")
+                                    @Html.HiddenGroupFor(model => model.ActionName, new { id = "hdnEditorAssginmentIndividualActionName" }, "AssignmentIndividual")
+                                    @Html.HiddenGroupFor(model => model.ActionTypeId, new { @Value = "", id = "hdnEditorAssginmentIndividualActionTypeId" }, "AssignmentIndividual")
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+
+                    <div class="col-sm-12">
+                        <fieldset>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.DeliveryMethod, new { @class = "control-label" })<span class="stark">*</span>
+
+                                <div class="">
+                                    @Html.AutoCompleteBuilder("ddlDeliveryMethod", "hdnDeliveryId", LookupCategory.DeliveryMethod, Model.DeliveryMethodId != 0 ? Model.DeliveryMethodId.ToString() : null, true, "form-control")
+                                    @Html.HiddenGroupFor(model => model.DeliveryMethod, new { @Value = "", id = "hdnDeliveryMethod" }, "AssignmentIndividual")
+                                    @Html.HiddenGroupFor(model => model.DeliveryMethodId, new { @Value = "", id = "hdnDeliveryId" }, "AssignmentIndividual")
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                    @*<div class="col-sm-12">
+                        <p class="stark">@DbRes.TResource("Admin.User.MustFill") * </p>
+                    </div>*@
+                </div>
+                @Html.StickyHidden("hdnIndexIndividual", null, new { id = "hdnIndexIndividual" })
+            </div>
+        </div>
+    </div>
+</div>
+

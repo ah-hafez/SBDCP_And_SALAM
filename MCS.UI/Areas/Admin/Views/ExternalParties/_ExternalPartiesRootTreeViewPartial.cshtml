@@ -1,0 +1,100 @@
+﻿@model MCS.Common.TreeViewModel
+@using MCS.Common
+@using MCS.Framework.Localization
+
+
+<div class="content_container">
+    <div class="white-container mx-3 mx-md-5">
+        <form id="frmExternalPartiesSearch">
+            @Html.AntiForgeryToken()
+            <div class="form-row">
+                <div class="form-group col-lg-6 col-md-6 col-sm-12 col-xs-12 readonlyByPrivilege">
+
+                    <div id="divContainerExternalParties">
+                        <div class="externalParties">
+                            <fieldset class="field-set">
+                                @Html.DepartmentsTreeOnDemand(ViewData["ExternalPartiesData"] as TreeViewModel, model => model.RootNode, TreeMode.Single, "dvDestinationTree", true, "GetDestinationUsersByOrgUnitId", "BasicInformation", "divContainerExternalParties", false, false)
+                            </fieldset>
+                        </div>
+                    </div>
+
+
+
+
+                    @*<div class="External">
+                @Html.ClientButton("<i class='la la-plus'></i>" + DbRes.TResource("User.OutboundExternal.BasicInfo.AddNewExternalParty"), null, " btn btn-st5 margin-top-5", "AddExternalParty", UserClaims.AddExternalParty.AddExternalPartyForInbound)
+            </div>*@
+
+                </div>
+
+                <div style="margin-top:2.25rem">
+                    @Html.ClientButton(@DbRes.TResource("User.File.Search"), "btnSearch", "btn btn-st1 w-xs-100 pull-right", "GetExternalSearchById")
+
+                </div>
+            </div>
+
+</form>
+      
+    </div>
+        <div class="white-container mx-3 mx-md-5">
+            <div id="divExternalParties">
+                @foreach (MCS.Common.TreeNode node in Model.Nodes.Values)
+                {
+                    Html.RenderPartial("~/Areas/Admin/Views/ExternalParties/_ExternalPartiesChildsTreeViewPartial.cshtml", node);
+                }
+            </div>
+
+        </div>
+    </div>
+<script>
+    function GetExternalSearchById() {
+        var filter = "";
+        var token = $("#frmExternalPartiesSearch input[name='__RequestVerificationToken']").val();
+
+        if ($("#divContainerExternalParties .hdnDepartmentId").val() != "" && $("#divContainerExternalParties .hdnDepartmentId").val() != null) {
+
+            if (filter.length > 0) {
+                filter += "&";
+            }
+             $("#divContainerExternalParties .hdnDepartmentId").val();
+        }
+
+        $("#filterData").val(filter);
+        $.ajax({
+            type: 'post',
+            data: { id: $("#divContainerExternalParties .hdnDepartmentId").val()},
+            url: '@Url.Action("GetExternalSearchById", "ExternalParties")',
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    $("#divExternalParties").html("");
+                    $("#divExternalParties").html(data.Html);
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            }
+        });
+    }
+    function GetDestinationUsersByOrgUnitId() {
+
+        $("#InboundBasicInfo_DestinationId").val($("#DestinationId_hdnDepartmentId").val());
+
+        if ($("#DestinationId_hdnDepartmentId").val() != "") {
+            $.ajax({
+                cache: false,
+                type: 'get',
+                url: '@Url.Action("GetManagersByPartyId")',
+                data: { id: $("#DestinationId_hdnDepartmentId").val() },
+                success:
+                    function (data) {
+                        var isChecked = $('#Individual:checked').val() ? true : false;
+                        if (isChecked) {
+                         return false;
+                        }
+               }
+            });
+            return false;
+        }
+
+    }
+</script>

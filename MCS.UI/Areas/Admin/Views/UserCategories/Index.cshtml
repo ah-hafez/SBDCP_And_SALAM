@@ -1,0 +1,127 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.UserCategories;
+@model UserCategoriesViewModel
+
+@{
+    ViewBag.Title = DbRes.TResource("Admin.UserCategory.UserCategory");
+    Layout = "~/Areas/Admin/Views/Shared/_UsersTraysLayout.cshtml";
+}
+
+<div class="page-title">
+    <h2><span class="fa fa-arrow-circle-o-left"></span> @DbRes.TResource("Admin.UserCategory.UsersAndTrays")</h2>
+</div>
+
+<!-- PAGE CONTENT WRAPPER -->
+<div class="page-content-wrap">
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-horizontal form-row">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">@DbRes.TResource("Admin.UserCategory.UserCategory")</h3>
+                    </div>
+                    <div id="dvAdd">
+                        @Html.Partial("~/Areas/Admin/Views/UserCategories/_UserCategoryAddPartial.cshtml", Model.UserCategoryAddDTO)
+                    </div>
+                    <div id="dvEdit" style="display:none">
+                        @Html.Partial("~/Areas/Admin/Views/UserCategories/_UserCategoryEditPartial.cshtml", Model.UserCategoryEditDTO)
+                    </div>
+                    <div id="dvGrid">
+                        <div class="panel-body">
+                            <div class="">
+                                @Html.Partial("~/Areas/Admin/Views/UserCategories/_UserCategoriesGridPartial.cshtml", ViewData["GridData"])
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- END PAGE CONTENT WRAPPER -->         
+
+<script>
+    function ShowEditDiv() {
+        $("#dvEdit").css("display", "block");
+        $("#dvAdd").css("display", "none");
+    }
+
+    function HideEditDiv()
+    {
+        $("#dvEdit").css("display", "none");
+        $("#dvAdd").css("display", "block");
+    }
+
+    function OnEditSuccess(data, div) {
+        $("#dvEdit").css("display", "none");
+        $("#dvAdd").css("display", "block");
+        if (data.MessageType != 2) {
+            $("#" + div).html("");
+            $("#" + div).html(data.Html);
+            ClearInputs('EditUserCategoryContent');
+            jQuery.validator.unobtrusive.parse('#' + div);
+            ShowSuccesMessage(data.MessageText);
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function OnAddSuccess(data, div) {
+        if (data.MessageType != 2) {
+            $("#" + div).html("");
+            $("#" + div).html(data.Html);
+            jQuery.validator.unobtrusive.parse('#' + div);
+            ShowSuccesMessage(data.MessageText);
+            ClearInputs('AddUserCategoryContent');
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function OnDeleteSuccess(data, divUpdatData, deletedList) {
+       
+        if (data.UserCategoriesUsedList.length == 0) {
+
+            ShowSuccesMessage(data.MessageText);
+        }
+        else {
+
+            var msg = '';
+
+            for (var i = 0; i < data.UserCategoriesUsedList.length; i++) {
+
+                if (msg == '')
+                    msg = data.UserCategoriesUsedList[i];
+                else
+                    msg = msg + '</br>' + data.UserCategoriesUsedList[i];
+            }
+
+            msg = '@DbRes.TResource("Admin.UserCategory.DeleteUserCategoriesErrorMsg")' + '</br>' + msg;
+
+            ShowErrorMessage(msg);
+        }
+
+        var deletedArray = deletedList.split(',');
+
+        for (var i = 0; i < deletedArray.length; i++) {
+
+            var deleted = true;
+
+            for (var y = 0; y < data.UserCategoriesUsedList.length; y++) {
+
+                if (deletedArray[i] == data.UserCategoriesUsedList[y]) {
+
+                    deleted = false;
+                }
+            }
+
+            if (deleted)
+                if (deletedArray[i] == $('#hdnEditId').val())
+                    HideEditDiv();
+        }
+    }
+</script>   

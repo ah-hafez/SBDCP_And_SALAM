@@ -1,0 +1,109 @@
+﻿@model TransactionAddressVM
+@using MCS.UI.Areas.User.Models.Transaction
+@using MCS.UI.Helpers
+
+<div class="col-xs-12" dir="rtl">
+    <div class="single-wrapper">
+        <div class="content_container content_container--header extra-padding">
+            <div class="row">
+                <div class="col-xs-12">
+                    <h4 class="title4 control-label">@DbRes.TResource("User.Transaction.PrintAddress") </h4>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="form-horizontal form-row">
+                <div>
+                    <div class="q">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Transactionnumber, new { @class = "control-label" }) :
+                                <span>
+                                    @Html.DisplayFor(model => model.Transactionnumber)
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.TransactionDate, new { @class = "control-label" }) :
+                                <span>
+                                    @DateHelper.GetDate(Model.TransactionDate)
+
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="q">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.DocumentType, new { @class = "control-label" }) :
+                                <span>
+                                    @Html.DisplayFor(model => model.DocumentType)
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="q">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.DirectedToOrgUnit, new { @class = "control-label" }) :
+                                <span>
+                                    @Html.DisplayFor(model => model.DirectedToOrgUnit)
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.DirectedTo, new { @class = "control-label" }) :
+                                <span>
+                                    @Html.DisplayFor(model => model.DirectedTo)
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="q">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ShipmentNumber, new { @class = "control-label" }) :
+                                <span>
+                                    @Html.DisplayFor(model => model.ShipmentNumber)
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<style type="text/css">
+    html, body {
+        height: 100%;
+    }
+
+    body, div {
+        margin: 0;
+        padding: 0;
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+
+    .q {
+        max-width: 50%;
+        max-height: 45%;
+        min-width: 50%;
+        min-height: 45%;
+        width: 50%;
+        height: 45%;
+        display: inline-block;
+        border: 1px solid grey;
+        float: left;
+        padding: 10px;
+    }
+</style>

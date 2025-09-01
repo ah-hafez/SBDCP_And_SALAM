@@ -1,0 +1,69 @@
+﻿@using MCS.Common
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.File
+@model IList<TransactionTrayInfoVM>
+@{
+    bool isVIP = (bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser);
+    DefaultDisplay defaultDisplay = (DefaultDisplay)SessionInfo.GetObjectFromSession(Constants.DefaultDisplay);
+    Session["viewType"] = "Sent";
+}
+<script>
+     var isVIPUser = '@SessionInfo.GetObjectFromSession(Constants.IsVIPUser)';
+
+    $(document).ready(function () {
+        if ($('#selectAll').is(":checked")) {
+            $('#selectAll').click();
+        }
+
+        if (isVIPUser.toLowerCase() == 'true') {
+            goTableView();
+        }
+        else {
+            goCardsView();
+        }
+    });
+</script>
+@if (defaultDisplay == DefaultDisplay.Cards@*&& !isVIP*@)
+{
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="sub-tab-1">
+            @{
+                Session["renderType"] = "cardItem";
+                Html.RenderPartial("~/Areas/User/Views/File/_FileGrid.cshtml",
+                    Model, new ViewDataDictionary {
+                    { "ListItemName", "_SentTransaction_Item" },
+                    { "GridName", "SentTransactionGrid" },
+                    //{ "renderType", "cardItem" }
+                    });
+            }
+        </div>
+    </div>
+}
+else
+{
+    Session["renderType"] = "tableItem";
+    Html.RenderPartial("~/Areas/User/Views/File/_FileGrid.cshtml",
+        Model, new ViewDataDictionary {
+                    { "ListItemName", "_SentTransaction_TableItem" },
+                    { "GridName", "SentTransactionGrid" },
+                    { "renderType", "tableItem" }
+                                });
+}
+<script>
+    var sentTransactionGridEventHandler = "@Url.Action("SentTransactions", "File")";
+    function prepareSentTransactionGrid() {
+        if (!pageGrids.SentTransactionGrid) {
+            $(".grid-mvc").gridmvc();
+        }
+        pageGrids.SentTransactionGrid.ajaxify({
+            getPagedData: sentTransactionGridEventHandler,
+            getData: sentTransactionGridEventHandler,
+            callbackClientFunctionAfter: ["goToViewAfterPaging","reRegisterRevertButton"]
+        });
+    }
+
+    $(document).ready(function () {
+        prepareSentTransactionGrid();
+    });
+
+</script>

@@ -1,0 +1,9 @@
+@font-face {
+  font-family: 'Noto-Kufi-Arabic-Bold';
+    src:  url('Noto-Kufi-Arabic-Bold.ttf.woff') format('woff'),
+    url('Noto-Kufi-Arabic-Bold.ttf.svg#Noto-Kufi-Arabic-Bold') format('svg'),
+    url('Noto-Kufi-Arabic-Bold.ttf.eot'),
+    url('Noto-Kufi-Arabic-Bold.eot?#iefix') format('embedded-opentype'); 
+    font-weight: normal;
+    font-style: normal;
+}

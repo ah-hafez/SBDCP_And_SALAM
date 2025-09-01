@@ -1,0 +1,16 @@
+﻿@using MCS.Common
+@using MCS.UI.Areas.User.Models.File
+@*@model TrayDetailsVM*@
+
+@{
+    ViewBag.Title = ViewData["FileTitle"];
+    Layout = "~/Areas/User/Views/Shared/_SearchLayout.cshtml";
+}
+
+
+
+
+@{
+
+    @Html.Partial("~/Areas/User/Views/File/_WithdrawalPartial.cshtml")
+}

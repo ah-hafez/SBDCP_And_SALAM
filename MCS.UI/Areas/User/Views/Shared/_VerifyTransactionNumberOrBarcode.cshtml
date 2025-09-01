@@ -1,0 +1,72 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Transaction
+
+@{
+    Layout = "~/Views/Shared/_DialogLayout.cshtml";
+}
+
+@model TransactionLightVM
+<style>
+    .rowhight {
+        height: 115px;
+    }
+</style>
+<div class="content-rtl panel panel-default dialogbox_panel">
+    <div class="panel-heading">
+        <h3 class="title2">@DbRes.TResource("User.Transaction.VerifyTransactionNumberOrBarcode")</h3>
+    </div>
+    <div class="modal-body">
+        <div >
+            @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmCheckTransaction", @class = "form-horizontal" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(model => model.Id, new { @id = "transactionIdValue" })
+                @Html.HiddenFor(model => model.TransactionCategory , new { id = "transactionCategoryId"})
+                    <div class="row rowhight">
+                        <div class="col-md-4">
+                            <fieldset>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Number, new { @class = "control-label" })<span class="stark">*</span>
+                                    <div>
+                                        @Html.TextBoxGroupFor(model => model.Number, "CheckTransactionForm", new { @class = "form-control empty", @maxlength = "10" })
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-4">
+                            <fieldset>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Barcode, new { @class = "control-label" })<span class="stark">*</span>
+                                    <div>
+                                        @Html.TextBoxGroupFor(model => model.Barcode, "CheckTransactionForm", new { @class = "form-control empty" })
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="form-group col-lg-12 col-md-12 col-xs-12 col-sm-12">
+                            <div class="mt-2 text-danger pull-left">
+                                <p class="stark">@DbRes.TResource("User.Barcode.OneAtLeast") * </p>
+                            </div>
+                        </div>
+                    </div>
+                <div class="row text-right mr-5 mt-4 ml-xs-3 mb-4">
+                    @Html.ActionButton(DbRes.TResource("Admin.UserCategory.Save"), Url.Action("VerifyTransactionNumberOrBarcode").ToString(), "dvGrid", null, null,
+                    "OnVerifyTransactionNumberOrBarcodeSuccess", null, "post", "CheckTransactionForm", "btnCheckNumberAndBarcode", "frmCheckTransaction", "btn btn-site pull-right", validFunctionCall:"")
+                    @Html.ResetButton("ClearInputs('frmCheckTransaction')")
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<script>
+    function OnVerifyTransactionNumberOrBarcodeSuccess(data) {
+        if (data.MessageType != 2 && data.IsMatch) {
+            __dialogVerifyTransaction.close();
+            ExecuteTargetFunction($('#transactionIdValue').val());
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+</script>
+

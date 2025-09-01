@@ -1,0 +1,406 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\EntityFramework.6.3.0\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.3.0\build\EntityFramework.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{5B5B0B7B-1A75-4A12-9CEA-5B527AF8B6E5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MCS.Framework</RootNamespace>
+    <AssemblyName>MCS.Framework</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Audit.EntityFramework, Version=21.1.0.0, Culture=neutral, PublicKeyToken=571d6b80b242c87e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Audit.EntityFramework.21.1.0\lib\net472\Audit.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Audit.EntityFramework.Identity, Version=21.1.0.0, Culture=neutral, PublicKeyToken=571d6b80b242c87e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Audit.EntityFramework.Identity.21.1.0\lib\net45\Audit.EntityFramework.Identity.dll</HintPath>
+    </Reference>
+    <Reference Include="Audit.NET, Version=21.1.0.0, Culture=neutral, PublicKeyToken=571d6b80b242c87e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Audit.NET.21.1.0\lib\net461\Audit.NET.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.3.0\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.3.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.2\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.2\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Owin, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.AspNet.Identity.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.SystemWeb, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.5.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.HashCode, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.HashCode.1.1.0\lib\net461\Microsoft.Bcl.HashCode.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.EntityFrameworkCore, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.EntityFrameworkCore.3.1.0\lib\netstandard2.0\Microsoft.EntityFrameworkCore.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.EntityFrameworkCore.Abstractions, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.EntityFrameworkCore.Abstractions.3.1.0\lib\netstandard2.0\Microsoft.EntityFrameworkCore.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.EntityFrameworkCore.Relational, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.EntityFrameworkCore.Relational.3.1.0\lib\netstandard2.0\Microsoft.EntityFrameworkCore.Relational.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Caching.Abstractions, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Caching.Abstractions.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Caching.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Caching.Memory, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Caching.Memory.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Caching.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration.Abstractions, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.Abstractions.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration.Binder, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.Binder.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Configuration.Binder.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.3.1.0\lib\net461\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.3.1.0\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.Abstractions.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Options, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Options.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Options.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Primitives, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Primitives.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.Owin.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Cookies, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.Owin.Security.Cookies.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.OAuth, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.Owin.Security.OAuth.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.ExceptionHandling, Version=6.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.Practices.EnterpriseLibrary.ExceptionHandling.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Logging, Version=6.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.Practices.EnterpriseLibrary.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.Practices.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Configuration, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.Practices.Unity.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Mvc, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.Practices.Unity.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.13.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Owin">
+      <HintPath>Libs\Owin\Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.4.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Immutable, Version=1.2.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.1.7.0\lib\netstandard2.0\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Annotations, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ComponentModel.Annotations.4.7.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Diagnostics.DiagnosticSource, Version=4.0.5.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.4.7.0\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.3\lib\netstandard2.0\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.4.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.7.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Mvc, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libs\AspNet\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor">
+      <HintPath>Libs\AspNet\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages">
+      <HintPath>Libs\AspNet\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment">
+      <HintPath>Libs\AspNet\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor">
+      <HintPath>Libs\AspNet\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WebActivatorEx">
+      <HintPath>Libs\Web\WebActivatorEx.dll</HintPath>
+    </Reference>
+    <Reference Include="WebGrease">
+      <HintPath>Libs\Web\WebGrease.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AuditTrail\AuditInfo.cs" />
+    <Compile Include="AuditTrail\AuditInfoDetails.cs" />
+    <Compile Include="AuditTrail\AuditTrailFactory.cs" />
+    <Compile Include="AuditTrail\IAuditable.cs" />
+    <Compile Include="Cache\CacheProvider.cs" />
+    <Compile Include="Cache\ICacheProvider.cs" />
+    <Compile Include="Encryption\EncryptionHelper.cs" />
+    <Compile Include="Entities\EntityBase.cs" />
+    <Compile Include="Entities\ILocalizeEntity.cs" />
+    <Compile Include="Exceptions\BaseException.cs" />
+    <Compile Include="Exceptions\BusinessValidationException.cs" />
+    <Compile Include="Exceptions\ExceptionHelper.cs" />
+    <Compile Include="Exceptions\InvalidRijndaelEncryptionValueException.cs" />
+    <Compile Include="IoC\IoC.cs" />
+    <Compile Include="Localization\DbResourceManagerResourceProvider\DbResourceProvider.cs" />
+    <Compile Include="Localization\DbResourceManagerResourceProvider\DbResourceProviderFactory.cs" />
+    <Compile Include="Localization\DbResourceManager\DbRes.cs" />
+    <Compile Include="Localization\DbResourceManager\DbResourceManager.cs" />
+    <Compile Include="Localization\DbResourceManager\DbResourceReader.cs" />
+    <Compile Include="Localization\DbResourceManager\DbResourceSet.cs" />
+    <Compile Include="Localization\DbResourceManager\DbResourceWriter.cs" />
+    <Compile Include="Localization\DbResourceSupportClasses\ConnectionStringInfo.cs" />
+    <Compile Include="Localization\DbResourceSupportClasses\DataAccessBase.cs" />
+    <Compile Include="Localization\DbResourceSupportClasses\DbResourceConfiguration.cs" />
+    <Compile Include="Localization\DbResourceSupportClasses\DbResourceDataManager.cs" />
+    <Compile Include="Localization\DbResourceSupportClasses\DbResourceProviderSection.cs" />
+    <Compile Include="Localization\DbResourceSupportClasses\IDataAccess.cs" />
+    <Compile Include="Localization\DbResourceSupportClasses\OracleDataAccess.cs" />
+    <Compile Include="Localization\DbResourceSupportClasses\SqlDataAccess.cs" />
+    <Compile Include="Localization\Resources\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Localization\SupportClasses\IText.cs" />
+    <Compile Include="Localization\SupportClasses\LocalizationExtensions.cs" />
+    <Compile Include="Localization\SupportClasses\StronglyTypedWebResources.cs" />
+    <Compile Include="Localization\SupportClasses\WebUtil.cs" />
+    <Compile Include="Logging\Logger.cs" />
+    <Compile Include="MultiTenants\IMultiTenantsContext.cs" />
+    <Compile Include="MultiTenants\ITenant.cs" />
+    <Compile Include="MultiTenants\MultiTenantsContext.cs" />
+    <Compile Include="MultiTenants\TenantInfo.cs" />
+    <Compile Include="Notifications\Configurations\EmailProvider.cs" />
+    <Compile Include="Notifications\Configurations\EmailProviderCollection.cs" />
+    <Compile Include="Notifications\Configurations\EmailProvidersElement.cs" />
+    <Compile Include="Notifications\Configurations\NotificationConfiguration.cs" />
+    <Compile Include="Notifications\Configurations\NotificationConfigurationSection.cs" />
+    <Compile Include="Notifications\Configurations\NotificationSections.cs" />
+    <Compile Include="Notifications\Email\EmailMessage.cs" />
+    <Compile Include="Notifications\Email\EmailNotificationService.cs" />
+    <Compile Include="Notifications\Email\Exceptions\EmailNotificationConfigurationException.cs" />
+    <Compile Include="Notifications\Email\IEmailNotificationService.cs" />
+    <Compile Include="Notifications\Helper.cs" />
+    <Compile Include="Notifications\INotificationService.cs" />
+    <Compile Include="Notifications\NotificationMessage.cs" />
+    <Compile Include="Notifications\SignalR\IHubEvents.cs" />
+    <Compile Include="Notifications\SignalR\ISignalRNotificationService.cs" />
+    <Compile Include="Notifications\SignalR\SignalRMessage.cs" />
+    <Compile Include="Notifications\SignalR\SignalRNotificationService.cs" />
+    <Compile Include="Notifications\SignalR\UserInfo.cs" />
+    <Compile Include="Notifications\SMS\ISMSNotificationService.cs" />
+    <Compile Include="Notifications\SMS\SMSMessage.cs" />
+    <Compile Include="ObjectExtensions\Extensions.cs" />
+    <Compile Include="ObjectExtensions\StringExtentions.cs" />
+    <Compile Include="Persistence\DbContextBase.cs" />
+    <Compile Include="Persistence\EFRepository.cs" />
+    <Compile Include="Persistence\Enums.cs" />
+    <Compile Include="Persistence\Filter.cs" />
+    <Compile Include="Persistence\ICacheDependency.cs" />
+    <Compile Include="Persistence\IConnectionStringBuilder.cs" />
+    <Compile Include="Persistence\IDbContext.cs" />
+    <Compile Include="Persistence\IInterceptor.cs" />
+    <Compile Include="Persistence\IOracleConnectionStringBuilder.cs" />
+    <Compile Include="Persistence\IRepository.cs" />
+    <Compile Include="Persistence\IUnitOfWork.cs" />
+    <Compile Include="Persistence\OracleConnectionStringBuilder.cs" />
+    <Compile Include="Persistence\SearchColunm.cs" />
+    <Compile Include="Persistence\SearchCriteria.cs" />
+    <Compile Include="Persistence\SqlConnectionBuilder.cs" />
+    <Compile Include="Persistence\UnitOfWork.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Security\Common\ExternalUserLoginInfo.cs" />
+    <Compile Include="Security\Common\IApplicationUser.cs" />
+    <Compile Include="Security\Common\ICustomSignInManager.cs" />
+    <Compile Include="Security\Common\IMemeberShipProvider.cs" />
+    <Compile Include="Security\Common\IUser.cs" />
+    <Compile Include="Security\Common\IUserContext.cs" />
+    <Compile Include="Security\Common\User.cs" />
+    <Compile Include="Security\Common\UserClaim.cs" />
+    <Compile Include="Security\MixedAuth\AppBuilderExtensions.cs" />
+    <Compile Include="Security\MixedAuth\MixedAuthConstants.cs" />
+    <Compile Include="Security\MixedAuth\MixedAuthExtensions.cs" />
+    <Compile Include="Security\MixedAuth\MixedAuthHandler.cs" />
+    <Compile Include="Security\MixedAuth\MixedAuthMiddleware.cs" />
+    <Compile Include="Security\MixedAuth\MixedAuthOptions.cs" />
+    <Compile Include="Security\MixedAuth\Provider\IMixedAuthProvider.cs" />
+    <Compile Include="Security\MixedAuth\Provider\MixedAuthApplyRedirectContext.cs" />
+    <Compile Include="Security\MixedAuth\Provider\MixedAuthAuthenticatedContext.cs" />
+    <Compile Include="Security\MixedAuth\Provider\MixedAuthProvider.cs" />
+    <Compile Include="Encryption\AESEncrytDecry.cs" />
+    <Compile Include="Web\HttpApplicationBase.cs" />
+    <Compile Include="Web\HttpContextHelper.cs" />
+    <Compile Include="Web\UserContext.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <None Include="Encryption\eMorasalatEncryption.pfx" />
+    <None Include="Notifications\SignalR\App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Libs\AspNetIdentity\Microsoft.AspNet.Identity.Core.dll" />
+    <Content Include="Libs\AspNetIdentity\Microsoft.AspNet.Identity.EntityFramework.dll" />
+    <Content Include="Libs\AspNetIdentity\Microsoft.AspNet.Identity.Owin.dll" />
+    <Content Include="Libs\AspNetIdentity\Microsoft.IdentityModel.dll" />
+    <Content Include="Libs\AspNet\Microsoft.AspNet.SignalR.Core.dll" />
+    <Content Include="Libs\AspNet\Microsoft.AspNet.SignalR.SystemWeb.dll" />
+    <Content Include="Libs\AspNet\System.Web.Mvc.dll" />
+    <Content Include="Libs\AspNet\System.Web.Optimization.dll" />
+    <Content Include="Libs\AspNet\System.Web.Razor.dll" />
+    <Content Include="Libs\AspNet\System.Web.WebPages.Deployment.dll" />
+    <Content Include="Libs\AspNet\System.Web.WebPages.dll" />
+    <Content Include="Libs\AspNet\System.Web.WebPages.Razor.dll" />
+    <Content Include="Libs\DocumentViewer\DocumentFormats.dll" />
+    <Content Include="Libs\DocumentViewer\DocumentViewer.dll" />
+    <Content Include="Libs\EntityFramework\EntityFramework.dll" />
+    <Content Include="Libs\EntityFramework\EntityFramework.SqlServer.dll" />
+    <Content Include="Libs\EntLib\EntLibContrib.ExceptionHandling.dll" />
+    <Content Include="Libs\EntLib\Microsoft.Practices.EnterpriseLibrary.Common.dll" />
+    <Content Include="Libs\EntLib\Microsoft.Practices.EnterpriseLibrary.ExceptionHandling.dll" />
+    <Content Include="Libs\EntLib\Microsoft.Practices.EnterpriseLibrary.Logging.dll" />
+    <Content Include="Libs\EntLib\Microsoft.Practices.Unity.Configuration.dll" />
+    <Content Include="Libs\EntLib\Microsoft.Practices.Unity.dll" />
+    <Content Include="Libs\EntLib\Microsoft.Practices.Unity.Mvc.dll" />
+    <Content Include="Libs\EntLib\Microsoft.Practices.Unity.RegistrationByConvention.dll" />
+    <Content Include="Libs\iTextSharp\itextsharp.dll" />
+    <Content Include="Libs\iTextSharp\itextsharp.pdfa.dll" />
+    <Content Include="Libs\Owin\Microsoft.Owin.dll" />
+    <Content Include="Libs\Owin\Microsoft.Owin.Host.SystemWeb.dll" />
+    <Content Include="Libs\Owin\Microsoft.Owin.Security.Cookies.dll" />
+    <Content Include="Libs\Owin\Microsoft.Owin.Security.dll" />
+    <Content Include="Libs\Owin\Microsoft.Owin.Security.OAuth.dll" />
+    <Content Include="Libs\Owin\Owin.dll" />
+    <Content Include="Libs\Spire\Spire.Doc.dll" />
+    <Content Include="Libs\Spire\Spire.License.dll" />
+    <Content Include="Libs\Spire\Spire.Pdf.dll" />
+    <Content Include="Libs\Web\Newtonsoft.Json.dll" />
+    <Content Include="Libs\Web\WebActivatorEx.dll" />
+    <Content Include="Libs\Web\WebGrease.dll" />
+    <Content Include="Localization\DBScripts\CreateLocalizationsTable.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Localization\Resources\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\EntityFramework.6.3.0\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.3.0\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.3.0\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.3.0\build\EntityFramework.targets'))" />
+  </Target>
+  <Import Project="..\packages\EntityFramework.6.3.0\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.3.0\build\EntityFramework.targets')" />
+</Project>

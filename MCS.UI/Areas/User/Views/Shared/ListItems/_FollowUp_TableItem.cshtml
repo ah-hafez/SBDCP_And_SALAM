@@ -1,0 +1,210 @@
+﻿@using MCS.UI.Helpers
+@using MCS.Common
+@using MCS.UI.Areas.User.Models.File
+@model TransactionTrayInfoVM
+
+@{
+    string transType = string.Empty;
+
+    if (Model.TransactionDetailsInfoVM.TransactionCategoryId == (int)TransactionCategorieColor.InternalOutbound)
+    {
+
+        transType = "InternalOutboundLineTable";
+
+    }
+    else if (Model.TransactionDetailsInfoVM.TransactionCategoryId == (int)TransactionCategorieColor.Inbound)
+    {
+
+        transType = "InboundLineTable";
+
+
+    }
+    else
+    {
+        transType = "OutboundExternalTable";
+    }
+    string followupDays = Model.TransactionDetailsInfoVM.FollowupDate.HasValue ? (Int32.Parse((Model.TransactionDetailsInfoVM.FollowupDate.Value.Date - DateTime.Now.Date).Days.ToString())).ToString() : string.Empty;
+}
+<tr class="bg-white @transType" style="cursor: pointer; " data-id="@Model.TransactionDetailsInfoVM.Id">
+    <td>
+        <div class="checkbox" style="display:none">
+            @if (Model.TransactionDetailsInfoVM.HasPermission)
+            {
+                <label>
+                    <input type="checkbox" value="" onchange="holdDataFromBox(this)" id="ch_@Model.TransactionDetailsInfoVM.Id" data-id="@Model.TransactionDetailsInfoVM.Id" class="FillIds">
+                    <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                </label>
+            }
+        </div>
+    </td>
+    <td>
+        <div class="pr-1" id="Number_@Model.TransactionDetailsInfoVM.Id">@Model.TransactionDetailsInfoVM.Number</div>
+    </td>
+    @*<td>
+        @Model.TransactionDetailsInfoVM.TransactionCategory
+    </td>*@
+    <td class="title" id="entityName_5306">
+        <div class="title" id="entityName_@Model.TransactionDetailsInfoVM.Id">
+            @if (Model.TransactionDetailsInfoVM.EncryptedTransactionCategoryId != TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName).ToString())
+            {
+                @Model.TransactionDetailsInfoVM.ExternalPartyName
+            }
+            else
+            {
+                @Model.TransactionDetailsInfoVM.EntityName
+            }
+        </div>
+    </td>
+
+    <td class="subject-td">
+        @DateHelper.GetDate(@Model.TransactionDetailsInfoVM.FollowupDateH)
+    </td>
+    @*<td>
+        <div class="date" style="text-align: right;">
+            @DateHelper.GetDate(@Model.TransactionDetailsInfoVM.DateH)
+            @Model.TransactionDetailsInfoVM.Date.ToShortTimeString()
+        </div>
+    </td>*@
+    <td>
+        @followupDays @DbRes.TResource("Admin.User.Day")
+    </td>
+    <td>
+        <div class="">
+            @Model.TransactionDetailsInfoVM.PriorityName
+        </div>
+    </td>
+    <td>
+        <div class="result">
+            @Model.TransactionDetailsInfoVM.ConfidentialityName
+        </div>
+    </td>
+
+
+    <td>
+        @if (Model.TransactionAssignmentInfoVMs != null && Model.TransactionAssignmentInfoVMs.Count > 0)
+        {
+            <div class="">
+
+                @Model.TransactionAssignmentInfoVMs.FirstOrDefault().Action
+                @if (Model.TransactionAssignmentInfoVMs.FirstOrDefault().Action == null)
+                {
+                    <div class="">
+                        ---
+                    </div>
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="">
+                ---
+            </div>
+        }
+    </td>
+
+    @*<td>
+        @if (Model.TransactionAssignmentInfoVMs.FirstOrDefault().Date != null && Model.TransactionAssignmentInfoVMs.FirstOrDefault().Action != null)
+        {
+            <div class="" data-bs-toggle="tooltip" data-placement="bottom" title="@Model.TransactionAssignmentInfoVMs.FirstOrDefault().Date">
+                @if (Model.TransactionAssignmentInfoVMs.FirstOrDefault().Date.ToString().Length > 10)
+                {
+                    @Model.TransactionAssignmentInfoVMs.FirstOrDefault().Date.ToString().Substring(0, 10)
+                }
+                else
+                {
+                    @Model.TransactionAssignmentInfoVMs.FirstOrDefault().Date.ToString()
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="">
+                ---
+            </div>
+        }
+    </td>*@
+
+    @*<td>
+        @if (Model.TransactionAssignmentInfoVMs.FirstOrDefault().FromEntity != null && Model.TransactionAssignmentInfoVMs.FirstOrDefault().Action != null)
+        {
+            <div class="" data-bs-toggle="tooltip" data-placement="bottom" title="@Model.TransactionAssignmentInfoVMs.FirstOrDefault().FromEntity">
+                @Model.TransactionAssignmentInfoVMs.FirstOrDefault().FromEntity
+                @if (Model.TransactionAssignmentInfoVMs.FirstOrDefault().FromEntity.Length > 15)
+                {
+                    @Model.TransactionAssignmentInfoVMs.FirstOrDefault().FromEntity.Substring(0, 10)
+                }
+                else
+                {
+                    @Model.TransactionAssignmentInfoVMs.FirstOrDefault().FromEntity
+                }
+            </div>
+        }
+        else
+        {
+            <div class="">
+                ---
+            </div>
+        }
+    </td>
+    <td>
+        @if (Model.TransactionAssignmentInfoVMs.FirstOrDefault().FromUser != null && Model.TransactionAssignmentInfoVMs.FirstOrDefault().Action != null)
+        {
+            <div class="" data-bs-toggle="tooltip" data-placement="bottom" title="@Model.TransactionAssignmentInfoVMs.FirstOrDefault().FromUser">
+                @if (Model.TransactionAssignmentInfoVMs.FirstOrDefault().FromUser.Length > 15)
+                {
+                    @Model.TransactionAssignmentInfoVMs.FirstOrDefault().FromUser.Substring(0, 10)
+                }
+                else
+                {
+                    @Model.TransactionAssignmentInfoVMs.FirstOrDefault().FromUser
+                }
+
+
+            </div>
+        }
+        else
+        {
+            <div class="">
+
+                ---
+
+
+            </div>
+        }
+    </td>*@
+
+    <td class="">
+        <div class="correspondence-icon-table d-flex">
+            <a  href="#" data-bs-toggle="tooltip" data-placement="top" title="@DbRes.TResource("User.FollowUp.Certificat")" onclick="OpenFollowUpCertificate(@Model.TransactionDetailsInfoVM.Id)" transactionId="@Model.TransactionDetailsInfoVM.Id"><img src="~/Content/User/lib/images/SystemIcon/testimonial.svg" width="30" /></a>
+            @*<a class="circle color-delet" href="#" data-bs-toggle="tooltip" data-placement="top" title="@DbRes.TResource("User.FollowUp.UnFollowUp")" onclick="UnFollowUp(@Model.TransactionDetailsInfoVM.Id)" transactionId="@Model.TransactionDetailsInfoVM.Id"><i class="icon-return"></i></a>*@
+            @if (Model.TransactionDetailsInfoVM.HasPermission)
+            {
+                <div class="mr-auto d-flex">
+                    @if (Model.TransactionDetailsInfoVM.TransactionTypeId != TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName))
+                    {
+                        <a id="link" class="edit_trash " href="#" data-bs-toggle="tooltip" data-placement="top" title="@DbRes.TResource("User.InboundSearch.Certificate")" onclick="InboundCertificate('@Model.TransactionDetailsInfoVM.Id')"><img src="~/Content/User/lib/images/SystemIcon/main bar-14.svg" width="30" /></a>
+                    }
+                    else
+                    {
+                        <a id="link" class="edit_trash " href="#" data-bs-toggle="tooltip" data-placement="top" title="@DbRes.TResource("User.Task.RecivedTask.TransactionCertificate")" onclick="OutboundInternalCertificate('@Model.TransactionDetailsInfoVM.Id')"><img src="~/Content/User/lib/images/SystemIcon/main bar-14.svg" width="30" /></a>
+                    }
+                </div>
+                @*<div class="ml-auto d-flex">
+                        <div class="info d-flex align-items-center">
+                            <i class="fas fa-paperclip pl-2"></i>
+                            <span class=""><i>@Model.TransactionDetailsInfoVM.AttachmentCount</i> @DbRes.TResource("User.Transaction.Attachments") </span>
+                        </div>
+                    </div>*@
+            }
+            else
+            {
+                <div class="mr-auto d-flex">
+                    <a title="@DbRes.TResource("User.FollowUp.Certificat")" onclick="javascript:OpenFollowUpCertificate(@Model.TransactionDetailsInfoVM.Id)"><img src="~/Content/User/lib/images/SystemIcon/main bar-14.svg" width="25" /></a>
+                    @Html.StickyHidden("transId")
+                </div>
+            }
+        </div>
+    </td>
+</tr>

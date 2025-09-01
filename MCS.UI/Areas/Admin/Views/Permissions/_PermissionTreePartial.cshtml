@@ -1,0 +1,6 @@
+﻿@using MCS.Common;
+@using MCS.UI.Areas.Admin.Models.Groups;
+@model AddGroupVM
+
+
+@Html.PermissionsEditableTree(ViewData["PermissionsGroups"] as TreeViewModel, model => model.Permissions, TreeMode.Multiple, "treeEditPermissionNames", Request.IsAjaxRequest())

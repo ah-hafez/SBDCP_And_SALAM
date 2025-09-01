@@ -1,0 +1,5 @@
+﻿@using MCS.Common;
+
+@model  MCS.UI.Areas.Admin.Models.AddUserProfileVM 
+
+@Html.PermissionsEditableTree(ViewData["PermissionsGroups"] as TreeViewModel, model => model.Permissions, TreeMode.Multiple, "dvAddTreeContainer", Request.IsAjaxRequest())

@@ -1,0 +1,77 @@
+﻿
+@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.Common;
+@using MCS.Framework.Localization;
+@using MCS.UI.Areas.User.Models.Search;
+
+
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<InquirySearchResultVM>
+<div class="col-xs-12">
+        <div class="ml-5" style="display: flex; gap: 20px; color: #BDBDBD; font-size: 20px;">
+            <i class="fa fa-exclamation-circle" aria-hidden="true" style="font-size:25px;"></i>
+
+            <span class="fas fa-warning mb-5 mt-1">
+                عند البحث عن معاملة من غير حاجة عمل الموظف قد يعرض الموظف للمسائلة
+            </span>
+        </div>
+   
+    <div class="boxes">
+        <div class="row">
+            @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Search.InquirybyTransactionNumber))
+            {
+                @Html.Grid(Model, "_CardGrid").Named("Inquiry").CollectionName("InquirySearchResultVM").Columns(columns =>
+                {
+                    columns.Add(true).Titled("").RenderValueAs(mvcgridcolumn => Html.Partial("ListItems/InquirySearch_Item", mvcgridcolumn))
+                    .Sanitized(false).Encoded(false);
+                })
+            }
+            else
+            {
+                @Html.Grid(Model, "_CardGrid").Named("Inquiry").CollectionName("InquirySearchResultVM").Columns(columns =>
+                {
+                    columns.Add(true).Titled("").RenderValueAs(mvcgridcolumn => Html.Partial("ListItems/InquiryGeneralSearch_Item", mvcgridcolumn))
+                    .Sanitized(false).Encoded(false);
+                })
+            }
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function prepareInquiryGrid() {
+        if (!pageGrids.Inquiry) {
+            $(".grid-mvc").gridmvc();
+        }
+    }
+    $(document).ready(function () {
+        prepareInquiryGrid();
+    });
+
+        function ShowVisitTickect(id) {
+        var actionUrl = '@Url.Action("PrintTicket", "Shared")' + "?transactionId=" + id;
+        PrintButton(actionUrl);
+    }
+
+    function InquiryCertificate(transactionId) {
+        var trx = EncryptionKey(transactionId);
+        var url = '@Url.Action("InboundCertificate", "Shared")' + '?transactionId=' + trx + '&isInquiry=true';
+
+        ShowDialog(url, 'dialogbox col-md-12 ');
+    }
+
+     function ShowPrintDialog(id) {
+        var params = { transactionId: id };
+        ShowDialogAjaxPrintingBarcodes('@Url.Action("PrinttingBarcodes","Shared")' + "?" + $.param(params), {}, 'OpenPrintDialogSuccess', 'dialogbox col-md-12 ');
+    }
+       function OpenPrintDialogSuccess(data, $obj) {
+        if (data.MessageType != 2) {
+            $obj.setContent(data.Html);
+        }
+        else {
+            __dialog.close();
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+</script>

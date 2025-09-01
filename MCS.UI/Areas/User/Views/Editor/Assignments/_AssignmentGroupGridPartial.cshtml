@@ -1,0 +1,19 @@
+﻿@model AjaxGrid<MCS.UI.Areas.User.Models.Assignment.TransactionAssignmentVM>
+
+@{string controller = ViewData["ControllerName"] != null ? ViewData["ControllerName"].ToString() : ViewContext.RouteData.Values["controller"].ToString();}
+
+@Html.Grid(Model).Named("grdEditorAssignmentGroup").Columns(columns =>
+    {
+        columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").Titled("", "<input type='checkbox' id='chkall'></input>")
+                                          .RenderValueAs(o =>
+                                                @<div class="chkCol" id="spanCheckBox">
+                                                    <input id="AssigneeSelectorcheckbox" type="checkbox" />
+                                                </div>);
+
+                columns.Add(model => model.GroupId, true);
+                columns.Add().Encoded(false).Sanitized(false).Titled(DbRes.TResource("User.Transaction.Assignment.GroupId")).RenderValueAs(o => @<a class="editorgroup_content" data-groupid="@o.GroupId">@o.GroupName</a>);
+                        columns.Add(model => model.ActionNameForAll).Titled(DbRes.TResource("User.Transaction.Assignment.ActionForAllId"));
+                        columns.Add(model => model.Count).Titled(DbRes.TResource("User.Transaction.Assignment.Count"));
+
+                        columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => Html.ConfirmImageButton(Url.Action("DeleteEditorAssignmentGroups", controller), "grdEditorAssignmentGroup", 1, "dvEditorAssignmentGroupGrid", "dvEditorAssignmentGroupBody :input", null, "OnDeleteEditorAssignmentGroupSuccess", null, "post", DbRes.TResource("Grid.DeleteMassage"))).Titled(DbRes.TResource("Grid.Delete"));
+                    }).WithPaging(GridHelper.PageSize).Sortable().Filterable().WithMultipleFilters().UpdateActionUrl(Url.Action("UpdateGridEditorAssignmentGroup", controller)).RenderDeleteButton(Url.Action("DeleteEditorAssignmentGroups", controller), 1, "dvEditorAssignmentGroupBody :input", "dvEditorAssignmentGroupGrid", "OnDeleteEditorAssignmentGroupSuccess")

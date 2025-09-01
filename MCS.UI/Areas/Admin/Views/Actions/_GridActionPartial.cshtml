@@ -1,0 +1,58 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.Actions
+@using MCS.GridMvc.Helpers;
+@using MCS.GridMvc.Html;
+@using MCS.Common;
+
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<ActionVM>
+@{
+    ViewBag.Title = "_ActionGridPartial";
+}
+
+
+
+
+@Html.Grid(Model).Named("Actions").Columns(columns =>
+{
+    columns.Add(model => model.Id).Titled(DbRes.TResource("Admin.Link.Id")).Css("hidden_");
+    columns.Add(model => model.Description[0].Text, "DescriptionAr").Titled(DbRes.TResource("Admin.Lookups.Actions.Name.ar"));
+    columns.Add(model => model.Description[1].Text, "DescriptionEn").Titled(DbRes.TResource("Admin.Lookups.Actions.Name.en"));
+    columns.Add().Encoded(false).Sanitized(false).Css("").RenderValueAs(model =>
+       MvcHtmlString.Create(model.IsAsCopy ? DbRes.TResource("Admin.Lookups.Actions.IsCopy") : DbRes.TResource("Admin.Lookups.Actions.IsTransaction"))).Titled(DbRes.TResource("Admin.Lookups.Actions.AssignmentType")
+          );
+    columns.Add().Titled(DbRes.TResource("Admin.Link.Status")).RenderValueAs(model => MvcHtmlString.Create(model.IsActive ? DbRes.TResource("Admin.Link.Status.Active") : DbRes.TResource("Admin.Link.Status.Deactive")));
+    columns.Add().Encoded(false).Sanitized(false).Css("").RenderValueAs(model =>
+       MvcHtmlString.Create(
+           "<div class='table-icon d-flex align-items-center'>" +
+               (model.IsLocked ?
+               @Html.ClientLinkTag("", null, "color-blue", null, DbRes.TResource("Admin.Lookups.UnLock"), "LockUnlockLookup(" + (int)LookupType.Actions + "," + (int)LookupOperationType.UnLock + " , " + model.Id + ")", null, "<i class='icon-tables-unlock'></i>")
+               : !model.IsLocked ? @Html.ClientLinkTag("", null, "color-grey", null, DbRes.TResource("Admin.Lookups.Lock"), "LockUnlockLookup(" + (int)LookupType.Actions + "," + (int)LookupOperationType.Lock + " , " + model.Id + ")", null, "<i class='icon-tables-lock'></i>") : MvcHtmlString.Empty) +
+               (!model.IsActive ?
+               @Html.ClientLinkTag(text: "", cssClass: "color-orange", title: DbRes.TResource("Admin.Lookups.Activate"), clientFunctionToCall: "ActiveDeactiveLookup(" + (int)LookupType.Actions + "," + (int)LookupOperationType.Active + " , " + model.Id + ")", innerHtml: "<i class='icon-tables-lamp'></i>") : MvcHtmlString.Empty) +
+               (model.IsActive ?
+               @Html.ClientLinkTag(text: "", cssClass: "color-grey", title: DbRes.TResource("Admin.Lookups.Deactivate"), clientFunctionToCall: "ActiveDeactiveLookup(" + (int)LookupType.Actions + "," + (int)LookupOperationType.Deactivate + " , " + model.Id + ")", innerHtml: "<i class='icon-tables-lamp-off'></i>") : MvcHtmlString.Empty) +
+               (!model.IsLocked ?
+               @Html.GridImageButton("GetAction", "Actions", 0, OperationType.Update, "divEditAction", null, null, "ShowEditDiv", "", "get") : MvcHtmlString.Empty) +
+               (!model.IsLocked ?
+               @Html.GridImageButton("DeleteAction", "Actions", 0, OperationType.Delete, "dvGrid", "EditActionContent", null, "OnDeleteSuccess") : MvcHtmlString.Empty) +
+            "</div>"));
+}).WithPaging(GridHelper.PageSize)
+
+
+
+<script>
+    var token = $("#dvAdd input[name='__RequestVerificationToken']").val()
+    var ActionsEventHandler = "@Url.Action("UpdateActionGrid", "Actions")?__RequestVerificationToken=" + token;
+    function prepareActionsGrid() {
+            $(".grid-mvc").gridmvc();
+        pageGrids.Actions.ajaxify({
+        getPagedData: ActionsEventHandler,
+                requestType: "get",
+                getData: ActionsEventHandler
+            });
+}
+
+        $(document).ready(function () {
+    prepareActionsGrid();
+});
+</script>

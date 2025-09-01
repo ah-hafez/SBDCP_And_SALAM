@@ -1,0 +1,33 @@
+﻿
+@using MCS.UI.Areas.User.Models.UserPreferences;
+@using MCS.GridMvc.Html;
+@using MCS.GridMvc.Helpers;
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<TransactionPathVM>
+
+@{
+    ViewBag.Title = "_PathsGridPartial";
+    Layout = null;
+}
+<div class="boxes">
+    @Html.Grid(Model, "_CardGrid").CollectionName("TransactionPathGrid").Named("grdPaths").Columns(columns =>
+    {
+        columns.Add(true).Titled("").RenderValueAs(mvcgridcolumn => Html.Partial("~/Areas/Admin/Views/Paths/_AdminPath_Item.cshtml", mvcgridcolumn))
+        .Sanitized(false).Encoded(false);
+    }).WithPaging(GridHelper.PageSize)
+</div>
+
+<script>
+    $(document).ready(function () {
+        prepareUserPathsGrid();
+    })
+    function prepareUserPathsGrid() {
+        $(".grid-mvc").gridmvc();
+        pageGrids.grdPaths.ajaxify(
+            {
+                getPagedData: '@Html.Raw(Url.Action("UpdateGridTransactionPath", "Paths"))',
+                getData: '@Html.Raw(Url.Action("UpdateGridTransactionPath", "Paths"))',
+                callbackClientFunctionAfter: ["goToViewAfterPaging"],
+                requestType: "POST"
+            });
+    }
+</script>

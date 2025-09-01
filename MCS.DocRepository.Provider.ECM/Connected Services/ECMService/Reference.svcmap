@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="76b464c8-a6f5-4ca9-95fa-4e1bcdcddf11" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://localhost/YESSER.NCS.ECM.WCF.IntegrationService/Services/ECMService.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="ECMService.disco" MetadataType="Disco" ID="dee4c4bc-652b-4bcd-87b3-db5780648721" SourceId="1" SourceUrl="http://localhost/YESSER.NCS.ECM.WCF.IntegrationService/Services/ECMService.svc?disco" />
+    <MetadataFile FileName="ECMService.xsd" MetadataType="Schema" ID="44da9059-f3ca-4104-a2fd-bb5fce35d13b" SourceId="1" SourceUrl="http://localhost/YESSER.NCS.ECM.WCF.IntegrationService/Services/ECMService.svc?xsd=xsd1" />
+    <MetadataFile FileName="ECMService.wsdl" MetadataType="Wsdl" ID="ccb4422d-bb3e-4bad-bf75-509f10a8a74f" SourceId="1" SourceUrl="http://localhost/YESSER.NCS.ECM.WCF.IntegrationService/Services/ECMService.svc?wsdl" />
+    <MetadataFile FileName="ECMService1.xsd" MetadataType="Schema" ID="9a5d5ba3-a5cb-4366-964f-40e8fff00792" SourceId="1" SourceUrl="http://localhost/YESSER.NCS.ECM.WCF.IntegrationService/Services/ECMService.svc?xsd=xsd2" />
+    <MetadataFile FileName="ECMService2.xsd" MetadataType="Schema" ID="8fa47f3f-af2b-477c-92f9-80096deca6fd" SourceId="1" SourceUrl="http://localhost/YESSER.NCS.ECM.WCF.IntegrationService/Services/ECMService.svc?xsd=xsd0" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

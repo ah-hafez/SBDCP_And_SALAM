@@ -1,0 +1,7 @@
+﻿@using MCS.Common;
+@using MCS.UI.Areas.Admin.Models.Lookups
+@using UserLookups = MCS.UI.Areas.User.Models.Lookups
+@model TransactionTypeAddVM
+
+
+@Html.PermissionsEditableTree(ViewData["PermissionsGroups"] as TreeViewModel, model => Model.PermissionId, TreeMode.Single, "frmAddTransactionType", Request.IsAjaxRequest())

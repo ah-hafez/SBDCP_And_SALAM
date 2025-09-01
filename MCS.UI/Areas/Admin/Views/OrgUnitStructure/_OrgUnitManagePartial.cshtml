@@ -1,0 +1,1341 @@
+﻿@using MCS.Framework.Localization
+@model MCS.UI.Areas.Admin.Models.OrgUnit.OrgStructureInfoEditVM
+@using MCS.Common;
+@using MCS.UI.Areas.User.Models.Lookups
+
+@{
+    ViewBag.Title = DbRes.TResource("Admin.OrgUnit.OrgManagement");
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+@{List<CultureVM> cultureVMs = ViewData["Culture"] as List<CultureVM>;}
+<div class="container-all">
+    <div class="mx-3 mx-md-5 header-container d-flex flex-row align-items-center ">
+        <div class="d-flex flex-column flex-lg-row align-items-lg-center flex-grow-1 mb-3 mb-lg-0">
+            <h3 class="site-color mb-2 mb-lg-4">@DbRes.TResource("Admin.OrgUnit.EditOrg") </h3>
+        </div>
+        <div class="close-icon pl-2 mt-0 ml-auto">
+            <a class="circle-icon color-white" href="@Url.Action("Index", "OrgUnitStructure")" data-bs-toggle="tooltip" data-placement="bottom" title="@DbRes.TResource("Admin.OrgUnit.Close")"><i class="la la-close"></i></a>
+        </div>
+    </div>
+    <nav aria-label="breadcrumb" class="mx-3 mx-md-5">
+        <ol class="breadcrumb mb-1 path">
+            @if (Model.objOrgStructureInfoVMList != null)
+            {
+                foreach (MCS.UI.Areas.Admin.Models.OrgUnit.OrgStructureInfoVM item in Model.objOrgStructureInfoVMList)
+                {
+                    <li class="breadcrumb-item">@item.Name</li>
+                }
+            }
+            @*<li class="breadcrumb-item"><a href="#">اسم الجهة الرئيسية</a></li>
+                <li class="breadcrumb-item" aria-current="page"><a href="#">اسم الجهة الفرعية الأولى</a></li>
+                <li class="breadcrumb-item" aria-current="page"><a href="#">اسم الجهة الفرعية الثانية</a></li>
+                <li class="breadcrumb-item active" aria-current="page">اسم الجهة الفرعية الثالثة</li>*@
+        </ol>
+    </nav>
+    <div class="content_container">
+        <div class="white-container mx-3 mx-md-5">
+            <div class="d-flex">
+                <ul class="nav nav-tabs custom-nav-tabs mb-3 d-flex flex-wrap edit_manag_tabs mt-2" role="tablist">
+                    <li role="presentation" class="flex-fill" style="@Model.viewMode">
+                        <a href="#tab-1" aria-controls="tab-1"  role="tab" data-bs-toggle="tab" class="active">
+                            <i class="icon-tab1"></i>
+                            <div class="mt-2">@DbRes.TResource("Admin.OrgUnit.OrgInfo") </div>
+                        </a>
+                    </li>
+
+                    <li role="presentation" class="flex-fill" style="@Model.viewMode">
+
+
+                        <a href="#tab-2" aria-controls="tab-2"  role="tab" data-bs-toggle="tab" >
+                            <i class="icon-tab3"></i>
+                            <div class="mt-2">
+                                @DbRes.TResource("Admin.OrgUnit.OrgUsers")
+                            </div>
+                        </a>
+                    </li>
+                    @*<li role="presentation" class="flex-fill" style="@Model.viewMode">
+                            <a href="#tab-3" aria-controls="tab-3" role="tab" data-bs-toggle="tab">
+                                <i class="icon-tab4"></i>
+                                <div class="mt-2">
+                                    @DbRes.TResource("Admin.OrgUnit.OrgBarcode")
+                                </div>
+                            </a>
+                        </li>*@
+                    <li role="presentation" class="flex-fill" style="@Model.viewMode">
+                        <a href="#tab-4" onclick="CallCounter(@ViewData["OrgUnitKey"]);" aria-controls="tab-4"  role="tab" data-bs-toggle="tab">
+                            <i class="icon-tab4"></i>
+                            <div class="mt-2">
+                                العدادات
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane show active" id="tab-1">
+                    @using (Html.BeginForm("", "", FormMethod.Post, new { id = "formAddOrg" }))
+                    {
+                        @Html.AntiForgeryToken()
+                    <div class="form-row">
+                        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 disable">
+                            @Html.HiddenGroupFor(model => model.ParentId, new { id = "hdnParentId", @value = Model.ParentId })
+                            @Html.Label(DbRes.TResource("Admin.OrgUnit.OrgArabicName"))<span class='red-color ml-1 ml-1'>*</span>
+                            @Html.TextBoxGroupFor(model => model.Names[0].Text, "AddOrg", new { @class = "form-control", maxlength = "1000" }, DbRes.TValidation("Admin.UserCategory.NameRequired." + cultureVMs[0].ShortName))
+                            @Html.StickyHiddenFor(model => model.Names[0].CultureId, new { @Value = (int)CultureType.Arabic })
+                            @if (Model.viewMode == null)
+                            {
+                                @Html.HiddenFor(model => model.Names[0].Id)
+                            }
+                            @*<label for="">@DbRes.TResource("Admin.OrgUnit.OrgArabicName") <span class="red-color ml-1 ml-1">*</span></label>
+            <input type="text" class="form-control">*@
+                        </div>
+                        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 disable">
+                            @Html.Label(DbRes.TResource("Admin.OrgUnit.OrgEnglishName"))<span class='red-color ml-1 ml-1'>*</span>
+                            @Html.TextBoxGroupFor(model => model.Names[1].Text, "AddOrg", new { @class = "form-control", maxlength = "1000" }, DbRes.TValidation("Admin.UserCategory.NameRequired." + cultureVMs[1].ShortName))
+                            @Html.StickyHiddenFor(model => model.Names[1].CultureId, new { @Value = (int)CultureType.English })
+                            @if (Model.viewMode == null)
+                            {
+                                @Html.HiddenFor(model => model.Names[1].Id)
+                            }
+                            @*<label for=""> @DbRes.TResource("Admin.OrgUnit.OrgEnglishName")<span class="red-color ml-1 ml-1">*</span></label>
+            <input type="text" class="form-control">*@
+                        </div>
+
+                        <div class="form-group col-lg-3 col-md-4  col-sm-6 col-xs-12">
+                            <label for="">@DbRes.TResource("Admin.OrgUnit.OrgManager") </label>
+
+
+                            @Html.EditorFor(model => model.ManagerId, "AutoComplete", additionalViewData: new { autoCompleteControlid = "ddlManagerId", hdnIdToSaveValue = "hdnManagerId", items = ViewData["Users"] != null ? ViewData["Users"].ToString() : null, selectedId = @Model.ManagerId, matchAnywhere = true, inputClassName = "form-control", hdnExtraParametersId = "", ulClassName = "", buttonId = "", selectFirstIndex = false, validationGroup = "", onChangeCallback = "" })
+
+                            @Html.HiddenFor(model => model.Key, new { id = @ViewData["OrgUnitKey"] })
+
+                            @* @Html.HiddenFor(model => model.Number, new { id = @Model.Number })*@
+                        </div>
+                        <div class="form-group col-lg-3 col-md-4  col-sm-6 col-xs-12">
+                            <label> @DbRes.TResource("Admin.OrgUnit.OrgNumber")<span class='red-color ml-1 ml-1'>*</span> </label>
+                            <span class="number d-block">
+                                @Html.NumericTextBoxFor(model => model.Number, new { id = "txtAddNumber", @class = "form-control", maxlength = "9" }, "AddOrg")
+                            </span>
+                            <span id="dvOrgUnitNumberMessage" style="color:red"></span>
+                        </div>
+                        <div class="form-group col-lg-3 col-md-4  col-sm-6 col-xs-12">
+                            <label> @DbRes.TResource("Admin.OrgUnit.OrgNumber")<span class='red-color ml-1 ml-1'>*</span> </label>
+                            <span class="number d-block">
+                                @Html.TextBoxFor(model => model.Lineage, new { id = "", @class = "form-control"})
+                            </span>
+                        </div>
+                        <div class="clearfix w-100"></div>
+                        @*<div class="form-group col-lg-3 col-md-4  col-sm-6 col-xs-12">
+
+            <label class="w-100">@DbRes.TResource("Admin.OrgUnit.OrgReceiveExternalOutbound") </label>
+            <div class="form-check form-check-inline">
+                @Html.RadioButtonFor(model => model.IsExternal, true, new { @class = "form-check-input", type = "radio", name = "inlineRadioOptions", id = "inlineRadio1", value = "option1", @checked = "checked" })
+
+
+
+                <label class="form-check-label" for="inlineRadio1"> @DbRes.TResource("Admin.OrgUnit.OrgYes")</label>
+            </div>
+            <div class="form-check form-check-inline">
+                @Html.RadioButtonFor(model => model.IsExternal, false, new { @class = "form-check-input", type = "radio", name = "inlineRadioOptions", id = "inlineRadio2", value = "option2" })
+
+                <label class="form-check-label" for="inlineRadio2">@DbRes.TResource("Admin.OrgUnit.OrgNo") </label>
+            </div>
+
+        </div>*@
+
+
+                        <div class="col-lg-5">
+                            <div class="divOrgUnit">
+                                <fieldset class="field-set" id="dvOthersDepartmentsTree">
+                                    @Html.DepartmentsTree(ViewData["orgUnitDataInfo"] as TreeViewModel, model => model.IoDepartment, TreeMode.Single, "dvTree", true, "", "", "dvOthersDepartmentsTree")
+                                </fieldset>
+                            </div>
+                        </div>
+                        <a class="col-lg-1 mt-5" onclick="SetNulldvOthersDepartmentsTree()">
+                            <i class="glyphicon glyphicon-remove" style="color:red"></i>
+                        </a>
+
+                        <div class="col-lg-5">
+                            <div class="divOrgUnit">
+                                <fieldset class="field-set" id="dvFollowUpDepartmentsTree">
+                                    @Html.DepartmentsTree(ViewData["orgUnitDataInfo"] as TreeViewModel, model => model.FollowUpDepartment, TreeMode.Single, "dvFollowUpDepartmentsTree", true, "", "", "dvFollowUpDepartmentsTree")
+                                </fieldset>
+                            </div>
+                        </div>
+                        <a class="col-lg-1 mt-5" onclick="SetNulldvFollowUpDepartmentsTree()">
+                            <i class="glyphicon glyphicon-remove" style="color:red"></i>
+                        </a>
+
+                        @*<div class="form-group col-lg-5 col-md-6 col-sm-6 col-xs-12" id="dvOthersDepartmentsTree">
+            <label>@Html.DisplayNameFor(model => model.IoDepartment)<span class="stark"></span></label>
+            @Html.EditorFor(model => model.IoDepartment, "OrgHierarchyCaller", additionalViewData: new { treeId = "OthersDepartmentsTree", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Common"), GetNodeInfoByIdActionURL = @Url.Action("GetInternalPartyInfoById", "Common"), GetNodeInfoByNumActionURL = @Url.Action("GetInternalPartyInfoByNumber", "Common"), onClickfunction = "", ValidationGroup = "", ShowAddPartyButton = false })
+        </div>*@
+                        @*<div class="form-group col-lg-5 col-md-6 col-sm-6 col-xs-12" id="dvFollowUpDepartmentsTree">
+            <label>@Html.DisplayNameFor(model => model.FollowUpDepartment)<span class="stark"></span></label>
+            @Html.EditorFor(model => model.FollowUpDepartment, "OrgHierarchyCaller", additionalViewData: new { treeId = "dvFollowUpDepartmentsTree", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Common"), GetNodeInfoByIdActionURL = @Url.Action("GetInternalPartyInfoById", "Common"), GetNodeInfoByNumActionURL = @Url.Action("GetInternalPartyInfoByNumber", "Common"), onClickfunction = "", ValidationGroup = "", ShowAddPartyButton = false })
+        </div>*@
+                        @*<div class="form-group col-lg-12 col-md-12 col-xs-12 col-sm-12 d-flex">
+            <small class="text-danger ml-auto">
+                @DbRes.TResource("Admin.OrgUnit.OrgNotes")
+            </small>
+        </div>*@
+                        <div class="form-group col-lg-3 col-md-4  col-sm-6 col-xs-12 disable">
+
+                            @Html.LabelFor(model => Model.IsVirtualUnit, new { @class = "w-100" })
+                            @*<label class="w-100"> @DbRes.TResource("Admin.OrgUnit.OrgVirtual")</label>*@
+                            <div class="form-check form-check-inline">
+                                @*<input class="form-check-input" type="radio" name="inlineRadioOptions2" id="inlineRadio3"
+                value="option1">*@
+                                @Html.RadioButtonFor(model => model.IsVirtualUnit, "true", new { @class = "form-check-input", type = "radio", name = "inlineRadioOptions", id = "inlineRadio1", value = "option1", })
+
+                                <label class="form-check-label" for="inlineRadio1">@DbRes.TResource("Admin.OrgUnit.OrgYes")</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                @*<input class="form-check-input" type="radio" name="inlineRadioOptions2" id="inlineRadio4"
+                value="option2">*@
+                                @Html.RadioButtonFor(model => model.IsVirtualUnit, "false", new { @class = "form-check-input", type = "radio", name = "inlineRadioOptions", id = "inlineRadio1", value = "option1" })
+
+                                <label class="form-check-label" for="inlineRadio2">@DbRes.TResource("Admin.OrgUnit.OrgNo")</label>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group col-lg-3 col-md-4  col-sm-6 col-xs-12 disable">
+
+                            @Html.LabelFor(model => Model.IsExecutive, new { @class = "w-100" })
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(model => model.IsExecutive, "true", new { @class = "form-check-input", type = "radio", name = "inlineRadioOptionsExe", id = "inlineRadio1Exe", value = "option1", })
+
+                                <label class="form-check-label" for="inlineRadio1">@DbRes.TResource("Admin.OrgUnit.OrgYes")</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(model => model.IsExecutive, "false", new { @class = "form-check-input", type = "radio", name = "inlineRadioOptionsExe", id = "inlineRadio1Exe", value = "option1" })
+
+                                <label class="form-check-label" for="inlineRadio2">@DbRes.TResource("Admin.OrgUnit.OrgNo")</label>
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="form-group col-lg-4 col-md-4  col-sm-6 col-xs-12 disable">
+
+                            @Html.LabelFor(model => Model.IsGeneralIoDepartment, new { @class = "w-100" })
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(model => model.IsGeneralIoDepartment, "true", new { @class = "form-check-input", type = "radio", name = "inlineRadioOptionsIsGeneralIoDepartment", id = "inlineRadio1IsGeneralIoDepartment", value = "option3", })
+
+                                <label class="form-check-label" for="inlineRadio1">@DbRes.TResource("Admin.OrgUnit.OrgYes")</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(model => model.IsGeneralIoDepartment, "false", new { @class = "form-check-input", type = "radio", name = "inlineRadioOptionsIsGeneralIoDepartment", id = "inlineRadio1IsGeneralIoDepartment", value = "option3" })
+
+                                <label class="form-check-label" for="inlineRadio2">@DbRes.TResource("Admin.OrgUnit.OrgNo")</label>
+                            </div>
+                            <span id="GeneralIoDepartment" style="color:red"></span>
+                        </div>
+                        <div class="form-group col-lg-3 col-md-4  col-sm-6 col-xs-12 disable">
+
+                            @Html.LabelFor(model => Model.ReceiveElcOutBoundWithAcknowled, new { @class = "w-100" })
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(model => model.ReceiveElcOutBoundWithAcknowled, "true", new { @class = "form-check-input", type = "radio", name = "inlineRadioOptionsIsIoDepartment", id = "inlineRadio1IsIoDepartment", value = "option2", })
+
+                                <label class="form-check-label" for="inlineRadio1">@DbRes.TResource("Admin.OrgUnit.OrgYes")</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(model => model.ReceiveElcOutBoundWithAcknowled, "false", new { @class = "form-check-input", type = "radio", name = "inlineRadioOptionsIsIoDepartment", id = "inlineRadio1IsIoDepartment", value = "option2" })
+
+                                <label class="form-check-label" for="inlineRadio2">@DbRes.TResource("Admin.OrgUnit.OrgNo")</label>
+                            </div>
+
+                        </div>
+                        <div class="form-group col-lg-3 col-md-4  col-sm-6 col-xs-12 disable">
+
+                            @Html.LabelFor(model => Model.SendSpecialCopy, new { @class = "w-100" })
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(model => model.SendSpecialCopy, "true", new { @class = "form-check-input", type = "radio", name = "inlineRadioOptionsISendSpecialCopy", id = "inlineRadio1SendSpecialCopy", value = "option5", })
+
+                                <label class="form-check-label" for="inlineRadio1">@DbRes.TResource("Admin.OrgUnit.OrgYes")</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(model => model.SendSpecialCopy, "false", new { @class = "form-check-input", type = "radio", name = "inlineRadioOptionsSendSpecialCopy", id = "inlineRadio1SendSpecialCopy", value = "option5" })
+
+                                <label class="form-check-label" for="inlineRadio2">@DbRes.TResource("Admin.OrgUnit.OrgNo")</label>
+                            </div>
+
+                        </div>
+                    </div>
+                        <div class="pull-right">
+                            @Html.ActionButton(DbRes.TResource("Admin.OrgUnit.OrgSave"), "AddOrgUnitInfo", null, null, null, "OnSuccess", null, "post", "AddOrg", "btnAdd", "formAddOrg", "btn btn-st1 btn-lg mr-2", "CheckOrgUnitNumberForAdd")
+
+                            <a class="btn btn-st1 btn-lg mr-2" href='@Url.Action("Index","OrgUnitStructure")'> @DbRes.TResource("Admin.OrgUnit.OrgCancel")</a>
+                        </div>
+                    }
+
+                </div>
+                <div role="tabpanel" class="tab-pane" id="tab-2">
+                    <div class="mx-3 mx-md-5 header-container d-flex flex-row align-items-center">
+                        <div class="d-flex flex-column flex-lg-row align-items-lg-center flex-grow-1 mb-3 mb-lg-0">
+                            <h3 class="site-color mb-2 mb-lg-4">المستخدمين </h3>
+                            <div class="ml-lg-auto  d-flex flex-column flex-md-row">
+                                <div class="filter-link ml-lg-auto mr-lg-3 my-2 mt-lg-auto ">
+
+                                    <div class="toggling-menu">
+                                        <a class="active system_1"><i class="icon-grid"></i></a>
+                                        <a class="grid_system"><i class="icon-list"></i></a>
+                                    </div>
+                                </div>
+                                @*<div>
+                        <button type="submit" class="btn btn-lg btn-st3" onclick="AddUser()" id="#add-link" data-target="">
+                            <i class="icon-buttons-add pr-3"></i>@DbRes.TResource("Admin.OrgUnitUsers.CreateUser")
+                        </button>
+                    </div>*@
+                            </div>
+                        </div>
+                    </div>
+                    <div class="boxes px-md-1 mx-aut">
+                        @*<div class="d-flex flex-wrap mx-auto mx-md-4">*@
+                        @if (@ViewData["GridData"] != null)
+                        {
+                            @Html.Partial("~/Areas/Admin/Views/OrgUnitStructure/OrgUsersGridPartial.cshtml", ViewData["GridData"])
+
+                        }
+                        @*</div>*@
+                    </div>
+
+
+                </div>
+
+                <div role="tabpanel" class="tab-pane" id="tab-4">
+                    <div id="counter">
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="tab-for-2">
+
+    
+</div>
+
+@*<div class="mx-3 mx-md-5 mb-4 d-flex">
+        <button class="btn btn-lg btn-st3 ml-auto" data-dismiss="modal">حفظ الإدارة</button>
+    </div>*@
+@Html.HiddenFor(model => model.ExternalId, new { id = "hdnExternalId" })
+
+
+<script>
+
+
+    function SetNulldvOthersDepartmentsTree() {
+        document.getElementById("leftdvTree").value = "";
+        document.getElementById("IoDepartment").value = "";
+        document.getElementById("rightdvTree").value = "";
+
+    }
+    function SetNulldvFollowUpDepartmentsTree() {
+        document.getElementById("leftdvFollowUpDepartmentsTree").value = "";
+        document.getElementById("FollowUpDepartment").value = "";
+        document.getElementById("rightdvFollowUpDepartmentsTree").value = "";
+
+    }
+
+        $(function () {
+            $('[data-bs-toggle="tooltip"]').tooltip()
+        })
+
+        function OnSuccess(data) {
+            if (data.MessageType != 2) {
+
+                ShowSuccesMessage(data.MessageText, redirect(data.Id));
+
+
+
+            }
+            else {
+                ShowErrorMessage(data.MessageText);
+            }
+    }
+
+    function redirect(data) {
+        setTimeout(function () {
+              window.location.href = '@Url.Action("OrgUnitInfo", "OrgUnitStructure", new { orgUnitKey = "IdToReplace" })'.replace("IdToReplace",data);
+        }, 3000);
+    }
+</script>
+
+
+<script>
+    $(function () {
+
+        $(".right-arrow").click(function () {
+            $("div .top-icons").toggleClass("show-icons");
+            $(".right-arrow").toggleClass("la-rotate");
+            $(".right-arrow").toggleClass("left-arrow");
+            $(".la-angle-right").toggleClass("pl-2");
+
+        });
+
+    });
+
+
+</script> <!--end Header Script-->
+<script>
+    $(function () {
+        $('[data-toggle-second="tooltip"]').tooltip();
+    });
+</script>
+<script>
+    $(function () {
+        $(".flex-fill").click(function () {
+            if ($(this).hasClass("open-tab-2")) {
+                $(".tab-for-2").css("display", "block");
+                $(".white-container").css("margin-bottom", "8px");
+            }
+            else {
+                $(".tab-for-2").css("display", "none");
+                $(".white-container").css("margin-bottom", "30px");
+            }
+        })
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        CheckGeneralIOExist();
+        $('.filter-target').click(function () {
+            $('.filter-box.filter').slideToggle('fast');
+            $('.sort-target').removeClass("active");
+            $('.search-target').removeClass("active");
+            $(this).toggleClass("active");
+            $('.filter-box.sort').hide();
+            $('.filter-box.search').hide();
+
+        });
+        $('.sort-target').click(function () {
+            $('.filter-box.sort').slideToggle('fast');
+            $('.filter-target').removeClass("active");
+            $(this).toggleClass("active");
+            $('.filter-box.filter').hide();
+            $('.filter-box.search').hide();
+        });
+        $('.search-target').click(function () {
+            $('.filter-box.search').slideToggle('fast');
+            $('.sort-target').removeClass("active");
+            $('.filter-target').removeClass("active");
+            $(this).toggleClass("active");
+            $('.filter-box.filter').hide();
+            $('.filter-box.sort').hide();
+
+        });
+
+        if ($('#hdnExternalId').val() != '') {
+            $('.disable').find(':input').attr('readonly', 'true');
+            $('.disable').find('.ShowHideOrgHierarchyDialog').hide();
+
+            $('.disable').find(':radio,:checkbox').click(function () {
+                return false;
+            });
+        }
+    });
+</script>
+<script>
+    $(function () {
+        $(".grid_system").click(function () {
+            $(".boxes").addClass("full");
+        });
+        $(".system_1").click(function () {
+            $(".boxes").removeClass("full");
+        });
+    });
+
+
+    function AddUser() {
+        window.location.href = '@Url.Action("AddUserProfile", "User")';
+    }
+
+
+
+
+
+
+
+</script>
+<style>
+    .FitBox {
+        position: absolute;
+    }
+</style>
+<script>
+    var contianerDesign
+    var Design
+    var PosX;
+    var PosY;
+
+    $.validator.unobtrusive.adapters.add(
+                'CheckIfDepartmentSelected',
+                ['validationgroup'],
+                function (options) {
+                    options.rules['CheckIfDepartmentSelected'] = {
+                        validationgroup: options.params['validationgroup']
+                    };
+                    options.messages['CheckIfDepartmentSelected'] = options.message;
+                });
+
+    $.validator.addMethod('CheckIfDepartmentSelected',
+        function (value, element, parameters) {
+            if (!$("#IsGeneral").is(':checked') && value == "") {
+
+                return false;
+            }
+            return true;
+        }
+);
+
+    function MouseMoveContainer(containerId,barcodeId) {
+
+        $('#' + containerId).mousemove(function (event) {
+            $('#' + barcodeId).children().each(function () {
+                var childOffest = $(this).css('top');
+                var childLeft = $(this).css('left');
+                var childWidth = $(this).width();
+                var childHeight = $(this).height();
+                var barcodHight = $('#' + barcodeId).height();
+                var barcodWidth = $('#' + barcodeId).width();
+
+                if (parseInt(childOffest) < 0) {
+                    $(this).css('top', '0');
+                }
+
+                if ((parseInt(childOffest) + parseFloat(childHeight)) > parseInt(barcodHight)) {
+                    $(this).css('top', parseFloat(barcodHight) - parseFloat(childHeight));
+                }
+
+                if (parseInt(childLeft) < 0) {
+                    $(this).css('left', '0');
+                }
+
+                if ((parseFloat(childLeft) + parseFloat(childWidth)) > parseInt(barcodWidth)) {
+                    $(this).css('left', parseFloat(barcodWidth) - parseFloat(childWidth));
+                }
+            });
+        });
+
+        }
+
+        function CallCounter(orgUnitKey) {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("Counter", "OrgUnitStructure")',
+            data: { "orgUnitKey": orgUnitKey},
+            success: function (response) {
+                $("#counter").html(response.View);
+            }
+        });
+    }
+
+
+
+    function EnableChildrenDraggable(barCodeId) {
+        $('#' + barCodeId).children().each(function () {
+            $(this).removeClass('draggable2');
+            $(this).draggable({ containment: barCodeId });
+        });
+    }
+
+    $(document).ready(function () {
+        EnableChildrenDraggable('barCode');
+
+        EnableChildrenDraggable('barCodeAttachment');
+
+        SetStyles();
+        GetDesign(@(BarcodeDesignType.Inbound.LookupIdentity(LookupCategory.BarcodeDesignType,SessionInfo.CultureShortName)), @ViewData["OrgUnitKey"]);
+        SetSelectedSetting();
+
+        SetBarcodeImagesSize();
+        MouseMoveContainer('mainDiv', 'barCode');
+
+        MouseMoveContainer('mainDiv', 'barCodeAttachment');
+
+        var $container = $("#barCode");
+
+        $container.children().each(function () {
+
+            $(this).css("marginLeft", "");
+            $(this).css("width", "");
+            $(this).css({ left: $(this).attr("data-Left") });
+        });
+
+        $container = $("#barCodeAttachment");
+
+        $container.children().each(function () {
+
+            $(this).css("marginLeft", "");
+            $(this).css("width", "");
+            $(this).css({ left: $(this).attr("data-Left") });
+        });
+    });
+
+    var items = [
+          {
+              label: "Delete",
+              action: function (element) {
+                  $("#hdnSelected").val($(element.currentTarget).data("id"));
+                  Delete();
+              }
+          }
+    ];
+
+
+    function GetDesign(typeId, isGeneral) {
+
+        $("#typeID").val(typeId);
+        $(".dialog_but").removeClass("select");
+        $("#btn_" + typeId).addClass("select");
+        $(".buts_toolbar .dialog_but").removeClass("bg");
+        $("#btn_" + typeId).addClass("bg");
+        $.ajax({
+            cache: false,
+            type: "GET",
+            url: '@Url.Action("GetDesign", "BarcodeDesigner")',
+            data: { "isGeneral": isGeneral, "typeId": typeId },
+            success: function (response) {
+                $("#container").html(response.Html);
+
+                $('#barCode').children().each(function () {
+                    $(this).removeClass('draggable2');
+
+                    $(this).draggable({ containment: 'barCode' });
+                });
+
+                SetStyles();
+                SetSelectedSetting();
+
+                setBarcodeChildern()
+
+                jQuery.validator.unobtrusive.parse('#frmAddDesign');
+            }
+        });
+    }
+
+
+    function getXY(evt) {
+        var element = document.getElementById('barCode');
+        var rect = element.getBoundingClientRect();
+        var scrollTop = document.documentElement.scrollTop ?
+                        document.documentElement.scrollTop : document.body.scrollTop;
+        var scrollLeft = document.documentElement.scrollLeft ?
+                        document.documentElement.scrollLeft : document.body.scrollLeft;
+        var elementLeft = rect.left + scrollLeft;
+        var elementTop = rect.top + scrollTop;
+
+        if (document.all) {
+            PosX = event.clientX + scrollLeft - elementLeft;
+            PosY = event.clientY + scrollTop - elementTop;
+        }
+        else {
+            PosX = evt.pageX - elementLeft;
+            PosY = evt.pageY - elementTop;
+        }
+    }
+
+    function SetStyles() {
+        $(".draggable2").draggable({ containment: 'barCode', helper: 'clone' });
+
+        $("#barCode>div[data-id]").contextmenu({
+            items: items
+        });
+
+        $("#barCodeAttachment>div[data-id]").contextmenu({
+            items: items
+        });
+
+        if ($("#IsGeneral").is(':checked')) {
+            $("#treeDiv").hide();
+        } else {
+            $("#treeDiv").show();
+        }
+
+        $(".draggable").draggable({ containment: 'barCode', helper: 'clone' });
+
+        $(".draggable").draggable({ containment: 'barCodeAttachment', helper: 'clone' });
+
+        $(".droppable").droppable({
+            activeClass: "ui-state-default",
+            hoverClass: "ui-state-hover",
+            drop: function (event, ui) {
+
+                var html;
+
+                var id = $(ui.helper).data("id");
+
+                var droppableId = $(this).attr("id");
+
+                var menuId = GetMenuIdbyContainer(droppableId);
+
+                var $menu = $("#" + menuId).clone();
+
+                switch (id) {
+                    case 1:
+                    case 'attachment3DImage':
+                        $menu.find("[data-id='" + id + "']:first").find('a').children().first().next().html("<img class='imag3D' src='" + '@Url.Content("~/Content/Admin/Lib/images/morasalat/code_3d_v.png")' + "'  alt=''>");
+                        $menu.find("[data-id='" + id + "']:first").find('a').children().first().next().children().first().width(parseFloat($(".droppable").width()) * 0.195);
+                        $menu.find("[data-id='" + id + "']:first").find('a').children().first().next().children().first().height(parseFloat($(".droppable").height()) * 0.3);
+
+                        html = $menu.find("[data-id='" + id + "']:first").find('a').children().first().next().html();
+                        break;
+                    case 3:
+                    case 'attachment2DImage':
+                        $menu.find("[data-id='" + id + "']:first").find('a').children().first().next().html("<img class='imag2D' src='" + '@Url.Content("~/Content/Admin/Lib/images/morasalat/code_2d_v.png")' + "'  alt=''>");
+
+                        $menu.find("[data-id='" + id + "']:first").find('a').children().first().next().children().first().width(parseFloat($(".droppable").width()) * 0.6);
+                        $menu.find("[data-id='" + id + "']:first").find('a').children().first().next().children().first().height(parseFloat($(".droppable").height()) * 0.2);
+                        html = $menu.find("[data-id='" + id + "']:first").find('a').children().first().next().html();
+                        break;
+                    default:
+                        html = $($menu.find("[data-id='" + id + "']:first").find('a')[0]).text();
+                }
+
+                var controlelm;
+                var xcxc
+                var dropPositionX = event.pageX - $(this).offset().left;
+                var dropPositionY = event.pageY - $(this).offset().top;
+                var dragItemOffsetX = event.offsetX;
+                var dragItemOffsetY = event.offsetY;
+                var dragItemPositionX = dropPositionX - dragItemOffsetX;
+                var dragItemPositionY = dropPositionY - dragItemOffsetY;
+                var $newPosX = ui.offset.left - $(this).offset().left;
+                var $newPosY = ui.offset.top - $(this).offset().top;
+                ui.draggable.draggable('disable');
+                ui.draggable.children().addClass("disabled");
+                controlelm = ui.draggable.clone();
+
+                if (ui.draggable.attr('data-info') == '1') {
+                    ui.draggable.remove();
+                }
+                else {
+
+                    $(controlelm).html('');
+                    $(controlelm).append(html);
+                    $(controlelm).css("left", dragItemPositionX);
+                    $(controlelm).css("top", dragItemPositionY);
+                }
+
+                controlelm.attr('data-info', '1');
+                $(controlelm).addClass("FitBox");
+                $('#' + droppableId).append(controlelm);
+                $(controlelm).draggable();
+                $(controlelm).contextmenu({
+                    items: items
+                });
+                SetPosition($(controlelm));
+            }
+        });
+
+
+        function GetMenuIdbyContainer(id) {
+            if (id == "barCode")
+                return "menu";
+
+            return "attachmentMenu";
+        }
+
+        $("#BarcodeSize").change(function () {
+            $('#barCode').removeClass("size_a");
+            $('#barCode').removeClass("size_b");
+            $('#barCode').removeClass("size_c");
+            $('#barCode').addClass($(this).val());
+            $('#barCodeAttachment').removeClass("size_a");
+            $('#barCodeAttachment').removeClass("size_b");
+            $('#barCodeAttachment').removeClass("size_c");
+            $('#barCodeAttachment').addClass($(this).val());
+
+            SetBarcodeImagesSize();
+
+            $('#barCode').children().each(function () {
+                var childOffest = $(this).css('top');
+                var childLeft = $(this).css('left');
+                var childWidth = $(this).width();
+                var childHeight = $(this).height();
+                var barcodHight = $("#barCode").height();
+                var barcodWidth = $("#barCode").width();
+
+                if (parseInt(childOffest) < 0) {
+                    $(this).css('top', '0');
+                }
+
+                if ((parseInt(childOffest) + parseFloat(childHeight)) > parseInt(barcodHight)) {
+                    $(this).css('top', parseFloat(barcodHight) - parseFloat(childHeight));
+                }
+
+                if (parseInt(childLeft) < 0) {
+                    $(this).css('left', '0');
+                }
+
+                if ((parseFloat(childLeft) + parseFloat(childWidth)) > parseInt(barcodWidth)) {
+                    $(this).css('left', parseFloat(barcodWidth) - parseFloat(childWidth));
+                }
+            });
+
+
+            $('#barCodeAttachment').children().each(function () {
+                var childOffest = $(this).css('top');
+                var childLeft = $(this).css('left');
+                var childWidth = $(this).width();
+                var childHeight = $(this).height();
+                var barcodHight = $("#barCodeAttachment").height();
+                var barcodWidth = $("#barCodeAttachment").width();
+
+                if (parseInt(childOffest) < 0) {
+                    $(this).css('top', '0');
+                }
+
+                if ((parseInt(childOffest) + parseFloat(childHeight)) > parseInt(barcodHight)) {
+                    $(this).css('top', parseFloat(barcodHight) - parseFloat(childHeight));
+                }
+
+                if (parseInt(childLeft) < 0) {
+                    $(this).css('left', '0');
+                }
+
+                if ((parseFloat(childLeft) + parseFloat(childWidth)) > parseInt(barcodWidth)) {
+                    $(this).css('left', parseFloat(barcodWidth) - parseFloat(childWidth));
+                }
+            });
+
+        });
+
+        $("#SizeUnit").change(function () {
+            ValidateSize();
+        });
+
+        function ConvertToPixel(value, unit) {
+
+            if (unit == "cm") {
+                return 37.795276 * value;
+            }
+
+            return 96 * value
+        }
+        function ValidateSize() {
+
+
+            if ($("#SizeUnit").val() == "in" && $("#txtSizeWidthValue").val() != "" && parseFloat($("#txtSizeWidthValue").val()) >= parseFloat(@SystemConfigurations.BarcodeInchMinWidth) && parseFloat($("#txtSizeWidthValue").val()) <= parseFloat(@SystemConfigurations.BarcodeInchMaxWidth) && $("#txtSizeHeightValue").val() != "" && parseFloat($("#txtSizeHeightValue").val()) >= parseFloat(@SystemConfigurations.BarcodeInchMinHeight) && parseFloat($("#txtSizeHeightValue").val()) <= parseFloat(@SystemConfigurations.BarcodeInchMaxHeight)) {
+                RefreshBarcodeSetting()
+                $("#errorMessage").text("");
+                return;
+            }
+
+            if ($("#SizeUnit").val() == "cm" && $("#txtSizeHeightValue").val() != "" && parseFloat($("#txtSizeWidthValue").val()) >= parseFloat(@SystemConfigurations.BarcodeCmMinWidth) && parseFloat($("#txtSizeWidthValue").val()) <= parseFloat(@SystemConfigurations.BarcodeCmMaxWidth) && $("#txtSizeHeightValue").val() != "" && parseFloat($("#txtSizeHeightValue").val()) >= parseFloat(@SystemConfigurations.BarcodeCmMinHeight) && parseFloat($("#txtSizeHeightValue").val()) <= parseFloat(@SystemConfigurations.BarcodeCmMaxHeight)) {
+
+                RefreshBarcodeSetting()
+                $("#errorMessage").text("");
+                return;
+            }
+
+            if ($("#SizeUnit").val() == "in") {
+
+                if (parseFloat($("#txtSizeWidthValue").val()) < parseFloat(@SystemConfigurations.BarcodeInchMinWidth))
+                    $("#errorMessage").text('@Html.Raw(DbRes.TResource("Admin.BarcodeDesigner.InvalidMinSize"))' + @SystemConfigurations.BarcodeInchMinHeight +"-" +@SystemConfigurations.BarcodeInchMinWidth +" inch");
+                else
+                    $("#errorMessage").text('@Html.Raw(DbRes.TResource("Admin.BarcodeDesigner.InvalidMaxSize"))' + @SystemConfigurations.BarcodeInchMaxHeight +"-" +@SystemConfigurations.BarcodeInchMaxWidth +" inch");
+
+                return;
+            }
+            if ($("#SizeUnit").val() == "cm") {
+                if (parseFloat($("#txtSizeWidthValue").val()) < parseFloat(@SystemConfigurations.BarcodeCmMinWidth))
+                    $("#errorMessage").text('@Html.Raw(DbRes.TResource("Admin.BarcodeDesigner.InvalidMinSize"))' + @SystemConfigurations.BarcodeCmMinHeight.ToString() +"-" +@SystemConfigurations.BarcodeCmMinWidth.ToString() +" cm");
+                else
+                    $("#errorMessage").text('@Html.Raw(DbRes.TResource("Admin.BarcodeDesigner.InvalidMaxSize"))' + @SystemConfigurations.BarcodeCmMaxHeight.ToString() +"-" +@SystemConfigurations.BarcodeCmMaxWidth.ToString() +" cm");
+
+                return;
+            }
+        }
+
+        $("#txtSizeWidthValue").on('focusout', function (e) {
+            if ($("#SizeUnit").val() == "in")
+                if ($("#txtSizeHeightValue").val() != "" && $("#txtSizeWidthValue").val() != "" && parseFloat($("#txtSizeWidthValue").val()) >= parseFloat(@SystemConfigurations.BarcodeInchMinWidth) && parseFloat($("#txtSizeWidthValue").val()) <= parseFloat(@SystemConfigurations.BarcodeInchMaxWidth)) {
+                    ValidateSize()
+                } else {
+                    if (parseFloat($("#txtSizeWidthValue").val()) < parseFloat(@SystemConfigurations.BarcodeInchMinWidth))
+                        $("#errorMessage").text('@Html.Raw(DbRes.TResource("Admin.BarcodeDesigner.InvalidMinSize"))' + @SystemConfigurations.BarcodeInchMinHeight +"-" +@SystemConfigurations.BarcodeInchMinWidth +" inch");
+                    else
+                        $("#errorMessage").text('@Html.Raw(DbRes.TResource("Admin.BarcodeDesigner.InvalidMaxSize"))' + @SystemConfigurations.BarcodeInchMaxHeight +"-" +@SystemConfigurations.BarcodeInchMaxWidth +" inch");
+                }
+            if ($("#SizeUnit").val() == "cm")
+                if ($("#txtSizeHeightValue").val() != "" && $("#txtSizeWidthValue").val() != "" && parseFloat($("#txtSizeWidthValue").val()) >= parseFloat(@SystemConfigurations.BarcodeCmMinWidth) && parseFloat($("#txtSizeWidthValue").val()) <= parseFloat(@SystemConfigurations.BarcodeCmMaxWidth)) {
+                    ValidateSize()
+                } else {
+                    if (parseFloat($("#txtSizeWidthValue").val()) < parseFloat(@SystemConfigurations.BarcodeCmMinWidth))
+                        $("#errorMessage").text('@Html.Raw(DbRes.TResource("Admin.BarcodeDesigner.InvalidMinSize"))' + @SystemConfigurations.BarcodeCmMinHeight.ToString() +"-" +@SystemConfigurations.BarcodeCmMinWidth.ToString() +" cm");
+                    else
+                        $("#errorMessage").text('@Html.Raw(DbRes.TResource("Admin.BarcodeDesigner.InvalidMaxSize"))' + @SystemConfigurations.BarcodeCmMaxHeight.ToString() +"-" +@SystemConfigurations.BarcodeCmMaxWidth.ToString() +" cm");
+                }
+        });
+
+
+        function RefreshBarcodeSetting() {
+
+            $("#barCode").css("width", ConvertToPixel($("#txtSizeWidthValue").val(), $("#SizeUnit").val()));
+
+            $("#barCode").css("height", ConvertToPixel($("#txtSizeHeightValue").val(), $("#SizeUnit").val()));
+
+            $("#barCodeAttachment").css("width", ConvertToPixel($("#txtSizeWidthValue").val(), $("#SizeUnit").val()));
+
+            $("#barCodeAttachment").css("height", ConvertToPixel($("#txtSizeHeightValue").val(), $("#SizeUnit").val()));
+
+            SetBarcodeImagesSize();
+
+            $('#barCode').children().each(function () {
+                var childOffest = $(this).css('top');
+                var childLeft = $(this).css('left');
+                var childWidth = $(this).width();
+                var childHeight = $(this).height();
+                var barcodHight = $("#barCode").height();
+                var barcodWidth = $("#barCode").width();
+
+                if (parseInt(childOffest) < 0) {
+                    $(this).css('top', '0');
+                }
+
+                if ((parseInt(childOffest) + parseFloat(childHeight)) > parseInt(barcodHight)) {
+                    $(this).css('top', parseFloat(barcodHight) - parseFloat(childHeight));
+                }
+
+                if (parseInt(childLeft) < 0) {
+                    $(this).css('left', '0');
+                }
+
+                if ((parseFloat(childLeft) + parseFloat(childWidth)) > parseInt(barcodWidth)) {
+                    $(this).css('left', parseFloat(barcodWidth) - parseFloat(childWidth));
+                }
+            });
+
+
+            $('#barCodeAttachment').children().each(function () {
+                var childOffest = $(this).css('top');
+                var childLeft = $(this).css('left');
+                var childWidth = $(this).width();
+                var childHeight = $(this).height();
+                var barcodHight = $("#barCodeAttachment").height();
+                var barcodWidth = $("#barCodeAttachment").width();
+
+                if (parseInt(childOffest) < 0) {
+                    $(this).css('top', '0');
+                }
+
+                if ((parseInt(childOffest) + parseFloat(childHeight)) > parseInt(barcodHight)) {
+                    $(this).css('top', parseFloat(barcodHight) - parseFloat(childHeight));
+                }
+
+                if (parseInt(childLeft) < 0) {
+                    $(this).css('left', '0');
+                }
+
+                if ((parseFloat(childLeft) + parseFloat(childWidth)) > parseInt(barcodWidth)) {
+                    $(this).css('left', parseFloat(barcodWidth) - parseFloat(childWidth));
+                }
+            });
+            SetBarcodeImagesSize();
+        }
+
+        $("#fs").change(function () {
+
+            $('#barCode').css("font-family", $(this).val());
+
+            $('#barCodeAttachment').css("font-family", $(this).val());
+        });
+
+        $("#size").change(function () {
+            $('#barCode').css("font-size", $(this).val() + "px");
+
+            $('#barCodeAttachment').css("font-size", $(this).val() + "px");
+
+            SetBarcodeImagesSize()
+        });
+
+        $("#barCode>div[data-id]").each(function () {
+            $('#menu>div[data-id=' + $(this).data("id") + ']').draggable('disable');
+            $('#menu>div[data-id=' + $(this).data("id") + ']>a').addClass("disabled");
+        });
+
+        $("#barCodeAttachment>div[data-id]").each(function () {
+            $('#attachmentMenu>div[data-id=' + $(this).data("id") + ']').draggable('disable');
+            $('#attachmentMenu>div[data-id=' + $(this).data("id") + ']>a').addClass("disabled");
+        });
+
+        $('#barCode').css("font-size", $('#barCode').attr('data-Font-Size') + "px");
+
+        $('#barCodeAttachment').css("font-size", $('#barCodeAttachment').attr('data-Font-Size') + "px");
+
+        $('#barCode').css("font-family", $('#barCode').attr('data-Font-Name'));
+
+        $('#barCodeAttachment').css("font-family", $('#barCodeAttachment').attr('data-Font-Name'));
+    }
+
+    function SetSelectedSetting() {
+        //$('#size').prop('selectedIndex', 0)
+        $("#txtSizeWidthValue").val($('#barCode').attr('data-Width-Value'))
+        $("#txtSizeHeightValue").val($('#barCode').attr('data-Height-Value'))
+        $("#SizeUnit").val($('#barCode').attr('data-Size-Unit'))
+        $("#fs").val($('#barCode').attr('data-Font-Name'))
+        $("#size").val($('#barCode').attr('data-Font-Size'))
+        $('#barCode').css('width', $('#barCode').attr('data-Width-Value') + $('#barCode').attr('data-Size-Unit'));
+        $('#barCode').css('height', $('#barCode').attr('data-Height-Value') + $('#barCode').attr('data-Size-Unit'));
+        $("#txtSizeWidthValue").val($('#barCodeAttachment').attr('data-Width-Value'))
+        $("#txtSizeHeightValue").val($('#barCodeAttachment').attr('data-Height-Value'))
+        $("#SizeUnit").val($('#barCodeAttachment').attr('data-Size-Unit'))
+        $("#fs").val($('#barCodeAttachment').attr('data-Font-Name'))
+        $("#size").val($('#barCodeAttachment').attr('data-Font-Size'))
+        $('#barCodeAttachment').css('width', $('#barCodeAttachment').attr('data-Width-Value') + $('#barCodeAttachment').attr('data-Size-Unit'));
+        $('#barCodeAttachment').css('height', $('#barCodeAttachment').attr('data-Height-Value') + $('#barCodeAttachment').attr('data-Size-Unit'));
+        SetBarcodeImagesSize();
+    }
+
+    function setBarcodeChildern() {
+        $("#barCode").children().each(function () {
+            $(this).css("marginLeft", "");
+            $(this).css("left", $(this).attr('data-Left'));
+            $(this).css("width", "");
+
+        });
+    }
+
+    function SetBarcodeImagesSize() {
+        var $containerWidth = $("#barCode").width();
+        var $containerheight = $("#barCode").height();
+        $(".imag2D").width(parseFloat($containerWidth) * 0.6);
+        $(".imag2D").height(parseFloat($containerheight) * 0.2);
+        $(".imag3D").width(parseFloat($containerheight) * 0.3);
+        $(".imag3D").height(parseFloat($containerheight) * 0.3);
+    }
+
+    function SetPosition(element) {
+        var childOffest = element.css('top');
+        var childLeft = element.css('left');
+        var barcodHight = $("#barCode").height();
+        var barcodWidth = $("#barCode").width();
+        if (parseInt(childOffest) < 0) {
+            element.css('top', '0');
+        }
+        if (parseInt(childOffest) > parseInt(barcodHight)) {
+            element.css('top', barcodHight);
+        }
+        if (parseInt(childLeft) < 0) {
+            element.css('left', '0');
+        }
+        if (parseInt(childLeft) > parseInt(barcodWidth)) {
+            element.css('left', barcodWidth);
+        }
+    }
+    function CheckIfHasContent() {
+        if ($("#barCode").children().length < 1) {
+            $("#dvNoItemsAddedValidationMessage").show();
+            window.scrollTo(0, 0);
+            return false;
+        }
+        else {
+            $("#dvNoItemsAddedValidationMessage").hide();
+            return UpdateHTML();
+        }
+
+    }
+
+    function UpdateHTML() {
+        var $container = $("#barCode").clone();
+        var $containerWidth = $("#barCode").width()
+        var elemntBarCode = document.getElementById("barCode");
+        $container.attr('data-Width-Value', $("#txtSizeWidthValue").val());
+        $container.attr('data-Height-Value', $("#txtSizeHeightValue").val());
+        $container.attr('data-Size-Unit', $("#SizeUnit").val());
+        $container.attr('data-Font-Name', $("#fs").val());
+        $container.attr('data-Font-Size', $("#size").val());
+        $container.css('width', "");
+        $container.css('height', "");
+        $container.children().each(function () {
+
+            var child = elemntBarCode.getElementsByClassName("dataid" + $(this).data("id"));
+
+            var newWidth = parseInt($(this).css('left'));
+
+            var newHeight = parseInt(child[0].offsetHeight);
+            $(this).attr('data-Left', $(this).css('left'));
+            $(this).css('position', 'absolute');
+            $(this).css("marginLeft", "0px");
+            $(this).css("left", "");
+            newWidth = newWidth + parseInt(child[0].offsetWidth);
+            $(this).width(newWidth);
+            $(this).height(newHeight);
+            var id = parseInt($(this).data("id")) + 1;
+            $(this).css("direction", 'rtl')
+            $(this).text("{" + $(this).data("id") + "} {" + id + "}")
+        });
+
+        $("#hdnHtml").val($container[0].outerHTML);
+        $("#hdnWidth").val($('#barCode').width());
+        $("#hdnHeight").val($('#barCode').height());
+        UpdateHTMLAttachment();
+        return true;
+    }
+
+    function UpdateHTMLAttachment() {
+
+        var $container = $("#barCodeAttachment").clone();
+        var $containerWidth = $("#barCodeAttachment").width()
+        var elemntBarCode = document.getElementById("barCodeAttachment");
+
+        $container.attr('data-Width-Value', $("#txtSizeWidthValue").val());
+        $container.attr('data-Height-Value', $("#txtSizeHeightValue").val());
+        $container.attr('data-Size-Unit', $("#SizeUnit").val());
+        $container.attr('data-Font-Name', $("#fs").val());
+        $container.attr('data-Font-Size', $("#size").val());
+        $container.css('width', "");
+        $container.css('height', "");
+
+        $container.children().each(function () {
+
+            var child = elemntBarCode.getElementsByClassName($(this).data("id"));
+            var newWidth = parseInt($(this).css('left'));
+            var newHeight = parseInt(child[0].offsetHeight);
+            $(this).attr('data-Left', $(this).css('left'));
+            $(this).css('position', 'absolute');
+            $(this).css("marginLeft", "0px");
+            $(this).css("left", "");
+            newWidth = newWidth + parseInt(child[0].offsetWidth);
+            $(this).width(newWidth);
+            $(this).height(newHeight);
+            var id = $(this).data("id") + "Value";
+            $(this).css("direction", 'rtl')
+            $(this).text("{" + $(this).data("id") + "} {" + id + "}")
+        });
+
+        $("#hdnHtmlAttachment").val($container[0].outerHTML);
+        $("#hdnWidth").val($('#barCode').width());
+        $("#hdnHeight").val($('#barCode').height());
+        return true;
+    }
+
+    function OnAdd(data) {
+
+        if (data.MessageType != 2) {
+
+            jQuery.validator.unobtrusive.parse('#frmAddDesign');
+            ShowSuccesMessage(data.MessageText)
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function DeleteContainerElement(containerId, menuId) {
+        $("#" + containerId).html("");
+
+        $('#' + menuId + ' .draggable2').each(function () {
+            $(this).draggable('enable');
+
+            $('#' + menuId + '>div[data-id=' + $(this).data("id") + ']>a').removeClass("disabled");
+        });
+
+    }
+
+    function DeleteAll() {
+        DeleteContainerElement("barCode", "menu");
+        DeleteContainerElement("barCodeAttachment", "attachmentMenu");
+    }
+
+    function Select(id) {
+
+        $("#hdnSelected").val(id);
+    }
+
+    function DeleteItemFromMenu(elementId, menuId) {
+
+        var id = $("#hdnSelected").val();
+        $('#' + elementId + '>div[data-id=' + id + ']').remove();
+        $('#' + menuId + '>div[data-id=' + id + ']').draggable('enable');
+        $('#' + menuId + '>div[data-id=' + id + ']>a').removeClass("disabled");
+    }
+
+    function Delete() {
+        DeleteItemFromMenu("barCode", "menu");
+        DeleteItemFromMenu("barCodeAttachment", "attachmentMenu");
+        }
+
+
+        function GetDesign(typeId, orgUnitId) {
+
+        $("#typeID").val(typeId);
+        $(".dialog_but").removeClass("select");
+        $("#btn_" + typeId).addClass("select")
+        var token = $('#frmAddDesign').find("input[name='__RequestVerificationToken']").val();
+        $.ajax({
+            cache: false,
+            type: "Post",
+            url: '@Url.Action("GetDesign")',
+            data: {
+                "orgUnitKey": orgUnitId,
+                "typeId": typeId,
+                "departmentsStructure": $("#hdnDepartmentsStructure").val(),
+                "__RequestVerificationToken": token
+            },
+            success: function (response) {
+                $("#BarCodecontainer").html(response.Html);
+
+                $('#barCode').children().each(function () {
+
+                    $(this).removeClass('draggable2');
+
+                    $(this).draggable({ containment: 'barCode' });
+                });
+
+                SetStyles();
+                SetSelectedSetting();
+
+                setBarcodeChildern()
+
+                jQuery.validator.unobtrusive.parse('#frmAddDesign');
+            }
+        });
+    }
+
+</script>
+<script>
+
+
+      function ActivateDeactivateUser(UserId) {
+
+        $.ajax({
+            type: 'get',
+            data: { id: UserId },
+            url: '@Url.Action("ActivateDeactivateUser", "User")',
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    ShowInformationMessage(data.MessageText, redirectToPage());
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            }
+        });
+    }
+
+
+
+    function redirectToPage() {
+        setTimeout(function () {
+            window.location.href = '@Url.Action("OrgUnitInfo", "OrgUnitStructure", new { orgUnitKey = Request.QueryString["orgUnitKey"] })';
+       }, 2000);
+    }
+
+
+
+
+    function DeleteUserProfile(UserId) {
+
+        $.ajax({
+            type: 'Post',
+            data: { ids: UserId, __RequestVerificationToken: token},
+            url: '@Url.Action("CheckIfUserCanDeleted", "User")',
+            success: function (data) {
+                if (data.MessageType != 2)//good
+                {
+                    $.ajax({
+                        type: 'Post',
+                        data: { ids: data.id, __RequestVerificationToken: token},
+                        url: '@Url.Action("DeleteUsers", "User")',
+                        success: function (data) {
+                            if (data.MessageType != 2) {
+                                ShowSuccesMessage(data.MessageText, redirectToPage());
+                            }
+                            else {
+                                ShowErrorMessage(data.MessageText);
+                            }
+                        }
+                    });
+                }
+
+                else {
+                    ShowCustomConfirmMessage(data.MessageText, 'DeleteUserAndMoveTransaction', data.id);
+                }
+            }
+        });
+    }
+
+
+function DeleteUserAndMoveTransaction(UserId) {
+
+        $.ajax({
+            type: 'Post',
+            data: { ids: UserId },
+            url: '@Url.Action("DeleteUserAndMoveTransaction", "User")',
+            success: function (data) {
+
+                if (data.MessageType != 2) {
+                    ShowSuccesMessage(data.MessageText, redirectToPage());
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            }
+
+        });
+    }
+
+
+    function CheckOrgUnitNumberForAdd() {
+
+        var number = $('#txtAddNumber').val();
+        var OrgUnitKey;
+        if ('@ViewData["OrgUnitKey"]' != '') {
+            var OrgUnitKey =    $('#@ViewData["OrgUnitKey"]').val()
+        } else {
+            var OrgUnitKey = -1;
+        }
+
+        var valid = false;
+        $.ajax({
+            type: 'Get',
+            url: '@Url.Action("CheckOrgUnitNumber")',
+            data: { Number: number, OrgUnitKey:OrgUnitKey},
+            async: false,
+            success:
+                function (data) {
+                    if (data.Exists) {
+                        valid = true;
+                    }
+                    else {
+                        $('#dvOrgUnitNumberMessage').html('رقم الادارة مدخل مسبقا');
+                        valid = false;
+                    }
+                }
+        });
+
+        return valid;
+        }
+
+
+    function CheckGeneralIOExist() {
+
+        $.ajax({
+            type: 'Get',
+            url: '@Url.Action("CheckGeneralIOExist")',
+            async: false,
+            success:
+                function (data) {
+
+                    if (data.GeneralIOName == '' || data.GeneralIOName == null) {
+
+                    }
+                    else {
+                           $("#inlineRadio1IsGeneralIoDepartment").attr("disabled", "disabled");
+                        var massege = 'يوجد وحدة اتصالات ادارية عامة  /  ' + data.GeneralIOName + '  ' ;
+                        $('#GeneralIoDepartment').html(massege);
+
+                    }
+                }
+        });
+
+    }
+</script>

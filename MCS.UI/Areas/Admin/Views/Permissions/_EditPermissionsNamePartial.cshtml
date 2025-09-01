@@ -1,0 +1,131 @@
+﻿@model List<PermissionGroupVM>
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.Permission
+
+
+
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmModifyPermissions", @class = "form-horizontal form-row" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="content-rtl panel panel-default dialogbox_panel" >
+        <div class="panel-heading">
+            <h3 class="panel-title">@DbRes.TResource("Admin.Permissions.EditPermissionsName")</h3>
+        </div>
+
+        <div class="modal-body">
+
+            <div class="panel-body">
+                <div class='tree_parties space'>
+                    <ul class='tree'>
+
+                        @for (int i = 0; i < Model.Count; i++)
+                        {
+                            <li>
+                                <div class='row row_directory selected_bottom'>
+                                    <div class='col-md-1'>
+                                        <a class='node'>
+                                            <span class='fa fa-plus'></span>
+                                        </a>
+                                    </div>
+                                    <div class='col-md-8  col_text'>@Model[i].Text</div>
+                                    @Html.HiddenFor(model => model[i].Text)
+                                    @Html.HiddenFor(model => model[i].Id)
+                                    @Html.HiddenFor(model => model[i].IsUserDefined)
+                                    <div class='col-md-2'>
+                                        <div class='row control_name'>
+                                            <div class='col-md-6'></div>
+                                            <div class='col-md-6'></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @if (Model[i].Permissions != null)
+                                {
+                                    <ul style='display:none'>
+                                        @for (int j = 0; j < Model[i].Permissions.Count; j++)
+                                        {
+                                            <li>
+                                                <div class='row row_directory last'>
+                                                    <div class='col-md-1'></div>
+                                                    <div class='col-md-8  col_text'>@Model[i].Permissions[j].Text</div>
+                                                    @Html.HiddenFor(model => model[i].Permissions[j].Text, new { id = "__hdnText" })
+                                                    @Html.HiddenFor(model => model[i].Permissions[j].Id)
+                                                    @Html.HiddenFor(model => model[i].Permissions[j].IsUserDefined)
+                                                    <div class='col-md-2'>
+                                                        <div class='row control_name'>
+                                                            <div class='col-md-6'>
+                                                                <a class='col_cancel' style='font-size:13px; display:none;'>@DbRes.TResource("Admin.Permissions.Cancel")</a>
+                                                            </div>
+                                                            <div class='col-md-6'>
+                                                                <a style='display:none;' class='save_text'><i class='fa fa-save'></i></a>
+                                                                <a class='edit_text' title="@DbRes.TResource("Global.Edit")" alt="@DbRes.TResource("Global.Edit")"><i class='fa fa-edit'></i></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                            </li>
+                        }
+                    </ul>
+                </div>
+
+                @Html.ActionButton(DbRes.TResource("Admin.Permissions.Save"), "UpdatePermission", "AddTree", null, null, "OnAddSuccess", null, "post", null, "btnPermission", "frmModifyPermissions", "btn btn-primary ml-auto pull-right")
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+
+    $('div.content').on("click", ".edit_text", function () {
+
+        var text = $(this).parents('.row_directory:first').find('.col_text').html();
+        $(this).parents('.row_directory:first').addClass('edit');
+        $(this).parents('.row_directory:first').find('.col_text').addClass('control_name');
+        $(this).parents('.row_directory:first').find('.save_text').css('display', 'block');
+        $(this).parents('.row_directory:first').find('.col_cancel').css('display', 'block');
+        $(this).parents('.row_directory:first').find('.col_text').html("<input data-prev='" + text + "' type='text' value='" + text + "' class='form-control'>");
+        $(this).css('display', 'none');
+    });
+
+    $('div.content').on("click", ".col_cancel", function () {
+        $(this).parents('.row_directory:first').removeClass('edit');
+        $(this).parents('.row_directory:first').find('.col_text').removeClass('control_name');
+        $(this).parents('.row_directory:first').find('.save_text').css('display', 'none');
+        $(this).parents('.row_directory:first').find('.edit_text').css('display', 'block');
+        var text = $($(this).parents('.row_directory:first').find('.col_text').find('input')).data('prev');
+        $(this).parents('.row_directory:first').find('.col_text').html(text);
+        $(this).css('display', 'none');
+    });
+
+    $('div.content').on("click", ".save_text", function () {
+        var textbox = $($(this).parents('.row_directory:first').find('.col_text').find('input'));
+        if (textbox.val().indexOf("script") >= 0) {
+            return;
+        } 
+        $(this).parents('.row_directory:first').removeClass('edit');
+        $(this).parents('.row_directory:first').find('.col_text').removeClass('control_name');
+        $(this).parents('.row_directory:first').find('.col_cancel').css('display', 'none');
+        $(this).parents('.row_directory:first').find('.edit_text').css('display', 'block');
+        $(this).parents('.row_directory:first').find('.col_text').html(textbox.val());
+        $(this).parents('.row_directory:first').find('#__hdnText').val(textbox.val());
+        $(this).css('display', 'none');
+    });
+
+    function OnAddSuccess(data, div) {
+
+        if (data.MessageType != 2) {
+
+            __dialog.close();
+
+            ShowSuccesMessage(data.MessageText)
+        }
+        else {
+
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+</script>

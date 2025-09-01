@@ -1,0 +1,60 @@
+﻿.autocomplete_scroll {
+    max-height: 250px !important;
+    overflow: hidden !important;
+    overflow-y: auto !important;
+}
+
+.field-validation-valid {
+    display: inline !important;
+}
+
+.row.display-flex {
+    display: flex;
+    flex-wrap: wrap;
+}
+.row {
+    margin-right: -10px;
+    margin-left: -10px;
+}
+
+    .row.display-flex > [class*='col-'] {
+        display: flex;
+        flex-direction: column;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+.form-group {
+    margin-bottom: 0px;
+}
+
+.single-wrapper .row {
+    margin-bottom: 0px !important;
+}
+
+
+@media (max-width: 450px) {
+    .row.display-flex > [class*='col-'] {
+        width: 100%;
+    }
+
+    .inline-radio > .radio {
+        display: inline-block;
+        
+        margin-left: -1px !important;
+    }
+
+    body {
+        font-size: 12px !important;
+    }
+}
+
+.single-paper, .single-wrapper {
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+.ui-front {
+    z-index: 9999999999 !important;
+}
+

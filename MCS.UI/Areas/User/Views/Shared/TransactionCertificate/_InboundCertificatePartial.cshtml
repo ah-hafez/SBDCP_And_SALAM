@@ -1,0 +1,272 @@
+﻿@model MCS.UI.Areas.User.Models.Search.TransactionCertificate.InboundCertificateVM
+@using MCS.Common
+@using MCS.Framework.Localization
+@{
+    /**/
+
+    Layout = "~/Views/Shared/_DialogLayout.cshtml";
+    int id = Model.Id;
+}
+
+<div class="content-rtl panel panel-default dialogbox_panel">
+    <div class="content_container content_container--body transparent-bg">
+        <div class="options-list row anchor">
+            <div class="col-xs-4 col-sm-2 text-center">
+                <a id="first" class="boardered-circle-transparent active" data-divid="dvCerBasicInfo" onclick="GetCertificateBasicInfo(@id)"><i class="uicon icon_folder1"></i></a>
+                <a data-id="first" data-divid="dvCerBasicInfo" onclick="GetCertificateBasicInfo(@id)">  @DbRes.TResource("User.TransactionCertificate.TransactionData")</a>
+            </div>
+            <div class="col-xs-4 col-sm-2 text-center">
+                <a id="second" class="boardered-circle-transparent" data-divid="dvCerNames" onclick="GetCertificateNames(@id)"><i class="uicon icon_folder3"></i></a>
+                <a data-id="second" data-divid="dvCerNames" onclick="GetCertificateNames(@id)"> @DbRes.TResource("User.TransactionCertificate.RelatedpersonsInfo")</a>
+            </div>
+            <div class="col-xs-4 col-sm-2 text-center">
+                <a id="third" class="boardered-circle-transparent " data-divid="dvCerAssignments" onclick="GetCertificateAssignments(@id)"><i class="uicon uicon icon_refresh_right"></i></a>
+                <a data-id="third" data-divid="dvCerAssignments" onclick="GetCertificateAssignments(@id)">  @DbRes.TResource("User.TransactionCertificate.TransactionAssignments")</a>
+            </div>
+            <div class="col-xs-4 col-sm-2 text-center">
+                <a id="forth" class="boardered-circle-transparent " data-divid="dvCerLinks" onclick="GetCertificateLinks(@id)"><i class="uicon icon_folder5"></i></a>
+                <a data-id="forth" data-divid="dvCerLinks" onclick="GetCertificateLinks(@id)"> @DbRes.TResource("User.TransactionCertificate.LinkedTransactions")</a>
+            </div>
+            <div class="col-xs-4 col-sm-2 text-center">
+                <a id="fifth" class="boardered-circle-transparent " data-divid="dvCerArchiving" onclick="GetCertificateAttachments(@id)"><i class="uicon icon_folder2"></i></a>
+                <a data-id="fifth" data-divid="dvCerArchiving" onclick="GetCertificateAttachments(@id)">@DbRes.TResource("User.TransactionCertificate.MainDocnmentAttachments")</a>
+            </div>
+            <div class="col-xs-4 col-sm-2 text-center">
+                <a id="sixth" class="boardered-circle-transparent " data-divid="dvCerCopies" onclick="GetCertificateCopies(@id)"><i class="uicon icon_folder4"></i></a>
+                <a data-id="sixth" data-divid="dvCerCopies" onclick="GetCertificateCopies(@id)">@DbRes.TResource("User.OutboundDraft.ElectronicCopies")</a>
+            </div>
+            @*<div class="col-xs-4 col-sm-2 text-center">
+                <a id="sixth" class="boardered-circle-transparent " data-divid="dvCerCopies" onclick="GetCertificateExternalCopies(@id)"><i class="uicon icon_folder4"></i></a>
+                <a data-id="sixth" data-divid="dvCerCopies" onclick="GetCertificateExternalCopies(@id)">@DbRes.TResource("User.Transaction.ExternalCopies")</a>
+            </div>*@
+            <div class="col-xs-4 col-sm-2 text-center">
+                <a class="boardered-circle-transparent " data-divid="dvCerExplanation" onclick="GetCertificateExplanations(@id)"><i class="uicon icon_folder1"></i></a>
+                <a onclick="GetCertificateExplanations(@id)">@DbRes.TResource("User.Editor.Explanations")</a>
+            </div>
+        </div>
+
+        <div id="dvContent_@id">
+            @Html.Partial("~/Areas/User/Views/Shared/TransactionCertificate/CertificatePartials/_InboundCertificateBasicInfoPartial.cshtml", Model)
+        </div>
+
+        <div class="panel-footer text-center ">
+            <button type="button" class=" btn-site" onclick='ShowPrintDialog(@id);return false;'>@DbRes.TResource("User.InboundCertificate.PrintBarcode")</button>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $("div.anchor a").click(function () {
+        $("div.anchor a").removeClass("active");
+        $("div.anchor a").addClass("disabled");
+        $(this).addClass("active");
+        var id = $(this).data("id");
+        $("#" + id).addClass("active");
+        // $(".tabscontent").addClass("hidden_");
+        //var divId = $(this).data("divid");
+        //$("#" + divId).removeClass("hidden_");
+    });
+
+    $('.tab_editor').click(function () {
+
+        var url;
+        var data = new Array();
+
+        $('.tab_editor').removeClass('select_but');
+        $(this).addClass('select_but');
+
+        $("._views").hide();
+
+        switch ($(this)[0].id) {
+
+            case "btnBasicInfo":
+                $("#dvEditorBasicInfo").show();
+                break;
+
+            case "btnExplanation":
+                $("#dvEditorExplanation").show();
+                break;
+        }
+        return false;
+    });
+
+</script>
+
+<script>
+    var urlPrintTicket = '@Url.Action("PrintTicket","Shared")' + '?transactionId=' + @Model.Id;
+
+
+
+    function ShowTransactionCertificate(id, transactionType) {
+        debugger
+        var url;
+
+        switch (transactionType) {
+
+            case '@TransactionCategory.Inbound.ToString()':
+
+                url = '@Url.Action("InboundCertificate", "Shared")' + '?transactionId=' + id;
+                break;
+
+            case '@TransactionCategory.InternalOutbound.ToString()':
+
+                url = '@Url.Action("InboundCertificate", "Shared")' + '?transactionId=' + id;
+                break;
+
+            case '@TransactionCategory.ExternalOutbound.ToString()':
+            case '@TransactionCategory.DraftOutbound.ToString()':
+
+                url = '@Url.Action("OutboundCertificate", "Shared")' + '?transactionId=' + id;
+                break;
+        }
+
+        ShowDialog(url);
+    }
+    function ShowPrintDialog(id) {
+        var params = { transactionId: id };
+        ShowDialogAjaxPrintingBarcodes('@Url.Action("PrinttingBarcodes","Shared")' + "?" + $.param(params), {}, 'OpenPrintDialogSuccess', 'dialogbox col-md-12 ');
+    }
+
+    function OpenPrintDialogSuccess(data, $obj) {
+        if (data.MessageType != 2) {
+            $obj.setContent(data.Html);
+        }
+        else {
+            __dialog.close();
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+    function CloseDialog()
+    {
+        $(".closeIcon").click();
+        __dialog.close();
+
+    }
+</script>
+
+<script>
+    function GetCertificateBasicInfo(transactionId) {
+        var id = transactionId;
+
+        $.ajax({
+            type: 'Get',
+            cache: false,
+            url: '@Url.Action("GetInboundBasicInfo", "TransactionLog")',
+            data: { transactionId: id},
+            success:
+                function (data) {
+                    $("#dvContent_" + transactionId).html("");
+                    $("#dvContent_" + transactionId).html(data);
+                }
+        });
+    }
+
+    function GetCertificateNames(transactionId) {
+        var id = transactionId;
+
+        $.ajax({
+            type: 'Get',
+            cache: false,
+            url: '@Url.Action("GetTransactionNames", "TransactionLog")',
+            data: { transactionId: id},
+            success:
+                function (data) {
+                    $("#dvContent_" + transactionId).html("");
+                    $("#dvContent_" + transactionId).html(data);
+                }
+        });
+    }
+
+    function GetCertificateAssignments(transactionId) {
+        var id = transactionId;
+
+        $.ajax({
+            type: 'Get',
+            cache: false,
+            url: '@Url.Action("GetTransactionAssignmentHistories", "TransactionLog")',
+            data: { transactionId: id},
+            success:
+                function (data) {
+                    
+                    $("#dvContent_" + transactionId).html("");
+                    $("#dvContent_" + transactionId).html(data);
+                }
+        });
+    }
+    function GetCertificateLinks(transactionId) {
+        var id = transactionId;
+
+        $.ajax({
+            type: 'Get',
+            cache: false,
+            url: '@Url.Action("GetTransactionLinks", "TransactionLog")',
+            data: { transactionId: id},
+            success:
+                function (data) {
+                    $("#dvContent_" + transactionId).html("");
+                    $("#dvContent_" + transactionId).html(data);
+                }
+        });
+    }
+    function GetCertificateAttachments(transactionId) {
+        var id = transactionId;
+
+        $.ajax({
+            type: 'Get',
+            cache: false,
+            url: '@Url.Action("GetTransactionAttachments", "TransactionLog")',
+            data: { transactionId: id},
+            success:
+                function (data) {
+                    $("#dvContent_" + transactionId).html("");
+                    $("#dvContent_" + transactionId).html(data);
+                }
+        });
+    }
+    function GetCertificateCopies(transactionId) {
+        var id = transactionId;
+
+        $.ajax({
+            type: 'Get',
+            cache: false,
+            url: '@Url.Action("GetTransactionCopiesByTransactionId", "TransactionLog")',
+            data: { transactionId: id},
+            success:
+                function (data) {
+                    $("#dvContent_" + transactionId).html("");
+                    $("#dvContent_" + transactionId).html(data);
+                }
+        });
+    }
+    function GetCertificateExternalCopies(transactionId) {
+        var id = transactionId;
+
+        $.ajax({
+            type: 'Get',
+            cache: false,
+            url: '@Url.Action("GetTransactionExternalCopiesByTransactionId", "TransactionLog")',
+            data: { transactionId: id},
+            success:
+                function (data) {
+                    $("#dvContent_" + transactionId).html("");
+                    $("#dvContent_" + transactionId).html(data);
+                }
+        });
+    }
+    function GetCertificateExplanations(transactionId) {
+        var id = transactionId;
+
+        $.ajax({
+            type: 'Get',
+            cache: false,
+            url: '@Url.Action("GetExplanationsByTransactionId", "TransactionLog")',
+            data: { transactionId: id},
+            success:
+                function (data) {
+                    $("#dvContent_" + transactionId).html("");
+                    $("#dvContent_" + transactionId).html(data);
+                }
+        });
+    }
+</script>

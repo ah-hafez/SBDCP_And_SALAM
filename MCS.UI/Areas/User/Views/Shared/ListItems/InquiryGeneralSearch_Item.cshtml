@@ -1,0 +1,43 @@
+﻿@model MCS.UI.Areas.User.Models.Search.InquirySearchResultVM
+<div class="box-grid">
+    <div class="box gray animated zoomIn buttons-action">
+        <div class="correspondence-t">
+            <div class="d-flex">
+                <div class="administration-top">
+                </div>
+            </div>
+        </div>
+        <div class="correspondence-h">
+            <div class="heading"> @DbRes.TResource("User.Transaction.Assignment.ToOrgUnitId")</div>
+            <div class="subject">
+                @if (Model.ToEntity.Length > 37)
+                {
+                    <a id="example2" class=" ui-tooltip ui-corner-all ui-widget-shadow" style="color:#262f6b" data-bs-toggle="tooltip" data-placement="bottom" title="  @Model.ToEntity">
+                        @Model.ToEntity.Substring(0, 37)
+                        ...
+                    </a>
+                }
+                else
+                {
+                    @Model.ToEntity
+                }
+            </div>
+        </div>
+        <div class="correspondence-b d-flex flex-wrap">
+            <div class="f-line">
+                <div class="heading">@DbRes.TResource("User.InboundCertificate.InboundNumber")</div>
+                <div>
+                    <span class="light-count box_yellow">@Model.Number</span>
+                </div>
+            </div>
+            @*<div class="f-line">
+                    <div class="heading">@DbRes.TResource("User.OutboundAdvancedSearch.TransactionStatus")</div>
+                    <div>@Model.StatusName</div>
+                </div>*@
+            @*<div class="f-line">
+                    <div class="heading">@DbRes.TResource("User.Transaction.Assignment.ToEmployee")</div>
+                    <div>@Model.ToUser</div>
+                </div>*@
+        </div>
+    </div>
+</div>

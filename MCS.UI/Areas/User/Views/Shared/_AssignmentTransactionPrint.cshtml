@@ -1,0 +1,53 @@
+﻿@{
+    /**/
+
+    Layout = "~/Views/Shared/_EmptyLayout.cshtml";
+    int id = Model.Id;
+    string GUID = Guid.NewGuid().ToString();
+}
+<div>
+    <h2 class="site-color main-title " style="margin-left:40px">@DbRes.TResource("User.Transaction.Assignment.Print")</h2>
+    <div class="row ">
+        <div class="col-md-12">
+            @Html.Partial("~/Areas/User/Views/Shared/TransactionCertificate/_AssignmentGridPartial.cshtml", ViewData["AssignmentsData"])
+            @Html.Hidden("hdnTransactionId", ViewData["TransactionId"])
+        </div>
+    </div>
+
+</div>
+<script>
+    var token = $('form:first').find("input[name='__RequestVerificationToken']").val();
+    
+    //var TransactionId = $('#hdnTransactionId').val();
+    function PrintAssignmentTransactionReport(TransactionId) {
+        var data = { transactionId: TransactionId  ,__RequestVerificationToken: token };
+        event.preventDefault();
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetTransactionAssignmentHistoryWithContent", "TransactionLog")' + '?transactionId=' + TransactionId,
+            data: data,
+            cache: false,
+            success:
+
+                function (data) {
+                    if (data.MessageType != 2) {
+                        
+                        var TransactionAssignmentWindow = window.open('', '_blank', 'width=900,height=500');
+
+                        TransactionAssignmentWindow.document.write(data);
+                        TransactionAssignmentWindow.document.close();
+                        TransactionAssignmentWindow.focus();
+
+                        setTimeout(function () {
+                            TransactionAssignmentWindow.print();
+                            TransactionAssignmentWindow.close();
+                        }, 2000);
+                    }
+                    else {
+                        ShowErrorMessage(data.MessageText);
+                    }
+                }
+        });
+    }
+
+</script>

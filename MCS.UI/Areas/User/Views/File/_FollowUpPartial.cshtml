@@ -1,0 +1,562 @@
+﻿@using MCS.Common
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.File
+@using MCS.Framework.Controls.Mvc
+@using MCS.Framework.Controls
+@model IList<TransactionTrayInfoVM>
+
+<script src=@Url.Content("~/Content/User/lib/js/aos.js")></script>
+<script src=@Url.Content("~/Content/User/lib/js/jquery.slimscroll.min.js")></script>
+<script src=@Url.Content("~/Content/User/lib/js/mousewheel.min.js")></script>
+@*<script src=@Url.Content("~/Scripts/jquery-ui.min.js")></script>*@
+<script src=@Url.Content("~/Content/User/lib/js/jquery.iviewer.min.js")></script>
+<script src=@Url.Content("~/Content/User/lib/js/app.js")></script>
+<script src=@Url.Content("~/Content/User/lib/js/sideBarControl/SideBarControl.js")></script>
+
+@{
+    /**/
+
+    int FollowUpTrayId = (int)TrayType.FollowUp;
+    string subject = string.Empty;
+}
+
+<div class="content_container site_border mt-5" style="margin-bottom:50px;">
+    <div class="d-block d-lg-flex mx-3 mx-sm-5 my-2">
+        <ul class="nav nav-tabs custom-sub-nav-tabs mb-2 mb-sm-auto d-block d-sm-flex" role="tablist">
+
+            <li role="presentation" class="active">
+                <a href="#sub-tab-1" aria-controls="sub-tab-1" role="tab" data-toggle="tab" onclick="filterByFollowUpType(this,'@Convert.ToInt32(TrayType.FollowUp)')"> <span class="badge badge-danger badge-pill1 spnCount_@((int)TrayType.FollowUp)">0</span>@DbRes.TResource("User.File.FollowUp.FollowUp")</a>
+            </li>
+
+            @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.FollowUps.FollowUpEscalation))
+            {
+                <li role="presentation">
+                    <a href="#sub-tab-2" aria-controls="sub-tab-2" role="tab" data-toggle="tab" onclick="filterByFollowUpType(this,'@Convert.ToInt32(TrayType.FollowUpEscalation)')"> <span class="badge badge-danger badge-pill1 spnCount_@((int)TrayType.FollowUpEscalation)">0</span>@DbRes.TResource("User.File.FollowUp.FollowUpEcalation")</a>
+                </li>
+            }
+        </ul>
+        <div class="filter-link  ml-md-auto mr-lg-3 mt-3 mt-lg-auto">
+            <div class="checkbox" style="display:none">
+                <label for="CheckAllBoxes">
+                    <input id="CheckAllBoxes" type="checkbox" value="">
+                    <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                    <span class="Darkgreen bold">
+                        @DbRes.TResource("User.File.SelectAll")
+                    </span>
+                </label>
+            </div>
+            <a class="dashed-circle sort-target" href="javascript:toggleOrderBox()">
+                <i class="uicon icon_order Darkgreen"></i>
+                <span class="Darkgreen font-size-16">
+                    @DbRes.TResource("User.File.SortBy")
+
+                </span>
+            </a>
+            <a href="javascript:toggleFilterBox()" class="dashed-circle filter-target">
+                <i class="uicon icon_filter Darkgreen"></i>
+                <span class="Darkgreen font-size-16">
+                    @DbRes.TResource("User.Layout.Search")
+
+                </span>
+            </a>
+            @if ((bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser))
+            {
+                <a data-type="Card" onclick="goToView(1)" href="#" class=" system_1 Darkgreen font-size-16">
+                    <i class="uicon icon_cards Darkgreen font-size-16"></i>
+                    <span class="Darkgreen font-size-16">
+                        بطاقات
+
+                    </span>
+                </a>
+                <a data-type="Table" onclick="goToView(2)" href="#" class="active grid_system Darkgreen font-size-16">
+                    <i class="uicon icon_table Darkgreen font-size-16"></i>
+                    <span class="Darkgreen font-size-16">
+                        جدول
+                    </span>
+                </a>
+            }
+            else
+            {
+                <a data-type="Card" onclick="goToView(1)" href="#" class="active system_1">
+                    <i class="uicon icon_cards Darkgreen font-size-16"></i>
+                    <span class="Darkgreen font-size-16">
+                        بطاقات
+                    </span>
+                </a>
+                <a data-type="Table" onclick="goToView(2)" href="#" class="active grid_system">
+                    <i class="uicon icon_table Darkgreen font-size-16"></i>
+                    <span class="Darkgreen font-size-16">
+                        جدول
+                    </span>
+                </a>
+            }
+            <div class="toggling-menu">
+
+            </div>
+        </div>
+    </div>
+    @if (!(bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser))
+    {
+        <div class="row">
+            <div class="col-lg-12 ml-5">
+                <ul class="nav nav-pills MCShomeTabs">
+                    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.FollowUps.FollowUpNew))
+                    {
+                        <li role="presentation" class="active">
+                            <a onclick="filterByFollowUpType(this,'@Convert.ToInt32(TrayType.FollowUp)')">
+                                <span class="badge badge-danger badge-pill1 spnCount_@((int)TrayType.FollowUp)">0</span>
+
+                                <span>
+                                    @DbRes.TResource("User.File.Transaction.New")
+                                </span>
+                            </a>
+                        </li>
+                    }
+                    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.FollowUps.FollowUpUnderProccess))
+                    {
+                        <li role="presentation">
+                            <a onclick="filterByFollowUpType(this,'@Convert.ToInt32(TrayType.FollowUpUnderProcess)')">
+
+                                <span class="badge badge-danger badge-pill1 spnCount_@((int)TrayType.FollowUpUnderProcess)">0</span>
+                                <span>
+                                    @DbRes.TResource("User.File.Transaction.UnderProcess")
+                                </span>
+                            </a>
+                        </li>
+                    }
+                    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.FollowUps.FollowUpComplete))
+                    {
+                        <li role="presentation">
+                            <a onclick="filterByFollowUpType(this,'@Convert.ToInt32(TrayType.FollowUpComplete)')">
+
+                                <span class="badge badge-danger badge-pill1 spnCount_@((int)TrayType.FollowUpComplete)">0</span>
+                                <span>
+                                    @DbRes.TResource("User.File.Transaction.Complated")
+                                </span>
+                            </a>
+                        </li>
+                    }
+                    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.FollowUps.FollowUpLate))
+                    {
+                        <li role="presentation">
+                            <a onclick="filterByFollowUpType(this,'@Convert.ToInt32(TrayType.FollowUpLate)')">
+
+                                <span class="badge badge-danger badge-pill1 spnCount_@((int)TrayType.FollowUpLate)">0</span>
+                                <span>
+                                    @DbRes.TResource("User.File.Transaction.Late")
+                                </span>
+                            </a>
+                        </li>
+                    }
+                    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.FollowUps.FollowUpCanceld))
+                    {
+                        <li role="presentation">
+                            <a onclick="filterByFollowUpType(this,'@Convert.ToInt32(TrayType.FollowUpCanceld)')">
+                                <span class="badge badge-danger badge-pill1 spnCount_@((int)TrayType.FollowUpCanceld)">0</span>
+
+                                <span>
+                                    @DbRes.TResource("User.File.Transaction.Canceld")
+                                </span>
+                            </a>
+                        </li>
+                    }
+                    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.FollowUps.FollowUpReminder))
+                    {
+                        <li role="presentation">
+                            <a onclick="filterByFollowUpType(this,'@Convert.ToInt32(TrayType.FollowUpReminder)')">
+                                <span class="badge badge-danger badge-pill1 spnCount_@((int)TrayType.FollowUpReminder)">0</span>
+                                <span>
+                                    @DbRes.TResource("User.File.FollowUp.FollowUpNotification")
+                                </span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+
+            </div>
+        </div>
+    }
+    <hr class="mb-3" />
+    <div class="search mx-5 mx-xs-3 white-container mt-2 pb-2 filter-box">
+        <div class="form-row">
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <label class="">@DbRes.TResource("User.Transaction.Link.TransactionNumber")</label>
+                <input type="text" class="form-control trans-input" id="TransNo" onkeypress="return IsNumeric(event);">
+            </div>
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 with-icon">
+                <label class=" ">@DbRes.TResource("User.FollowUp.CreateDate")</label>
+                @Html.Calendar("DateCal", "hdnDateCal", "hdnHasDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), "", "dataCal form-control")
+                <a class=" date-icon2 " onclick="showCalender('DateCal')"><img src="~/Content/User/lib/images/SystemIcon/main bar-08.svg" width="30" /></a>
+                @Html.StickyHidden("hdnDateCal", "", null)
+            </div>
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <label class=" ">@DbRes.TResource("User.File.Subject")</label>
+                <div id="datePicker">
+                    @Html.TextBox("Description", "", "", new { @class = "form-control", @id = "Description" })
+                </div>
+            </div>
+            <div class="col-xs-12 panel-body row text-right">
+                <input type="button" value="@DbRes.TResource("User.Search.SubmitSearch")" class="btn btn-st2" onclick="FilterBy()" />
+            </div>
+        </div>
+    </div>
+    <div class="search mx-5 mx-xs-3 white-container mt-2 pb-2 order-box">
+        <form class="form-row" action="" method="post">
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <label class="">@DbRes.TResource("User.Transaction.TransactionNumber")</label>
+                @Html.AutoCompleteBuilder("Number", "NumberAcsDescId", ViewData["NumberAcsDesc"].ToString(), "", true, "form-control", onChangeCallback: "doSort")
+                @Html.StickyHidden("NumberAcsDescId", "", new { @Value = "", id = "NumberAcsDescId" })
+            </div>
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <label class="">@DbRes.TResource("User.Transaction.CreateDate")</label>
+                @Html.AutoCompleteBuilder("Date", "hdnSortByDate", ViewData["SortByDate"].ToString(), "", true, "form-control", onChangeCallback: "doSort")
+                @Html.StickyHidden("hdnSortByDate", "", new { @Value = "", id = "hdnSortByDate" })
+            </div>
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 ">
+                <label class="">@DbRes.TResource("User.Transaction.PriorityLevel")</label>
+                @Html.AutoCompleteBuilder("Priority", "hdnPriorityLevelId", ViewData["PriorityAscDesc"].ToString(), "", true, "form-control", onChangeCallback: "doSort")
+                @Html.StickyHidden("hdnPriorityLevelId", "", new { @Value = "", id = "hdnPriorityLevelId" })
+            </div>
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 ">
+                <label class="">@DbRes.TResource("User.Transaction.ConfidentialityLevel")</label>
+                @Html.AutoCompleteBuilder("Confidentiality", "hdnConfidentialityLevelId", ViewData["ConfidentialityAscDesc"].ToString(), "", true, "form-control", onChangeCallback: "doSort")
+                @Html.StickyHidden("hdnConfidentialityLevelId", "", new { @Value = "", id = "hdnConfidentialityLevelId" })
+            </div>
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <label class="">@DbRes.TResource("User.FollowUp.CreateDate")</label>
+                @Html.AutoCompleteBuilder("FollowUpCreatedOn", "hdnSortByDate", ViewData["SortByDate"].ToString(), "", true, "form-control", onChangeCallback: "doSort")
+                @Html.StickyHidden("hdnSortByDate", "", new { @Value = "", id = "hdnSortByDate" })
+            </div>
+        </form>
+    </div>
+
+
+    @Html.StickyHidden("transactionsIds", "", new { id = "transactionsIds" })
+    @Html.StickyHidden("FollowuptrayId", FollowUpTrayId.ToString(), new { id = "FollowuptrayId" })
+    @Html.StickyHidden("hdnFilter")
+    <div class="content_container content_container--body" id="FollowUpTransactionsBoxes">
+        @Html.Partial("~/Areas/User/Views/File/_TransactionsFollowUpBoxesPartial.cshtml", Model)
+    </div>
+</div>
+
+<div class="sidebarMultiOptions invisible transparent-bg" style="display:none">
+    <div class="options-list">
+
+        <div class="col-sm-2 text-left info-bottom">
+
+            <span class="paper_count"></span>
+            <span>معاملات</span>
+            <a class="close-box" href="javascript:toggleSelectedPaperBox()">
+                <i class="uicon icon_arrow_down"></i>
+            </a>
+        </div>
+        <div class="col-sm-10 bottom-actions text-right">
+            <div class="text-center">
+                <a onclick="ShowUnFollowPopUp()" class="boardered-circle-transparent"><i class="fas fa-user-times"></i></a>
+                <a onclick="ShowUnFollowPopUp()">@DbRes.TResource("User.FollowUp.UnFollowUp")</a>
+            </div>
+            <a href="javascript:closeSendActionShowMessage()" class="close-box close-box-md hidden-success"><i class="uicon icon_close"></i></a>
+        </div>
+
+
+
+    </div>
+    <div class="bottom-white selected-papers-wrapper">
+        <div class="col-xs-12">
+            <ul class="papers-selected"></ul>
+        </div>
+    </div>
+
+
+    <div class="bottom-white msg-bottom-box msg-confirm-box">
+        <div class="col-xs-12 col-sm-6">
+            <h4 class="title4">
+                <i class="glyphicon glyphicon-question-sign"></i>
+                <span>@DbRes.TResource("User.FollowUp.MovedTransaction")</span>
+            </h4>
+        </div>
+        <div class="col-sm-6 text-right">
+            <a class="btn-site " href="javascript:closePaperSendToDone()">@DbRes.TResource("Global.Dialog.Cancel")</a>
+            <a class="btn-site" href="javascript:sendActionShowMessage()">@DbRes.TResource("User.FollowUp.Ok")</a>
+        </div>
+    </div>
+
+    <div class="bottom-white msg-bottom-box success-done-msg">
+        <div class="col-xs-12 col-sm-6">
+            <h4 class="title4">
+                <i class="glyphicon glyphicon-ok"></i>
+                <span>@DbRes.TResource("User.FollowUp.MovedTransactionDone")</span>
+            </h4>
+        </div>
+        <div class="col-sm-6 text-right">
+            <a class="btn-site" href="#">@DbRes.TResource("User.FollowUp.GoToSavedTransactions")</a>
+        </div>
+    </div>
+</div>
+
+
+<script>
+        function Open(Id) {
+
+        var type = $('#hdnTransactionType_' + Id).val();
+        var url = "";
+        switch (type) {
+            case 'Inbound':
+                url = '@Url.Action("Edit", "Inbound")' + '?id=-1';
+                break;
+            case 'ExternalOutbound':
+                url = '@Url.Action("Edit", "OutboundExternal")' + '?id=-1';
+                break;
+            case 'InternalOutbound':
+                url = '@Url.Action("Edit", "OutboundInternal")' + '?id=-1';
+                break;
+            case 'DraftOutbound':
+                url = '@Url.Action("Edit", "OutboundDraft")' + '?id=-1';
+                break;
+            }
+            url = url.replace("-1", EncryptionKey(Id));
+            window.location.href = url;
+    }
+
+  var urlActionPage = "";
+    function OpenFollowUpCertificate(transId) {
+        debugger;
+        var FollowuptrayId = $("#FollowuptrayId").val();
+        var Id = transId;
+          urlActionPage = '@Url.Action("FollowUp", "TransactionFollowUp")?transId=' + Id +  "&FollowuptrayId=" + FollowuptrayId ;
+
+          ExecuteTargetFunction();
+
+	}
+     function ExecuteTargetFunction() {
+            window.location.href = urlActionPage;
+    }
+	function OpenDraftEditor(trayId, id, type) {
+
+        window.location.href = '@Url.Action("Index","Editor")?trayId=' + trayId + "&transactionId=" + id + "&transactionCategoryId="+type;
+	}
+    function OpenEditor(trayId, id, type) {
+
+        window.location.href = '@Url.Action("Index","Editor")?trayId=' + trayId + "&transactionId=" + id + "&transactionCategoryId=" + type;
+    }
+</script>
+
+<script>
+	 var idsList = [];
+	var FollowUpEventHandler = "@Html.Raw(Url.Action("UpdateTrayTransactions", "File", new { trayId = ViewData["TrayType"] ?? 1, dateType = ViewData["dateType"] ?? 1 }))";
+
+    function prepareFollowUpTransactions(optionalData) {
+        $(".grid-mvc").gridmvc();
+        pageGrids.FollowUpGrid.ajaxify(
+            {
+                getPagedData: FollowUpEventHandler,
+                getData: FollowUpEventHandler,
+                requestType: "POST",
+                optionalData: optionalData,
+                callbackClientFunctionAfter: ["goToViewAfterPaging"],
+            });
+    }
+
+    $(document).ready(function () {
+          var selectddl = '';
+        $(".MCShomeTabs li").click(function () {
+
+            $(".MCShomeTabs").find('li').removeClass("active");
+
+            if (selectddl == '') {
+                $('#othrs').removeClass("active");
+                selectddl = '';
+            }
+            else {
+                $('#othrs').addClass("active");
+                selectddl = '';
+            }
+            $(this).addClass("active");
+        });
+        $('#DateCal').attr('autocomplete', 'off');
+    });
+    var sortingOrders = [];
+    var currentIndex = 1;
+
+    function updateSortingData(index, ascending, obj) {
+        var objIndex = checkIfExist(obj, ascending);
+
+        if (obj.value == "") {
+            sortingOrders.splice(objIndex, 1);
+        } else {
+            if (objIndex == -1) {
+                sortingOrders.push({ Index: index, Ascending: ascending, ColunmName: obj.id });
+                currentIndex++;
+            } else {
+                sortingOrders[objIndex].Ascending = ascending;
+            }
+        }
+    }
+
+    function checkIfExist(obj) {
+        var index = -1;
+        for (var i = 0; i < sortingOrders.length; i++) {
+            if (sortingOrders[i].ColunmName == obj.id) {
+                index = i;
+                break;
+            }
+        }
+        return index;
+    }
+    function doSort(obj, value) {
+        var trayid = '@Convert.ToInt32(TrayType.FollowUp)';
+        var selectedTab = parseInt($('#selectedTab').val());
+        updateSortingData(currentIndex, value, obj);
+
+        var filters = $("#hdnFilter").val();
+        var sortData = { trayId: trayid, dateType: selectedTab, sortType: obj.id, dir: value, searchData: value, SortingOrders: sortingOrders, filter: filters };
+        $.ajax({
+            url: '@Url.Action("UpdateTrayTransactions", "File")',
+            type: 'POST',
+            cache: false,
+            data: sortData,
+            success: function (data) {
+                $('#FollowUpTransactionsBoxes').html("");
+                $('#FollowUpTransactionsBoxes').html(data.Html);
+                prepareFollowUpTransactions(sortData);
+                goToViewAfterPaging();
+            }
+        });
+    }
+	function fillHidden(obj) {
+		$('#hdn' + obj.id).val("");
+		$('#hdn' + obj.id).val(obj.value);
+	}
+
+    function FilterBy(obj,trayid) {
+
+        var selectedTab = parseInt($('#selectedTab').val());
+        var filter = "";
+
+        if ($("#TransNo").val() != "" && $("#TransNo").val() != null) {
+
+            if (filter.length > 0) {
+                filter += "&";
+            }
+            filter += "Number__1__" + $("#TransNo").val();
+        }
+
+        if ($("#hdnDateCal").val() != "" && $("#hdnDateCal").val() != null) {
+
+            if (filter.length > 0) {
+                filter += "&";
+            }
+            filter += "FollowUpCreatedOn__1__" + $("#hdnDateCal").val();
+        }
+        if ($("#Description").val() != "" && $("#Description").val() != null) {
+
+            if (filter.length > 0) {
+                filter += "&";
+            }
+            filter += "Subject__2__" + $("#Description").val();
+        }
+        $("#hdnFilter").val(filter);
+        $("#FollowuptrayId").val(trayId);
+        var filterData = { trayId: trayid, dateType: selectedTab, filter: filter,SortingOrders: sortingOrders };
+
+        $.ajax({
+            url: '@Url.Action("UpdateTrayTransactions","File")',
+            type: 'POST',
+            data: filterData,
+            success: function (data) {
+
+                $('#FollowUpTransactionsBoxes').html("");
+                $('#FollowUpTransactionsBoxes').html(data.Html);
+                prepareFollowUpTransactions(filterData);
+                goToViewAfterPaging();
+            },
+            error: function (textStatus, errorThrown) {
+
+            }
+
+        });
+    }
+
+    function ShowUnFollowPopUp() {
+        ShowConfirmMessage("@DbRes.TResource("User.FollowUp.AreYouUnFollowUp")", "doUnFollow");
+    }
+
+    function doUnFollow() {
+        if (selectedTrans == "" || selectedTrans == null) {
+            return;
+        }
+        var token = $("#frmOrgUnitsList").find("input[name='__RequestVerificationToken']").val();
+        var Data = { transactionIds: selectedTrans, __RequestVerificationToken: token };
+
+        $.ajax({
+            url: '@Url.Action("MultiFollowUpUpdate", "File")',
+            type: 'POST',
+            data: Data,
+            success: function (data) {
+                window.location.href = "@Url.Action("FollowUp" , "File")";
+            },
+            error: function (textStatus, errorThrown) {
+            }
+        });
+        }
+
+
+    function filterByFollowUpType(obj, trayId) {
+        $("#FollowuptrayId").val(trayId);
+
+        $("div.mr-auto.filter-link a ").removeClass("active");
+        //$(obj).addClass("active");
+
+        goToViewAfterPaging();
+        if (trayId == @FollowUpTrayId) {
+            $('#dvcheckAll').hide();
+            $("#dvChck").hide();
+            $(CheckAllBoxes).closest('div').hide();
+        }
+        else {
+            $('#dvcheckAll').show();
+            $("#dvChck").show();
+            $(CheckAllBoxes).closest('div').show();
+        }
+        $("#FollowUpTransactionsBoxes").html("");
+        $('#trayId').val(trayId);
+        var filterByTransactionTypeData = { trayId: trayId, dateType: '@Convert.ToInt32(TransactionDateType.Any)', PageSize: '@ViewData["PageSize"]' };
+        $.ajax({
+            url: '@Url.Action("UpdateTrayTransactions","File")',
+            type: 'POST',
+            data: filterByTransactionTypeData,
+            success: function (data)
+            {
+
+                $("#FollowUpTransactionsBoxes").html(data.Html);
+                unfillSelectedAll();
+                prepareFollowUpTransactions(filterByTransactionTypeData);
+                goToViewAfterPaging();
+            },
+            error: function (a)
+            {
+            }
+        });
+
+    }
+    function goToView(id) {
+        var trayId = $("#FollowuptrayId").val();
+        var selectedTab = parseInt($('#selectedTab').val());
+        $("#FollowUpTransactionsBoxes").html("");
+        var filterByTransactionTypeData = { trayId: trayId , dateType: '@Convert.ToInt32(TransactionDateType.Any)', PageSize: '@ViewData["PageSize"]', renderType: id };
+        $.ajax({
+            url: '@Url.Action("UpdateTrayTransactions","File")',
+            type: 'POST',
+            data: filterByTransactionTypeData,
+            success: function (data) {
+                $("#FollowUpTransactionsBoxes").html(data.Html);
+                unfillSelectedAll();
+                $('#selectedTab').val(filterByTransactionTypeData.dateType);
+                prepareFollowUpTransactions(filterByTransactionTypeData);
+                goToViewAfterPaging();
+            },
+            error: function (a) {
+            }
+        });
+        }
+</script>

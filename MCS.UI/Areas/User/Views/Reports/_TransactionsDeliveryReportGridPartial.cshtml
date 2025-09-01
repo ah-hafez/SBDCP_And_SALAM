@@ -1,0 +1,92 @@
+﻿@using MCS.UI.Areas.User.Models.Report
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<TransactionDeliveryReportVM>
+
+<script src=@Url.Content("~/Content/User/lib/js/app.js")></script>
+
+@{
+    var name = "_DeliveryReports_Item";
+    var gridName = "ReportsGrid";
+    var listItemName = string.Format("ListItems/{0}", name);
+}
+
+<div style="margin-bottom:50px;" class="boxes">
+    @Html.Grid(Model, "_CardGrid").Named(gridName).CollectionName("TransactionDeliveryReports").Columns(columns =>
+    {
+        columns.Add(true).Titled("").RenderValueAs(mvcgridcolumn => Html.Partial(listItemName, mvcgridcolumn, Html.ViewData))
+        .Sanitized(false).Encoded(false);
+    }).WithPaging(UIHelper.PageSize)
+</div>
+<script>
+    var token = $("input[name='__RequestVerificationToken']").val();
+    var requestObject = {
+        DateFrom: $("input[name='DateFrom']").val(),
+        DateTo: $("input[name='DateTo']").val(),
+        TransactionCategoryId: $('#hdnTransactionTypeId').val(),
+        FromOrgUnit: $('#FromOrgUnit').val(),
+        FromUser: $('#FromUser').val(),
+        ToOrgUnit: $('#ToOrgUnit').val(),
+        ToUser: $('#ToOrgUnit').val(),
+        ToEntity: $('#ToEntity').val(),
+        FromTransactionNumber: $('#hdnFromTransactionNumber').val(),
+        ToTransactionNumber: $('#ToTransactionNumber').val(),
+        HourFrom: $('#hdnHourFrom').val(),
+        HourTo: $('#ddlHourTo').val(),
+        MinuteFrom: $('#ddlMinuteFrom').val(),
+        MinuteTo: $('#MinuteTo').val(),
+        TimeFrom: $('#hdnTimeSpanTimeFrom').val(),
+        TimeTo: $('#hdnTimeSpanTimeTo').val(),
+        LetterTypeId: $('input[name="LetterTypeId"][type="hidden"]').val(),
+        PriorityLevelId: $('input[name="PriorityLevelId"][type="hidden"]').val(),
+        ConfidentialityLevelId: $('input[name="ConfidentialityLevelId"][type="hidden"]').val(),
+        SourceId: $('input[name="SourceId"][type="hidden"]').val(),
+        RePrint: document.getElementsByName('RePrint')[1].checked,
+        UserId: $('#hdnUsers').val(),
+        //ReportType: $('#ddlMinuteFrom').val(),
+        ReporterId: $('#hdnBasicReporter').val()
+    };
+
+    var ReportsGridEventHandler = "@Html.Raw(Url.Action("TransactionsDeliveryReportSearchGroupingByParty", "Reports"))?__RequestVerificationToken=" + token;
+    searchCriteria.DateFrom = new Date();
+
+    var searchCriteriaData = [];
+    searchCriteriaData.push({ name: '__RequestVerificationToken', value: token });
+
+    for (let item of Object.entries(requestObject)) {
+        searchCriteriaData.push({ name: item[0], value: item[1] });
+    }
+
+    function prepareTransactionsGrid() {
+        debugger;
+        pageGrids.ReportsGrid = undefined;
+        if (!pageGrids.ReportsGrid) {
+            $("div[data-gridname='ReportsGrid']").gridmvc();
+        }
+        if (!pageGrids.ReportsGrid) {
+            $(".grid-mvc").gridmvc();
+        }
+        pageGrids.ReportsGrid.ajaxify({
+            getPagedData: ReportsGridEventHandler,
+            requestType: "POST",
+            getData: ReportsGridEventHandler,
+            optionalData: searchCriteriaData
+        });
+    }
+
+    $(document).ready(function () {
+
+        //$('#dvDocumentPartial').hide();
+         var ReportsUrl = window.location.pathname.split("/")[3];
+
+        switch (ReportsUrl) {
+            case 'Reports':
+                $(".AttachmentTitle").html('@DbRes.TResource("User.Layout.UploadDeliveryReports")');
+                break;
+            default:
+                $(".AttachmentTitle").html('@DbRes.TResource("User.Attachment.AttachmentTitle")');
+
+                break;
+        }
+        prepareTransactionsGrid();
+    });
+</script>
+

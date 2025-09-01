@@ -1,0 +1,22 @@
+﻿@model MCS.UI.Areas.User.Models.Transaction.EditSubjectTransactionVM
+
+@{
+    Layout = null;
+
+}
+@using (Html.BeginForm("UpdateTransactionSubject", "Transaction", FormMethod.Post, new { id = "frmUpdateSubject", @class = "tab-content" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="form-group col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-3">
+        <div class="input-group w-100">
+            <div class="form-group w-100">
+                <label class="w-100 ml-5 mt-2">@DbRes.TResource("User.Inbound.BasicInfo.Subject") <span class="stark">*</span></label>
+                @Html.TextAreaGroupFor(model => model.Subject, new { id = "txtAreaSubject", @class = "form-control", @rows = "5" }, "Subject")
+            </div>
+        </div>
+    </div>
+    @Html.HiddenFor(x => x.Id, "Subject")
+}
+<div class="row text-left mr-5 mt-4 ml-xs-3 mb-4">
+    @Html.ConfirmAction(OperationType.Save, "btnUpdateTransction", DbRes.TResource("User.OutboundExternal.Save"), Url.Action("UpdateTransactionSubject", "Inbound"), null, null, "", "OnUpdateSuccess", null, DbRes.TResource("User.Inbound.SaveMessage"), "post", "frmUpdateSubject", "Subject", "btn btn-st1 btn-lg pull-left mt-5", null, UserClaims.Inbound.CreateInbound, null)
+</div>

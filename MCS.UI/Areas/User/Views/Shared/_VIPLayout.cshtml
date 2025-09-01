@@ -1,0 +1,15 @@
+﻿@{
+    Layout = "~/Views/Shared/_VIPBaseLayout.cshtml";
+}
+
+@section VIPMenu
+    {
+    @Html.Partial("~/Areas/User/Views/Shared/_VIPUserFileMenuPartial.cshtml")
+
+
+}
+
+@section Body
+    {
+    @RenderBody()
+}

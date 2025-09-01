@@ -1,0 +1,223 @@
+﻿@model MCS.UI.Areas.User.Models.Hub.HubTransactionVM
+@using MCS.UI.Areas.User.Models.Transaction;
+@using MCS.Framework.Localization
+@{
+    ViewBag.Title = "";
+    Layout = "~/Areas/User/Views/Shared/_OrgUnitLayout.cshtml";
+    List<TransactionAttachmentVM> Attachments = (List<TransactionAttachmentVM>)ViewData["Attachments"];
+    List<TransactionNameVM> RelatedPersons = (List<TransactionNameVM>)ViewData["Names"];
+    var attachmentsVM = new TransactionAttachmentVM { Attachments = (AjaxGrid<TransactionAttachmentVM>)new AjaxGridFactory().CreateAjaxGrid(Attachments, 1, Attachments.Count, false) };
+    var namesVM = new TransactionNameVM { Names = (AjaxGrid<TransactionNameVM>)new AjaxGridFactory().CreateAjaxGrid(RelatedPersons, 1, RelatedPersons.Count, false) };
+}
+
+
+<div class="expanded-container">
+
+    <div class="content_container content_container--body transparent-bg">
+        <div class="options-list row anchor">
+            <a class="close-box close-box--sticky" href='@Url.Action("GetAll","Hub")'><i class="uicon icon_close"></i></a>
+            <div class="col-xs-6 col-sm-2 text-center" id="basicInfor ">
+                <a href="#" id="first" class="boardered-circle-transparent active" data-divid="first-tab"><i class="uicon icon_folder1"></i></a>
+                <a href="#" data-id="first" data-divid="first-tab">  @DbRes.TResource("User.OutboundExternal.DataInsertion")</a>
+            </div>
+            <div class="col-xs-6 col-sm-2 text-center" id="transactionAttachment">
+                <a href="#" id="second" class="boardered-circle-transparent" data-divid="second-tab"><i class="uicon icon_folder2"></i></a>
+                <a href="#" data-id="second" data-divid="second-tab">  @DbRes.TResource("User.Transaction.Archiving")</a>
+            </div>
+            <div class="col-xs-6 col-sm-2 text-center" id="transactionNames">
+                <a href="#" id="third" class="boardered-circle-transparent" data-divid="third-tab"><i class="uicon icon_folder3"></i></a>
+                <a href="#" data-id="third" data-divid="third-tab">  @DbRes.TResource("User.Inbound.Names") </a>
+            </div>
+        </div>
+    </div>
+    <div class="content_container content_container--body white-bg">
+        <div class="tabscontent" id="first-tab">
+            <div class="row">
+                <div class="animated zoomIn">
+                    <div class="panel-body">
+                        <div class="col-md-4">
+                            <span class="light-text">
+                                hiiiiiiiiiiiiii
+                                @DbRes.TResource("User.Editor.BasicInfo.Inbound.Subject") :
+                            </span>
+                            <span class="indent-text" style="word-break:break-all">
+                                @Html.DisplayFor(model => model.Subject)
+                            </span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <span class="light-text">
+                                @DbRes.TResource("User.Editor.BasicInfo.Inbound.DocumentNumber") :
+                            </span>
+                            <span class="indent-text">
+                                @Html.DisplayFor(model => model.TransactionNumber)
+                            </span>
+                        </div>
+                        <div class="col-md-4">
+                            <span class="light-text">
+                                @DbRes.TResource("User.Editor.BasicInfo.Inbound.Date") :
+                            </span>
+                            <span class="indent-text">
+                                @Html.DisplayFor(model => model.RecordDate)
+                            </span>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="col-md-4">
+                            <span class="light-text">
+                                @DbRes.TResource("User.Editor.BasicInfo.Inbound.Confidentiality") :
+                            </span>
+                            <span class="indent-text">
+                                @Html.DisplayFor(model => model.ConfidentialityName)
+                            </span>
+                        </div>
+                        <div class="col-md-4">
+                            <span class="light-text">
+                                @DbRes.TResource("User.Editor.BasicInfo.Inbound.Destination") :
+                            </span>
+                            <span class="indent-text">
+                                @Html.DisplayFor(model => model.ExternalPartyName)
+                            </span>
+                        </div>
+                        <div class="col-md-4">
+                            <span class="light-text">
+                                @DbRes.TResource("User.Editor.BasicInfo.Inbound.LetterType") :
+                            </span>
+                            <span class="indent-text">
+                                @Html.DisplayFor(model => model.TransactionCategory)
+                            </span>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="col-md-4">
+                            <span class="light-text">
+                                @DbRes.TResource("User.Editor.BasicInfo.Inbound.Priority") :
+                            </span>
+                            <span class="indent-text">
+                                @Html.DisplayFor(model => model.PriorityText)
+                            </span>
+                        </div>
+                        <div class="col-md-4">
+                            <span class="light-text">
+                                @DbRes.TResource("User.Editor.BasicInfo.Inbound.SourceType") :
+                            </span>
+                            <span class="indent-text">
+                                @Html.DisplayFor(model => model.TransactionTypeName)
+                            </span>
+                        </div>
+                        <div class="col-md-4">
+                            <span class="light-text">
+                                @DbRes.TResource("User.Inbound.BasicInfo.IsAppointment") :
+                            </span>
+                            <span class="indent-text">
+                                @{ 
+                                    string reminderTime = Model.ReminderGDate.HasValue? Model.ReminderGDate.Value.ToString("hh:mm tt") : "";
+                                }
+                                @Html.DisplayFor(model => model.ReminderHDate) @reminderTime
+                            </span>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="col-md-8">
+                            <span class="light-text">
+                                @DbRes.TResource("User.Editor.BasicInfo.Inbound.Remarks") :
+                            </span>
+                            <span class="indent-text" style="word-break:break-all">
+                                @Html.DisplayFor(model => model.Remarks)
+                            </span>
+                        </div>
+                    </div>
+
+                    <hr />
+                    @Html.Partial("~/Areas/User/Views/Transaction/_ArchivingPartialMainDocument.cshtml", new TransactionArchiveVM(TransactionAttachmentType.Main, true, false, true, bReadOnly: true), Html.ViewData)
+                </div>
+            </div>
+        </div>
+        <div class="tabscontent hidden_" id="second-tab">
+            <div class="animated zoomIn">
+                <div class="panel-body">
+                    <div class="col-md-12">
+                        @*@if (Model.MainDocument.Document != null)
+                            {
+                                <div class="archiving_group">
+                                    <div class="archiving_group_title">
+                                        @DbRes.TResource("User.InboundCertificate.MainDocument")
+                                    </div>
+                                    <div class="archiving_group_content">
+                                        <a href="" onclick="ShowDocumentViewer('@Model.MainDocument.Document.Id','@ViewData["SessionArchiveMainDocumentKey"]'); return false;">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="col-md-4">
+                                                        @Html.DisplayFor(model => model.TransactionNumber)
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        @Html.DisplayFor(model => model.TransactionTypeName)
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        @Html.DisplayFor(model => model.HijriRecordDate)
+                                                        @Html.Display(@Model.RecordDate.ToShortTimeString())
+                                                    </div>
+                                                </div><br /><hr />
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            }*@
+                        @if (Attachments.Count > 0)
+                        {
+                            <div class="archiving_group">
+                                <div class="archiving_group_title">
+                                    <h4>@DbRes.TResource("User.InboundCertificate.Attachments")</h4>
+                                    <br />
+                                </div>
+                                <div class="archiving_group_content">
+                                    @for (int i = 0; i < Attachments.Count; i++)
+                                    {
+                                        if (Attachments[i].DocumentVM != null)
+                                        {
+                                            <span class=""><a onclick="ShowHUBDocumentViewer('@Attachments[i].Id','@ViewData["DocumentSessionKey"]'); return false;" href=""> @Attachments[i].TypeName</a></span>
+                                            <br />
+                                        }
+                                        else
+                                        {
+                                            <span class="">@Attachments[i].TypeName</span>
+                                            <br />
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tabscontent hidden_" id="third-tab">
+            <div class="animated zoomIn">
+                <div class="panel-body">
+                    @Html.Partial("~/Areas/User/Views/Transaction/_NamesGridPartial.cshtml", namesVM.Names, new ViewDataDictionary { { "IsEnableAction", false } })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("div.anchor a").click(function () {
+            $("div.anchor a").removeClass("active");
+            $("div.anchor a").addClass("disabled");
+            $(this).addClass("active");
+            var id = $(this).data("id");
+            $("#" + id).addClass("active");
+            $(".tabscontent").addClass("hidden_");
+
+            var divId = $(this).data("divid");
+            $("#" + divId).removeClass("hidden_");
+        });
+    });
+
+
+     function ShowHUBDocumentViewer(documentId, documentSessionKey) {
+        var url = '@Url.Action("ShowHUBDocumentViewer","Shared")' + '?documentId=' + documentId + "&documentSessionKey=" + documentSessionKey;
+        ShowDialog(url);
+    }
+</script>

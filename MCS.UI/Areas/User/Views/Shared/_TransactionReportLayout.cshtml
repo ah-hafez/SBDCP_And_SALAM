@@ -1,0 +1,48 @@
+﻿@{
+
+    bool isVIP = (bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser);
+    if (!isVIP)
+    {
+        Layout = "~/Views/Shared/_BaseLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_VIPBaseLayout.cshtml";
+    }
+
+
+
+}
+
+
+@if (!isVIP)
+{
+    @section Menu
+    {
+
+        @Html.Partial("~/Areas/User/Views/Shared/_TransactionReportMenuPartial.cshtml")
+    }
+}
+else
+{
+    @section VIPMenu
+    {
+
+        @Html.Partial("~/Areas/User/Views/Shared/_VIPTransactionReportMenuPartial.cshtml")
+    }
+}
+
+
+
+
+
+
+
+@section Body
+    {
+    <div class="mx-3 mx-md-5">
+        @RenderBody()
+    </div>
+}
+
+

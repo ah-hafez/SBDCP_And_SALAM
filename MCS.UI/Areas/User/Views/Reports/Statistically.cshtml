@@ -1,0 +1,91 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.Common;
+@model MCS.UI.Areas.User.Models.StatisticallyDashboardViewModel
+
+@{
+    ViewBag.Title = DbRes.TResource("User.Report.Statistically.Reborts");
+    Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
+}
+
+<div id="dvContenar mt-5">
+    <div class="row">
+
+        <h2 class="site-color main-title">@DbRes.TResource("User.Report.Statistically.Reborts")</h2>
+
+        <div class="content_container site_border">
+            <div class="content_container content_container--header">
+                <div class="col-md-12">
+                    <div class="content_container site_border">
+                        <div class="content_container ">
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <h3 class="title2 title2-padding">@DbRes.TResource("User.Report.Statistically.StatisticallyReborts")</h3>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmReportStatistically", @class = "form-horizontal form-row" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.OrgUnitId, TreeMode.Single, "dvOrgUnitsTree", true, "SetOrgUnitText", "Statistically")
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 text-center">
+                        @*@Html.ActionButton(DbRes.TResource("User.Report.Statistically.Search"), "StatisticallySearch", "dvContenar", null, null, "OnSuccess", null, "post", "Statistically", "btnSearch", "frmReportStatistically", "btn btn-permissions pull-right")*@
+                        @Html.ClientButton(DbRes.TResource("User.Report.OutboundTransactions.Search"), "btnSearch", " btn-site ", "Redirect", UserClaims.Reports.StatisticalReportsOfTransactions)
+                    </div>
+                </div>
+
+            }
+        </div>
+    </div>
+    @Html.Hidden("SelectedOrgUnit", null, new { @class = "formField" })
+</div>
+<form class="form-horizontal form-row" target="_blank" action="@(MCS.UI.UrlHelper.GetBaseUri() + "/ReportViewer.aspx?ReportName=Statistical")" method="post" id="frmReportStatistical"></form>
+
+<script>
+
+    $(function () {
+        $("#SelectedOrgUnit").val($("#divForm__dvOrgUnitsTree .txtDepartmentName").val());
+    })
+
+    function SetOrgUnitText() {
+        $("#SelectedOrgUnit").val($("#divForm__dvOrgUnitsTree .txtDepartmentName").val());
+    }
+
+    function OnSuccess(data) {
+
+
+        var url = '@(MCS.UI.UrlHelper.GetBaseUri() + "/ReportViewer.aspx?ReportName=Statistical")';
+
+
+        window.open(url);
+
+    }
+
+    function Redirect() {
+
+
+        ClickedSubmit = "Statistically";
+
+
+        if ($('#frmReportStatistically').valid()) {
+
+            $("#OrgUnitId").addClass("formField");
+            $("#frmReportStatistical").append($("#dvContenar .formField").clone());
+            $("#frmReportStatistical").submit();
+            $("#frmReportStatistical").html("");
+        }
+    }
+</script>
+

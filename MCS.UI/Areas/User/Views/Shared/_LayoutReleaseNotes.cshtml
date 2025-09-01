@@ -1,0 +1,106 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Common
+@using MCS.UI.Areas.User.Models.Shared;
+@using MCS.Framework.Controls.Mvc;
+
+@using MvcSiteMapProvider.Web.Html;
+@{UserVM userVM = SessionInfo.CurrentUser;}
+<!DOCTYPE html>
+<html lang="ar">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link type="image/x-icon" rel="shortcut icon" href="~/Content/User/lib/favicon.ico">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="theme-color" content="#0c7c5a">
+    <title>@ViewBag.Title</title>
+    <!-- Bootstrap Core CSS -->
+    <link href="~/Content/User/lib/css/bootstrap.min.css" rel="stylesheet">
+    <link href="~/Content/User/lib/css/bootstrap-rtl.min.css" rel="stylesheet">
+    <link href="~/Content/style/Custom.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <!-- Custom Fonts -->
+    <link href="~/Content/User/lib/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="~/Content/User/lib/css/bootstrap-select.min.css" rel="stylesheet">
+    <link href="~/Content/User/lib/css/animate.css" rel="stylesheet">
+    <link href="~/Content/User/lib/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="~/Content/User/lib/css/slick.css" />
+    <link href="~/Content/User/lib/css/mob_style.css" rel="stylesheet">
+    <link href="~/Content/User/lib/css/select2.min.css" rel="stylesheet" />
+    <link href="~/Content/User/OldDesign/lib/css/jquery/jquery-ui.min.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href=@Url.Content("~/Content/User/lib/css/jquery-confirm.css") />
+    <link href="~/Content/User/lib/css/style_SakkalMajalla.css" rel="stylesheet">
+    <link href="~/Content/User/lib/fontawesome/css/all.css" rel="stylesheet" /> @*<link rel="stylesheet" href="~/Content/User/lib/fontawesome/css/all.css">*@
+    <style>
+        .connected-transaction {
+            background-color: orangered !important;
+            color: #FFF;
+            border-color: orangered !important;
+        }
+
+        .connected-transaction-text {
+            color: orangered !important;
+        }
+    </style>
+    <!-- jQuery -->
+    <!-- Bootstrap Core JavaScript -->
+
+
+    @System.Web.Optimization.Scripts.Render("~/bundles/jquery")
+    @System.Web.Optimization.Scripts.Render("~/bundles/jqueryui")
+    @System.Web.Optimization.Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+        var AllowSend=false;
+        var __dialogNoText = '@Html.Raw(DbRes.TResource("Global.Dialog.No"))';
+        var __dialogYesText = '@Html.Raw(DbRes.TResource("Global.Dialog.Yes"))';
+        var __dialogCloseText = '@Html.Raw(DbRes.TResource("Global.Dialog.Close"))';
+        var __dialogCancelText = '@Html.Raw(DbRes.TResource("Global.Dialog.Cancel"))';
+        var __cultureName = '@SessionInfo.CultureShortName';
+
+        $(document).ajaxStart(function () {
+            $("#Loaderr").show();
+            AllowSend = false;
+
+        });
+        $(document).ajaxComplete(function () {
+            $("#Loaderr").hide();
+
+        });
+    </script>
+    @System.Web.Optimization.Scripts.Render("~/bundles/plugin")
+    @System.Web.Optimization.Scripts.Render("~/bundles/lib")
+    @System.Web.Optimization.Scripts.Render("~/bundles/custom")
+
+    @Html.RenderTextEditorResources()
+    <script src="~/Scripts/ActionButtonsHelper.js"></script>
+
+</head>
+
+<body dir="rtl">
+
+    <!-- ******************************Content ************************* -->
+
+    <div>
+        @RenderBody()
+    </div>
+    <!-- ****************************** end Content ************************* -->
+    <br />
+
+</body>
+</html>
+
+<script>
+    autosize(document.querySelectorAll('textarea'));
+</script>
+
+<script>
+    //(function ($) {
+    //    $(document).ready(function () {
+    //        $.slidebars();
+    //    });
+    //})(jQuery);
+</script>

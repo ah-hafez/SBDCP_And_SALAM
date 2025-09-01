@@ -1,0 +1,35 @@
+﻿@using MCS.UI.Areas.User.Models.Transaction;
+@model AjaxGrid<TransactionChatVM>
+@using MCS.UI.Helpers
+
+@{
+    Layout = null;
+}
+
+@Html.Grid(Model).CollectionName("TransactionChats").Named("grdTransactionChat").Columns(columns =>
+{
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Id, new { id = "Id_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Key, new { id = "Key_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(model => model.ChatUsers).Titled(DbRes.TResource("User.Transaction.Chat.Users"));
+    columns.Add(false).RenderValueAs(model => @DateHelper.GetDate(model.DateTimeHJ)).Titled(DbRes.TResource("User.Transaction.Chat.DatetimeHJ"));
+    columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => @Html.ClientLinkTag(DbRes.TResource("User.Transaction.Chat.View"), cssClass: "btn btn-st2 pull-right", title: DbRes.TResource("User.Transaction.Chat.View"), clientFunctionToCall: "DisplayTransactionChat(" + model.Id + ",'" + model.ChatUsers + "','" + @DateHelper.GetDate(model.DateTimeHJ) + "')", innerHtml: ""));
+
+
+}).WithPaging(GridHelper.PageSize)
+
+<script>
+    $(document).ready(function () {
+        userTransactionChat();
+    })
+    function userTransactionChat() {
+        $(".grid-mvc").gridmvc();
+        pageGrids.grdTransactionChat.ajaxify(
+            {
+                getPagedData: '@Html.Raw(Url.Action("UpdateGridChats", "Chat"))',
+                getData: '@Html.Raw(Url.Action("UpdateGridChats", "Chat"))',
+                optionalData: { transactionId: $('#hdnTransactionId').val() },
+                requestType: "POST"
+            });
+    }
+</script>
+

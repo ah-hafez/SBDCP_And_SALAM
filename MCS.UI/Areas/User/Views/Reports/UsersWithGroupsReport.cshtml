@@ -1,0 +1,162 @@
+﻿
+@{
+    ViewBag.Title = "ادوار المستخدمين";
+}
+<br />
+<br />
+
+@using MCS.UI.Areas.User.Models.Report;
+@using MCS.Framework.Localization;
+@using MCS.Framework.Controls;
+@using MCS.UI.Common;
+@using MCS.UI.Helpers;
+@using System.Reflection;
+@using MCS.UI.Areas.Admin.Models.Lookups
+@using System.Globalization;
+@model TransactionReportResult
+@{
+    Layout = null;
+}
+
+<DOCTYPE style="width: 100%; background-color: #ffffff" html>
+    <html style=" background-color: #ffffff" lang="ar">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" id="theme" href="@UIConfigurations.GetFullURl()/Content/User/lib/css/theme_@(SessionInfo.CultureShortName).css" />
+        @if (SessionInfo.CultureShortName == "ar")
+        {
+            <link rel="stylesheet" type="text/css" id="theme" href="@UIConfigurations.GetFullURl()/Content/User/lib/css/rtl.css" />
+        }
+        <link type="image/x-icon" rel="shortcut icon" href="@UIConfigurations.GetFullURl()/Content/User/lib/favicon.png">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <meta name="theme-color" content="#0c7c5a">
+        <title>@ViewBag.Title</title>
+        <!-- New -->
+        <link href="@UIConfigurations.GetFullURl()/Content/User/lib/css/new.css" rel="stylesheet" />
+        <!-- Select2 CSS -->
+        <link href="@UIConfigurations.GetFullURl()/Content/User/lib/plugins/select2/select2.min.css" rel="stylesheet" />
+        <link href="@UIConfigurations.GetFullURl()/Content/User/lib/css/dawood-style.css" rel="stylesheet" />
+        <script src="@UIConfigurations.GetFullURl()/Scripts/jquery.min.js"></script>
+        <style>
+            .pagebreak {
+                page-break-after: always;
+            }
+
+            table.rprt {
+                width: 80%;
+            }
+
+                table.rprt td {
+                    padding: 5px;
+                    text-align: center;
+                }
+
+            table.rprtGrid {
+                width: 100%;
+                border: 1px solid #000000;
+            }
+
+                table.rprtGrid td {
+                    padding: 5px;
+                    border-bottom: 1px dashed #ffffff;
+                }
+        </style>
+    </head>
+    <body style="width:90%;background-color:#ffffff;margin-left:8%">
+
+        <table style="width: 100%; background-color: #ffffff" class="rprt">
+
+            <tr style=" background-color: #ffffff">
+                <td>
+                    <table style=" background-color: #ffffff" class="rprt">
+                        <tr>
+                            <td>
+                                <p>
+                                    المملكة العربية السعودية
+                                </p>
+
+                                <p>
+                                    الهيئة العامة للصناعات الحربية
+                                </p>
+                            </td>
+                            <td>
+
+                                @if (ViewData["LogoFile"] != null)
+                                {
+                                    <img class="" width="200" src="~/Content/User/lib/images/GAMI_Logo_Color-01.svg" />
+                                }
+                                <img class="" width="200" src="~/Content/User/lib/images/GAMI_Logo_Color-01.svg" />
+
+
+                                <br>
+
+
+                                <b>تقرير / ادوار المستخدمين </b>
+                                <br />
+                                @* @Model.TransactionBasicResultVM.ExternalParty*@
+                            </td>
+                        </tr>
+                    </table>
+
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div class="row">
+                        <table class="rprtGrid">
+
+                            <tr>
+                                <td><b>اسم المستخدم</b></td>
+                                <td><b>الوحدة</b></td>
+                                <td><b>المدير</b></td>
+                                <td><b>الدور</b></td>
+                            </tr>
+
+                            @{ var results = ((AjaxGrid<UserGroupVM>)Model.UserGroupDTOtGridResultVMs).GridItems.ToList(); }
+                            @if (results != null && results.Count > 0)
+                            {
+                                foreach (var m in results)
+                                {
+                                    <tr>
+                                        <td>@m.Name</td>
+                                        <td>@m.OrgUnitNames.FirstOrDefault()</td>
+                                        <td>@m.AdminUserName</td>
+                                        <td>@m.GroupName</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="2">لا يوجد بيانات للعرض</td>
+                                </tr>
+                            }
+                        </table>
+
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
+
+<style>
+    .center {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        /*width: 50%;*/
+        max-height: 43px;
+        max-width: 214px;
+    }
+
+    .rprtGrid td {
+        border-left: 1px #000000 solid;
+        border-bottom: 1px #000000 solid !important;
+    }
+</style>

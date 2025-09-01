@@ -1,0 +1,236 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Framework.Controls
+@using MCS.Framework.Controls.Mvc
+@using Grid = MCS.GridMvc.Ajax.GridExtensions
+@model  MCS.UI.Areas.Admin.Models.AdminAudit.AdminAudit
+<div class="row m-0 my-2">
+    <div class="w-100 text-left">
+        <label class="cursor-pointer dark-color mx-2 filter-target">
+            <i class="sort-icons icon-filter mx-1"></i>تصفية
+        </label>
+        <label class="cursor-pointer dark-color mx-2 sort-target">
+            <i class="sort-icons icon-sort mx-1"></i>ترتيب حسب
+        </label>
+    </div>
+    <div class="filter-box filter">
+        <form id="frmLog">
+            @Html.AntiForgeryToken()
+            <div class="form-row">
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                    @Html.Label(DbRes.TResource("User.TransactionCertificate.MovementType"))
+                    @Html.AutoCompleteBuilder("LogType", "hdnLogType", ViewData["LogType"].ToString(), null, true, "form-control")
+                    @Html.Hidden("hdnLogType", "", new { @Value = "", id = "hdnLogType" })
+                </div>
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                    @Html.Label(DbRes.TResource("User.Log.TransactionLog.LogDatePeriod"))
+                    <div class="form-group input-group">
+                        @Html.Calendar("LogDateFrom", "hdnLogDateFromGreg", "hdnLogDateFromUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), "", "calenderInput form-control")
+                        @Html.StickyHidden("hdnLogDateFromGreg", "", null)
+                        @Html.StickyHidden("hdnLogDateFromUm", "", null)
+                        <span class="input-group-addon add-on">_</span>
+                        @Html.Calendar("LogDateTo", "hdnLogDateToGreg", "hdnLogDateToUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), "", "calenderInput form-control")
+                        @Html.StickyHidden("hdnLogDateToGreg", "", null)
+                        @Html.StickyHidden("hdnLogDateToUm", "", null)
+                    </div>
+                </div>
+                <div class="col-xs-12 panel-body row text-right">
+                    <input type="button" value="@DbRes.TResource("User.Layout.Search")" class="btn-site" onclick="FilterLogsBy()" />
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="filter-box sort">
+        <form>
+            <div class="form-row">
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                    @Html.Label(DbRes.TResource("User.TransactionCertificate.MovementDate"))
+                    @Html.AutoCompleteBuilder("LogedOn", "hdnLogedOn", ViewData["SortByDate"].ToString(), null, true, "form-control", onChangeCallback: "doSortForLogs")
+                    @Html.Hidden("hdnLogedOn", "", new { @Value = "", id = "hdnLogedOn" })
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+ <div id="dvLoggingTable">
+    @Html.Partial("~/Areas/Admin/Views/AdminAudit/_AdminAuditTablePartial.cshtml", Model.AdminAuditGridVMs)
+</div> 
+
+<div>
+    <button class="btn btn-dark-blue pull-right mb-2" onclick="PrintTransactionLog()">@DbRes.TResource("User.Search.PrintTheLog")</button>
+</div>
+@Html.Hidden("hdnLogsFilter") 
+<script>
+
+    $(document).ready(function () {
+        $('.filter-target').click(function () {
+            $(this).parent().parent().find('.filter-box.filter').toggle();
+            $('.sort-target').removeClass("active");
+            $(this).toggleClass("active");
+            $('.filter-box.sort').hide();
+        });
+        $('.sort-target').click(function () {
+            $(this).parent().parent().find('.filter-box.sort').toggle();
+            $('.filter-target').removeClass("active");
+            $(this).toggleClass("active");
+            $('.filter-box.filter').hide();
+        });
+
+        $(".calenderInput").attr('autocomplete', 'off');
+    });
+
+    var currentLogPage = 1;
+    function doSortForLogs(obj) {
+        $("#hdnLogsFilter").val("");
+        var dir = "";
+        var SortByData = $('#hdn' + obj.id).val();
+         if (obj.id == "LogedOn") {
+            dir = SortByData;
+        }
+
+        var transId = $("#transactionId").val();
+        var token = $("#frmLog").find("input[name='__RequestVerificationToken']").val();
+        var sortDataResult = { transactionId: transId, sortType: obj.id, dir: dir, searchData: SortByData, page: 1, __RequestVerificationToken: token};
+
+        $.ajax({
+            url: '@Url.Action("UpdateTransactionLogGrid", "TransactionLog")',
+            type: 'POST',
+            cache: false,
+            data: sortDataResult,
+            success: function (data) {
+                $('#dvLoggingTable').html("");
+                $('#dvLoggingTable').html(data.Html);
+                $('#dvPagination').html("");
+                $('#dvPagination').html(data.PaginationData);
+                currentLogPage = 1;
+            }
+        });
+    }
+
+
+    function FilterLogsBy() {
+        var filter = "";
+        if ($("#hdnLogedByUserName").val() != "" && $("#hdnLogedByUserName").val() != null) {
+
+            filter += "LogedByUserName__1__" + $("#hdnLogedByUserName").val();
+        }
+        if ($("#hdnLogType").val() != "" && $("#hdnLogType").val() != null) {
+
+            if (filter.length > 0) {
+                filter += "&";
+            }
+            filter += "LogType__1__" + $("#hdnLogType").val();
+        }
+        if ($("#hdnLogDateFromGreg").val() != "" && $("#hdnLogDateFromGreg").val() != null) {
+
+            if (filter.length > 0) {
+                filter += "&";
+            }
+            filter += "LogDateFrom__1__" + $("#hdnLogDateFromGreg").val();
+        }
+        if ($("#hdnLogDateToGreg").val() != "" && $("#hdnLogDateToGreg").val() != null) {
+
+            if (filter.length > 0) {
+                filter += "&";
+            }
+            filter += "LogDateTo__1__" + $("#hdnLogDateToGreg").val();
+        }
+        var token = $("#frmLog").find("input[name='__RequestVerificationToken']").val();
+        $("#hdnLogsFilter").val(filter);
+        var transId = $("#transactionId").val();
+        var filterData = { transactionId: transId, filter: filter, page: 1, __RequestVerificationToken: token};
+
+        $.ajax({
+            url: '@Url.Action("UpdateTransactionLogGrid", "TransactionLog")',
+            type: 'POST',
+            data: filterData,
+            success: function (data) {
+                $('#dvLoggingTable').html("");
+                $('#dvLoggingTable').html(data.Html);
+                $('#dvPagination').html("");
+                $('#dvPagination').html(data.PaginationData);
+                currentLogPage = 1;
+            }
+        });
+    }
+
+    function GetPageNo(pageNo) {
+        var dir = "";
+        var SortByData = $('#hdnLogedOn').val();
+        var sortType = null;
+        if (SortByData != null && SortByData != "") {
+            dir = SortByData;
+            sortType = $('#LogedOn').attr("id");
+        }
+
+        var token = $("#frmLog").find("input[name='__RequestVerificationToken']").val();
+        var filter = $("#hdnLogsFilter").val();
+        var transactionId = $("#transactionId").val();
+        var filterData = { page: pageNo, filter: filter, transactionId: transactionId, sortType: sortType, dir: dir, searchData: SortByData, __RequestVerificationToken: token };
+        $.ajax({
+            url: '@Url.Action("UpdateTransactionLogGrid", "TransactionLog")',
+            type: 'POST',
+            data: filterData,
+            success: function (data) {
+                $('#dvLoggingTable').html("");
+                $('#dvLoggingTable').html(data.Html);
+                $('#dvPagination').html("");
+                $('#dvPagination').html(data.PaginationData);
+                currentLogPage = pageNo;
+            }
+        });
+    }
+    function GoToNextPage() {
+        GetPageNo(currentLogPage + 1);
+    }
+    function GoToPreviousPage() {
+        GetPageNo(currentLogPage - 1);
+    }
+
+    function PrintTransactionLog() {
+        var token = $("#frmLog").find("input[name='__RequestVerificationToken']").val();
+         var filter = $("#hdnLogsFilter").val();
+         var transactionId = $("#transactionId").val();
+         var dir = "";
+         var SortByData = $('#hdnLogedOn').val();
+         var sortType = null;
+         if (SortByData != null && SortByData != "") {
+             dir = SortByData;
+             sortType = $('#LogedOn').attr("id");
+         }
+        var filterData = { page: currentLogPage, filter: filter, transactionId: transactionId, dir: dir, sortType: sortType, searchData: SortByData, __RequestVerificationToken: token };
+
+        $.ajax({
+            type: "POST",
+            url:  '@Url.Action("PrintTransactionLoggingGrid", "TransactionLog")',
+            data: filterData,
+            cache: false,
+            success:
+                function (data, textStatus, request) {
+
+                    if (data.MessageType != 2) {
+
+                        var PrintLogWindow = window.open('', '_blank', 'width=900,height=500');
+
+                        PrintLogWindow.document.write(data.Html);
+                        PrintLogWindow.document.close();
+                        PrintLogWindow.focus();
+
+                        setTimeout(function () {
+                            PrintLogWindow.print();
+                            PrintLogWindow.close();
+                        }, 2000);
+                    }
+                    else {
+                        ShowErrorMessage(data.MessageText);
+                    }
+
+                },
+            error: function (data) {
+
+            }
+
+        });
+
+    }
+</script>

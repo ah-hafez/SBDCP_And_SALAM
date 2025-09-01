@@ -1,0 +1,132 @@
+﻿@model TransactionCategory
+
+<h3 class="site-color ml-3">@DbRes.TResource("User.Transaction.Search.AdditionalFields")</h3>
+<div class="form-row pb-3">
+    <label class="container_checkbox mx-2">
+        @DbRes.TResource("User.Transaction.Search.Common")
+        <input type="checkbox" name="" data-trigger="hidden_fields_one" data-typechosser="@Convert.ToInt32(SearchChosser.Common)" class="trigger">
+        <span class="checkmark"></span>
+    </label>
+    <label class="container_checkbox mx-2">
+        @DbRes.TResource("User.Transaction.Search.RelatedPersonData")
+        <input type="checkbox" name="" data-trigger="hidden_fields_two" data-typechosser="@Convert.ToInt32(SearchChosser.Names)" class="trigger">
+        <span class="checkmark"></span>
+    </label>
+    @switch ((TransactionCategory)((int)Model).LookupInternalID(LookupCategory.TransactionCategory, SessionInfo.CultureShortName))
+    {
+        case TransactionCategory.Inbound:
+            <label class="container_checkbox mx-2">
+                @DbRes.TResource("User.Transaction.Search.AdditionalFieldsInbound")
+                <input type="checkbox" name="" data-trigger="hidden_fields_four" data-typechosser="@Convert.ToInt32(SearchChosser.Inbound)" class="trigger">
+                <span class="checkmark"></span>
+            </label>
+            <label class="container_checkbox mx-2">
+                @DbRes.TResource("User.Transaction.Search.TransferredTransactions")
+                <input type="checkbox" name="" data-trigger="hidden_fields_Five" data-typechosser="@Convert.ToInt32(SearchChosser.Transferrd)" class="trigger">
+                <span class="checkmark"></span>
+            </label>
+            break;
+        case TransactionCategory.ExternalOutbound:
+            <label class="container_checkbox mx-2">
+                @DbRes.TResource("User.Transaction.Search.AdditionalFieldsExternal")
+                <input type="checkbox" name="" data-trigger="hidden_fields_three" data-typechosser="@Convert.ToInt32(SearchChosser.External)" class="trigger">
+                <span class="checkmark"></span>
+            </label>
+            break;
+        case TransactionCategory.InternalOutbound:
+            <label class="container_checkbox mx-2">
+                @DbRes.TResource("User.Transaction.Search.TransferredTransactions")
+                <input type="checkbox" name="" data-trigger="hidden_fields_Five" data-typechosser="@Convert.ToInt32(SearchChosser.Transferrd)" class="trigger">
+                <span class="checkmark"></span>
+            </label>
+            break;
+        case TransactionCategory.DraftOutbound:
+            <label class="container_checkbox mx-2">
+                @DbRes.TResource("User.Transaction.Search.AdditionalFieldsExternal")
+                <input type="checkbox" name="" data-trigger="hidden_fields_three" data-typechosser="@Convert.ToInt32(SearchChosser.External)" class="trigger">
+                <span class="checkmark"></span>
+            </label>
+            <label class="container_checkbox mx-2">
+                @DbRes.TResource("User.Transaction.Search.TransferredTransactions")
+                <input type="checkbox" name="" data-trigger="hidden_fields_Five" data-typechosser="@Convert.ToInt32(SearchChosser.Transferrd)" class="trigger">
+                <span class="checkmark"></span>
+            </label>
+            break;
+        default:
+            break;
+    }
+    @Html.Hidden("TransactionTypeId", Model == TransactionCategory.None ? (TransactionCategory.ExternalOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName)).ToString() : ((int)Model).ToString())
+</div>
+<script>
+    $(document).ready(function () {
+        $('.hide_trigger').hide();
+        $('.trigger').change(function () {
+            var hide_triggerId = $(this).attr("data-trigger");
+            var type = parseInt($(this).data('typechosser'));
+            var isChecked = $(this).is(':checked');
+            GetSearchSection(type, isChecked, hide_triggerId);
+        });
+    });
+
+    function ShowHideContent(value, triggerId) {
+        if (value) {
+            $("#" + triggerId).fadeIn();
+        } else {
+            $("#" + triggerId).fadeOut();
+        }
+    }
+
+    function GetSearchSection(value, isChecked, hideTriggerId) {
+        var htmlResult = "";
+        if (isChecked) {
+            $.ajax({
+                type: 'get',
+                cache: false,
+                async: false,
+                url: '@Url.Action("GetSearchSection", "Reports")',
+                data: { type: value },
+                success: function (data) {
+                    if (data.Html) {
+                        htmlResult = data.Html;
+                    }
+                }
+            });
+        }
+        switch (value) {
+            case @((int)SearchChosser.Common):
+                $('#Common').html(htmlResult);
+                ShowHideContent(isChecked, hideTriggerId)
+                $.ajax({
+                    type: 'get',
+                    url: '@Url.Action("GetTransactionTypes", "Reports")',
+                    data: { transactionCategory: $('#TransactionTypeId').val() },
+                    success: function (data) {
+                        AutoCompleteChangeList("ddlTransactionSourceType", data);
+                    },
+                    error: function (jqXHR) {
+                        console.log(jqXHR.responseText);
+                    }
+                });
+                break;
+            case @((int)SearchChosser.Names):
+                $('#Names').html(htmlResult);
+                ShowHideContent(isChecked, hideTriggerId)
+                break;
+            case @((int)SearchChosser.Inbound):
+            case @((int)SearchChosser.Internal):
+            case @((int)SearchChosser.Draft):
+                $('#InboundOrInternalOrDraft').html(htmlResult);
+                ShowHideContent(isChecked, hideTriggerId)
+                break;
+            case @((int)SearchChosser.External):
+                $('#External').html(htmlResult);
+                ShowHideContent(isChecked, hideTriggerId)
+                break;
+            case @((int)SearchChosser.Transferrd):
+                $('#Transferrd').html(htmlResult);
+                ShowHideContent(isChecked, hideTriggerId)
+                break;
+            default:
+        }
+    }
+</script>

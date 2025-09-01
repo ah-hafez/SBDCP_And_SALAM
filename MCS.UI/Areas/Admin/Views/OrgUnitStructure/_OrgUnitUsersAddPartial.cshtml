@@ -1,0 +1,182 @@
+﻿@using MCS.Framework.Localization
+@model MCS.UI.Areas.Admin.Models.AddUserProfileVM
+@using MCS.Common;
+@using MCS.UI.Areas.User.Models.Lookups
+
+@{
+    Layout = "~/Views/Shared/_AdminDialogLayout.cshtml";
+    string orgUnitId = string.Empty;
+    orgUnitId = ViewData["SelectedOrgUnitId"] != null ? ViewData["SelectedOrgUnitId"].ToString() : string.Empty;
+}
+
+@using (Html.BeginForm("AddUser", "Admin", FormMethod.Post, new { id = "formAddUser", @class = "form-horizontal form-row" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="content-rtl panel panel-default dialogbox_panel">
+        <div class="panel-heading">
+            <h3 class="panel-title">@DbRes.TResource("Admin.User.AddUser")</h3>
+        </div>
+        <div class="panel-body" id="dvAddTreeContainer">
+            <p>@DbRes.TResource("Global.Forms.MandatoryFields")</p>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.CustomLabelFor(model => model.TitleId, new { id = "lblUserNoTitle", @class = "col-md-4 control-label" })
+                        <div class="col-md-8">
+                            <div class="">
+                                @Html.AutoCompleteBuilder("ddlAddTitle", "hdnAddTitleId", LookupCategory.Title, null, true, "form-control")
+                                @Html.HiddenGroupFor(model => model.TitleId, new { @Value = "", id = "hdnAddTitleId" }, "AddUser")
+                            </div>
+                        </div>
+                    </div>
+
+                    @{List<CultureVM> cultureVMs = ViewData["Culture"] as List<CultureVM>;}
+
+                    @if (cultureVMs != null)
+                    {
+                        for (int i = 0; i < cultureVMs.Count; i++)
+                        {
+                            <div class="form-group">
+                                @Html.CustomLabelFor(model => model.Names[i].CultureName, new { @class = "col-md-4 control-label" }, DbRes.TResource(string.Format("Admin.User.Name.{0}", cultureVMs[i].ShortName)))
+                                @Html.StickyHiddenFor(model => model.Names[i].CultureId, new { @Value = cultureVMs[i].Id })
+                                <div class="col-md-8">
+                                    <div class="">
+                                        @Html.TextBoxGroupFor(model => model.Names[i].Text, "AddUser", new { @class = "form-control" }, DbRes.TValidation(string.Format("Admin.User.Name.{0}", cultureVMs[i].ShortName)))
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+
+                    <div class="form-group">
+                        @Html.CustomLabelFor(model => model.Password, new { id = "lblPassword", @class = "col-md-4 control-label" })
+                        <div class="col-md-8">
+                            <div class="">
+                                @Html.PasswordGroupFor(model => model.Password, "AddUser", new { @class = "form-control", @autocomplete = "off", maxlength = "50" })
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.CustomLabelFor(model => model.CategoryId, new { id = "lblEmployeeCategoryTitle", @class = "col-md-4 control-label" })
+                        <div class="col-md-8">
+                            <div class="">
+                                @Html.AutoCompleteBuilder("ddlAddEmployeeCategory", "hdnAddEmployeeCategoryId", ViewData["UserCategory"] as string, null, true, "form-control")
+                                @Html.HiddenGroupFor(model => model.CategoryId, new { @Value = "", id = "hdnAddEmployeeCategoryId" }, "AddUser")
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.CustomLabelFor(model => model.UserName, new { id = "lblUserNameTitle", @class = "col-md-4 control-label" })
+                        <div class="col-md-8">
+                            <div class="">
+                                @Html.TextBoxGroupFor(model => model.UserName, "AddUser", new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.CustomLabelFor(model => model.TransactionProcessingPeriod, new { id = "lblProcessingTimeTitle", @class = "col-md-4 control-label" })
+                        <div class="col-md-6">
+                            <div class="">
+                                @Html.NumericTextBoxFor(model => model.TransactionProcessingPeriod, new { @Value = "", @class = "form-control", maxlength = "3" }, "AddUser")
+                            </div>
+                        </div>
+                        <div class="col-md-2">@DbRes.TResource("Admin.User.Day")</div>
+                    </div>
+                    <div class="form-group">
+                        @Html.CustomLabelFor(model => model.ConfirmPassword, new { id = "lblConfirmPassword", @class = "col-md-4 control-label" })
+                        <div class="col-md-8">
+                            <div class="">
+                                @Html.PasswordGroupFor(model => model.ConfirmPassword, "AddUser", new { @class = "form-control", @autocomplete = "off", maxlength = "50" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.CustomLabelFor(model => model.Email, new { id = "lblEmailTitle", @class = "col-md-4 control-label" })
+                        <div class="col-md-8">
+                            <div class="">
+                                @Html.TextBoxGroupFor(model => model.Email, "AddUser", new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.CustomLabelFor(model => model.PhoneNumber, new { @class = "col-md-4 control-label" })
+                        <div class="col-md-8">
+                            <div class="">
+                                @Html.NumericTextBoxFor(model => model.PhoneNumber, new { placeholder = DbRes.TResource("Admin.User.Exam") + " 966999999999", @class = "form-control", maxlength = "12" }, "AddUser")
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.CustomLabelFor(model => model.UserNationalId, new { @class = "col-md-4 control-label" })
+                        <div class="col-md-8">
+                            <div class="">
+                                @Html.NumericTextBoxFor(model => model.UserNationalId, new { placeholder = DbRes.TResource("Admin.User.Exam") + " 0123456789", @class = "form-control", maxlength = "10" }, "AddUser")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="dvEditGroupTreeContainer">
+                @Html.PermissionsTree(ViewData["Groups"] as TreeViewModel, model => model.Groups, TreeMode.Multiple, "dvEditGroupTreeContainer", Request.IsAjaxRequest())
+            </div>
+            <input name='OrgUnitList[0].Id' value="@orgUnitId" type='hidden' class="__hdnSticky" />
+        </div>
+        <div class="panel-footer middle">
+            @Html.ConfirmAction(OperationType.Save, "btnSaveUser", DbRes.TResource("Admin.User.Save"), "AddUserProfile", "divGridContainer", null, null, "OnCreateUserSuccess", null, "", "post", "formAddUser", "AddUser", "btn btn-save pull-right", clientFunctionToCall: "GetOrganizationUnitIdsAddMode")
+            @Html.ResetButton("Clear('formAddUser')")
+        </div>
+    </div>
+}
+<script>
+    function Clear(formId) {
+        $(".removeTag").trigger("click");
+        $(".removeDepartmentTag").trigger("click");
+        ClearInputs(formId);
+        $("#" + formId).formReset();
+    }
+
+    function OnCreateUserSuccess(data, div) {
+        if (data.MessageType != 2) {
+            ShowSuccesMessage(data.MessageText)
+            Clear('formAddUser');
+            AutoCompleteChangeList("ddlUser", data.DataSource);
+            $("#hdnUser").val(data.UserId);
+            $("#hdnUser").trigger("change");
+            $("#ddlUser").trigger("focusout");
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function GetOrganizationUnitIdsAddMode() {
+        if ($('#Password').val() != '' && $('#ConfirmPassword').val() != '') {
+
+            var key = CryptoJS.enc.Utf8.parse('8080808080808080');
+            var iv = CryptoJS.enc.Utf8.parse('8080808080808080');
+            $('#Password').val(CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse($('#Password').val()), key,
+                {
+                    keySize: 128 / 8,
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                }));
+
+            $('#ConfirmPassword').val(CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse($('#ConfirmPassword').val()), key,
+                {
+                    keySize: 128 / 8,
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                }));
+        }
+
+        return true;
+    }
+
+</script>

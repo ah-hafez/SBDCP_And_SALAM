@@ -1,0 +1,36 @@
+﻿@using MCS.UI.Areas.Admin.Models.Permission
+
+@model List<PermissionVM>
+<div class="row all_types_title">
+    الصلاحيات
+</div>
+
+@*<div class="row row_input">
+        <input type="text" class="form-control">
+    </div>*@
+<div class="scroll maxheight_types">
+    @{
+        foreach (var item in Model)
+        {
+            if (item.IsSelected == true)
+            {
+                <div id="permission_@item.Id" class="row all_types select" data-type="@UsersAndTraysReportType.Permission" data-id="@item.Id" onclick="getPermissionUsers(@item.Id);">
+                    <span>@item.Text</span>
+                </div>
+            }
+            else
+            {
+                <div id="permission_@item.Id" class="row all_types" data-type="@UsersAndTraysReportType.Permission" data-id="@item.Id" onclick="getPermissionUsers(@item.Id);">
+                    <span>@item.Text</span>
+                </div>
+            }
+        }
+    }
+</div>
+<script>
+    $(document).ready(function () {
+        if ($(".scroll").length > 0) {
+            $(".scroll").mCustomScrollbar({ axis: "y", autoHideScrollbar: true, scrollInertia: 20, advanced: { autoScrollOnFocus: false } });
+        }
+    });
+</script>

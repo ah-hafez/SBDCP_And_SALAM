@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{CDC11EE1-8760-448B-8770-14A6ABABBCD9}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MCS.GridMvc</RootNamespace>
+    <AssemblyName>MCS.GridMvc</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Mvc, Version=4.0.0.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages">
+      <HintPath>..\Binaries\Common\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Columns\DefaultColumnBuilder.cs" />
+    <Compile Include="Columns\GridColumn.cs" />
+    <Compile Include="Columns\GridColumnBase.cs" />
+    <Compile Include="Columns\GridColumnCollection.cs" />
+    <Compile Include="Columns\HiddenGridColumn.cs" />
+    <Compile Include="Columns\IColumnBuilder.cs" />
+    <Compile Include="Columns\IGridColumn.cs" />
+    <Compile Include="Columns\IGridColumnCollection.cs" />
+    <Compile Include="DataAnnotations\GridAnnotaionsProvider.cs" />
+    <Compile Include="DataAnnotations\GridColumnAttribute.cs" />
+    <Compile Include="DataAnnotations\GridHiddenColumnAttribute.cs" />
+    <Compile Include="DataAnnotations\GridTableAttribute.cs" />
+    <Compile Include="DataAnnotations\IGridAnnotaionsProvider.cs" />
+    <Compile Include="DataAnnotations\NotMappedColumnAttribute.cs" />
+    <Compile Include="Filtering\ColumnFilterValue.cs" />
+    <Compile Include="Filtering\DefaultColumnFilter.cs" />
+    <Compile Include="Filtering\FilterColumnHeaderRenderer.cs" />
+    <Compile Include="Filtering\FilterGridItemsProcessor.cs" />
+    <Compile Include="Filtering\GridFilterType.cs" />
+    <Compile Include="Filtering\IColumnFilter.cs" />
+    <Compile Include="Filtering\IFilterColumnCollection.cs" />
+    <Compile Include="Filtering\IGridFilterSettings.cs" />
+    <Compile Include="Filtering\QueryStringFilterSettings.cs" />
+    <Compile Include="Filtering\Types\BooleanFilterType.cs" />
+    <Compile Include="Filtering\Types\ByteFilterType.cs" />
+    <Compile Include="Filtering\Types\DateTimeFilterType.cs" />
+    <Compile Include="Filtering\Types\DecimalFilterType.cs" />
+    <Compile Include="Filtering\Types\DoubleFilterType.cs" />
+    <Compile Include="Filtering\Types\FilterTypeBase.cs" />
+    <Compile Include="Filtering\Types\FilterTypeResolver.cs" />
+    <Compile Include="Filtering\Types\IFilterType.cs" />
+    <Compile Include="Filtering\Types\Int16FilterType.cs" />
+    <Compile Include="Filtering\Types\Int32FilterType.cs" />
+    <Compile Include="Filtering\Types\Int64FilterType.cs" />
+    <Compile Include="Filtering\Types\SingleFilterType.cs" />
+    <Compile Include="Filtering\Types\TextFilterType.cs" />
+    <Compile Include="Filtering\Types\UInt16FilterType.cs" />
+    <Compile Include="Filtering\Types\UInt32FilterType.cs" />
+    <Compile Include="Filtering\Types\UInt64FilterType.cs" />
+    <Compile Include="Grid.cs" />
+    <Compile Include="GridBase.cs" />
+    <Compile Include="GridCell.cs" />
+    <Compile Include="GridCellRenderer.cs" />
+    <Compile Include="GridExtensions\AjaxGrid.cs" />
+    <Compile Include="GridExtensions\AjaxGridFactory.cs" />
+    <Compile Include="GridExtensions\AjaxGridPager.cs" />
+    <Compile Include="GridExtensions\IAjaxGrid.cs" />
+    <Compile Include="GridExtensions\IAjaxGridFactory.cs" />
+    <Compile Include="GridExtensions\IAjaxGridPager.cs" />
+    <Compile Include="GridHeaderRenderer.cs" />
+    <Compile Include="GridHiddenCellRenderer.cs" />
+    <Compile Include="GridHiddenHeaderRenderer.cs" />
+    <Compile Include="GridStyledRenderer.cs" />
+    <Compile Include="Helpers\GridHelper.cs" />
+    <Compile Include="Helpers\IHtmlHelpers.cs" />
+    <Compile Include="Helpers\KlaHtmlHelpers.cs" />
+    <Compile Include="Html\GridExtensions.cs" />
+    <Compile Include="Html\GridHtmlOptions.cs" />
+    <Compile Include="Html\GridRenderOptions.cs" />
+    <Compile Include="Html\HtmlGrid.cs" />
+    <Compile Include="Html\IGridHtmlOptions.cs" />
+    <Compile Include="IGrid.cs" />
+    <Compile Include="IGridCell.cs" />
+    <Compile Include="IGridCellRenderer.cs" />
+    <Compile Include="IGridColumnHeaderRenderer.cs" />
+    <Compile Include="IGridItemsProcessor.cs" />
+    <Compile Include="IGridSettingsProvider.cs" />
+    <Compile Include="ISanitizer.cs" />
+    <Compile Include="Pagination\GridPager.cs" />
+    <Compile Include="Pagination\IGridPager.cs" />
+    <Compile Include="Pagination\PagerGridItemsProcessor.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QueryStringGridSettingsProvider.cs" />
+    <Compile Include="Resources\Strings.ar.Designer.cs" />
+    <Compile Include="Resources\Strings.de.Designer.cs" />
+    <Compile Include="Resources\Strings.Designer.cs" />
+    <Compile Include="Resources\Strings.es.Designer.cs" />
+    <Compile Include="Resources\Strings.fr.Designer.cs" />
+    <Compile Include="Resources\Strings.it.Designer.cs" />
+    <Compile Include="Resources\Strings.ru.Designer.cs" />
+    <Compile Include="Sanitizer.cs" />
+    <Compile Include="Sorting\GridSortDirection.cs" />
+    <Compile Include="Sorting\IColumnOrderer.cs" />
+    <Compile Include="Sorting\IGridSortSettings.cs" />
+    <Compile Include="Sorting\OrderByGridOrderer.cs" />
+    <Compile Include="Sorting\QueryStringSortSettings.cs" />
+    <Compile Include="Sorting\SortColumnHeaderRenderer.cs" />
+    <Compile Include="Sorting\SortGridItemsProcessor.cs" />
+    <Compile Include="Sorting\ThenByColumnOrderer.cs" />
+    <Compile Include="Utility\CustomQueryStringBuilder.cs" />
+    <Compile Include="Utility\JsonHelper.cs" />
+    <Compile Include="Utility\PropertiesHelper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Strings.ar.resx" />
+    <EmbeddedResource Include="Resources\Strings.de.resx" />
+    <EmbeddedResource Include="Resources\Strings.es.resx" />
+    <EmbeddedResource Include="Resources\Strings.fr.resx" />
+    <EmbeddedResource Include="Resources\Strings.it.resx" />
+    <EmbeddedResource Include="Resources\Strings.resx" />
+    <EmbeddedResource Include="Resources\Strings.ru.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MCS.FRAMEWORK\MCS.Framework.csproj">
+      <Project>{5b5b0b7b-1a75-4a12-9cea-5b527af8b6e5}</Project>
+      <Name>MCS.Framework</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

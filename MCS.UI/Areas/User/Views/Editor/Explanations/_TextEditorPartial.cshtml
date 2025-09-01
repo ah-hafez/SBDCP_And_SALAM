@@ -1,0 +1,12 @@
+﻿
+@using MCS.Framework.Controls.Mvc;
+
+@model MCS.UI.Areas.User.Models.Transaction.ExplanationVM
+
+    @Html.RenderTextEditorResources()
+
+    @Html.StickyHidden("hdnTextEditorContent", ViewData["TextEditorContent"] != null ? ViewData["TextEditorContent"].ToString() : null, new { id = "hdnTextEditorContent" })
+
+    @Html.TextEditor("txtEditorExplanation", "hdnTextEditorContent", false, SessionInfo.CultureShortName.ToString(), Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(ViewData["TextEditorContent"] != null ? ViewData["TextEditorContent"].ToString() : string.Empty, false)).ToString(), null, null, null)
+
+

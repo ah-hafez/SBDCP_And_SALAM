@@ -1,0 +1,160 @@
+﻿@using MCS.UI.Areas.Admin.Models.Groups
+@using MCS.Framework.Localization
+@{
+    ViewBag.Title = DbRes.TResource("Admin.Permissions.PermissionsManagement");
+    Layout = "~/Areas/Admin/Views/Shared/_UsersTraysLayout.cshtml";
+}
+
+<div class="content_container site_border">
+    <div class="mx-3 mx-md-5 header-container d-flex flex-row align-items-center">
+        <div class="d-flex flex-column flex-lg-row align-items-lg-center flex-grow-1 mb-3 mb-lg-0">
+            <h3 class="site-color mb-2 mb-lg-4">@DbRes.TResource("Admin.Permissions.Doors") </h3>
+            <div class="ml-lg-auto  d-flex flex-column flex-md-row">
+                <div class="filter-link ml-lg-auto mr-lg-3 my-2 mt-lg-auto ">
+                    <a class="dashed-circle search-target" href="#">
+                        <i class="fas fa-search"></i>
+                        @DbRes.TResource("User.File.Search")
+                    </a>
+                    <div class="toggling-menu">
+                        <a href="#" class="active system_1"><i class="icon-grid"></i></a>
+                        <a href="#" class="grid_system"><i class="icon-list"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <button class="btn btn-st1 btn-lg" id="add-Role" data-target="">
+                        <i class="icon-buttons-add pr-3"></i>إضافة دور
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="filter-box search mx-3 mx-md-5 white-container mt-2" style="display: none;">
+        <form id="frmRolesSearch">
+            @Html.AntiForgeryToken()
+            <div class="form-row">
+                <div class="form-group col-lg-3 col-sm-6 col-xs-12">
+                    <label for="">@DbRes.TResource("Admin.Permissions.DoorName")</label>
+                    @Html.TextBox("RoleName", "", new { id = "RoleName", @class = "form-control" })
+                </div>
+                <div class="form-group col-lg-3 col-md-4 col-sm-4 col-xs-12 align-self-end">
+                    
+                    @Html.ClientButton(@DbRes.TResource("User.File.Search"), "btnSearch", "btn btn-st1 w-xs-100", "RolesSearch")
+                </div>
+
+            </div>
+        </form>
+    </div>
+    <div class="boxes px-md-1 mx-auto">
+        <div class="flex-wrap mx-auto mx-md-4" id="dvRolesGrid">
+            @Html.Partial("~/Areas/Admin/Views/Roles/RolesGridPartial.cshtml", ViewData["GridData"])
+        </div>
+        @Html.StickyHidden("filterData")
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $('.filter-target').click(function () {
+            $('.filter-box.filter').slideToggle('fast');
+            $('.sort-target').removeClass("active");
+            $('.search-target').removeClass("active");
+            $(this).toggleClass("active");
+            $('.filter-box.sort').hide();
+            $('.filter-box.search').hide();
+
+        });
+        $('.sort-target').click(function () {
+            $('.filter-box.sort').slideToggle('fast');
+            $('.filter-target').removeClass("active");
+            $(this).toggleClass("active");
+            $('.filter-box.filter').hide();
+            $('.filter-box.search').hide();
+        });
+        $('.search-target').click(function () {
+            $('.filter-box.search').slideToggle('fast');
+            $('.sort-target').removeClass("active");
+            $('.filter-target').removeClass("active");
+            $(this).toggleClass("active");
+            $('.filter-box.filter').hide();
+            $('.filter-box.sort').hide();
+
+        });
+    });
+</script>
+<script>
+    $(function () {
+        $(".grid_system").click(function () {
+            $(".boxes").addClass("full");
+        });
+        $(".system_1").click(function () {
+            $(".boxes").removeClass("full");
+        });
+    });
+
+
+    $("#add-Role").click(function () {
+        window.location.href = "@Url.Action("AddGroup" , "Permissions")";
+    });
+
+
+    function DeleteRole(roleId) {
+        $.ajax({
+            type: 'get',
+            data: { ids: roleId },
+            url: '@Url.Action("DeleteGroup", "Permissions")',
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    window.location.reload();
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            }
+        });
+    }
+
+    function ActivateDeactivateRole(roleId) {
+         $.ajax({
+            type: 'get',
+            data: { id: roleId },
+            url: '@Url.Action("ActivateDeactivateRole", "Permissions")',
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    $("#box_" + roleId).replaceWith(data.Html);
+                    ShowInformationMessage(data.MessageText);
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            }
+        });
+    }
+
+    function RolesSearch() {
+        var filter = "";
+        var token = $("#frmRolesSearch input[name='__RequestVerificationToken']").val();
+        if ($("#RoleName").val() != "" && $("#RoleName").val() != null) {
+
+            filter += "RoleName__1__" + $("#RoleName").val();
+        }
+        $("#filterData").val(filter);
+
+        $.ajax({
+            type: 'post',
+            data: { filter: filter, __RequestVerificationToken : token },
+            url: '@Url.Action("RolesSearch", "Permissions")',
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    $("#dvRolesGrid").html("");
+                    $("#dvRolesGrid").html(data.Html);
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            }
+        });
+    }
+</script>
+
+

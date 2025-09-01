@@ -1,0 +1,137 @@
+﻿@model MCS.UI.Areas.User.Models.Transaction.PrivateFollowupVM
+@using MCS.Common;
+@using MCS.Framework.Controls
+@using MCS.Framework.Localization
+@using MCS.Framework.Controls.Mvc
+@{
+
+    ViewData.TemplateInfo.HtmlFieldPrefix = "PrivateFollowUps";
+}
+
+
+<div class="form-horizontal form-row">
+    <div class="form-group col-lg-6 col-md-4 col-sm-6 col-xs-12 mb-3">
+        <div id="divFollowUpEntityTree">
+            @Html.DepartmentsTree(ViewData["FollowUpDepartmentsData"] as TreeViewModel, model => model.EntityId, TreeMode.Single, "treeFollowUpToOrgUnit", true, "GetToUsersByOrgUnitId_Followup", "", "divFollowUpEntityTree")
+            @Html.HiddenGroupFor(model => model.EntityId, new { id = "hdnFromEntityName" }, "inboundGroup")
+        </div>
+    </div>
+    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3 mt-2">
+        <label class="w-100">@DbRes.TResource("User.Transaction.FollowUp.Employee")<span class="stark NotIndividual">*</span></label>
+        @Html.AutoCompleteBuilder("ddlFollowupToUserId", "hdnFollowUpToUserId", ViewData["OrgUnitsUsersData"] != null ? ViewData["OrgUnitsUsersData"].ToString() : null, Model != null ? Model.UserId.ToString() : null, true, "form-control")
+        @Html.HiddenGroupFor(model => model.UserId, new { @Value = "", id = "hdnFollowUpToUserId" }, "inboundGroup")
+        @*@Html.HiddenFor(model => model.UserId, new { id = "hdnEmployeeName", @class = "UserName" })*@
+    </div>
+    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3 mt-2">
+        <label class="w-100">@DbRes.TResource("User.Transaction.FollowUp.Proccess") <span class="stark">*</span></label>
+        @Html.AutoCompleteBuilder("ddlPrivateFollowUpProccess", "hdnPrivateFollowUpProccessId", ViewData["FollowUpProccess"].ToString(), null, true, "form-control", selectFirstIndex: true)
+        @Html.HiddenGroupFor(model => model.ProccessId, new { @Value = "", id = "hdnPrivateFollowUpProccessId" }, "inboundGroup")
+    </div>
+
+    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+        <label class="w-100">@DbRes.TResource("User.Transaction.FollowUp.Period") <span class="stark">*</span></label>
+        @Html.AutoCompleteBuilder("ddlPrivateFollowUpPeriod", "hdnPrivateFollowUpPeriodId", ViewData["FollowUpPeriod"].ToString(), null, true, "form-control", selectFirstIndex: false)
+        @Html.HiddenGroupFor(model => model.PeriodId, new { @Value = "", id = "hdnPrivateFollowUpPeriodId" }, "inboundGroup")
+    </div>
+
+    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3" id="divPrivateFollowupDate" style="display:none">
+
+        <label class="w-100">@DbRes.TResource("User.Transaction.FollowUp.EndDate")<span class="stark NotIndividual">*</span></label>
+        <div class="with-icon">
+            @Html.CalendarCustom("PrivateFollowUpDateCal", "hdnPrivateFolloupDateGreg", "hdnPrivateFollowUpDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), Model != null ? Model.DateToH : null, "form-control")
+            <a class=" date-icon2 " onclick="showCalender('FollowUpDateCal')"><img src="~/Content/User/lib/images/SystemIcon/main bar-08.svg" width="30" /></a>
+            @Html.HiddenGroupFor(model => model.DateTo, new { id = "hdnPrivateFolloupDateGreg", AutoComplete = "off" }, "inboundGroup")
+            @Html.HiddenGroupFor(model => model.DateToH, new { id = "hdnPrivateFollowUpDateUm", AutoComplete = "off" }, "inboundGroup")
+            <i id="FollowUpMessage" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+            <span id="FollowUpdateMessage" style="color:red"></span>
+        </div>
+    </div>
+
+
+    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mt-4">
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" id="hdnPrivateIsImportant" />
+                <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                <text for="hdnPrivateIsImportant" style="color:black; font-weight:bold; font-size:16px">@DbRes.TResource("هام")</text>
+            </label>
+        </div>
+
+        @Html.HiddenGroupFor(x => x.IsImportant, "inboundGroup")
+    </div>
+
+    @*<div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+        <label class="w-100"> </label>
+
+        <input type="checkbox" id="hdnPrivateIsImportant" /> <label for="hdnPrivateIsImportant"> @DbRes.TResource("هام")</label>
+        @Html.HiddenGroupFor(x => x.IsImportant, "inboundGroup")
+    </div>*@
+
+
+
+</div>
+
+<script>
+    $(function ()
+    {
+        $('#ddlPrivateFollowUpPeriod').change(function ()
+        {
+            debugger;
+            var selectedPeriod = $(this).val();
+
+            if (selectedPeriod == "أخرى")
+            {
+                $('#PrivateFollowUpDateCal').attr('autocomplete', 'off');
+                $('#divPrivateFollowupDate').show();
+            } else
+            {
+                $('#divPrivateFollowupDate').hide();
+
+            }
+        });
+
+        $('#PrivateFollowUpDateCal').attr('autocomplete', 'off');
+        var checkbox = document.querySelector("#hdnPrivateIsImportant");
+        checkbox.addEventListener('change', function ()
+        {
+            if (this.checked)
+            {
+
+                $("#PrivateFollowUps_IsImportant").val(true);
+            }
+            else
+            {
+                $("#PrivateFollowUps_IsImportant").val(false);
+            }
+        });
+    });
+
+
+      function GetToUsersByOrgUnitId_Followup() {
+        //$("#ddlEditorAssginmentIndividualToUserId_hdnIdToSaveValue").val('')
+        var token = $("input[name='__RequestVerificationToken']").val();
+          if ($("#PrivateFollowUps_EntityId").val() != "") {
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("GetUsersByOrgUnitId")',
+                data: { id: $("#PrivateFollowUps_EntityId").val(), __RequestVerificationToken: token  },
+                success:
+               function (data) {
+
+                   $("#ddlFollowupToUserId").val("");
+                   AutoCompleteChangeList("ddlFollowupToUserId", data);
+                   $("#ddlFollowupToUserId").prop('disabled', false);
+               }
+            });
+            return false;
+        }
+        else {
+              $("#ddlFollowupToUserId").prop('disabled', true);
+              $("#ddlFollowupToUserId").val("");
+              AutoCompleteChangeList("ddlFollowupToUserId", "[]");
+        }
+    }
+</script>
+
+
+

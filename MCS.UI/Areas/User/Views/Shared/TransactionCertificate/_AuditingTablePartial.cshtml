@@ -1,0 +1,45 @@
+﻿@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<AuditVM>
+@using MCS.Framework.Controls;
+@using MCS.Framework.Localization
+@using MCS.UI.Helpers
+
+@Html.Grid(Model, "_GridNew").Named("grdAudit").CollectionName("TransactionAuditing").Columns(columns =>
+{
+columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(mvcgridcolumn => @Html.ClientLinkTag("", clientFunctionToCall: "GetEntityAuditing(" + mvcgridcolumn.Id + " , " + (int)mvcgridcolumn.AuditFor + ", this)", innerHtml: "<i id='i_" + mvcgridcolumn.Id + "' class='fa fa-plus'></i>"));
+columns.Add().RenderValueAs(model => DateHelper.DateCalendar(model.Date, SessionInfo.CultureShortName,true)).Titled(DbRes.TResource("User.TransactionCertificate.ModifiedDate"));
+    columns.Add(model =>  model.OperationTypeName).Titled(DbRes.TResource("User.TransactionCertificate.OperationType"));
+    columns.Add(model => model.UserName).Titled(DbRes.TResource("User.TransactionCertificate.ModifiedBy"));
+}).WithPaging(UIHelper.PageSize)
+
+
+
+<script>
+    var dir = "";
+    var SortByData = $('#hdnCreatedOn').val();
+    var sortType = null;
+    if (SortByData != null && SortByData != "") {
+        dir = SortByData;
+        sortType = $('#CreatedOn').attr("id");
+    }
+    var filter = $("#hdnFilter").val();
+    var transactionId = $("#transactionId").val();
+    var auditFor = $("#auditFor").val();
+    var EntityName = $("#EntityName").val();
+    var token = $("#frmAudit").find("input[name='__RequestVerificationToken']").val();
+    var filterData = { filter: filter, transactionId: transactionId, auditFor: auditFor, EntityName: EntityName, sortType: sortType, dir: dir, searchData: SortByData, __RequestVerificationToken: token };
+
+    var grdAuditGridEventHandler = "@Url.Action("TransactionAuditingGridEventHandler", "TransactionLog")";
+    function prepareAuditGrid() {
+        $(".grid-mvc").gridmvc();
+        pageGrids.grdAudit.ajaxify({
+            getPagedData: grdAuditGridEventHandler,
+            requestType: "post",
+            getData: grdAuditGridEventHandler,
+            optionalData: filterData
+        });
+    }
+
+    $(document).ready(function () {
+        prepareAuditGrid();
+    });
+</script>

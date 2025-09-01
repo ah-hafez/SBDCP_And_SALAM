@@ -1,0 +1,735 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{937EDE88-192C-40F7-990E-D60F271A96C2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MCS.Framework.Controls</RootNamespace>
+    <AssemblyName>MCS.Framework.Controls</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DocumentFormats">
+      <HintPath>..\MCS.FRAMEWORK\Libs\DocumentViewer\DocumentFormats.dll</HintPath>
+    </Reference>
+    <Reference Include="DocumentViewer">
+      <HintPath>..\MCS.FRAMEWORK\Libs\DocumentViewer\DocumentViewer.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp">
+      <HintPath>..\MCS.FRAMEWORK\Libs\iTextSharp\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp.pdfa">
+      <HintPath>..\MCS.FRAMEWORK\Libs\iTextSharp\itextsharp.pdfa.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.13.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Spire.Doc">
+      <HintPath>..\MCS.FRAMEWORK\Libs\Spire\Spire.Doc.dll</HintPath>
+    </Reference>
+    <Reference Include="Spire.License">
+      <HintPath>..\MCS.FRAMEWORK\Libs\Spire\Spire.License.dll</HintPath>
+    </Reference>
+    <Reference Include="Spire.Pdf">
+      <HintPath>..\MCS.FRAMEWORK\Libs\Spire\Spire.Pdf.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Mvc, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\MCS.FRAMEWORK\Libs\AspNet\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Optimization">
+      <HintPath>..\MCS.FRAMEWORK\Libs\AspNet\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor">
+      <HintPath>..\MCS.FRAMEWORK\Libs\AspNet\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages">
+      <HintPath>..\MCS.FRAMEWORK\Libs\AspNet\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment">
+      <HintPath>..\MCS.FRAMEWORK\Libs\AspNet\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor">
+      <HintPath>..\MCS.FRAMEWORK\Libs\AspNet\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AutoComplete\AutoComplete.cs" />
+    <Compile Include="AutoComplete\AutoCompleteDataSource.cs" />
+    <Compile Include="Barcode\BarcodeDraw.cs" />
+    <Compile Include="Barcode\BarcodeDrawFactory.cs" />
+    <Compile Include="Barcode\BarGlyph.cs" />
+    <Compile Include="Barcode\BinaryPitchBarcodeDraw.cs" />
+    <Compile Include="Barcode\BinaryPitchGlyph.cs" />
+    <Compile Include="Barcode\BinaryPitchVaryLengthBarcodeDraw.cs" />
+    <Compile Include="Barcode\BinaryPitchVaryLengthGlyph.cs" />
+    <Compile Include="Barcode\Checksum.cs" />
+    <Compile Include="Barcode\Code11.cs" />
+    <Compile Include="Barcode\Code128.cs" />
+    <Compile Include="Barcode\Code25.cs" />
+    <Compile Include="Barcode\Code39.cs" />
+    <Compile Include="Barcode\Code93.cs" />
+    <Compile Include="Barcode\CodeEan13.cs" />
+    <Compile Include="Barcode\CodeEan8.cs" />
+    <Compile Include="Barcode\CodePdf417.cs" />
+    <Compile Include="Barcode\CodeQr.cs" />
+    <Compile Include="Barcode\CompositeGlyph.cs" />
+    <Compile Include="Barcode\Glyph.cs" />
+    <Compile Include="Barcode\GlyphFactory.cs" />
+    <Compile Include="Barcode\IBarGlyph.cs" />
+    <Compile Include="Barcode\IBinaryPitchGlyph.cs" />
+    <Compile Include="Barcode\IGlyph.cs" />
+    <Compile Include="Barcode\IVaryLengthGlyph.cs" />
+    <Compile Include="Barcode\MultisetGlyph.cs" />
+    <Compile Include="Barcode\Resources1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Barcode\VaryLengthGlyph.cs" />
+    <Compile Include="Calendar\Calendar.cs" />
+    <Compile Include="Chart\Chart.cs" />
+    <Compile Include="Chart\ChartDataSource.cs" />
+    <Compile Include="eSignature\Signature.cs" />
+    <Compile Include="Helpers\BundlingHelper.cs" />
+    <Compile Include="Helpers\EmbeddedResourcesHelper.cs" />
+    <Compile Include="Helpers\EmbeddedVirtualFile.cs" />
+    <Compile Include="Helpers\EmbeddedVirtualPathProvider.cs" />
+    <Compile Include="Mvc\AutoCompleteExtensions.cs" />
+    <Compile Include="Mvc\Barcode\BarcodeHtmlHelper.cs" />
+    <Compile Include="Mvc\Barcode\BarcodeImageHandler.cs" />
+    <Compile Include="Mvc\Barcode\BarcodeImageRouteHandler.cs" />
+    <Compile Include="Mvc\Barcode\BarcodeImageUri.cs" />
+    <Compile Include="Mvc\Barcode\BarcodeImageUriBuilder.cs" />
+    <Compile Include="Mvc\CalendarExtensions.cs" />
+    <Compile Include="Mvc\ChartExtensions.cs" />
+    <Compile Include="Mvc\GridView\Columns\DefaultColumnBuilder.cs" />
+    <Compile Include="Mvc\GridView\Columns\GridColumn.cs" />
+    <Compile Include="Mvc\GridView\Columns\GridColumnBase.cs" />
+    <Compile Include="Mvc\GridView\Columns\GridColumnCollection.cs" />
+    <Compile Include="Mvc\GridView\Columns\HiddenGridColumn.cs" />
+    <Compile Include="Mvc\GridView\Columns\IColumnBuilder.cs" />
+    <Compile Include="Mvc\GridView\Columns\IGridColumn.cs" />
+    <Compile Include="Mvc\GridView\Columns\IGridColumnCollection.cs" />
+    <Compile Include="Mvc\GridView\DataAnnotations\GridAnnotaionsProvider.cs" />
+    <Compile Include="Mvc\GridView\DataAnnotations\GridColumnAttribute.cs" />
+    <Compile Include="Mvc\GridView\DataAnnotations\GridHiddenColumnAttribute.cs" />
+    <Compile Include="Mvc\GridView\DataAnnotations\GridTableAttribute.cs" />
+    <Compile Include="Mvc\GridView\DataAnnotations\IGridAnnotaionsProvider.cs" />
+    <Compile Include="Mvc\GridView\DataAnnotations\NotMappedColumnAttribute.cs" />
+    <Compile Include="Mvc\GridView\Filtering\ColumnFilterValue.cs" />
+    <Compile Include="Mvc\GridView\Filtering\DefaultColumnFilter.cs" />
+    <Compile Include="Mvc\GridView\Filtering\FilterColumnHeaderRenderer.cs" />
+    <Compile Include="Mvc\GridView\Filtering\FilterGridItemsProcessor.cs" />
+    <Compile Include="Mvc\GridView\Filtering\GridFilterType.cs" />
+    <Compile Include="Mvc\GridView\Filtering\IColumnFilter.cs" />
+    <Compile Include="Mvc\GridView\Filtering\IFilterColumnCollection.cs" />
+    <Compile Include="Mvc\GridView\Filtering\IGridFilterSettings.cs" />
+    <Compile Include="Mvc\GridView\Filtering\QueryStringFilterSettings.cs" />
+    <Compile Include="Mvc\GridView\Filtering\Types\BooleanFilterType.cs" />
+    <Compile Include="Mvc\GridView\Filtering\Types\ByteFilterType.cs" />
+    <Compile Include="Mvc\GridView\Filtering\Types\DateTimeFilterType.cs" />
+    <Compile Include="Mvc\GridView\Filtering\Types\DecimalFilterType.cs" />
+    <Compile Include="Mvc\GridView\Filtering\Types\DoubleFilterType.cs" />
+    <Compile Include="Mvc\GridView\Filtering\Types\FilterTypeBase.cs" />
+    <Compile Include="Mvc\GridView\Filtering\Types\FilterTypeResolver.cs" />
+    <Compile Include="Mvc\GridView\Filtering\Types\IFilterType.cs" />
+    <Compile Include="Mvc\GridView\Filtering\Types\Int16FilterType.cs" />
+    <Compile Include="Mvc\GridView\Filtering\Types\Int32FilterType.cs" />
+    <Compile Include="Mvc\GridView\Filtering\Types\Int64FilterType.cs" />
+    <Compile Include="Mvc\GridView\Filtering\Types\SingleFilterType.cs" />
+    <Compile Include="Mvc\GridView\Filtering\Types\TextFilterType.cs" />
+    <Compile Include="Mvc\GridView\Filtering\Types\UInt16FilterType.cs" />
+    <Compile Include="Mvc\GridView\Filtering\Types\UInt32FilterType.cs" />
+    <Compile Include="Mvc\GridView\Filtering\Types\UInt64FilterType.cs" />
+    <Compile Include="Mvc\GridView\Grid.cs" />
+    <Compile Include="Mvc\GridView\GridBase.cs" />
+    <Compile Include="Mvc\GridView\GridCell.cs" />
+    <Compile Include="Mvc\GridView\GridCellRenderer.cs" />
+    <Compile Include="Mvc\GridView\GridHeaderRenderer.cs" />
+    <Compile Include="Mvc\GridView\GridHelper.cs" />
+    <Compile Include="Mvc\GridView\GridHiddenCellRenderer.cs" />
+    <Compile Include="Mvc\GridView\GridHiddenHeaderRenderer.cs" />
+    <Compile Include="Mvc\GridView\GridStyledRenderer.cs" />
+    <Compile Include="Mvc\GridView\GridViewAjax\GridExtensions\AjaxGrid.cs" />
+    <Compile Include="Mvc\GridView\GridViewAjax\GridExtensions\AjaxGridFactory.cs" />
+    <Compile Include="Mvc\GridView\GridViewAjax\GridExtensions\AjaxGridPager.cs" />
+    <Compile Include="Mvc\GridView\GridViewAjax\GridExtensions\IAjaxGrid.cs" />
+    <Compile Include="Mvc\GridView\GridViewAjax\GridExtensions\IAjaxGridFactory.cs" />
+    <Compile Include="Mvc\GridView\GridViewAjax\GridExtensions\IAjaxGridPager.cs" />
+    <Compile Include="Mvc\GridView\GridViewAjax\Helpers\IHtmlHelpers.cs" />
+    <Compile Include="Mvc\GridView\GridViewAjax\Helpers\KlaHtmlHelpers.cs" />
+    <Compile Include="Mvc\GridView\GridViewExtensions.cs" />
+    <Compile Include="Mvc\GridView\Html\GridExtensions.cs" />
+    <Compile Include="Mvc\GridView\Html\GridHtmlOptions.cs" />
+    <Compile Include="Mvc\GridView\Html\GridRenderOptions.cs" />
+    <Compile Include="Mvc\GridView\Html\HtmlGrid.cs" />
+    <Compile Include="Mvc\GridView\Html\IGridHtmlOptions.cs" />
+    <Compile Include="Mvc\GridView\IGrid.cs" />
+    <Compile Include="Mvc\GridView\IGridCell.cs" />
+    <Compile Include="Mvc\GridView\IGridCellRenderer.cs" />
+    <Compile Include="Mvc\GridView\IGridColumnHeaderRenderer.cs" />
+    <Compile Include="Mvc\GridView\IGridItemsProcessor.cs" />
+    <Compile Include="Mvc\GridView\IGridSettingsProvider.cs" />
+    <Compile Include="Mvc\GridView\ISanitizer.cs" />
+    <Compile Include="Mvc\GridView\Pagination\GridPager.cs" />
+    <Compile Include="Mvc\GridView\Pagination\IGridPager.cs" />
+    <Compile Include="Mvc\GridView\Pagination\PagerGridItemsProcessor.cs" />
+    <Compile Include="Mvc\GridView\QueryStringGridSettingsProvider.cs" />
+    <Compile Include="Mvc\GridView\Resources\Strings1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Mvc\GridView\Sanitizer.cs" />
+    <Compile Include="Mvc\GridView\Sorting\GridSortDirection.cs" />
+    <Compile Include="Mvc\GridView\Sorting\IColumnOrderer.cs" />
+    <Compile Include="Mvc\GridView\Sorting\IGridSortSettings.cs" />
+    <Compile Include="Mvc\GridView\Sorting\OrderByGridOrderer.cs" />
+    <Compile Include="Mvc\GridView\Sorting\QueryStringSortSettings.cs" />
+    <Compile Include="Mvc\GridView\Sorting\SortColumnHeaderRenderer.cs" />
+    <Compile Include="Mvc\GridView\Sorting\SortGridItemsProcessor.cs" />
+    <Compile Include="Mvc\GridView\Sorting\ThenByColumnOrderer.cs" />
+    <Compile Include="Mvc\GridView\Utility\CustomQueryStringBuilder.cs" />
+    <Compile Include="Mvc\GridView\Utility\JsonHelper.cs" />
+    <Compile Include="Mvc\GridView\Utility\PropertiesHelper.cs" />
+    <Compile Include="Mvc\OrganizationStructureExtensions.cs" />
+    <Compile Include="Mvc\SignatureExtensions.cs" />
+    <Compile Include="Mvc\TextEditorExtensions.cs" />
+    <Compile Include="OrgStructure\OrgStructure.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TextEditor\TextEditor.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="AutoComplete\JS\AutoCompleteScript.js" />
+    <EmbeddedResource Include="Barcode\Resources.resx">
+      <LastGenOutput>Resources1.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Mvc\GridView\Resources\Strings.resx">
+      <LastGenOutput>Strings1.Designer.cs</LastGenOutput>
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="AutoComplete\Styles\AutoComplete.css" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Barcode\Resources\qrv10_0.dat" />
+    <None Include="Barcode\Resources\qrv10_1.dat" />
+    <None Include="Barcode\Resources\qrv10_2.dat" />
+    <None Include="Barcode\Resources\qrv10_3.dat" />
+    <None Include="Barcode\Resources\qrv11_0.dat" />
+    <None Include="Barcode\Resources\qrv11_1.dat" />
+    <None Include="Barcode\Resources\qrv11_2.dat" />
+    <None Include="Barcode\Resources\qrv11_3.dat" />
+    <None Include="Barcode\Resources\qrv12_0.dat" />
+    <None Include="Barcode\Resources\qrv12_1.dat" />
+    <None Include="Barcode\Resources\qrv12_2.dat" />
+    <None Include="Barcode\Resources\qrv12_3.dat" />
+    <None Include="Barcode\Resources\qrv13_0.dat" />
+    <None Include="Barcode\Resources\qrv13_1.dat" />
+    <None Include="Barcode\Resources\qrv13_2.dat" />
+    <None Include="Barcode\Resources\qrv13_3.dat" />
+    <None Include="Barcode\Resources\qrv14_0.dat" />
+    <None Include="Barcode\Resources\qrv14_1.dat" />
+    <None Include="Barcode\Resources\qrv14_2.dat" />
+    <None Include="Barcode\Resources\qrv14_3.dat" />
+    <None Include="Barcode\Resources\qrv15_0.dat" />
+    <None Include="Barcode\Resources\qrv15_1.dat" />
+    <None Include="Barcode\Resources\qrv15_2.dat" />
+    <None Include="Barcode\Resources\qrv15_3.dat" />
+    <None Include="Barcode\Resources\qrv16_0.dat" />
+    <None Include="Barcode\Resources\qrv16_1.dat" />
+    <None Include="Barcode\Resources\qrv16_2.dat" />
+    <None Include="Barcode\Resources\qrv16_3.dat" />
+    <None Include="Barcode\Resources\qrv17_0.dat" />
+    <None Include="Barcode\Resources\qrv17_1.dat" />
+    <None Include="Barcode\Resources\qrv17_2.dat" />
+    <None Include="Barcode\Resources\qrv17_3.dat" />
+    <None Include="Barcode\Resources\qrv18_0.dat" />
+    <None Include="Barcode\Resources\qrv18_1.dat" />
+    <None Include="Barcode\Resources\qrv18_2.dat" />
+    <None Include="Barcode\Resources\qrv18_3.dat" />
+    <None Include="Barcode\Resources\qrv19_0.dat" />
+    <None Include="Barcode\Resources\qrv19_1.dat" />
+    <None Include="Barcode\Resources\qrv19_2.dat" />
+    <None Include="Barcode\Resources\qrv19_3.dat" />
+    <None Include="Barcode\Resources\qrv1_0.dat" />
+    <None Include="Barcode\Resources\qrv1_1.dat" />
+    <None Include="Barcode\Resources\qrv1_2.dat" />
+    <None Include="Barcode\Resources\qrv1_3.dat" />
+    <None Include="Barcode\Resources\qrv20_0.dat" />
+    <None Include="Barcode\Resources\qrv20_1.dat" />
+    <None Include="Barcode\Resources\qrv20_2.dat" />
+    <None Include="Barcode\Resources\qrv20_3.dat" />
+    <None Include="Barcode\Resources\qrv21_0.dat" />
+    <None Include="Barcode\Resources\qrv21_1.dat" />
+    <None Include="Barcode\Resources\qrv21_2.dat" />
+    <None Include="Barcode\Resources\qrv21_3.dat" />
+    <None Include="Barcode\Resources\qrv22_0.dat" />
+    <None Include="Barcode\Resources\qrv22_1.dat" />
+    <None Include="Barcode\Resources\qrv22_2.dat" />
+    <None Include="Barcode\Resources\qrv22_3.dat" />
+    <None Include="Barcode\Resources\qrv23_0.dat" />
+    <None Include="Barcode\Resources\qrv23_1.dat" />
+    <None Include="Barcode\Resources\qrv23_2.dat" />
+    <None Include="Barcode\Resources\qrv23_3.dat" />
+    <None Include="Barcode\Resources\qrv24_0.dat" />
+    <None Include="Barcode\Resources\qrv24_1.dat" />
+    <None Include="Barcode\Resources\qrv24_2.dat" />
+    <None Include="Barcode\Resources\qrv24_3.dat" />
+    <None Include="Barcode\Resources\qrv25_0.dat" />
+    <None Include="Barcode\Resources\qrv25_1.dat" />
+    <None Include="Barcode\Resources\qrv25_2.dat" />
+    <None Include="Barcode\Resources\qrv25_3.dat" />
+    <None Include="Barcode\Resources\qrv26_0.dat" />
+    <None Include="Barcode\Resources\qrv26_1.dat" />
+    <None Include="Barcode\Resources\qrv26_2.dat" />
+    <None Include="Barcode\Resources\qrv26_3.dat" />
+    <None Include="Barcode\Resources\qrv27_0.dat" />
+    <None Include="Barcode\Resources\qrv27_1.dat" />
+    <None Include="Barcode\Resources\qrv27_2.dat" />
+    <None Include="Barcode\Resources\qrv27_3.dat" />
+    <None Include="Barcode\Resources\qrv28_0.dat" />
+    <None Include="Barcode\Resources\qrv28_1.dat" />
+    <None Include="Barcode\Resources\qrv28_2.dat" />
+    <None Include="Barcode\Resources\qrv28_3.dat" />
+    <None Include="Barcode\Resources\qrv29_0.dat" />
+    <None Include="Barcode\Resources\qrv29_1.dat" />
+    <None Include="Barcode\Resources\qrv29_2.dat" />
+    <None Include="Barcode\Resources\qrv29_3.dat" />
+    <None Include="Barcode\Resources\qrv2_0.dat" />
+    <None Include="Barcode\Resources\qrv2_1.dat" />
+    <None Include="Barcode\Resources\qrv2_2.dat" />
+    <None Include="Barcode\Resources\qrv2_3.dat" />
+    <None Include="Barcode\Resources\qrv30_0.dat" />
+    <None Include="Barcode\Resources\qrv30_1.dat" />
+    <None Include="Barcode\Resources\qrv30_2.dat" />
+    <None Include="Barcode\Resources\qrv30_3.dat" />
+    <None Include="Barcode\Resources\qrv31_0.dat" />
+    <None Include="Barcode\Resources\qrv31_1.dat" />
+    <None Include="Barcode\Resources\qrv31_2.dat" />
+    <None Include="Barcode\Resources\qrv31_3.dat" />
+    <None Include="Barcode\Resources\qrv32_0.dat" />
+    <None Include="Barcode\Resources\qrv32_1.dat" />
+    <None Include="Barcode\Resources\qrv32_2.dat" />
+    <None Include="Barcode\Resources\qrv32_3.dat" />
+    <None Include="Barcode\Resources\qrv33_0.dat" />
+    <None Include="Barcode\Resources\qrv33_1.dat" />
+    <None Include="Barcode\Resources\qrv33_2.dat" />
+    <None Include="Barcode\Resources\qrv33_3.dat" />
+    <None Include="Barcode\Resources\qrv34_0.dat" />
+    <None Include="Barcode\Resources\qrv34_1.dat" />
+    <None Include="Barcode\Resources\qrv34_2.dat" />
+    <None Include="Barcode\Resources\qrv34_3.dat" />
+    <None Include="Barcode\Resources\qrv35_0.dat" />
+    <None Include="Barcode\Resources\qrv35_1.dat" />
+    <None Include="Barcode\Resources\qrv35_2.dat" />
+    <None Include="Barcode\Resources\qrv35_3.dat" />
+    <None Include="Barcode\Resources\qrv36_0.dat" />
+    <None Include="Barcode\Resources\qrv36_1.dat" />
+    <None Include="Barcode\Resources\qrv36_2.dat" />
+    <None Include="Barcode\Resources\qrv36_3.dat" />
+    <None Include="Barcode\Resources\qrv37_0.dat" />
+    <None Include="Barcode\Resources\qrv37_1.dat" />
+    <None Include="Barcode\Resources\qrv37_2.dat" />
+    <None Include="Barcode\Resources\qrv37_3.dat" />
+    <None Include="Barcode\Resources\qrv38_0.dat" />
+    <None Include="Barcode\Resources\qrv38_1.dat" />
+    <None Include="Barcode\Resources\qrv38_2.dat" />
+    <None Include="Barcode\Resources\qrv38_3.dat" />
+    <None Include="Barcode\Resources\qrv39_0.dat" />
+    <None Include="Barcode\Resources\qrv39_1.dat" />
+    <None Include="Barcode\Resources\qrv39_2.dat" />
+    <None Include="Barcode\Resources\qrv39_3.dat" />
+    <None Include="Barcode\Resources\qrv3_0.dat" />
+    <None Include="Barcode\Resources\qrv3_1.dat" />
+    <None Include="Barcode\Resources\qrv3_2.dat" />
+    <None Include="Barcode\Resources\qrv3_3.dat" />
+    <None Include="Barcode\Resources\qrv40_0.dat" />
+    <None Include="Barcode\Resources\qrv40_1.dat" />
+    <None Include="Barcode\Resources\qrv40_2.dat" />
+    <None Include="Barcode\Resources\qrv40_3.dat" />
+    <None Include="Barcode\Resources\qrv4_0.dat" />
+    <None Include="Barcode\Resources\qrv4_1.dat" />
+    <None Include="Barcode\Resources\qrv4_2.dat" />
+    <None Include="Barcode\Resources\qrv4_3.dat" />
+    <None Include="Barcode\Resources\qrv5_0.dat" />
+    <None Include="Barcode\Resources\qrv5_1.dat" />
+    <None Include="Barcode\Resources\qrv5_2.dat" />
+    <None Include="Barcode\Resources\qrv5_3.dat" />
+    <None Include="Barcode\Resources\qrv6_0.dat" />
+    <None Include="Barcode\Resources\qrv6_1.dat" />
+    <None Include="Barcode\Resources\qrv6_2.dat" />
+    <None Include="Barcode\Resources\qrv6_3.dat" />
+    <None Include="Barcode\Resources\qrv7_0.dat" />
+    <None Include="Barcode\Resources\qrv7_1.dat" />
+    <None Include="Barcode\Resources\qrv7_2.dat" />
+    <None Include="Barcode\Resources\qrv7_3.dat" />
+    <None Include="Barcode\Resources\qrv8_0.dat" />
+    <None Include="Barcode\Resources\qrv8_1.dat" />
+    <None Include="Barcode\Resources\qrv8_2.dat" />
+    <None Include="Barcode\Resources\qrv8_3.dat" />
+    <None Include="Barcode\Resources\qrv9_0.dat" />
+    <None Include="Barcode\Resources\qrv9_1.dat" />
+    <None Include="Barcode\Resources\qrv9_2.dat" />
+    <None Include="Barcode\Resources\qrv9_3.dat" />
+    <None Include="Barcode\Resources\qrvfr1.dat" />
+    <None Include="Barcode\Resources\qrvfr10.dat" />
+    <None Include="Barcode\Resources\qrvfr11.dat" />
+    <None Include="Barcode\Resources\qrvfr12.dat" />
+    <None Include="Barcode\Resources\qrvfr13.dat" />
+    <None Include="Barcode\Resources\qrvfr14.dat" />
+    <None Include="Barcode\Resources\qrvfr15.dat" />
+    <None Include="Barcode\Resources\qrvfr16.dat" />
+    <None Include="Barcode\Resources\qrvfr17.dat" />
+    <None Include="Barcode\Resources\qrvfr18.dat" />
+    <None Include="Barcode\Resources\qrvfr19.dat" />
+    <None Include="Barcode\Resources\qrvfr2.dat" />
+    <None Include="Barcode\Resources\qrvfr20.dat" />
+    <None Include="Barcode\Resources\qrvfr21.dat" />
+    <None Include="Barcode\Resources\qrvfr22.dat" />
+    <None Include="Barcode\Resources\qrvfr23.dat" />
+    <None Include="Barcode\Resources\qrvfr24.dat" />
+    <None Include="Barcode\Resources\qrvfr25.dat" />
+    <None Include="Barcode\Resources\qrvfr26.dat" />
+    <None Include="Barcode\Resources\qrvfr27.dat" />
+    <None Include="Barcode\Resources\qrvfr28.dat" />
+    <None Include="Barcode\Resources\qrvfr29.dat" />
+    <None Include="Barcode\Resources\qrvfr3.dat" />
+    <None Include="Barcode\Resources\qrvfr30.dat" />
+    <None Include="Barcode\Resources\qrvfr31.dat" />
+    <None Include="Barcode\Resources\qrvfr32.dat" />
+    <None Include="Barcode\Resources\qrvfr33.dat" />
+    <None Include="Barcode\Resources\qrvfr34.dat" />
+    <None Include="Barcode\Resources\qrvfr35.dat" />
+    <None Include="Barcode\Resources\qrvfr36.dat" />
+    <None Include="Barcode\Resources\qrvfr37.dat" />
+    <None Include="Barcode\Resources\qrvfr38.dat" />
+    <None Include="Barcode\Resources\qrvfr39.dat" />
+    <None Include="Barcode\Resources\qrvfr4.dat" />
+    <None Include="Barcode\Resources\qrvfr40.dat" />
+    <None Include="Barcode\Resources\qrvfr5.dat" />
+    <None Include="Barcode\Resources\qrvfr6.dat" />
+    <None Include="Barcode\Resources\qrvfr7.dat" />
+    <None Include="Barcode\Resources\qrvfr8.dat" />
+    <None Include="Barcode\Resources\qrvfr9.dat" />
+    <None Include="Barcode\Resources\rsc10.dat" />
+    <None Include="Barcode\Resources\rsc13.dat" />
+    <None Include="Barcode\Resources\rsc15.dat" />
+    <None Include="Barcode\Resources\rsc16.dat" />
+    <None Include="Barcode\Resources\rsc17.dat" />
+    <None Include="Barcode\Resources\rsc18.dat" />
+    <None Include="Barcode\Resources\rsc20.dat" />
+    <None Include="Barcode\Resources\rsc22.dat" />
+    <None Include="Barcode\Resources\rsc24.dat" />
+    <None Include="Barcode\Resources\rsc26.dat" />
+    <None Include="Barcode\Resources\rsc28.dat" />
+    <None Include="Barcode\Resources\rsc30.dat" />
+    <None Include="Barcode\Resources\rsc32.dat" />
+    <None Include="Barcode\Resources\rsc34.dat" />
+    <None Include="Barcode\Resources\rsc36.dat" />
+    <None Include="Barcode\Resources\rsc40.dat" />
+    <None Include="Barcode\Resources\rsc42.dat" />
+    <None Include="Barcode\Resources\rsc44.dat" />
+    <None Include="Barcode\Resources\rsc46.dat" />
+    <None Include="Barcode\Resources\rsc48.dat" />
+    <None Include="Barcode\Resources\rsc50.dat" />
+    <None Include="Barcode\Resources\rsc52.dat" />
+    <None Include="Barcode\Resources\rsc54.dat" />
+    <None Include="Barcode\Resources\rsc56.dat" />
+    <None Include="Barcode\Resources\rsc58.dat" />
+    <None Include="Barcode\Resources\rsc60.dat" />
+    <None Include="Barcode\Resources\rsc62.dat" />
+    <None Include="Barcode\Resources\rsc64.dat" />
+    <None Include="Barcode\Resources\rsc66.dat" />
+    <None Include="Barcode\Resources\rsc68.dat" />
+    <None Include="Barcode\Resources\rsc7.dat" />
+    <EmbeddedResource Include="Chart\JS\Charts\.gitignore" />
+    <EmbeddedResource Include="Chart\JS\Charts\.travis.yml" />
+    <EmbeddedResource Include="Chart\JS\Charts\bower.json" />
+    <EmbeddedResource Include="Chart\JS\Charts\CONTRIBUTING.md" />
+    <EmbeddedResource Include="Chart\JS\Charts\LICENSE.md" />
+    <EmbeddedResource Include="Chart\JS\Charts\package.json" />
+    <None Include="Chart\JS\Charts\README.md" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\skins\lightgray\fonts\tinymce-small.eot" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\skins\lightgray\fonts\tinymce-small.ttf" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\skins\lightgray\fonts\tinymce-small.woff" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\skins\lightgray\fonts\tinymce.eot" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\skins\lightgray\fonts\tinymce.ttf" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\skins\lightgray\fonts\tinymce.woff" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Calendar\Images\calImg.gif" />
+    <EmbeddedResource Include="Calendar\JS\CalendarScript.js" />
+    <EmbeddedResource Include="Calendar\JS\jquery.calendars-ar.js" />
+    <EmbeddedResource Include="Calendar\JS\jquery.calendars.js" />
+    <EmbeddedResource Include="Calendar\JS\jquery.calendars.picker-ar.js" />
+    <EmbeddedResource Include="Calendar\JS\jquery.calendars.picker.js" />
+    <EmbeddedResource Include="Calendar\JS\jquery.calendars.plus.js" />
+    <EmbeddedResource Include="Calendar\JS\jquery.calendars.ummalqura-ar.js" />
+    <EmbeddedResource Include="Calendar\JS\jquery.calendars.ummalqura.js" />
+    <EmbeddedResource Include="Calendar\Styles\jquery.calendars.picker.css" />
+    <EmbeddedResource Include="Calendar\Styles\ui.calendars.picker.css" />
+    <EmbeddedResource Include="Chart\JS\ChartScript.js" />
+    <EmbeddedResource Include="Chart\JS\Charts\Chart.js" />
+    <EmbeddedResource Include="Chart\JS\Charts\gulpfile.js" />
+    <EmbeddedResource Include="Chart\JS\Charts\src\Chart.Bar.js" />
+    <EmbeddedResource Include="Chart\JS\Charts\src\Chart.Core.js" />
+    <EmbeddedResource Include="Chart\JS\Charts\src\Chart.Doughnut.js" />
+    <EmbeddedResource Include="Chart\JS\Charts\src\Chart.Line.js" />
+    <EmbeddedResource Include="Chart\JS\Charts\src\Chart.PolarArea.js" />
+    <EmbeddedResource Include="Chart\JS\Charts\src\Chart.Radar.js" />
+    <EmbeddedResource Include="eSignature\JS\flashcanvas.js" />
+    <EmbeddedResource Include="eSignature\JS\flashcanvas.min.js" />
+    <EmbeddedResource Include="eSignature\JS\jSignature.CompressorBase30.js" />
+    <EmbeddedResource Include="eSignature\JS\jSignature.CompressorSVG.js" />
+    <EmbeddedResource Include="eSignature\JS\jSignature.js" />
+    <EmbeddedResource Include="eSignature\JS\jSignature.SignHere.js" />
+    <EmbeddedResource Include="eSignature\JS\jSignature.UndoButton.js" />
+    <EmbeddedResource Include="eSignature\JS\modernizr.js" />
+    <EmbeddedResource Include="eSignature\JS\SignatureScript.js" />
+    <EmbeddedResource Include="eSignature\JS\signhere.svg" />
+    <EmbeddedResource Include="eSignature\Styles\jSignature.css" />
+    <EmbeddedResource Include="Mvc\GridView\JS\gridmvc-ext.js" />
+    <EmbeddedResource Include="Mvc\GridView\JS\gridmvc.customwidgets.js" />
+    <EmbeddedResource Include="Mvc\GridView\JS\gridmvc.customwidgetsText.js" />
+    <EmbeddedResource Include="Mvc\GridView\JS\gridmvc.js" />
+    <EmbeddedResource Include="Mvc\GridView\JS\gridmvcAR.js" />
+    <EmbeddedResource Include="Mvc\GridView\JS\URI.js" />
+    <EmbeddedResource Include="Mvc\GridView\Styles\Gridmvc.css" />
+    <EmbeddedResource Include="Mvc\GridView\Styles\ResponsiveTable.css" />
+    <EmbeddedResource Include="OrgStructure\Images\toolbar_icon_01.png" />
+    <EmbeddedResource Include="OrgStructure\Images\toolbar_icon_02.png" />
+    <EmbeddedResource Include="OrgStructure\Images\toolbar_icon_03.png" />
+    <EmbeddedResource Include="OrgStructure\Images\toolbar_icon_04.png" />
+    <EmbeddedResource Include="OrgStructure\Images\toolbar_icon_05.png" />
+    <EmbeddedResource Include="OrgStructure\Images\toolbar_icon_06.png" />
+    <EmbeddedResource Include="OrgStructure\Images\toolbar_icon_07.png" />
+    <EmbeddedResource Include="OrgStructure\JS\jquery.contextmenu.js" />
+    <EmbeddedResource Include="OrgStructure\JS\jquery.ui.touch-punch.min.js" />
+    <EmbeddedResource Include="OrgStructure\JS\jsPlumb\jsPlumb-list.js" />
+    <EmbeddedResource Include="OrgStructure\JS\jsPlumb\lib\biltong-0.2.js" />
+    <EmbeddedResource Include="OrgStructure\JS\jsPlumb\lib\jsBezier-0.7.js" />
+    <EmbeddedResource Include="OrgStructure\JS\jsPlumb\lib\katavorio-0.6.js" />
+    <EmbeddedResource Include="OrgStructure\JS\jsPlumb\lib\mottle-0.6.js" />
+    <EmbeddedResource Include="OrgStructure\JS\jsPlumb\src\anchors.js" />
+    <EmbeddedResource Include="OrgStructure\JS\jsPlumb\src\base-library-adapter.js" />
+    <EmbeddedResource Include="OrgStructure\JS\jsPlumb\src\browser-util.js" />
+    <EmbeddedResource Include="OrgStructure\JS\jsPlumb\src\connection.js" />
+    <EmbeddedResource Include="OrgStructure\JS\jsPlumb\src\connector-editors.js" />
+    <EmbeddedResource Include="OrgStructure\JS\jsPlumb\src\connectors-bezier.js" />
+    <EmbeddedResource Include="OrgStructure\JS\jsPlumb\src\connectors-flowchart.js" />
+    <EmbeddedResource Include="OrgStructure\JS\jsPlumb\src\connectors-statemachine.js" />
+    <EmbeddedResource Include="OrgStructure\JS\jsPlumb\src\defaults.js" />
+    <EmbeddedResource Include="OrgStructure\JS\jsPlumb\src\dom-adapter.js" />
+    <EmbeddedResource Include="OrgStructure\JS\jsPlumb\src\dom.jsPlumb.js" />
+    <EmbeddedResource Include="OrgStructure\JS\jsPlumb\src\endpoint.js" />
+    <EmbeddedResource Include="OrgStructure\JS\jsPlumb\src\jquery.jsPlumb.js" />
+    <EmbeddedResource Include="OrgStructure\JS\jsPlumb\src\jsPlumb.js" />
+    <EmbeddedResource Include="OrgStructure\JS\jsPlumb\src\overlay-component.js" />
+    <EmbeddedResource Include="OrgStructure\JS\jsPlumb\src\overlays-guidelines.js" />
+    <EmbeddedResource Include="OrgStructure\JS\jsPlumb\src\renderers-svg.js" />
+    <EmbeddedResource Include="OrgStructure\JS\jsPlumb\src\renderers-vml.js" />
+    <EmbeddedResource Include="OrgStructure\JS\jsPlumb\src\util.js" />
+    <EmbeddedResource Include="OrgStructure\JS\language.js" />
+    <EmbeddedResource Include="OrgStructure\JS\OrgStructureScript.js" />
+    <EmbeddedResource Include="OrgStructure\Styles\jquery.contextmenu.css" />
+    <EmbeddedResource Include="OrgStructure\Styles\OrgStructure.css" />
+    <EmbeddedResource Include="OrgStructure\Styles\OrgStructure_ar.css" />
+    <EmbeddedResource Include="OrgStructure\Styles\OrgStructure_en.css" />
+    <EmbeddedResource Include="TextEditor\JS\TextEditorScript.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\langs\ar.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\license.txt" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\advlist\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\anchor\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\autolink\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\autoresize\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\autosave\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\bbcode\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\charmap\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\code\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\colorpicker\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\contextmenu\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\directionality\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\emoticons\img\smiley-cool.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\emoticons\img\smiley-cry.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\emoticons\img\smiley-embarassed.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\emoticons\img\smiley-foot-in-mouth.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\emoticons\img\smiley-frown.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\emoticons\img\smiley-innocent.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\emoticons\img\smiley-kiss.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\emoticons\img\smiley-laughing.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\emoticons\img\smiley-money-mouth.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\emoticons\img\smiley-sealed.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\emoticons\img\smiley-smile.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\emoticons\img\smiley-surprised.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\emoticons\img\smiley-tongue-out.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\emoticons\img\smiley-undecided.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\emoticons\img\smiley-wink.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\emoticons\img\smiley-yell.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\emoticons\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\example\dialog.html" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\example\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\example_dependency\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\fullpage\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\fullscreen\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\hr\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\image\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\importcss\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\insertdatetime\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\layer\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\legacyoutput\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\link\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\lists\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\media\moxieplayer.swf" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\media\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\nonbreaking\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\noneditable\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\pagebreak\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\paste\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\preview\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\print\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\save\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\searchreplace\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\spellchecker\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\tabfocus\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\table\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\template\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\textcolor\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\textpattern\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\visualblocks\css\visualblocks.css" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\visualblocks\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\visualchars\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\plugins\wordcount\plugin.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\skins\lightgray\content.inline.min.css" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\skins\lightgray\content.min.css" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\skins\lightgray\fonts\tinymce-small.svg" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\skins\lightgray\fonts\tinymce.svg" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\skins\lightgray\img\anchor.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\skins\lightgray\img\loader.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\skins\lightgray\img\object.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\skins\lightgray\img\pencil.png" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\skins\lightgray\img\trans.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\skins\lightgray\skin.ie7.min.css" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\skins\lightgray\skin.min.css" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\about.htm" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\anchor.htm" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\charmap.htm" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\color_picker.htm" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\editor_template.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\editor_template_src.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\image.htm" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\img\colorpicker.jpg" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\img\flash.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\img\icons.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\img\iframe.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\img\pagebreak.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\img\quicktime.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\img\realmedia.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\img\shockwave.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\img\trans.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\img\video.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\img\windowsmedia.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\js\about.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\js\anchor.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\js\charmap.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\js\color_picker.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\js\image.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\js\link.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\js\source_editor.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\langs\en.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\langs\en_dlg.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\link.htm" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\shortcuts.htm" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\skins\default\content.css" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\skins\default\dialog.css" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\skins\default\img\buttons.png" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\skins\default\img\items.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\skins\default\img\menu_arrow.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\skins\default\img\menu_check.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\skins\default\img\progress.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\skins\default\img\tabs.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\skins\default\ui.css" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\skins\highcontrast\content.css" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\skins\highcontrast\dialog.css" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\skins\highcontrast\ui.css" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\skins\o2k7\content.css" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\skins\o2k7\dialog.css" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\skins\o2k7\img\button_bg.png" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\skins\o2k7\img\button_bg_black.png" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\skins\o2k7\img\button_bg_silver.png" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\skins\o2k7\ui.css" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\skins\o2k7\ui_black.css" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\skins\o2k7\ui_silver.css" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\advanced\source_editor.htm" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\modern\theme.min.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\simple\editor_template.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\simple\editor_template_src.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\simple\img\icons.gif" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\simple\langs\en.js" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\simple\skins\default\content.css" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\simple\skins\default\ui.css" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\simple\skins\o2k7\content.css" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\simple\skins\o2k7\img\button_bg.png" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\themes\simple\skins\o2k7\ui.css" />
+    <EmbeddedResource Include="TextEditor\JS\tinymce\tinymce.min.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MCS.FRAMEWORK\MCS.Framework.csproj">
+      <Project>{5b5b0b7b-1a75-4a12-9cea-5b527af8b6e5}</Project>
+      <Name>MCS.Framework</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

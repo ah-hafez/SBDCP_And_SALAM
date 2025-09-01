@@ -1,0 +1,30 @@
+﻿@model AjaxGrid<MCS.UI.Areas.User.Models.Transaction.TransactionCopyVM>
+
+@{
+    var operationType = ViewData["IsEnableAction"] ?? true;
+}
+
+
+@Html.Grid(Model).CollectionName("Copies").Named("grdCopies").Columns(columns =>
+{
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Key, new { id = "Key_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Id, new { id = "Id_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.OrgUnitId, new { id = "OrgUnitId_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.OrgUnitName, new { id = "OrgUnitName_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.UserId, new { id = "UserId_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.UserName, new { id = "UserName_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.IsBcc, new { id = "hdn_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.ActionId, new { id = "ActionId_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.ActionName, new { id = "ActionName_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.OprEntityName, new { id = "OprEntityName_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.SpecialExplanation, new { id = "SpecialExplanation_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.GeneralExplanation, new { id = "GeneralExplanation_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+
+columns.Add(model => model.OrgUnitName).Titled(DbRes.TResource("User.Transaction.Copies.OrgUnit"));
+columns.Add(model => model.UserName).Titled(DbRes.TResource("User.Transaction.Copies.User"));
+columns.Add(model => model.ActionName).Titled(DbRes.TResource("User.Transaction.Assignment.ActionId"));
+columns.Add(model => model.OprEntityName).Titled(DbRes.TResource("User.Transaction.Copy.OprEntity"));
+columns.Add(model => model.SpecialExplanation).Titled(DbRes.TResource("User.Transaction.Copies.SpecialExplanation"));
+columns.Add(model => model.GeneralExplanation).Titled(DbRes.TResource("User.Transaction.Copies.GeneralExplanation"));
+columns.Add(model => LookupsHelper.GetLookupItem(model.Status, SessionInfo.CultureShortName).Result.Text).Titled(DbRes.TResource("User.Transaction.Copy.Status"));
+})

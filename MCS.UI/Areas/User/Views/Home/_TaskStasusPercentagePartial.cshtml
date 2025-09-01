@@ -1,0 +1,59 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Transaction
+@using MCS.Common
+@model List<TaskStatusVM>
+
+@{
+    decimal completedTasks = 0;
+    decimal leftTasks = 0;
+    decimal completedCount = 0;
+    decimal leftCount = 0;
+    decimal allTasksCount = 0;
+
+    if (Model != null)
+    {
+        allTasksCount = Model.Where(t => t.StatusId != TaskStatus.Reject.LookupIdentity(LookupCategory.TaskStatus, SessionInfo.CultureShortName) ).Count();
+        completedCount = Model.Where(t => t.StatusId == TaskStatus.Complete.LookupIdentity(LookupCategory.TaskStatus, SessionInfo.CultureShortName) ).Count();
+        leftCount = Model.Where(t => t.StatusId == TaskStatus.InProcess.LookupIdentity(LookupCategory.TaskStatus, SessionInfo.CultureShortName)  || t.StatusId == TaskStatus.Late.LookupIdentity(LookupCategory.TaskStatus, SessionInfo.CultureShortName) ).Count();
+
+        if (allTasksCount > 0)
+        {
+            completedTasks = (completedCount / allTasksCount) * 100;
+            leftTasks = (leftCount / allTasksCount) * 100;
+        }
+    }
+}
+
+<div class="row percentage">
+    <div class="col-md-6">
+        <div class="row">
+            <div class="c100 small red @(String.Format("p{0}", (int)leftTasks))">
+                <span>@(String.Format("{0:0.0}", leftTasks) + "%")</span>
+                <div class="slice">
+                    <div class="bar"></div>
+                    <div class="fill"></div>
+                </div>
+            </div>
+            <div class="percentage_text">
+                <span>@DbRes.TResource("User.Home.TaskPercentage")</span>
+                <em>@DbRes.TResource("User.Home.Lefted")</em>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="row">
+            <div class="c100 small green @(String.Format("p{0}", (int)completedTasks))">
+                <span>@(String.Format("{0:0.0}", completedTasks) + "%")</span>
+                <div class="slice">
+                    <div class="bar"></div>
+                    <div class="fill"></div>
+                </div>
+            </div>
+            <div class="percentage_text">
+                <span>@DbRes.TResource("User.Home.TaskPercentage")</span>
+                <em>@DbRes.TResource("User.Home.Completed")</em>
+            </div>
+        </div>
+    </div>
+</div>

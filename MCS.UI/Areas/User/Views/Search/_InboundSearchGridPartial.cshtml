@@ -1,0 +1,94 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Search
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<InboundSearchResultVM>
+
+
+
+<div style="margin-bottom:50px;">
+    @Html.Grid(Model, "_CardGridSearch").Named("InboundSearch").CollectionName("InboundSearchResult").Columns(columns =>
+    {
+        columns.Add(true).Titled("").RenderValueAs(mvcgridcolumn => Html.Partial("ListItems/_InboundSearch_Item", mvcgridcolumn))
+        .Sanitized(false).Encoded(false);
+    }).WithPaging(UIHelper.PageSize)
+</div>
+
+<script>
+    var myInboundSearchGridEventHandler = "@Url.Action("SearchPaging", "Search")";
+    //SearchEventHandler
+    function prepareInboundSearchGrid() {
+        pageGrids.InboundSearch = undefined;
+       var filterData = $("#frmSearch").serializeArray();
+        if (!pageGrids.InboundSearch) {
+            $("div[data-gridname='InboundSearch']").gridmvc();
+        }
+        pageGrids.InboundSearch.ajaxify({ getPagedData: myInboundSearchGridEventHandler, requestType: "POST", getData: myInboundSearchGridEventHandler, optionalData: filterData });
+    }
+
+    $(document).ready(function () {
+        prepareInboundSearchGrid();
+    });
+
+
+    function ShowPrintDialog(id) {
+        var params = { transactionId: id };
+        ShowDialogAjaxPrintingBarcodes('@Url.Action("PrinttingBarcodes","Shared")' + "?" + $.param(params), {}, 'OpenPrintDialogSuccess', 'dialogbox col-md-12 ');
+    }
+    function OpenPrintDialogSuccess(data, $obj) {
+        if (data.MessageType != 2) {
+            $obj.setContent(data.Html);
+        }
+        else {
+            __dialog.close();
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function ShowVisitTickect(id) {
+        var actionUrl = '@Url.Action("PrintTicket", "Shared")' + "?transactionId=" + id;
+
+        PrintButton(actionUrl);
+
+    }
+
+    function base64ToArrayBuffer(data) {
+        var binaryString = window.atob(data);
+        var binaryLen = binaryString.length;
+        var bytes = new Uint8Array(binaryLen);
+        for (var i = 0; i < binaryLen; i++) {
+            var ascii = binaryString.charCodeAt(i);
+            bytes[i] = ascii;
+        }
+        return bytes;
+    };
+
+     function Open(Id) {
+
+        var url = "";
+
+        url = '@Url.Action("Edit", "Inbound", new { id = "-1" })';
+
+        url = url.replace("-1", Id);
+
+        window.location.href = url;
+    }
+
+    function Reactivate(Id) {
+        var data = { transactionId: Id };
+        $.ajax({
+            url: '@Url.Action("Reactivate","Search")',
+            type: 'POST',
+            data: data,
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    ShowSuccesMessage(data.MessageText);
+                    window.location.href = '@Url.Action("Index", "Search")';
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            },
+            error: function (a) {
+            }
+        });
+    }
+</script>

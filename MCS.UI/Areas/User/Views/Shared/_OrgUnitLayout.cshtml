@@ -1,0 +1,13 @@
+﻿@{
+    Layout = "~/Views/Shared/_BaseLayout.cshtml";
+}
+
+@section Menu
+    {
+    @Html.Partial("~/Areas/User/Views/Shared/_OrgUnitFileMenuPartial.cshtml")
+}
+
+@section Body
+    {
+    @RenderBody()
+}

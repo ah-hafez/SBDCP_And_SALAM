@@ -1,0 +1,11 @@
+﻿@using MCS.UI.Areas.User.Models.Transaction;
+@model AjaxGrid<TransactionDetailsVM>
+
+@{
+    Layout = "~/Views/Shared/_DialogLayout.cshtml";
+}
+<div class="row ">
+    <div class="col-md-12">
+        @Html.Partial("_PerformanceMeasurementInProgressDetailsGrid", Model, ViewData)
+    </div>
+</div>

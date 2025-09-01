@@ -1,0 +1,27 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Common;
+@using MCS.UI.Areas.User.Models.UserPreferences
+@model AjaxGrid<DistributionListDetailsVM>
+
+
+@{
+    Layout = null;
+}
+
+@{string controller = "UserPreferences";}
+
+
+@Html.Grid(Model).CollectionName("DistributionListDetailsGrid").Named("grdDistributionListDetails").Columns(columns =>
+    {
+        columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Key, new { id = "Key_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+        columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.OrgUnitId, new { id = "gridDetailsOrgUnitId_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+        columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.UserId, new { id = "gridDetailsUserId_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+        columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.OrgUnitName, new { id = "gridDetailsOrgUnitName_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+        columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.UserName, new { id = "gridDetailsUserName_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+
+        columns.Add(model => model.OrgUnitName).Titled(DbRes.TResource("User.UserPreferences.DistributionList.OrgUnit"));
+        columns.Add(model => model.UserName).Titled(DbRes.TResource("User.UserPreferences.DistributionList.User"));
+
+        columns.Add().Titled("تعديل").Encoded(false).Sanitized(false).Css("fixed_col text-right site-danger action-icon").RenderValueAs(model => @Html.ClientLinkTag("", cssClass: "edit_link", title: DbRes.TResource("Grid.Edit"), clientFunctionToCall: "EditDistributionList(" + model.Key + "," + model.OrgUnitId + ")", permissionCode: UserClaims.UserPreferences.DistributionList, innerHtml: "<i class='fa fa-edit'></i>"));
+        columns.Add().Titled("حذف").Encoded(false).Sanitized(false).Css("fixed_col text-right site-danger action-icon").RenderValueAs(model => @Html.ClientLinkTag("", cssClass: "edit_link", permissionCode: UserClaims.UserPreferences.DistributionList, clientFunctionToCall: "DeleteActionGrid(" + "'grdDistributionListDetails'," + model.Key + ",'" + DbRes.TResource("Grid.DeleteMassage") + "','DistributionListForm' , 'CancelDistributionListEdit')", innerHtml: "<i class='glyphicon glyphicon-trash color-danger'></i>"));
+    })

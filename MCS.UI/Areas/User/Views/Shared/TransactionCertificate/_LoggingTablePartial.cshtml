@@ -1,0 +1,43 @@
+﻿@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<TransactionLogDetailInfoVM>
+@using MCS.UI.Helpers
+@Html.Grid(Model , "_GridNew").Named("grdLog").CollectionName("TransactionLogging").Columns(columns=>
+{
+    columns.Add(model => model.UserName).Titled(DbRes.TResource("User.TransactionCertificate.user"));
+    columns.Add(model => model.Description).Titled(DbRes.TResource("User.TransactionCertificate.MovementType"));
+    columns.Add().RenderValueAs(model => DateHelper.DateCalendar(model.Date,SessionInfo.CultureShortName,true)).Titled(DbRes.TResource("User.TransactionCertificate.MovementDate"));
+}).WithPaging(UIHelper.PageSize)
+
+
+
+
+
+<script>
+
+    var dir = "";
+    var SortByData = $('#hdnLogedOn').val();
+    var sortType = null;
+    if (SortByData != null && SortByData != "") {
+        dir = SortByData;
+        sortType = $('#LogedOn').attr("id");
+    }
+    var token = $("#frmLog").find("input[name='__RequestVerificationToken']").val();
+
+    var filter = $("#hdnLogsFilter").val();
+    var transactionId = $("#transactionId").val();
+    var filterData = { filter: filter, transactionId: transactionId, sortType: sortType, dir: dir, searchData: SortByData, __RequestVerificationToken: token };
+
+    var grdLogGridEventHandler = "@Url.Action("TransactionLogGridEventHandler", "TransactionLog")";
+    function prepareLogGrid() {
+        $(".grid-mvc").gridmvc();
+        pageGrids.grdLog.ajaxify({
+            getPagedData: grdLogGridEventHandler,
+            requestType: "post",
+            getData: grdLogGridEventHandler,
+            optionalData: filterData
+        });
+    }
+
+    $(document).ready(function () {
+        prepareLogGrid();
+    });
+</script>

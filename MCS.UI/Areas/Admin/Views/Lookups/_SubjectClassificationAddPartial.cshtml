@@ -1,0 +1,53 @@
+﻿
+@using MCS.Common;
+@using MCS.Framework.Localization;
+@using MCS.UI.Areas.Admin.Models.Lookups
+@using UserLookups = MCS.UI.Areas.User.Models.Lookups
+@model SubjectClassificationAddVM
+
+@{
+    /**/
+
+    ViewBag.Title = "_SubjectClassificationAddPartial";
+    Layout = null;
+}
+
+<div class="d-flex flex-column flex-md-row align-items-md-center flex-grow-1">
+    <h3 class="site-color mb-4">إضافة تصنيف موضوعي</h3>
+</div>
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmAddSubjectClassification" }))
+{
+    @Html.AntiForgeryToken()
+    <div id="AddSubjectClassificationContent" class="form-row">
+
+        @{List<UserLookups.CultureVM> cultureVMs = ViewData["Culture"] as List<UserLookups.CultureVM>;}
+        @if (cultureVMs != null)
+        {
+            List<string> textLabels = new List<string> { "الاسم بالعربية", "الاسم بالانجليزية" };
+            for (int m = 0; m < cultureVMs.Count; m++)
+            {
+
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                    @Html.CustomLabelFor(model => model.Description[m].CultureName, new { @class = "" }, DbRes.TResource(string.Format(textLabels[m], cultureVMs[m].ShortName)))<span class="stark">*</span>
+                    @Html.StickyHiddenFor(model => model.Description[m].CultureId, new { Value = cultureVMs[m].Id })
+                    @Html.TextBoxGroupFor(model => model.Description[m].Text, "", new { @class = "form-control" }, DbRes.TValidation("الحقل مطلوب"))
+
+                </div>
+            }
+        }
+    </div>
+
+    for (int i = 0; i < Model.TransactionCategories.Count(); i++)
+    {
+        @Html.StickyHiddenFor(model => model.TransactionCategories[i].Id)
+        @Html.StickyHiddenFor(model => model.TransactionCategories[i].IsSelected, new { @Value = true })
+    }
+    <div class="mx-3 mx-md-5 mb-4 d-flex">
+        <div class="ml-auto">
+            @Html.ActionButton(DbRes.TResource("Admin.SubjectClassification.Save"), "AddSubjectClassifications", "dvGrid", null, null, "OnAddSuccess", null, "post", null, "btnAdd", "frmAddSubjectClassification", "btn btn-lg btn-st3 mx-1")
+            @Html.ResetButton("ClearInputs('AddSubjectClassificationContent')")
+        </div>
+    </div>
+}
+
+

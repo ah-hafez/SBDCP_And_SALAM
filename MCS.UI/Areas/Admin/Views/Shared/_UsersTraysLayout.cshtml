@@ -1,0 +1,105 @@
+﻿
+@using MCS.Framework.Localization
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_BaseLayout.cshtml";
+    var controllerName = HttpContext.Current.Request.RequestContext.RouteData.Values["controller"].ToString();
+    var actionName = ViewContext.RouteData.GetRequiredString("action").ToString();
+}
+
+@section Menu
+{
+    <div class="align-self-start main_sidebar">
+        @*<div class="my-3 mx-3 d-flex logo_div">
+            <a class="main_logo" href="#">
+                <img src="~/Content/Admin/lib/images/logo.png" title="" alt="" class="logo">
+                <img src="~/Content/Admin/lib/images/GAMI_Logo_Color-01.svg" title="" class="GAMI_Logo_Color-01.svg">
+            </a>
+        </div>*@
+        <div class="d-none d-md-block mr-auto">
+            <a class="nav-link nav-menu-main menu-toggle hidden-xs is-active" href="#"><img src="~/Content/Admin/lib/images/menu/menu.svg" style="width:22px"></a>
+        </div>
+        <div class=" main-menu menu-fixed menu-light menu-accordion menu-icon-left" data-scroll-to-active="true" style="direction:ltr;">
+            <div class="main-menu-content">
+                <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
+                    @*<li class="@(controllerName == "UserCategories" && actionName == "Index" ? "nav-item active" : "nav-item")">
+            <a href="@Url.Action("Index", "UserCategories")">
+                <i>
+                    <img src="~/Content/Admin/newLib/assets/images/menu/attachment.svg">
+                </i>
+                <span class="menu-title">@DbRes.TResource("Admin.UserCategory.UserCategory")</span>
+            </a>
+        </li>
+        <li class="@(controllerName == "UserCategoryTrays" && actionName == "Trays" ? "nav-item active" : "nav-item")">
+            <a href="@Url.Action("Trays", "UserCategoryTrays")">
+                <i>
+                    <img src="~/Content/Admin/newLib/assets/images/menu/attachment.svg">
+                </i>
+                <span class="menu-title">@DbRes.TResource("Admin.Trays.EditTrays")</span>
+            </a>
+        </li>
+
+        <li class="@(controllerName == "UserCategoryTrays" && actionName == "Index" ? "nav-item active" : "nav-item")">
+            <a href="@Url.Action("Index", "UserCategoryTrays")">
+                <i>
+                    <img src="~/Content/Admin/newLib/assets/images/menu/attachment.svg">
+                </i>
+                <span class="menu-title">@DbRes.TResource("Admin.UsersTrays.usersTrays")</span>
+            </a>
+        </li>
+
+        <li class="@(controllerName == "UserCategoryTrays" && actionName == "UsersTraysAndPermissions" ? "nav-item active" : "nav-item")">
+            <a href="@Url.Action("UsersTraysAndPermissions", "UserCategoryTrays")">
+                <i>
+                    <img src="~/Content/Admin/newLib/assets/images/menu/attachment.svg">
+                </i>
+                <span class="menu-title">@DbRes.TResource("Admin.UsersTraysPErmissions")</span>
+            </a>
+        </li>*@
+                    <li class="@(controllerName == "User" && actionName == "Index" ? "nav-item active" : "nav-item")">
+                        <a href="@Url.Action("Index", "User")">
+                            <i>
+                                <img src="~/Content/Admin/lib/images/menu/friends.svg">
+                            </i>
+                            <span class="menu-title">@DbRes.TResource("المستخدمين")</span>
+                        </a>
+                    </li>
+                    <li class="@(controllerName == "Permissions" && actionName == "Index" ? "nav-item active" : "nav-item")">
+                        <a href="@Url.Action("Index", "Permissions")">
+                            <i>
+                                <img src="~/Content/Admin/lib/images/menu/refresh.svg">
+                            </i>
+                            <span class="menu-title">@DbRes.TResource("الأدوار")</span>
+                        </a>
+                    </li>
+                    <li class="@(controllerName == "User" && actionName == "GetUsersWithGroups" ? "nav-item active" : "nav-item")">
+                        <a href="@Url.Action("GetUsersWithGroups", "User")">
+                            <i>
+                                <img src="~/Content/Admin/lib/images/menu/tasks.svg">
+                            </i>
+                            <span class="menu-title">@DbRes.TResource("ادوار المسنخدمين")</span>
+                        </a>
+                    </li>
+                    <li class="@(controllerName == "User" && actionName == "GetUserReport" ? "nav-item active" : "nav-item")">
+                        <a href="@Url.Action("GetUserReport", "User")">
+                            <i>
+                                <img src="~/Content/Admin/lib/images/menu/tasks.svg">
+                            </i>
+                            <span class="menu-title">@DbRes.TResource("تقرير المستخدمين")</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+<style>
+    .main_sidebar{
+        height:24%;
+    }
+</style>
+}
+@section Body
+{
+    @RenderBody()
+}

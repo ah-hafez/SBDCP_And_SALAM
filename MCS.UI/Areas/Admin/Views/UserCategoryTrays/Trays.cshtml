@@ -1,0 +1,54 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.Tray
+
+@model TraysViewModel
+
+@{
+    ViewBag.Title = DbRes.TResource("Admin.Trays.EditTrays");
+    Layout = "~/Areas/Admin/Views/Shared/_UsersTraysLayout.cshtml";
+}
+
+<div class="page-title">
+    <h2><span class="fa fa-arrow-circle-o-left"></span>@DbRes.TResource("Admin.UsersTrays.usersTrays")</h2>
+</div>
+<div class="page-content-wrap">
+    <div class="row">
+        <div class="col-md-12">
+            <form class="form-horizontal form-row">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">@DbRes.TResource("Admin.Trays.EditTrays")</h3>
+                    </div>
+                    <div class="panel-body" style="display:none" id="EditDiv">
+                        @Html.Partial("_TraysEditPartial", Model.EditTray)
+                    </div>
+                    <div class="panel-body">
+                        <div id="GridDiv">
+                            @Html.Partial("_TraysGridPartial", Model.Trays)
+                        </div>
+                        <div class="tartib">
+                            <a href="#" class="btn btn-primary btn-block btn-rounded example-p-01">@DbRes.TResource("Admin.Trays.TraysOrder")</a>
+                            <script type="text/javascript">
+                                $('.example-p-01').on('click', function () {
+                                    var token = $('form:first').find("input[name='__RequestVerificationToken']").val();
+                                    ShowDialogAjax('@Url.Action("RenderTraysSortPartial", "UserCategoryTrays")', {
+                                        __RequestVerificationToken: token
+                                    }, 'OpenTraysSortDialogSuccess');
+                                });
+                                function OpenTraysSortDialogSuccess(data, $obj) {
+
+                                    $obj.setContent(data.View);
+                                }
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    function OnGetSuccess() {
+        $("#EditDiv").show();
+    }
+</script>

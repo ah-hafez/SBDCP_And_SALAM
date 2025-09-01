@@ -1,0 +1,246 @@
+﻿@using MCS.Framework.Controls.Mvc;
+@using MCS.Framework.Controls
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Transaction;
+@using MCS.Common;
+@model MCS.UI.Areas.User.Models.Report.TransactionsSignedDeliveryReportVM
+
+@{
+    Layout = "~/Areas/User/Views/Shared/_DeliveryReportsLayout.cshtml";
+    ViewBag.Title = DbRes.TResource("User.Reports.TransactionsDeliveryReport");
+}
+
+<div id="dvContenar mt-5">
+
+    <div class="d-block d-lg-flex mx-3 mx-md-5 mb-3 mt-5">
+        <ul class="nav nav-tabs custom-sub-nav-tabs" role="tablist">
+            <li role="presentation" class="">
+                <a href="#sub-tab-1" aria-controls="sub-tab-1" role="tab" data-toggle="tab" onclick="printTransactionDeliveryReport(this)" aria-expanded="false" class="active">@DbRes.TResource("User.Transaction.Assignment.PrintDeliveryReport")<span></span></a>
+            </li>
+            <li role="presentation" class="active">
+                <a href="#sub-tab-2" aria-controls="sub-tab-2" role="tab" data-toggle="tab" onclick="uploadTransactionDeliveryReport(this)" class="active" aria-expanded="false">@DbRes.TResource("User.Layout.UploadDeliveryReports") <span></span></a>
+            </li>
+            <li role="presentation" class="">
+                <a href="#sub-tab-3" aria-controls="sub-tab-3" role="tab" data-toggle="tab" onclick="searchDeliveryReport(this)" class="active" aria-expanded="true">البحث عن بيان التسليم الموقع<span></span></a>
+            </li>
+        </ul>
+    </div>
+    @*<div class="content_container content_container--header">
+            <div class="d-flex flex-column flex-lg-row">
+                <div class="mr-auto filter-link">
+                    <a role="presentation" href="#" onclick="printTransactionDeliveryReport(this)">@DbRes.TResource("User.Transaction.Assignment.PrintDeliveryReport")</a>
+                    <a role="presentation" class="active" href="#" onclick="uploadTransactionDeliveryReport(this)">@DbRes.TResource("User.Layout.UploadDeliveryReports")</a>
+                    <a role="presentation" href="#" onclick="searchDeliveryReport(this)">البحث عن بيان التسليم الموقع</a>
+                </div>
+
+            </div>
+        </div>*@
+
+    <div class="page-content-wrap">
+        <div class="row">
+            <div class="col-md-12">
+                @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmTransactionsDeliveryReport", @class = "form-horizontal" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="panel panel-default" style="margin-right:20px; margin-left:20px;">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">@DbRes.TResource("User.Report.TransactionsDeliveryReport.SearchCriteria")</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="col-md-4">
+                                        <label class="control-label">رقم البيان @*<span class="stark">*</span>*@</label>
+                                        @Html.TextBoxGroupFor(model => model.Number, "TransactionsDeliveryReport", new { @Value = "", @class = "form-control", AutoComplete = "off", maxlength = "12" })
+                                        <br />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="control-label">رقم المعاملة @*<span class="stark">*</span>*@</label>
+                                        @Html.TextBoxGroupFor(model => model.TransactionNumber, "TransactionsDeliveryReport", new { @Value = "", @class = "form-control", AutoComplete = "off", maxlength = "12" })
+                                        <br />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div style="display:none;">
+                                            <label class="control-label">تاريخ البيان @*<span class="stark">*</span>*@</label>
+                                            @Html.Hidden("hdnDateUm", "", new { id = "hdnDateUm" })
+                                            @Html.CalendarCustom("fromDateCal", "hdnDateGreg", "hdnDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+                                        </div>
+                                        @*@Html.LabelFor(model => model.Number, new { @class = "w-100" })*@
+                                        @*<div class="form-group">
+                                                <div class="input-group">
+                                                    @Html.NumericTextBoxFor(model => model.Number, new { @class = "form-control BoxShadow InputReportNumber", @Value = "", @maxlength = "10" })
+                                                    <p style="display:none; font-size:13px" class="stark" id="pValidation">@DbRes.TValidation("User.TransactionDelivery.Number")</p>
+                                                </div>
+                                            </div>*@
+                                        <br />
+                                        @Html.HiddenGroupFor(model => model.Date, new { id = "hdnDateGreg" }, "TransactionsDeliveryReport")
+                                        @*@Html.HiddenGroupFor(model => model.Number, new { id = "hdnReportNumber" }, "TransactionsDeliveryReport")*@
+                                    </div>
+                                    @Html.Hidden("hdnDeliveryReportNumber")
+                                </div>
+
+
+                            </div>
+                            <div class="row text-right mr-5 mt-4 ml-xs-3 mb-4">
+                                @Html.ActionButton(DbRes.TResource("User.Report.TransactionsDeliveryReport.Search"), Url.Action("TransactionDeliveryReportSearch", "Reports"),
+                               "dvContenar", null, null, "OnSuccess", null, "post", "TransactionsDeliveryReport", "btnSearch", "frmTransactionsDeliveryReport", "btn-site btn-permissions pull-right", "checkInputs")
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default panel-results" style="margin-left:20px; margin-right:30px;">
+        <div class="toggling-menu pull-right" style="display:none" id="dvResultType">
+            <a href="javascript:goTableView()" data-type="Table"><i class="uicon icon_table"></i> @DbRes.TResource("User.File.Table")</a>
+            <a href="javascript:goCardsView()" class="active" data-type="Card"><i class="uicon icon_cards"></i> @DbRes.TResource("User.File.Cards")</a>
+        </div>
+        <div class="panel-heading">
+            <h3 class="panel-title">@DbRes.TResource("User.Search.SearchResult")</h3>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div id="dvDeliveryReportGridContener" class="">
+                    @Html.Partial("~/Areas/User/Views/Reports/_TransactionsDeliveryReportGridPartial.cshtml", ViewData["TransactionsDeliveryReportGridData"])
+                </div>
+            </div>
+        </div>
+        <hr class="seperator" />
+
+        <div id="dvDocumentPartial" style="display:none">
+            <div class="row">
+                @{Html.ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+                @Html.Partial("~/Areas/User/Views/Transaction/_ArchivingPartialMainDocumentReeports.cshtml", new TransactionArchiveVM(TransactionAttachmentType.Main, true, false, false,
+                                                    bStampPermission: SessionInfo.CurrentUser.Claims.Contains(UserClaims.UserPreferences.Mark),
+                                                    bSignaturePermission: SessionInfo.CurrentUser.Claims.Contains(UserClaims.UserPreferences.Signature),
+                                                    bAnnotationsPermission: SessionInfo.CurrentUser.Claims.Contains(UserClaims.Archiving.Annotations),
+                                                    bColorScanningPermission: SessionInfo.CurrentUser.Claims.Contains(UserClaims.Archiving.ColorScanning),
+                                                    bShowArchives: false), Html.ViewData)
+            </div>
+            <div class="panel-footer text-center">
+                @Html.ClientButton(DbRes.TResource("User.OutboundExternal.Save"), "btnSaveDocument", "btn-site", "UploadSignedReport", null)
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelector('.InputReportNumber').addEventListener('keypress', function (e) {
+        var key = e.which || e.keyCode;
+        if (key === 13) {
+            e.preventDefault();
+            $("#btnSearch").click();
+        }
+    });
+    function OnSuccessPrint() {
+        __dialog.close();
+    }
+
+    function UploadSignedReport() {
+        if (!checkIfHasMainDocument(false)) {
+            return false;
+        }
+        var token = $('#frmTransactionsDeliveryReport').find("input[name='__RequestVerificationToken']").val();
+        $.ajax({
+            type: 'Post',
+            url: '@Url.Action("UploadSignedDeliveryReport")',
+            data: {
+                deliveryReportNumber: $('#hdnDeliveryReportNumber').val(),
+                mainDocumentToken: $('#hdnMainDocToken').val(),
+                date: $('#hdnDateGreg').val(),
+                __RequestVerificationToken: token
+            },
+            success:
+                function (data) {
+
+                    $('#dvDocumentPartial').hide();
+                    $("#dvDeliveryReportGridContener").html('لا يوجد بيانات للعرض');
+                    ShowSuccesMessage(data.MessageText);
+                }
+        });
+        return false;
+    }
+
+    function OnSuccess(data) {
+        //
+        if(data.MessageType != 2){
+
+        if (data.Html.includes('grid-empty-text')) {
+            $('#pValidation').show();
+            $('.InputReportNumber').addClass('RedBorder')
+        } else {
+            $('#pValidation').hide();
+            $('.InputReportNumber').removeClass('RedBorder')
+        }
+
+        isPrint = $('#ckPrint').is(':checked');
+        $('#hdnDeliveryReportNumber').val(data.DeliveryReportNumber);
+        $('#hdnDateGreg').val(data.Date);
+        $('#dvDeliveryReportGridContener').html(data.Html);
+        $('#dvDeliveryReportGridContener').show();
+        $('#btnPrintTransactionsDeliveryReport').show();
+            if (data.DeliveryReportNumber != "") {
+
+            //if (data.DeliveryReportsCount != 1) {
+            //   $('#dvDocumentPartial').hide();
+            //} else {
+            //    $('#dvDocumentPartial').show();
+            //}
+                $('#dvDocumentPartial').show();
+            $('#dvResultType').show();
+        }
+        else {
+            $('#dvDocumentPartial').hide();
+        }
+
+        $(".checkbox").hide();
+        document.getElementById('frameViewer').contentWindow.location.reload();
+
+        }
+        else{
+
+        ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    $(document).ready(function () {
+
+        $('#dvDocumentPartial').hide();
+
+    });
+
+    function uploadTransactionDeliveryReport(obj) {
+
+        window.location.href = '@Url.Action("UploadTransactionDeliveryReport", "Reports")'
+    }
+
+    function printTransactionDeliveryReport(obj) {
+
+        window.location.href = '@Url.Action("TransactionsDeliveryReport", "Reports")'
+    }
+
+     function searchDeliveryReport(obj) {
+
+        window.location.href = '@Url.Action("searchDeliveryReport", "Reports")'
+    }
+
+    function checkInputs() {
+        var number = $('#Number').val().trim();
+        var transactionNumber = $('#TransactionNumber').val().trim();
+        var fromDate = $('#fromDateCal').val().trim();
+
+        if (!number && !transactionNumber && !fromDate) {
+            ShowInformationMessage("@DbRes.TResource("لم يتم إدخال بيانات صحيحه")");
+            return false;
+        }
+        return true;
+    }
+
+</script>
+<style>
+    .RedBorder {
+        border: 1px solid #fe0000 !important
+    }
+</style>

@@ -1,0 +1,149 @@
+﻿@model MCS.UI.Areas.User.Models.Transaction.TransactionBasicInfoVM
+@using MCS.Framework.Localization
+@{
+
+    bool isVipUser = (bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser);
+
+}
+<script src="~/Scripts/Transaction.js"></script>
+<div class="content_container content_container--body">
+ 
+        <div class="row">
+            <div class="animated zoomIn">
+                <a href="@Url.Action("Copies", "File", new { area = "user" })">
+                    <i class="fa fa-arrow-left" style="position: absolute; left: 10px; top: 0px;"></i>
+                </a>
+                <div class="d-flex flex-column pt-2 pr-3 pl-5 pb-0 top-details">
+                    <div class="d-flex" style="margin-right:-45px; margin-bottom:16px;">
+                        <div class="pl-sm-5 Editor-div">
+                            <div class="gray3"> @DbRes.TResource("User.OutboundDraft.BasicInfo.DraftNumber") </div>
+                            <div class="transaction-number Editor-lable">
+                                @Html.DisplayFor(model => model.Number)
+                            </div>
+                        </div>
+                        <div class="pl-5 Editor-div">
+                            <div class="gray3">@DbRes.TResource("User.Editor.BasicInfo.OutboundDraft.Date") </div>
+                            <div class="date-value Editor-lable">
+                                @Html.DisplayFor(model => model.DateH)
+                            </div>
+                        </div>
+
+                        <div class="pl-5 Editor-div">
+                            <div class="gray3">@DbRes.TResource("User.Transaction.ConfidentialityLevel") </div>
+                            <div class="date-value Editor-lable">
+                                @Html.DisplayFor(model => model.ConfidentialityName)
+                            </div>
+                        </div>
+
+                        <div class="pl-5 Editor-div">
+                            <div class="gray3">@DbRes.TResource("User.Transaction.PriorityLevel") </div>
+                            <div class="date-value Editor-lable">
+                                @Html.DisplayFor(model => model.PriorityName)
+                            </div>
+                        </div>
+
+                        <div class="pl-5 Editor-div">
+                            <div class="gray3">@DbRes.TResource("User.Transaction.BasicInfo.SubjectClassifications") </div>
+                            <div class="date-value Editor-lable">
+                                @Html.DisplayFor(model => model.LetterTypeName)
+                            </div>
+                        </div>
+
+                        <div class="pl-5 Editor-div">
+                            <div class="gray3">@DbRes.TResource("User.Editor.BasicInfo.OutboundDraft.Subject") </div>
+                            <div class="date-value Editor-lable">
+                                @Html.DisplayFor(model => model.Subject)
+                            </div>
+                        </div>
+
+
+
+                        @if (!isVipUser)
+                        {
+
+                            <div class="col-sm-2 labelShow">
+                                <div class="light-text">
+                                    @DbRes.TResource("User.Editor.BasicInfo.OutboundDraft.SignedByUser")
+                                </div>
+                                <div class="BoldText">
+                                    @Html.DisplayFor(model => model.SignedByUserName)
+                                </div>
+                            </div>
+
+                            <div class="col-sm-2 labelShow">
+                                <div class="light-text">
+                                    @DbRes.TResource("User.Inbound.BasicInfo.InboundType")
+                                </div>
+                                <div class="BoldText">
+                                    @Html.DisplayFor(model => model.TransactionTypeName)
+                                </div>
+                            </div>
+
+
+                        }
+
+                    </div>
+                </div>
+            </div>
+    </div>
+
+    <script>
+    function ViewedTransaction() {
+
+        var trayid = @((int)TrayType.CopiesOutbound);
+        var page = $("#hdnCurrentPage").val();
+        var orderBy = $("#hdnOrderBy").val();
+        var dir = $("#hdnDirection").val();
+        var filter = $("#hdnFilter").val();
+        var fromDate = $("#hdnFromDateValue").val();
+        var toDate = $("#hdnToDateValue").val();
+        var number = $("#hdnSearchTransactionNumberValue").val();
+        var viewType = $("#hdnViewFile").val();
+        var dateType = $("#hdnFilterDateType").val();
+        var transactionId = $(_this).data("id");
+        var transactionTypeId = $(_this).data("tray");
+        var trayActionType = $(_this).data("type");
+        var PageSize = $("#ddlPaging").val();
+        var url2 = '@Url.Action("MoveTransaction","File")';
+        var copyType = 0;
+
+        if (transactionTypeId == @(TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName))|| transactionTypeId == @(TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName))) {
+            copyType = @((int)TrayType.Copies);
+        }
+        else if ((transactionTypeId == @(TransactionCategory.DraftOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName)) || transactionTypeId == @(TransactionCategory.ExternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName)))) {
+            copyType = @((int)TrayType.CopiesOutbound);
+        }
+        var data = {
+            trayId: trayid, page: page, gridColumn: orderBy, dir: dir, filter: filter, fromDate: fromDate,
+            toDate: toDate, searchColumn: number, viewType: viewType, transactionId: transactionId, trayActionType: trayActionType,
+            dateType: dateType, pageSize: PageSize
+        };
+
+     $.ajax({
+            url: url2,
+            type: 'post',
+            data: data,
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    UpdateMenuFileInformation('@Url.Action("GetMenuFile", "Shared")');
+                    window.location.href = '@Url.Action("Copies", "File")';
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            },
+            error: function (a) {
+
+                alert(a)
+            }
+        });
+    }
+
+       $(".aMarkSeen").unbind('click').click(function (e)
+    {
+        e.stopPropagation();
+        _this = this;
+        ShowConfirmMessage('@(DbRes.TResource("User.File.View"))', "ViewedTransaction");
+    })
+
+    </script>

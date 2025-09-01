@@ -1,0 +1,427 @@
+﻿@model MCS.UI.Areas.User.Models.Transaction.Outbound.Internal.EditOutboundInternalBasicInfoVM
+@using MCS.Common;
+@using MCS.UI.Areas.User.Models.Transaction;
+@using MCS.Framework.Localization
+@using MCS.Framework.Controls;
+@using MCS.UI.Helpers
+
+@{
+    var copyVMs = new TransactionCopyVM { Copies = (MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<TransactionCopyVM>)new MCS.GridMvc.Ajax.GridExtensions.AjaxGridFactory().CreateAjaxGrid((List<TransactionCopyVM>)ViewData["InternalCopiesData"], 1, ((List<TransactionCopyVM>)ViewData["InternalCopiesData"]).Count, false) };
+    var externalCopyVMs = new TransactionExternalCopyVM { ExternalCopies = (MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<TransactionExternalCopyVM>)new MCS.GridMvc.Ajax.GridExtensions.AjaxGridFactory().CreateAjaxGrid((List<TransactionExternalCopyVM>)ViewData["ExternalCopiesListData"], 1, ((List<TransactionExternalCopyVM>)ViewData["ExternalCopiesListData"]).Count, false) };
+
+}
+
+@Html.HiddenFor(a => a.DeliveryMethodId)
+@Html.HiddenFor(a => a.ReporterId)
+<div class=" white-bg" id="dvBasicInfo">
+    <div class="BasicInfo">
+        <div class="form-group col-lg-6 col-md-6 col-sm-12 col-xs-12  mb-3">
+            <div class="input-group w-100">
+                <div class="w-100">
+                    <label class="w-100">@DbRes.TResource("User.OutboundInternal.BasicInfo.Summary") </label>
+                    @Html.TextAreaGroupFor(model => model.Summary, new { @class = "form-control", @rows = "3" })
+                </div>
+            </div>
+        </div>
+        @*<div class="row" style="display:flex; gap:15px">
+            <div class="EditorLable">
+                <label>@DbRes.TResource("User.Transaction.Link.TransactionNumber") :</label>
+                <div class="BoldText"> @ViewData["TransactionsNumber"]</div>
+            </div>
+            <div class="EditorLable">
+                <label>@DbRes.TResource("User.Transaction.ConfidentialityLevel") :</label>
+                <div class="BoldText"> @ViewData["ConfidentialityName"]</div>
+            </div>
+            <div class="EditorLable">
+                <label>@DbRes.TResource("User.Transaction.PriorityLevel") : </label>
+                <div class="BoldText"> @ViewData["PriorityLevel"]</div>
+            </div>
+            <div class="EditorLable">
+                <label>@DbRes.TResource("User.Inbound.BasicInfo.Subject") :</label>
+                <div class="BoldText">  @Html.DisplayFor(model => model.Subject) </div>
+            </div>
+        </div>*@
+        @*<hr style="margin-right:3px;" />
+
+        <div class="row" style="display:flex; gap:20px">
+            <div>
+                <label>@DbRes.TResource("User.OutboundInternal.BasicInfo.Remarks") : </label>
+                <div class="BoldText">  @Html.DisplayFor(model => model.Remarks) </div>
+            </div>
+            <div>
+                <label>@DbRes.TResource("User.Transaction.BasicInfo.ProcessPeriodTransaction") : </label>
+                <div style="margin-right:15px"> @Html.NumericTextBoxFor(model => model.ProcessPeriodTransaction, new { @class = "form-control", maxlength = "3" })</div>
+            </div>
+        </div>*@
+
+    </div>
+    <div class="row"> <div class="col-lg-12"><br /></div></div>
+
+    <div>
+
+        <div class="extraOption">
+            <h4>
+                <a role="button" style="display:flex">
+                    <span onclick="CollapseDiv('divArchiving'); return false;" style="cursor: pointer;">
+                        <img src="~/Content/User/lib/images/plus-icon.svg" id="divArchivingPlusIcon" width="25" />
+                        <img src="~/Content/User/lib/images/Dash-icon.svg" id="divArchivingDashIcon" width="25" style="display: none;" />
+                    </span>
+                    <span class="ml-3 mt-1">@DbRes.TResource("User.Transaction.BasicInfo.Attachments")</span>
+                </a>
+            </h4>
+            <div role="tabpanel" class="tab-pane" id="divArchiving" style="display:none">
+                <div>
+                    @{
+                        var archivingVM = new TransactionArchiveVM(TransactionAttachmentType.Attachment, false,
+                                                        bStampPermission: SessionInfo.CurrentUser.Claims.Contains(UserClaims.UserPreferences.Mark),
+                                                        bSignaturePermission: SessionInfo.CurrentUser.Claims.Contains(UserClaims.UserPreferences.Signature),
+                                                        bAnnotationsPermission: SessionInfo.CurrentUser.Claims.Contains(UserClaims.Archiving.Annotations),
+                                                        bColorScanningPermission: SessionInfo.CurrentUser.Claims.Contains(UserClaims.Archiving.ColorScanning),
+                                                        bReadOnly: true);
+                        archivingVM.Archives = (MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<TransactionArchiveVM>)new MCS.GridMvc.Ajax.GridExtensions.AjaxGridFactory().CreateAjaxGrid((List<TransactionArchiveVM>)ViewData["ArchiveListData"], 1, ((List<TransactionArchiveVM>)ViewData["ArchiveListData"]).Count, false);
+                    }
+                    @Html.Partial("~/Areas/User/Views/Transaction/_ArchivingPartial.cshtml", archivingVM)
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div class="extraOption">
+        <h4>
+            <a role="button" style="display:flex">
+                <span onclick="CollapseDiv('divPicAndCopies'); return false;" style="cursor: pointer;">
+                    <img src="~/Content/User/lib/images/plus-icon.svg" id="divPicAndCopiesPlusIcon" width="25" />
+                    <img src="~/Content/User/lib/images/Dash-icon.svg" id="divPicAndCopiesDashIcon" width="25" style="display: none;" />
+                </span>
+                <span class="ml-3 mt-1">@DbRes.TResource("User.Inbound.PicAndCopies")</span>
+            </a>
+        </h4>
+
+        <div role="tabpanel" class="tab-pane" id="divPicAndCopies" style="display:none">
+            @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.CopiesInternal.DisplayLink))
+            {
+                <div>
+                    @Html.Partial("~/Areas/User/Views/Transaction/_CopiesPartial.cshtml", copyVMs)
+                </div>
+            }
+
+            <br />
+            @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.CopiesExternal.DisplayLink))
+            {
+                <div>
+                    @Html.Partial("~/Areas/User/Views/Transaction/_ExternalCopiesPartial.cshtml", externalCopyVMs)
+                </div>
+            }
+        </div>
+
+    </div>
+
+    <br />
+
+    <div class="row" id="ArchivingPartial">
+        @{Html.ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+        @*@Html.Partial("~/Areas/User/Views/Transaction/_EditorPartial.cshtml", ViewData["EditorViewModel"], Html.ViewData)*@
+        @Html.Partial("~/Areas/User/Views/Transaction/_ArchivingPartialMainDocument.cshtml", new TransactionArchiveVM(TransactionAttachmentType.Main, true, false, false, true,
+                                            bStampPermission: SessionInfo.CurrentUser.Claims.Contains(UserClaims.UserPreferences.Mark),
+                                            bSignaturePermission: SessionInfo.CurrentUser.Claims.Contains(UserClaims.UserPreferences.Signature),
+                                            bAnnotationsPermission: SessionInfo.CurrentUser.Claims.Contains(UserClaims.Archiving.Annotations),
+                                            bColorScanningPermission: SessionInfo.CurrentUser.Claims.Contains(UserClaims.Archiving.ColorScanning)), Html.ViewData)
+
+
+        <div id="dvScanningArchiving" style="display:none">
+            <div id="dvDocumentViewerEditorContainerArchiving" class="">
+                <iframe src="" class="col-md-12" style="height:500px" id="frameViewerAttachmentForArchiving"></iframe>
+            </div>
+        </div>
+
+    </div>
+    @Html.StickyHidden("hdnDocumentId", ViewData["hdnDocumentId"].ToString(), new { id = "hdnDocumentId" })
+</div>
+<script>
+
+
+
+
+
+
+    $(document).ready(function () {
+        $('html, body').animate({
+            scrollTop: $('#ArchivingPartial').offset().top
+        }, 'slow');
+        onChangeDeliveryMethod();
+
+        AppendArchives();
+
+    });
+
+
+
+    function onChangeDeliveryMethod() {
+        var value = $('#hdnBasicDeliveryMethod').val();
+        switch (parseInt(value)) {
+            case DeliveryMethodType.Paper:
+                ShowHideReporterContent(true);
+                break;
+            case DeliveryMethodType.Electronic:
+                ShowHideReporterContent(false);
+                break;
+            case DeliveryMethodType.ElectronicPaper:
+                ShowHideReporterContent(true);
+                break;
+            default:
+        }
+    }
+
+    function ShowHideReporterContent(isShow) {
+        if (isShow) {
+            $('#ReporterContent').removeClass('hide');
+            $('#ddlBasicReporter').prop('disabled', false);
+            $('#hdnBasicReporter').prop('disabled', false);
+        } else {
+            $('#ReporterContent').addClass('hide');
+            $('#ddlBasicReporter').prop('disabled', 'disabled');
+            $('#hdnBasicReporter').prop('disabled', 'disabled');
+        }
+    }
+    $(document).on("click", "span[data-node-id]", function () {
+        var elemnt = $(this);
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('LoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetExternalPartyNodes")',
+                data: { parentId: $(this).data("node-id"), letterId: $("#hdnInboundDocumentType").val(), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+                success:
+                    function (data) {
+                        $(elemnt).closest('li').children('ul').last().empty()
+
+                        $(elemnt).closest('li').children('ul').last().append(data);
+
+                        if ($(elemnt).attr('data-isRefreshEnabled').toLowerCase() == 'false') {
+
+                            $(elemnt).removeClass("LoadedData")
+                        }
+                    }
+            });
+        }
+
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('InternalLoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetOrgUnitsNodes")',
+                data: { parentId: $(this).data("node-id"), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+                success:
+                    function (data) {
+
+                        $(elemnt).closest('li').children('ul').last().empty()
+
+                        $(elemnt).closest('li').children('ul').last().append(data);
+
+                        $(elemnt).removeClass("InternalLoadedData");
+                    }
+            });
+        }
+    });
+        $(document).on("click", "span[data-multi-node-id]", function () {
+        var elemnt = $(this);
+
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('LoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetExternalPartyMultyNodes")',
+                data: { parentId: $(this).data("multi-node-id"), letterId: $("#hdnInboundDocumentType").val(), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func'), checkboxFunction: "ExternalCheckboxChange" },
+                success:
+               function (data) {
+                   $(elemnt).closest('li').children('ul').last().empty()
+
+                   $(elemnt).closest('li').children('ul').last().append(data);
+
+                   if ($(elemnt).attr('data-isRefreshEnabled').toLowerCase() == 'false') {
+
+                       $(elemnt).removeClass("LoadedData")
+
+                   }
+
+               }
+            });
+        }
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('InternalLoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetOrgUnitsMultiNodes")',
+                data: { parentId: $(this).data("multi-node-id"), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+                success:
+               function (data) {
+                   $(elemnt).closest('li').children('ul').last().empty()
+
+                   $(elemnt).closest('li').children('ul').last().append(data);
+
+                   $(elemnt).removeClass("InternalLoadedData");
+               }
+            });
+        }
+    });
+
+    $(document).on("focusout", "#ddlTypeId", function () {
+        if ($('#hdnTypeIsPopularization').val() === "true") {
+            $(".dvPopulariazationTo").show();
+        }
+        else {
+            $(".dvPopulariazationTo").hide();
+            $("#hdnPopulariazationGroupId").val("");
+            $("#hdnPopulariazationGroupId").trigger("change");
+            //to clear to popul...
+        }
+
+    })
+    $('._openDia').click(function () {
+        ShowDialog('@Url.Action("AssignmentGroupAdd", new { txtId = "ddlPopulariazationGroupId", divContainer = "dvPopulariazationTo" })');
+        //
+    });
+
+    $(document).ready(function () {
+
+        $('.disabled').prop('disabled', true);
+        $('#divForm__treeDirectedToOrgUnit').find('.txtDepartmentNumber').prop('disabled', true);
+        $('#divForm__treeDirectedToOrgUnit').find('.txtDepartmentName').prop('disabled', true);
+        $('#divForm__treeDirectedToOrgUnit').find('a').prop("onclick", null).off('click');
+
+
+        $('#HasDateCal').attr('autocomplete', 'off');
+        if ($('#hdnHasDateGreg').val() == "") {
+            $('.withoutAppointment').trigger('change');
+            $('.withoutAppointment').attr('checked', 'checked');
+        } else {
+            FillDateAndTime();
+        }
+    });
+    function FillDateAndTime() {
+        if ($(".withAppointment").length == 0) {
+            return
+        }
+        $(".withAppointment").click();
+        $('#ddlHour').val($('#hdnHour').val());
+        if ($('#hdnMinute').val().length == 1) {
+            $('#ddlMinute').val("0" + $('#hdnMinute').val());
+        }
+        else {
+            $('#ddlMinute').val($('#hdnMinute').val());
+        }
+}
+    $(document).on("change", "#radio1", function () {
+        if ($(this).val() == 0) {
+            $('#hdnHasDateUm').val("");
+            $('#hdnHasDateGreg').val("");
+            $('#hdnMinute').val("");
+            $('#hdnHour').val("");
+            $('#datePicker').hide();
+            $("#CalMessage").html('');
+            $("#CalMessage1").addClass("hidden_");
+        } else {
+            $('#datePicker').show();
+            $('#hdnHasDateGreg').val('@Model.RemindDate')
+            $('#hdnHour').val('@Model.Hour')
+            $('#hdnMinute').val('@Model.Minute')
+            FillDateAndTime();
+        }
+    });
+    function CheckPriorityIfHasDate()
+    {
+        $('#hdnHour').val($('#ddlHour').val());
+        $('#hdnMinute').val($('#ddlMinute').val());
+        if ($('#datePicker').css('display') == 'block' && $("#hdnHasDateGreg").val() == "") {
+            $("#CalMessage1").removeClass("hidden_");
+            $("#CalMessage1").show();
+            $('#HasDateCal, .date-icon2').addClass("RedBorder");
+            $("#CalMessage").html('@Html.Raw(DbRes.TValidation("User.Inbound.RemindDateRequired"))');
+            return false;
+        }
+        var dateNow = $.datepicker.formatDate('dd/mm/yy', new Date($.now()));
+        var currentDate = convertdate(dateNow);
+        if ($("#hdnHasDateGreg").val() != "") {
+
+            if ($("#hdnHasDateGreg").val() != undefined) {
+                var selectedDate = convertdate($("#hdnHasDateGreg").val());
+
+                if (selectedDate < currentDate) {
+                    $("#CalMessage1").removeClass("hidden_");
+                    $("#CalMessage1").show();
+                    $('#HasDateCal, .date-icon2').addClass("RedBorder");
+                    $("#CalMessage").html('@Html.Raw(DbRes.TValidation("User.Inbound.RemindDateCompare"))');
+                    return false;
+                }
+            }
+        }
+        @*if ($('#datePicker').css('display') == 'block' && ($('#ddlMinute').val() == "" || $('#ddlHour').val() == "")) {
+            $("#CalMessage1").removeClass("hidden_");
+            $("#CalMessage1").show();
+            $('#HasDateCal, .date-icon2').removeClass("RedBorder");
+            $("#CalMessage").html('@Html.Raw(DbRes.TValidation("User.Inbound.RemindTime"))');
+            return false;
+        }
+        else {
+            $("#CalMessage").html('');
+            $("#CalMessage1").addClass("hidden_");
+            $('#ddlMinute, #ddlHour').removeClass("RedBorder");
+        }*@
+        if ($('#datePicker').css('display') == 'block') {
+            var time = new Date();
+            if (convertdate($("#hdnHasDateGreg").val()) > currentDate) {
+
+                $("#CalMessage").html("");
+                $("#CalMessage1").hide();
+                $('#HasDateCal, .date-icon2').removeClass("RedBorder");
+                return checkIfHasMainDocument(true);
+            }
+            else if ($("#hdnHasDateGreg").val() > convertdate($("#hdnHasDateGreg").val())) {
+                $("#CalMessage").html("");
+                $("#CalMessage1").hide();
+                $('#HasDateCal, .date-icon2').removeClass("RedBorder");
+                return checkIfHasMainDocument(true);
+            }
+            //else if ($('#ddlHour').val() > time.getHours()) {
+
+            //    $("#CalMessage").html("");
+            //    $("#CalMessage1").hide();
+            //    $('#HasDateCal, .date-icon2, #ddlMinute, #ddlHour').removeClass("RedBorder");
+            //    return checkIfHasMainDocument();
+            //}
+            //else if ($('#ddlHour').val() == time.getHours() && $('#ddlMinute').val() > time.getMinutes()) {
+
+            //    $("#CalMessage").html("");
+            //    $("#CalMessage1").hide();
+            //    $('#HasDateCal, .date-icon2, #ddlMinute, #ddlHour').removeClass("RedBorder");
+            //    return checkIfHasMainDocument();
+            //}
+            else {
+                $("#CalMessage").html('@Html.Raw(DbRes.TValidation("User.Inbound.WrongRemindTime"))');
+                return false;
+            }
+        }
+         if (!ValidateCopy()) {
+
+            return false;
+        }
+        return checkIfHasMainDocument(true);
+    }
+</script>
+<style>
+    .RedBorder {
+        border: 1px solid #fe0000 !important
+    }
+
+    .EditorLable {
+        display: flex;
+        gap: 5px;
+    }
+
+        .EditorLable label {
+            font-size: 16px;
+            margin-top: 6px;
+        }
+
+    .BoldText {
+        color: green;
+        font-size: 20px;
+    }
+</style>

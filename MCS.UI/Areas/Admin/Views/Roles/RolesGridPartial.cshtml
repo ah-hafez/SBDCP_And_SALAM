@@ -1,0 +1,40 @@
+﻿@using MCS.GridMvc.Ajax.GridExtensions
+@using MCS.UI.Areas.Admin.Models.Groups
+@using MCS.GridMvc.Helpers;
+@using MCS.GridMvc.Html;
+@using MCS.Common;
+
+@model AjaxGrid<GroupVM>
+
+@{
+
+}
+
+<div style="margin-bottom:50px;">
+    @Html.Grid(Model, "_CardGridSearch").Named("RolesGrid").CollectionName("GroupVMs").Columns(columns=>
+{
+    columns.Add(true).Titled("").RenderValueAs(mvcgridcolumn => Html.Partial("~/Areas/Admin/Views/Roles/RoleBoxPartial.cshtml", mvcgridcolumn,Html.ViewData))
+    .Sanitized(false).Encoded(false);
+    }).WithPaging(UIHelper.PageSize)
+</div>
+
+
+<script>
+    var token = $("#frmRolesSearch input[name='__RequestVerificationToken']").val();
+    var requestedData = { filter: $("#filterData").val(), __RequestVerificationToken: token};
+     var rolesEventHandler = "@Html.Raw(Url.Action("RolesSearch", "Permissions"))";
+    function prepareRoles() {
+        $(".grid-mvc").gridmvc();
+        pageGrids.RolesGrid.ajaxify(
+            {
+                getPagedData: rolesEventHandler,
+                getData: rolesEventHandler,
+                requestType: "POST",
+                optionalData: requestedData
+            });
+    }
+
+    $(document).ready(function () {
+        prepareRoles();
+    });
+</script>

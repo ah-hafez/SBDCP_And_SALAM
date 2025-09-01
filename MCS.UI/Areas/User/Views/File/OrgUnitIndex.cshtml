@@ -1,0 +1,47 @@
+﻿@using MCS.Common
+@using MCS.UI.Areas.User.Models.File
+@model TrayDetailsVM
+
+@if (Model.IsVIPUser)
+{
+    {
+        ViewBag.Title = ViewData["FileTitle"];
+        Layout = "~/Areas/User/Views/Shared/_VIPLayout.cshtml";
+    }
+
+}
+else
+{
+        ViewBag.Title = ViewData["FileTitle"];
+        Layout = "~/Areas/User/Views/Shared/_OrgUnitLayout.cshtml";
+    }
+
+    @{ViewData["RowsCount"] = Model.AllTransactionCount;}
+
+
+    @{
+        TrayType traytype = (TrayType)Model.Id;
+
+        @Html.Hidden("hdnTrayId", Model.Id, new { id = "hdnTrayId" })
+        using (Html.BeginForm("partials", "yesser", FormMethod.Post, new { id = "frmRevert" }))
+        {
+            @Html.AntiForgeryToken()
+            switch (traytype)
+            {
+                case TrayType.OrgUnit:
+                    @Html.Partial("~/Areas/User/Views/File/_OrgunitPartial.cshtml", Model.TransactionTrayInfoVMs)
+                    break;
+                case TrayType.YESSER:
+                    @Html.Partial("~/Areas/User/Views/File/_YESSERPartial.cshtml", Model.TransactionTrayInfoVMs)
+                    break;
+            }
+        }
+    }
+
+    <script>
+        $(document).ready(function () {
+            goCardsView();
+            sessionStorage.setItem('CurrentTypeView', 'Card');
+        });
+
+    </script>

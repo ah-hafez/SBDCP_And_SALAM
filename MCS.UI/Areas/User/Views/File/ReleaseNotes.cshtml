@@ -1,0 +1,91 @@
+﻿@using MCS.Common
+@using MCS.UI.Areas.User.Models.File
+@using MCS.DTO
+
+@model List<ReleaseNotesDTO>
+
+@{
+    ViewBag.Title = ViewData["FileTitle"];
+    Layout = "~/Areas/User/Views/Shared/_LayoutReleaseNotes.cshtml";
+}
+
+@*<div class="row">
+        <div class="col-md-12">
+            <h2 class="site-color main-title pull-right">@DbRes.TResource("Admin.ReleaseNotes.Title")</h2>
+        </div>
+    </div>*@
+<center>
+    <img src="~/Content/User/lib/images/GAMI_Logo_Color-01.svg" width="120"/>
+</center>
+<div class="page-content-wrap" style="height:50%">
+    @for (int i = 0; i < Model.Count; i++)
+    {
+
+        <div class="row d-flex" style="justify-content:space-between">
+            <div class="">
+                <div class="form-group">
+                    <label class="control-label">@DbRes.TResource("Admin.ReleaseNotes.ReleaseDate")</label>
+                    :
+                    <label class="control-label">@Model[i].DateHj</label>
+
+                </div>
+            </div>
+            <div class="">
+                <div class="form-group">
+                    <label class="control-label">@DbRes.TResource("Admin.ReleaseNotes.ReleaseNumber")</label>
+                    :
+                    <label class="control-label">@Model[i].ReleaseNumber</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                @*<label class="Control-label">@DbRes.TResource("Admin.ReleaseNotes.Description")</label>*@
+                <br />
+                @Html.TextAreaFor(m => m[i].Description, new { @class = "form-control", @rows = 10, autofocus = "autofocus", @readonly = true })
+            </div>
+
+        </div>
+        <br />
+    }
+
+    <div class="row" style="display:none">
+        <div class="col-md-12">
+            <div class="form-group">
+                <input type="checkbox" class="inline-radio" id="rbIAgree" checked="checked" onchange="IAgree();" />&nbsp;&nbsp;
+                <label class="Control-label">@DbRes.TResource("Admin.ReleaseNotes.Commitment")</label>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="content_container site_border" style="margin-bottom:50px;">
+        <div class="content_container content_container--header">
+            <div class="row">
+                <div class="col-md-12 text-center">
+
+                    <input type="submit" value="تم الاطلاع" id="btnSave" class="btn-site" onclick="location.href='@Url.Action("AddReleaseNote", "File")'" />
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    IAgree()
+
+    function IAgree() {
+
+        var cb = document.getElementById("rbIAgree");
+        $("btnSave").css('background-color', '');
+        if (cb.checked == true) {
+            document.getElementById("btnSave").disabled = false;
+            $("btnSave").css('background-color', 'red');
+        }
+        else {
+            document.getElementById("btnSave").disabled = true;
+            $("btnSave").css('background-color', 'yellow');
+        }
+    }
+</script>

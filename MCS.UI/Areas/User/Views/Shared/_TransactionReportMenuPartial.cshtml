@@ -1,0 +1,156 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.File
+@using MCS.Common
+
+<!-- BEGIN: Vertical Menu -->
+<div class="align-self-start main_sidebar ">
+    @*<div class="my-3 mx-3 d-flex logo_div">
+        <a class="main_logo" href="#">
+            <img src="../../Content/User/lib/images/@Session["ThemePath"]/logo.png" title="" alt="" class="logo">
+            <img src="../../Content/User/lib/images/@Session["ThemePath"]/GAMI_Logo_Color-01.svg" title="" class="GAMI_Logo_Color-01.svg">
+        </a>
+    </div>*@
+    <div class="d-none d-md-block mr-auto">
+        <a id="aMenuTrigger" class="nav-link nav-menu-main menu-toggle hidden-xs is-active" href="#"><img src="~/Content/User/lib/images/SystemIcon/align-left.svg" style="width:40px"></a>
+    </div>
+    <div class=" main-menu menu-fixed menu-light menu-accordion menu-icon-left" data-scroll-to-active="true" style="direction:ltr;">
+        <div class="main-menu-content">
+            <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
+                @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Reports.TransactionReports))
+                {
+                    <li class=" nav-item" id="transactionReportSelected">
+                        <a href="@Url.Action("TransactionReport", "Reports", new { area = "user" })" class="d-flex">
+                            <i>
+                                <img src="~/Content/User/lib/images/SystemIcon/main bar-09.svg">
+                            </i>
+                            <span class="menu-title">@DbRes.TResource("User.Layout.TransactionReport")</span>
+                            @*<span class="badge badge badge-primary badge-pill">0</span>*@
+                        </a>
+
+                    </li>
+                }
+                @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Reports.SecretaryTransactionReport))
+                {
+                    <li class=" nav-item" id="secretaryTransactionReport">
+                        <a href="@Url.Action("SecretaryTransactionReport", "Reports", new { area = "user" })" class="d-flex">
+                            <i>
+                                <img src="~/Content/User/lib/images/SystemIcon/main bar-31.svg" style="width:60px; height:55px; margin-right:-12px;">
+                            </i>
+                            <span class="menu-title" style="margin-right:-11px">@DbRes.TResource("User.Layout.SecretaryTransactionReport")</span>
+                            @*<span class="badge badge badge-primary badge-pill">0</span>*@
+                        </a>
+
+                    </li>
+                }
+                @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Reports.UserPerformanceReports))
+                {
+                    <li class=" nav-item" id="performanceSelected2">
+                        <a href="@Url.Action("PerformanceMeasurementReport", "Reports", new { area = "user" })" class="d-flex">
+                            <i>
+                                <img src="~/Content/User/lib/images/SystemIcon/main bar-32.svg" class="ml-2">
+                            </i>
+                            <span class="menu-title">@DbRes.TResource("User.Layout.PerformanceMeasurementReport")</span>
+                            @*<span class="badge badge badge-primary badge-pill">0</span>*@
+                        </a>
+
+                    </li>
+
+                    <li class=" nav-item" id="tasksReportSelected2">
+                        <a href="@Url.Action("TasksReport", "Reports", new { area = "user" })" class="d-flex">
+                            <i>
+                                <img src="~/Content/User/lib/images/SystemIcon/main bar-33.svg" style="width:60px; height:55px; margin-right:-6px;">
+                            </i>
+                            <span class="menu-title" style="margin-right:-10px">@DbRes.TResource("User.Layout.TasksReport")</span>
+                            @*<span class="badge badge badge-primary badge-pill">0</span>*@
+                        </a>
+
+                    </li>
+                    <li class=" nav-item" id="followupReportSelected2">
+                        <a href="@Url.Action("FollowupReport", "Reports", new { area = "user" })" class="d-flex">
+                            <i>
+                                <img src="~/Content/User/lib/images/SystemIcon/main bar-34.svg" class="ml-2">
+                            </i>
+                            <span class="menu-title">@DbRes.TResource("User.Layout.FollowupReport")</span>
+                            @*<span class="badge badge badge-primary badge-pill">0</span>*@
+                        </a>
+
+                    </li>
+                    <li class=" nav-item" id="SentTransactionReportSelected2">
+                        <a href="@Url.Action("SentTransactionReport", "Reports", new { area = "user" })" class="d-flex">
+                            <i>
+                                <img src="~/Content/User/lib/images/SystemIcon/main bar-35.svg" style="width:60px; height:55px; margin-right:-6px;">
+                            </i>
+                            <span class="menu-title" style="margin-right:-11px">@DbRes.TResource("User.Layout.SentTransactionReport")</span>
+                            @*<span class="badge badge badge-primary badge-pill">0</span>*@
+                        </a>
+
+                    </li>
+                    <li class=" nav-item" id="SentTransactionReportSelected2">
+                        <a href="@Url.Action("SentTransactionSatutsReport", "Reports", new { area = "user" })" class="d-flex">
+                            <i>
+                                <img src="~/Content/User/lib/images/SystemIcon/main bar-35.svg" style="width:60px; height:55px; margin-right:-6px;">
+                            </i>
+                            <span class="menu-title" style="margin-right:-11px">@DbRes.TResource("User.Layout.SentTransactionReport")</span>
+                            @*<span class="badge badge badge-primary badge-pill">0</span>*@
+                        </a>
+
+                    </li>
+
+
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+<style>
+    .main_sidebar{
+        top:11%;
+    }
+    @@media screen and (max-width: 950px){
+        .main_sidebar {
+            top: 20%;
+        }
+    }
+    .icon-menu-10:before {
+        content: "\e92f";
+        color: #17653e;
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        var actionUrl = window.location.pathname.split("/")[4];
+        $("#transactionReportSelected").removeClass("active");
+        $("#performanceSelected2").removeClass("active");
+        $("#TasksReportSelected2").removeClass("active");
+        $("#followupReportSelected2").removeClass("active");
+        $("#sentTransactionReportSelected2").removeClass("active");
+        $("#secretaryTransactionReport").removeClass("active");
+
+        switch (actionUrl) {
+            case "TransactionReport":
+                $("#transactionReportSelected").addClass("active");
+
+                break;
+            case "PerformanceMeasurementReport":
+                $("#performanceSelected2").addClass("active");
+                break;
+            case "SentTransactionReport":
+                $("#SentTransactionReportSelected2").addClass("active");
+                break;
+            case "FollowupReport":
+                $("#followupReportSelected2").addClass("active");
+                break;
+            case "TasksReport":
+                $("#tasksReportSelected2").addClass("active");
+                break;
+            case "SecretaryTransactionReport":
+                $("#secretaryTransactionReport").addClass("active");
+                break;
+            default:
+                $("#selected").addClass("active");
+                break;
+        }
+
+        
+    });
+</script>

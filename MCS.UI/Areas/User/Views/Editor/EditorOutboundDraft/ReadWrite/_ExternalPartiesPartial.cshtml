@@ -1,0 +1,8 @@
+﻿@model MCS.UI.Areas.User.Models.EditorOutboundDraftExternalPartiesVM
+@using MCS.Common;
+
+
+@{Html.ViewData.TemplateInfo.HtmlFieldPrefix = "EditorBasicInfo";}
+
+@Html.DepartmentsTreeOnDemand(ViewData["ExternalPartiesData"] as TreeViewModel, model => model.ExternalPartyId, TreeMode.SingleNotMandatory, "ExternalPartyTree", true, "GetEditorUsersByPartyId", "OutboundDraft")
+

@@ -1,0 +1,289 @@
+﻿@using Newtonsoft.Json;
+@model MCS.UI.Areas.User.Models.Support.SupportVM
+
+
+@{
+    /**/
+
+    ViewBag.Title = DbRes.TResource("User.Layout.Support");
+    Layout = "~/Areas/User/Views/Shared/_SearchLayout.cshtml";
+}
+
+
+<div class="content_container content_container--body white-bg">
+    <div class="single-wrapper">
+        @using (Html.BeginForm("ReceiveSupport", "Shared", FormMethod.Post, new { @class = "form-horizontal", id = "mainform", enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="row">
+                <div class="col-sm-4">
+                    <fieldset>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Subject, new { @class = "control-label" })<span class="stark">*</span>
+                            <div>
+                                @Html.TextBoxGroupFor(model => model.Subject, "BasicInformation", new { @class = "form-control", @maxlength = "50" })
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-sm-4">
+                    <div id="dvUploadFile">
+                        @Html.Partial("~/Areas/User/Views/Transaction/_SupportUploadFile.cshtml")
+                        @*<div class="form-group">
+                                <a class="btn-site btn-upload" href="javascript:$('#files').click();">
+                                    <i class="uicon icon_attachment_plus"></i>
+                                    @DbRes.TResource("User.Transaction.Copy.Attachment")<span class="stark">*</span>
+                                </a>
+                                @Html.TextBoxFor(model => model.Attachments, new { type = "file", @name = "files", @class = "hidden", id = "files", @multiple = "multiple", @onchange = "SaveAttachements()" })
+                            </div>*@
+                    </div>
+                    <i id="glyphiconSupport" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                    <span id="CalMessageSupport" style="color:red"></span>
+                    <span id="FileNameSupport" style="color:red"></span>
+                </div>
+                <div class="col-sm-8 col-uploadeed-files hidden_">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label">@DbRes.TResource("User.Transaction.copy.AttachmentsAdded")</label><span class="stark">*</span>
+                            <div class="uploaded-files" id="UploadedFilesName">
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <fieldset>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.SupportType, new { @class = "control-label" })<span class="stark">*</span>
+                            <div>
+                                @Html.AutoCompleteBuilder("ddlSupportType", "supportType",
+                               ViewData["MainDDL"].ToString(), Model != null ? " " : null, true, "form-control", "", "", "", false, onChangeCallback: "onChangeSupportType")
+                                @Html.HiddenGroupFor(model => model.SupportType, new { @Value = "", id = "supportType" }, "BasicInformation")
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <div id="SubProblemContainer" style="display:none!important" class="col-sm-4">
+                    <fieldset>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Category, new { @class = "control-label" })<span class="stark">*</span>
+                            <div>
+                                @Html.AutoCompleteBuilder("ddlSubProblem", "Category", ViewData["SubProblem"].ToString(), Model != null ? " " : null, true, "form-control", "", "", "", false)
+                                @Html.HiddenGroupFor(model => model.Category, new { @Value = "", id = "Category" }, "BasicInformation")
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <div id="SubInqueryContainer" style="display:none!important" class="col-sm-4">
+                    <fieldset>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Category, new { @class = "control-label" })<span class="stark">*</span>
+                            <div>
+                                @Html.AutoCompleteBuilder("ddlSubInquery", "Category", ViewData["SubInquery"].ToString(), Model != null ? " " : null, true, "form-control", "", "", "", false)
+                                @Html.HiddenGroupFor(model => model.Category, new { @Value = "", id = "Category" }, "BasicInformation")
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <fieldset>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Description, new { @class = "control-label" })<span class="stark">*</span>
+                            <div>
+                                @Html.TextAreaGroupFor(model => model.Description, new { @class = "form-control", @maxlength = "2000" }, "BasicInformation")
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+            <div class="content_container content_container--footer">
+                <div class="row">
+                    <div class="col-xs-12 text-center">
+                        @Html.ActionButton(buttonText: DbRes.TResource("User.Transaction.Send"), actionUrl: "ReceiveSupport", divUpdatData: "", paramObj: null, contentType: "multipart/form-data",
+                        onAjaxSuccess: "showResponeMssge", cssClass: "btn-site", formId: "mainform", validationGroup: "BasicInformation", actionType: "post", clientFunctionToCall: "ValidateAttachmentFile", buttonID: "Send")
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    var emptyMessageFile = '@Html.Raw(DbRes.TResource("User.Support.Attachment"))';
+    function ValidateAttachmentFile() {
+
+        var count = $("#UploadedFilesName  .file").length;
+        if (count == 0)
+        {
+            return true;
+        }
+        else if (count > 0) {
+            $("#glyphiconSupport").hide();
+            $("#CalMessageSupport").html('');
+            $('.btn-upload').removeClass("RedBorder");
+            var name = document.getElementById('files');
+            var FilesName = [];
+            for (i = 0; i < name.files.length; i++) {
+                var fileOption = document.getElementById('files').files[i];
+                var isValidSize = Math.round(fileOption.size / 1024 / 1024) >= 1;//Convert Byte to MB => (fileOption.size / 1024 / 1024) =
+                if (isValidSize) {
+                    $("#CalMessageSupport").html('@Html.Raw(DbRes.TValidation("User.Support.FileExceedOneMB"))');
+                    FilesName.push(i+1 + '- ' + name.files[i].name + '  ');
+            }
+            }
+            if (FilesName.length > 0)
+                $("#FileNameSupport").html('@Html.Raw(DbRes.TResource("User.Support.UploadFileName"))' + FilesName);
+            else {
+                $("#FileNameSupport").html('');
+                return true;
+            }
+        }
+        else {
+            ShowErrorFile(emptyMessageFile);
+            return true;
+        }
+    }
+
+    //function SaveAttachements() {
+
+    //    $(".col-uploadeed-files").show();
+    //    $(".col-uploadeed-files").removeClass("hidden_");
+    //    $("#glyphiconSupport").hide();
+    //    $("#CalMessageSupport").html('');
+    //    $("#FileNameSupport").html('');
+    //    $('.btn-upload').removeClass("RedBorder");
+    //    $("#UploadedFilesName").html("");
+    //    var name = document.getElementById('files');
+    //    var fileExist = false;
+    //    for (i = 0; i < name.files.length; i++) {
+    //        $('#UploadedFilesName').find('.attachment_name').each(function () {
+    //            var S = $(this).html();
+    //            if (S.includes(name.files.item(i).name)) {
+    //                fileExist = true;
+    //            }
+    //        });
+    //        if (!fileExist) {
+    //            $('#UploadedFilesName').append('<div class="file newAdded"><i class="uicon icon_attachments"></i><span class="attachment_name">' + name.files.item(i).name + '</span></div>');
+    //        }
+    //    }
+    //    $('.col-uploadeed-files').fadeIn(200);
+    //    if (name.files.length <= 0) {
+    //        ShowErrorFile(emptyMessageFile);
+    //    }
+    //}
+    function ShowErrorFile(message) {
+        $(".col-uploadeed-files").hide();
+        $('.btn-upload').addClass("RedBorder");
+        $("#glyphiconSupport").removeClass("hidden_");
+        $("#glyphiconSupport").show();
+        $("#CalMessageSupport").html(message);
+    }
+    function showResponeMssge(data) {
+        if (data.MessageType != 2) {
+            $(".col-uploadeed-files").hide();
+            $("#UploadedFilesName").html("");
+            $('#mainform')[0].reset();
+            $('#SubProblemContainer').hide();
+            $('#SubInqueryContainer').hide();
+            ShowSuccesMessage(data.MessageText)
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+    function onChangeSupportType() {
+        if ($('#supportType').val().toString() == @((int)SupportType.Problem)) {
+            $('#SubProblemContainer').show();
+            $('#SubInqueryContainer').hide();
+        } else {
+            $('#SubInqueryContainer').show();
+            $('#SubProblemContainer').hide();
+        }
+    }
+
+   
+
+
+
+    function SaveAttachements() {
+       // showname();
+        debugger;
+            var name = document.getElementById('Files');
+        $('#dvUploadFile .uploaded-files').children('.newAdded').remove();
+        var fileExist = false;
+        for (i = 0; i < name.files.length; i++) {
+            $('#dvUploadFile .uploaded-files').find('.attachment_name').each(function () {
+
+                var S = $(this).html();
+                if (S.includes(name.files.item(i).name)) {
+                    fileExist = true;
+                }
+            });
+            if (!fileExist) {
+                $("#FileName").val(name.files.item(i).name);
+                $('#dvUploadFile .uploaded-files').append('<div class="file newAdded"><i class="uicon icon_attachments"></i><span class="attachment_name">' + name.files.item(i).name + '</span><a href="javascript:removeMainDocAttachemntPhysically()" class="color-danger remove-mini"><i class="uicon icon_recycle"></i></a></div>');
+            }
+        }
+        $('.col-uploadeed-files').fadeIn(200);
+
+        var files = $('#dvUploadFile').find($("input:file")).get(0).files;
+        if (files.length <= 0) {
+            return;
+        }
+
+        if (window.FormData !== undefined) {
+            var data = new FormData();
+            var fileExist = false;
+            for (i = 0; i < files.length; i++) {
+                $('#dvUploadFile .uploaded-files').find('.attachment_name').each(function () {
+                    if ($(this).html() == files[i].name) {
+                        fileExist = true;
+                    }
+                });
+                if (fileExist) {
+                    data.append("file" + i, files[i], files[i].name);
+                }
+            }
+            data.append('TransactionArchiveVM', $("#dvAttachmentsBody :input").serializeArray());
+            data.append('AttachmentTypeId', $("#hdnAttachmentType").val());
+            var jqXHR = $.ajax({
+                type: "post",
+                url: '@Url.Action("UploadExplanationAttachments", "Inbound")',
+                data: data,
+                contentType: false,
+                processData: false,
+                dataType: 'json',
+                async: false,
+            }).done(function (data)
+            {
+                debugger;
+                if (data.MessageType != 2)
+                {
+                    $("#JFile").val(data.AddedFilesJson);
+                } else
+                {
+                    $('#ExplanationFiles').val("");
+                    $('#dvUploadFile .uploaded-files').find('.attachment_name').html("");
+                    alert(data.MessageText);
+
+                }
+            }).fail(function (jqXHR, textStatus) {
+                alert("error");
+            });
+        } else {
+            alert("Your browser doesn't support HTML5 multiple file uploads! Please use some decent browser.");
+            return;
+        }
+
+        return;
+    }
+
+</script>
+<style>
+    .RedBorder {
+        border: 1px solid #fe0000 !important
+    }
+</style>

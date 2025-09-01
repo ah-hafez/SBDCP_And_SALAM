@@ -1,0 +1,165 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Common;
+@using MCS.UI.Areas.User.Models;
+@model TextEditorViewModel
+
+@{string controller = TempData.Peek("ControllerName") != null ? TempData.Peek("ControllerName").ToString() : ViewContext.RouteData.Values["controller"].ToString();}
+
+<div class="content_container content_container--body white-bg">
+    <hr />
+        <div class="">
+            @*<div class="panel-heading">
+                <h3 class="panel-title"></h3>
+
+                <div class="col-xs-12">
+                    <h4 class="title4">@DbRes.TResource("User.OutboundDraft.Editor")</h4>
+                </div>
+            </div>*@
+            <div class="form-horizontal">
+                <div id="dvSelectEditorType">
+                    <div class="form-group">
+                    </div>
+                </div>
+                @if (Model.IsScanning)
+                {
+            <div id="dvScanning">
+
+                        <div id="dvDocumentViewerEditorContainer" class="">
+                        </div>
+
+               
+            </div>
+                }
+                @if (!Model.IsSigned)
+                {
+            <div id="dvTextEditor" style="display:none;">
+                <div class="">
+                    <div class="row">
+                        <div class="panel-group accordion accordion-dc">
+                            <div class="col-md-12">
+                                <div class="text-center">
+                                    <h4 class="title6 AttachmentTitle">  @DbRes.TResource("User.TransactionCertificate.LetterOfOrigin")</h4>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.Label(DbRes.TResource("User.OutboundDraft.Forms"), new { @class = " control-label" })
+                                    <div>
+                                        <div class="">
+                                            @Html.AutoCompleteBuilder("ddlOrgUnitFormDocument", "hdnOrgUnitFormDocumentId", ViewData["FormDocumentList"].ToString(), null, true, "form-control")
+                                            @Html.Hidden("hdnOrgUnitFormDocument", null, new { id = "hdnOrgUnitFormDocumentId" })
+                                            <i id="formTypeValidationIcon" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                                            <span id="formTypeValidationText" style="color:red" class="hidden_">@Html.Raw(DbRes.TValidation("User.Transaction.SelectTemplete"))</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="panel-group accordion accordion-dc">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <div class="col-md-8">
+                                        <div class="">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.TextEditor("txtEditor", "hdnContent", Model.ReadOnly, SessionInfo.CultureShortName.ToString(), Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode((Model.EditorType != EditorType.Scanning ? Model.Content != null ? Model.Content.ToString() : string.Empty : string.Empty), false)).ToString(), null, null, null)
+                                </div>
+                            </div>
+                        </div>
+                        <div id="chatShareWindowBtn" class="chat-icon mx-2" style="display:none">
+                            <i class="icon-tab11"></i>
+                            <span id="chatShareWindowFlag" class="new-chats-count"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <i id="CalMessage2" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                <span id="CalMessageForMainDoc" style="color:red"></span>
+            </div>
+                }
+                @Html.HiddenFor(model => model.EditorType, new { id = "hdnEditorType" })
+            </div>
+        </div>
+    
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        if ($('#hdnEditorType').val() == 'TextEditor') {
+            $('#dvTextEditor').show();
+            $('#dvScanning').hide();
+            $('#dvTxtEditorIcon').css("background", "#dce3e9");
+            $('#dvEditorPartialContainer').hide();
+            $('#dvTxtEditorIcon').show();
+            $('#dvScanningIcon').hide();
+        }
+        else {
+            $('#dvTextEditor').hide();
+            $('#dvScanning').show();
+            $('#dvScanningIcon').css("background", "#dce3e9");
+            $('#dvEditorPartialContainer').show();
+            $('#dvTxtEditorIcon').hide();
+            $('#dvScanningIcon').show();
+        }
+
+        if (this.URL.search('Add') > -1) {
+            $('#dvTxtEditorIcon').show();
+            $('#dvScanningIcon').show();
+            $('#dvEditorPartialContainer').show();
+            if (this.URL.search('Internal/Add') > -1 || this.URL.search('CreateOutbound') > -1)
+            {
+                $('#dvTxtEditorIcon').show();
+            }
+        }
+
+        $('#aTextEditor').click(function () {
+            $('#hdnEditorType').val('TextEditor');
+            $('#dvTextEditor').show();
+            $('#dvScanning').hide();
+            $('#dvTxtEditorIcon').css("background", "#dce3e9");
+            $('#dvScanningIcon').css("background", "#f5f7fa")
+        });
+
+        $('#aScanning').click(function () {
+            $('#hdnEditorType').val('Scanning');
+            $('#dvTextEditor').hide();
+            $('#dvScanning').show();
+            $('#dvScanningIcon').css("background", "#dce3e9");
+            $('#dvTxtEditorIcon').css("background", "#f5f7fa")
+        });
+
+        $('#ExternalOutbound').click(function () {
+            $('#dvTextEditor').hide();
+            $('#dvScanningIcon').show();
+            $('#dvScanning').show();
+        });
+
+        $('#OutboundDraft').click(function () {
+            $('#dvTxtEditorIcon').show();
+            $('#dvScanningIcon').show();
+        });
+    });
+
+    $(document).on('change', "#ddlOrgUnitFormDocument", function () {
+        if ($("#hdnOrgUnitFormDocumentId").val() != "") {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetContentByFormId", controller)',
+                data: { id: $("#hdnOrgUnitFormDocumentId").val() },
+                success: function (data) {
+                    ChangeTextEditorContent("txtEditor", "hdnContent", data);
+                }
+            });
+            return false;
+        }
+    });
+
+</script>

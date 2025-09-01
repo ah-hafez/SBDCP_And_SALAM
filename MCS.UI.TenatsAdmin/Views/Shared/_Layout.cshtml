@@ -1,0 +1,250 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Framework.Controls.Mvc;
+@using MCS.Common
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <!-- META SECTION -->
+    <title>@ViewBag.Title</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="icon" href="~/Content/Admin/lib/favicon.png" type="image/x-icon" />
+    <!-- END META SECTION -->
+    <!-- CSS INCLUDE -->
+    <link rel="stylesheet" type="text/css" id="theme" href=@Url.Content("~/Content/Admin/lib/css/theme_" + SessionInfo.CultureShortName + ".css") />
+    <!-- EOF CSS INCLUDE -->
+    @if (SessionInfo.CultureShortName == Constants.Languages.Arabic)
+    {
+        <link rel="stylesheet" type="text/css" id="theme" href="~/Content/Admin/lib/css/rtl.css" />
+    }
+
+    <!-- Theme -->
+    <link rel="stylesheet" type="text/css" href="~/Content/Admin/lib/fonts/fonts.css" />
+    <link rel="stylesheet" type="text/css" href=@Url.Content("~/Content/Admin/lib/css/style_" + SessionInfo.CultureShortName + ".css") />
+    <link rel="stylesheet" type="text/css" href=@Url.Content("~/Content/Admin/lib/css/admin_" + SessionInfo.CultureShortName + ".css") />
+    <link rel="stylesheet" type="text/css" href=@Url.Content("~/Content/Admin/lib/css/responsive_table_" + SessionInfo.CultureShortName + ".css") />
+    <!-- END Theme-->
+    <!-- JS Tree -->
+    <link rel="stylesheet" type="text/css" href="~/Content/Admin/lib/css/cropper/cropper.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/Admin/lib/css/jstree/jstree.min.css" />
+
+    <!-- jquery-confirm -->
+    <link rel="stylesheet" type="text/css" href="~/Content/Admin/lib/js/theme/jquery-confirm/css/jquery-confirm.css" />
+    <!--END jquery-confirm -->
+    <!-- Slidebars CSS -->
+    <link rel="stylesheet" href=@Url.Content("~/Content/Admin/lib/js/theme/pushslide/css/slidebars.min_" + SessionInfo.CultureShortName + ".css")>
+    <link rel="stylesheet" href=@Url.Content("~/Content/Admin/lib/js/theme/pushslide/css/slidebars-theme_" + SessionInfo.CultureShortName + ".css")>
+
+    <!-- Owl Carousel -->
+    <link rel="stylesheet" href="~/Content/Admin/lib/js/theme/owlcarousel/docs.theme.min.css">
+    <link rel="stylesheet" href="~/Content/Admin/lib/js/theme/owlcarousel/owl.carousel.min.css">
+    <link rel="stylesheet" href="~/Content/Admin/lib/js/theme/owlcarousel/owl.theme.default.min.css">
+
+    <!--[if lt IE 9]>
+      <script src="~/Content/Admin/lib/js/theme/ie9/html5shiv.js"></script>
+      <script src="~/Content/Admin/lib/js/theme/ie9/respond.min.js"></script>
+    <![endif]-->
+    <!-- Script OWL Carousel -->
+    <!-- ToastMessage -->
+    <link type="text/css" href=@Url.Content("~/Content/Admin/lib/js/theme/toastmessage/jquery.toastmessage-min_" + SessionInfo.CultureShortName + ".css") rel="stylesheet" />
+    <!--droppable-->
+    <link rel="stylesheet" href="~/Content/Admin/lib/js/theme/droppable/droppable_style.css">
+    <script src="~/Content/Admin/lib/js/theme/droppable/jquery-1.10.2.js"></script>
+    <script src="~/Content/Admin/lib/js/theme/droppable/jquery-ui.js"></script>
+    <!---->
+    <link href="~/Content/Admin/Site.css" rel="stylesheet" />
+    <link href="~/Content/style/jquery.contextMenu.css" rel="stylesheet" />
+
+    @System.Web.Optimization.Scripts.Render("~/bundles/custom")
+
+    @System.Web.Optimization.Scripts.Render("~/bundles/lib_3")
+
+    <script type="text/javascript">
+    var __dateformat = '@System.Web.Configuration.WebConfigurationManager.AppSettings["SystemDateFormat"]';
+    var __dialogNoText = '@DbRes.TResource("Global.Dialog.No")';
+    var __dialogYesText = '@DbRes.TResource("Global.Dialog.Yes")';
+    var __dialogCloseText = '@Html.Raw(DbRes.TResource("Global.Dialog.Close"))';
+    var __cultureName = '@SessionInfo.CultureShortName';
+    var __loginPageUrl = '@(string.Format("{0}{1}",MCS.UI.TenantsAdmin.UrlHelper.GetBaseUri(),"/Tenant/Index"))';
+    $.validator.setDefaults({ ignore: null });
+
+    $(document).ajaxStart(function () {
+        $("#Loader").show();
+
+    });
+    $(document).ajaxComplete(function () {
+        $("#Loader").hide();
+    });
+    </script>
+    <!--rendering framework scripts -->
+    @Html.RenderCalendarResources()
+    <link href="~/Content/jquery.calendars.picker.css" rel="stylesheet" />
+    <!--end rendering framework scripts -->
+</head>
+<body>
+    <div class="spinner" style="display:none;">
+        <div class="bounce1"></div>
+        <div class="bounce2"></div>
+        <div class="bounce3"></div>
+    </div>
+    <div id="sb-site">
+        <!-- START PAGE CONTAINER -->
+        <div class="page-container page-navigation-top-fixed page-mode-rtl page-content-rtl">
+            <!-- START PAGE SIDEBAR -->
+            <!-- END PAGE SIDEBAR -->
+            <!-- PAGE CONTENT -->
+            <div class="page-content">
+
+                <!-- START X-NAVIGATION VERTICAL -->
+                <ul class="x-navigation x-navigation-horizontal x-navigation-panel">
+                    <!-- POWER OFF -->
+                    <li class="xn-icon-button pull-right last">
+                        <a href="~/Login/Logout"><span class="fa fa-power-off"></span></a>
+                    </li>
+                    <ul class="breadcrumb">
+                        @*@Html.MvcSiteMap().Menu(false, true, true)*@
+                        <div class="widget widget_clock">
+                            @{string date = SessionInfo.CultureShortName == Constants.Languages.Arabic ? DateTimeUtility.ConvertToUmAlQuraCalendar(DateTime.Now) : DateTime.Now.ToString("dd/MM/yyyy"); }
+
+                            <div class="widget-big-int">@date</div>
+                            <div class="widget-big-int timeplugin-clock"></div>
+                        </div>
+                    </ul>
+                    <div id="body">@RenderBody()</div>
+                    <!-- Footer Page -->
+                    <div class="footer_page">
+                        <div class="footer_page-content">
+                            <div class="logo_morasalat">
+                                <a href="#"><img src="~/Content/Admin/lib/img/morasalat/logo_morasalat.png"></a>
+                            </div>
+                            <div class="copyright">
+                                @DbRes.TResource("Tenant.CopyRightFor")
+                                <a href="http://sssit.net/" target="_blank">@DbRes.TResource("Tenant.CompanyName")</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END Footer Page -->
+            </div>
+            <!-- END PAGE CONTENT -->
+        </div>
+    </div>
+    <div class="page-sidebar_bg"></div>
+    <!-- Left Slidebar -->
+    <!-- Left Slidebar -->
+    <div class="sb-slidebar sb-chat sb-left sb-style-overlay scroll">
+        <div class="tabs ">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#tab1" data-toggle="tab"><i class="fa fa-comments-o"></i></a></li>
+            </ul>
+            <div class="tab-content ">
+                <div class="tab-pane active" id="tab1">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="chat-search">
+                                <form role="form">
+                                    <input type="text" name="search" id="ChatSearch" placeholder="">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slidebars -->
+    <script src="~/Content/Admin/lib/js/theme/pushslide/js/slidebars.min.js"></script>
+    <script>
+        (function ($) {
+            $(document).ready(function () {
+                $.slidebars();
+            });
+        })(jQuery);
+    </script>
+    <!-- START SCRIPTS -->
+    <!-- START PLUGINS -->
+    @System.Web.Optimization.Scripts.Render("~/bundles/lib_1")
+
+    <script type="text/javascript">
+        function notyConfirm() {
+            noty({
+                text: 'Do you want to continue?',
+                layout: 'topRight',
+                buttons: [
+                    {
+                        addClass: 'btn btn-success btn-clean', text: 'Ok', onClick: function ($noty) {
+                            $noty.close();
+                            noty({ text: 'You clicked "Ok" button', layout: 'topRight', type: 'success' });
+                        }
+                    },
+                    {
+                        addClass: 'btn btn-danger btn-clean', text: 'Cancel', onClick: function ($noty) {
+                            $noty.close();
+                            noty({ text: 'You clicked "Cancel" button', layout: 'topRight', type: 'error' });
+                        }
+                    }
+                ]
+            })
+        }
+    </script>
+    <!-- END NOTY -->
+    <!-- END THIS PAGE PLUGINS -->
+    <!-- START TEMPLATE -->
+
+    @System.Web.Optimization.Scripts.Render("~/bundles/lib_2")
+    <script>
+        $(".x-navigation").find('a.active').parent().addClass('active');
+        $(".x-navigation").find('li.active').parents('li:first').addClass('active');
+    </script>
+
+</body>
+</html>
+<script>
+    function ChangeCulture(name) {
+        $.ajax({
+            url: '@Url.Action("SetCultureName", "Home")',
+            type: 'POST',
+            data: { 'cultureName': name },
+            success: function (data) {
+                window.location.href = '@Url.Action("Index", "Home")';
+            },
+            error: function (a) {
+            }
+        });
+    }
+    var custom_templatePlugins = function () {
+        var custom_tp_clock = function () {
+            function custom_tp_clock_time() {
+                var now = new Date();
+                var hour = now.getHours();
+                var minutes = now.getMinutes();
+                var suffix = (hour >= 12) ? '@DbRes.TResource("PM")' : '@DbRes.TResource("AM")';
+
+                hour = ((hour + 11) % 12 + 1);
+                hour = hour < 10 ? '0' + hour : hour;
+                minutes = minutes < 10 ? '0' + minutes : minutes;
+
+                $(".timeplugin-clock").html(hour + "<span>:</span>" + minutes + " " + suffix);
+            }
+            if ($(".timeplugin-clock").length > 0) {
+
+                custom_tp_clock_time();
+
+                window.setInterval(function () {
+                    custom_tp_clock_time();
+                }, 10000);
+            }
+        }
+        return {
+            init: function () { custom_tp_clock(); }
+        }
+    }();
+
+    $(function () {
+        custom_templatePlugins.init();
+    });
+</script>
+

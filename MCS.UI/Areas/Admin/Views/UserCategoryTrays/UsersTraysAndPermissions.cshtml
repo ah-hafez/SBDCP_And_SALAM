@@ -1,0 +1,148 @@
+﻿@using MCS.UI.Areas.Admin.Models.UserCategories
+@using MCS.Framework.Localization
+
+@model UsersTraysAndPermissionsViewModel
+@{
+    ViewBag.Title = DbRes.TResource("Admin.UsersTraysPErmissions");
+    Layout = "~/Areas/Admin/Views/Shared/_UsersTraysLayout.cshtml";
+}
+<script>
+    function clearHiddens()
+    {
+        $(".export_pdf a").removeClass("disable_a");
+        $('#hdnPermissions').val("");
+        $('#hdnUsers').val("");
+        $('#hdnTrays').val("");
+    }
+
+    function getData(id) {
+        $(".select").removeClass("select");
+        $(".main_select").removeClass("main_select");
+        $("#user_" + id).addClass("main_select");
+        $.ajax({
+            cache: false,
+            type: "GET",
+            url: '@Url.Action("GetPermissionsAndTraysByUserId", "UserCategoryTrays")',
+            data: { "id": id },
+            success: function (response) {
+                clearHiddens();
+                $('#divTrays').html('');
+                $('#divTrays').html(response.TraysHtml);
+                $('#hdnTrays').val(response.DataTrays);
+
+                $('#divPermissions').html('');
+                $('#divPermissions').html(response.PermissionsHtml);
+                $('#hdnPermissions').val(response.DataPermissions);
+
+            }
+        });
+    }
+    function getPermissionUsers(id) {
+        $(".select").removeClass("select");
+        $(".main_select").removeClass("main_select");
+        $("#permission_" + id).addClass("main_select");
+        $.ajax({
+            cache: false,
+            type: "GET",
+            url: '@Url.Action("GetUsersByPermissionId", "UserCategoryTrays")',
+            data: { "id": id },
+            success: function (response) {
+                clearHiddens();
+                $('#divUsers').html('');
+                $('#divUsers').html(response.UsersHtml);
+                $('#hdnUsers').val(response.DataUsers);
+
+            }
+        });
+    }
+    function getTrayUsers(id)
+    {
+        $(".select").removeClass("select");
+        $(".main_select").removeClass("main_select");
+        $("#tray_" + id).addClass("main_select");
+        $.ajax({
+            cache: false,
+            type: "GET",
+            url: '@Url.Action("GetUsersByTrayId", "UserCategoryTrays")',
+            data: { "id": id },
+            success: function (response) {
+                clearHiddens();
+                $('#divUsers').html('');
+                $('#divUsers').html(response.UsersHtml);
+                $('#hdnUsers').val(response.DataUsers);
+            }
+        });
+    }
+</script>
+<div class="page-title">
+    <h2><span class="fa fa-arrow-circle-o-left"></span>@DbRes.TResource("Admin.UsersTraysPErmissions")</h2>
+</div>
+<div class="page-content-wrap">
+    <div class="row">
+        <div class="col-md-12">
+            <form class="form-horizontal form-row" id="frmExport">
+                @Html.AntiForgeryToken()
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">@DbRes.TResource("Admin.UsersTraysPErmissions.ChooseItem")</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-4" id="divTrays">
+                                @Html.Partial("_TraysPartial", Model.Trays)
+                            </div>
+                            <div class="col-md-4" id="divUsers">
+                                @Html.Partial("_UsersPartial", Model.Users)
+                            </div>
+                            <div class="col-md-4" id="divPermissions">
+                                @Html.Partial("_PermissionsPartial", Model.Permissions)
+                            </div>
+                        </div>
+                    </div>
+                    @Html.Hidden("hdnTrays")
+                    @Html.Hidden("hdnUsers")
+                    @Html.Hidden("hdnPermissions")
+                    <div class="panel-footer">
+                      
+                        <div class="export_icon pull-left">
+                        
+                            <div class="export_pdf"><a class="disable_a" title="تصدرير PDF" onclick="ExportToPdf()"></a></div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function ExportToPdf()
+    {
+        var name = $(".main_select span").html();
+        var id = $(".main_select").data("id");
+        var type = $(".main_select").data("type");
+
+        var data = $('#frmExport').serializeArray();
+        data.push({ name: 'name', value: name });
+        data.push({ name: 'id', value: id });
+        data.push({ name: 'type', value: type });
+
+        $.ajax({
+            cache: false,
+            type: "post",
+            url: '@Url.Action("ExportToPdf", "UserCategoryTrays")',
+            data: data,
+            success: function (data) {
+                if (data) {
+                    if (data.MessageType != 2) {
+                        var url = '@Url.Action("DownloadDocument", "UserCategoryTrays")';
+                        window.location.href = url + '?fileGuid=' + data.FileGuid + '&filename=' + data.FileName;
+                    }
+                    else {
+                        ShowErrorMessage(data.MessageText);
+                    }
+                }
+            }
+        });
+    }
+</script>

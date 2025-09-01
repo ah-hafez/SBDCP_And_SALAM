@@ -1,0 +1,106 @@
+﻿@using MCS.UI.Areas.User.Models.Transaction
+@using MCS.Framework.Localization
+@using MCS.Common
+@model List<SentTaskVM>
+
+@{
+    int SentTasksCount = Convert.ToInt32(ViewData["SentTasksCount"]);
+
+    int SelectedPageIndex = Int16.Parse(ViewData["SelectedPageIndex"].ToString());
+    int PageSize = Int16.Parse(ViewData["PageSize"].ToString());
+    int Pages = SentTasksCount / PageSize;
+    if (SentTasksCount % PageSize > 0)
+    {
+        Pages++;
+    }
+}
+<style>
+    select#SentPaging {
+        padding: 2px 12px !important;
+        -webkit-appearance: menulist-button !important;
+    }
+</style>
+<div class="col-md-6">
+
+    <form role="form" class="form-horizontal form-row">
+        @Html.Hidden("hdnSentTasksSelectedPageIndex", SelectedPageIndex)
+        @Html.Hidden("hdnSentPagesCount", Pages)
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">@DbRes.TResource("User.Task.SentTask.SentTasks")</h3>
+                <span class="total_tasks">@SentTasksCount</span>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="tasks_area"> 
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="top_list">
+                                    <div class="pull-left">
+                                        <div class="col">
+                                            @DbRes.TResource("User.Task.Page")
+                                        </div>
+                                        <div class="col">
+                                            <div class="input-group">
+                                                <input id="txtSentPageNumber" onkeypress="return IsNumeric(event);" type="text" class="form-control" value="@SelectedPageIndex">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            @DbRes.TResource("User.Task.From")
+                                            
+                                        </div>
+                                        <div class="col">
+                                            @Pages
+                                        </div>
+                                        <div class="col">
+                                            <ul class="pagination pagination-sm">
+                                                <li ><a id="ancSentPrevPage">«</a></li>
+                                                <li><a id="ancSentNextPage">»</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="pull-right">
+                                        <div class="col">
+                                            @DbRes.TResource("User.Task.PageSize")
+                                        </div>
+                                        <div class="col">
+                                            <div class="select-group">
+                                                <select id="SentPaging" class="form-control">
+                                                    <option value="10">10</option>
+                                                    <option value="20">20</option>
+                                                    <option value="30">30</option>
+                                                    <option value="40">40</option>
+                                                    <option value="50">50</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                        <ul class="list">
+
+                            @foreach (SentTaskVM sentTaskVM in Model)
+                            {
+                                @Html.Partial("~/Areas/User/Views/Home/_SentTaskPartial.cshtml", sentTaskVM);
+                            }
+
+                        </ul>
+
+                        @*<div class="row">
+        <div class="col-md-12">
+            <ul class="pagination pagination-sm pull-left">
+                @Html.ListPaging(SelectedPageIndex, SentTasksCount, PageSize, "GetSentTasksByPageIndex")
+
+
+            </ul>
+        </div>
+    </div>*@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

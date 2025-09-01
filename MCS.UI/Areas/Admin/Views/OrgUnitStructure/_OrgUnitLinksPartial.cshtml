@@ -1,0 +1,113 @@
+﻿@using MCS.Framework.Localization;
+@model MCS.UI.Areas.Admin.Models.OrgUnit.OrgUnitLinkVM
+
+@{
+    Layout = "~/Views/Shared/_AdminDialogLayout.cshtml";
+}
+
+<div class="modal-body" id="dvOrgUnitLinks">
+    @using (Html.BeginForm("OrgUnitLinks", "OrgUnitStructure", FormMethod.Post, new { id = "frmOrgUnitLinksForm" }))
+    {
+        @Html.AntiForgeryToken()
+        <div id="frmOrgUnitLinks">
+            @Html.StickyHidden("orgUnitKey", ViewData["OrgUnitKey"].ToString(), new { id = "hdnOrgUnitKey" });
+            @Html.StickyHidden("departmentsStructure", null, new { id = "hdnDepartmentsStructure" })
+            <script>
+                $('#hdnDepartmentsStructure').val($('#hdnSaveDepartmentsData').val());
+            </script>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            @Html.CustomLabelFor(model => model.Key, new { @class = "col-md-2 control-label" })
+                            <div class="col-md-10">
+                                <div class="">
+                                    @Html.AutoComplete("ddlLink", "hdnLink", Newtonsoft.Json.JsonConvert.SerializeObject(ViewData["ListOfLinks"]).ToString(), true, null, "form-control")
+                                    @Html.HiddenGroupFor(model => model.OrgUnitName, new { id = "hdnOrgUnitName" })
+                                    @Html.HiddenGroupFor(model => model.Key, new { id = "hdnLink", @Value = "" }, "OrgUnitLinks")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style=" clear:both;"></div>
+            <div class="panel-footer middle">
+                @Html.ActionButton(DbRes.TResource("Admin.OrgUnitLinks.Add"), "OrgUnitAddLinks", null, null, null, "OnSuccess", null, "post", "OrgUnitLinks", "Add", "frmOrgUnitLinksForm", "btn btn-permissions pull-right", "", "", "", "")
+            </div>
+        </div>
+    }
+    <div class="panel-body">
+        <div class="row" id="dvOrgUnitLinksGrid">
+            @Html.Partial("~/Areas/Admin/Views/OrgUnitStructure/_OrgUnitLinksGridPartial.cshtml", ViewData["GridData"])
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+</div>
+
+<script>
+    $(document).on('focusout', '#ddlLink',function () {
+
+        $('#hdnOrgUnitName').val($('#ddlLink').val());
+    });
+
+    var paramArray = $.parseJSON($('#hdnSaveDepartmentsData').val());
+    var paramElementIndex = ElementIndex(paramArray, @ViewData["OrgUnitKey"]);
+    pageGrids.grdOrgUnitLinks.param = new Array();
+    pageGrids.grdOrgUnitLinks.param[0]= JSON.stringify(paramArray);
+
+    function Valid(){
+        var departmentArray = $.parseJSON($('#hdnSaveDepartmentsData').val());
+
+        var indexFrom = ElementIndex(departmentArray, @ViewData["OrgUnitKey"]);
+
+        for (var i = 0; i < departmentArray[indexFrom].LinkUnitsKeys.length; i++) {
+
+            if( departmentArray[indexFrom].LinkUnitsKeys[i] == $('#hdnLink').val())
+                $('#hdnLink').val(0)
+        }
+
+        if($('#hdnLink').val() != 0)
+            DrawLink('hdnSaveDepartmentsData', 'hdnSaveSettings', @ViewData["OrgUnitKey"], $('#hdnLink').val());
+
+        $('#hdnDepartmentsStructure').val($('#hdnSaveDepartmentsData').val());
+        $('#hdnDepartmentsStructureGrid').val($('#hdnSaveDepartmentsData').val());
+    }
+
+    function ValidDelete(ids){
+        var confirmDel = false;
+
+        var idSplit = ids.split(',');
+
+        for (var i = 0; i < idSplit.length; i++) {
+
+            confirmDel = DeleteLink('hdnSaveDepartmentsData', 'hdnSaveSettings', @ViewData["OrgUnitKey"], idSplit[i]);
+        }
+
+        $('#hdnDepartmentsStructure').val($('#hdnSaveDepartmentsData').val());
+        $('#hdnDepartmentsStructureGrid').val($('#hdnSaveDepartmentsData').val());
+
+        return confirmDel;
+    }
+
+    function OnSuccess(departmentData) {
+        if (departmentData.MessageType != 2) {
+            $('#dvOrgUnitLinksGrid').html(departmentData.Html);
+            var paramArray = $.parseJSON($('#hdnSaveDepartmentsData').val());
+            pageGrids.grdOrgUnitLinks.param[0]= JSON.stringify(paramArray);
+            ClearInputs('frmOrgUnitLinks');
+        }
+        else{
+            ClearInputs('frmOrgUnitLinks');
+            ShowWarningMessage(departmentData.MessageText);
+        }
+    }
+    function DeleteLinkSuccess(departmentData, divUpdatData) {
+        
+        $('#dvOrgUnitLinksGrid').html(departmentData.Html);
+
+        var paramArray = $.parseJSON($('#hdnSaveDepartmentsData').val());
+        pageGrids.grdOrgUnitLinks.param[0]= JSON.stringify(paramArray);
+    }
+</script>

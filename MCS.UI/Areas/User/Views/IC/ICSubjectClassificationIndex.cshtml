@@ -1,0 +1,29 @@
+﻿@using MCS.Common
+@using MCS.UI.Areas.User.Models.File
+@model TrayDetailsVM
+
+
+@{
+    ViewBag.Title = ViewData["FileTitle"];
+    Layout = "~/Areas/User/Views/Shared/_ArchiveLayout.cshtml";
+}
+
+
+
+
+@{
+    TrayType traytype = TrayType.Classification;
+
+    switch (traytype)
+    {
+        case TrayType.Archives:
+            @Html.Partial("~/Areas/User/Views/IC/_DirectoryPartial.cshtml")
+            break;
+        case TrayType.Classification:
+            @*@Html.Partial("~/Areas/User/Views/File/_ClassificationPartial.cshtml")*@
+            @Html.Partial("~/Areas/User/Views/IC/_ClassificationPartial.cshtml", new MCS.UI.Areas.User.Models.Search.SearchCriteriaByICVM() )
+            break;
+    }
+}
+
+

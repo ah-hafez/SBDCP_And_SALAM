@@ -1,0 +1,134 @@
+#sb-site {
+	padding: 0px 0px 0px 0px;
+}
+
+.sb-slidebar {
+	background-color: #2A5890; /* Background colour. */
+	color: #e8e8e8; /* Text colour. */
+}
+
+
+.sb-slidebar .shadow_sb-slidebar{
+	padding:0px; margin:0px;
+	position:absolute;
+	left:0px;
+	top:0px;
+	width:0px;
+	height:100%;
+	
+	-moz-box-shadow: 0 0px 40px 10px rgba(52, 103, 165, 0.7);
+	-webkit-box-shadow:  0 0px 40px 10px rgba(52, 103, 165, 0.7);
+	box-shadow:  0 0px 40px 10px rgba(52, 103, 165, 0.7);
+	z-index:9999999999999999999;
+}
+
+.sb-slidebar a {
+	color: #f2f2f2; /* Link colour. */
+	text-decoration: none;
+}
+
+.sb-slidebar a:hover {
+	color: #49AEF2; /* Link hover colour. */
+	text-decoration: underline;
+}
+
+/* Main Menu */
+/* Borders */
+.sb-left .sb-menu li a {
+	border-left: 3px solid transparent;
+}
+
+.sb-left .sb-menu li a:hover {
+	border-left: 3px solid; /* Removes transparent colour, so border colour will be the same as link hover colour. */
+}
+
+.sb-right .sb-menu li a {
+	border-right: 3px solid transparent;
+}
+
+.sb-right .sb-menu li a:hover {
+	border-right: 3px solid; /* Removes transparent colour, so border colour will be the same as link hover colour. */
+}
+
+
+/* ------------------------
+ * 006 - Top Navigation Bar
+ */
+
+.sb-navbar {
+	width: 100%;
+	height: 50px;
+	position: relative;
+	top: 0;
+	left: auto;
+	right: auto;
+	z-index: 1000;
+	background-color: #219AEB; /* Bar colour. */
+	
+	box-shadow:
+		/* Layered single pixel shadows to create a one sided shadow effect. */
+		0 5px 0 0 rgba(0, 0, 0, 0.01),
+		0 4px 0 0 rgba(0, 0, 0, 0.02),
+		0 3px 0 0 rgba(0, 0, 0, 0.04),
+		0 2px 0 0 rgba(0, 0, 0, 0.06),
+		0 1px 0 0 rgba(0, 0, 0, 0.08),
+		/* Top highlight */
+		0 1px 0 0 rgba(255, 255, 255, 0.1) inset,
+		/* Left highlight */
+		1px 0 0 0 rgba(255, 255, 255, 0.1) inset,
+		/* Right highlight */
+		-1px 0 0 0 rgba(255, 255, 255, 0.1) inset,
+		/* Bottom lowlight */
+		0 -1px 0 0 rgba(0, 0, 0, 0.1) inset;
+		
+	/* Glass gradient overlay, works with any colour background. */
+	background-image: -webkit-linear-gradient(top, rgba(255,255,255, 0.05) 50%, rgba(0,0,0, 0.02) 51%); /*  Webkit syntax. */
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 50%, rgba(0, 0, 0, 0.02) 51%); /* Final syntax. */
+	background-size: 100%;
+	background-repeat: no-repeat;
+}
+
+html.sb-android .sb-navbar {
+	position: absolute; /* Fix navbar to top for old versions of Android Browser. */
+}
+
+/* -----------------------
+ * 007 - Slidebar Controls
+ */
+ 
+.sb-toggle-left, .sb-toggle-right, .sb-open-left, .sb-open-right, .sb-close {
+	cursor: pointer; /* Help desktop users with Slidebar controls. */
+}
+
+/* Navicons */
+/* These are prefixed with .sb-navbar to avoid styling other Slidebar toggles you may be using. */
+.sb-navbar .sb-toggle-left {
+	width: 52px;
+	float: left;
+	padding: 14px;
+}
+
+.sb-navbar .sb-toggle-right {
+	width: 52px;
+	float: right;
+	padding: 14px;
+}
+
+.navicon-line {
+	width: 24px;
+	height: 4px;
+	border-radius: 1px;
+	margin-bottom: 3px;
+	background-color: #fff; /* Colour of navicon lines. */
+}
+
+/* -------------------
+ * 006 - Media Queries
+ */
+
+@media (max-width: 767px) {
+	/* This is entirely optional, it hides the navbar menu items when device width is under 768px. */
+	.sb-navbar-menu {
+		display: none;
+	}
+}

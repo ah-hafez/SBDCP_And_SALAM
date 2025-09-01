@@ -1,0 +1,46 @@
+﻿@using MCS.UI.Areas.User.Models.Assignment
+@model AjaxGrid<TransactionAssignmentVM>
+@using MCS.UI.Helpers
+@{
+    string TransactionId = ViewData["TransactionId"].ToString();
+    string sortButton = "<button type =\"button\" id=\"sort\" onclick=\"SortData(" + TransactionId + "," + 1 + ")\" ><i class=\"fas fa-arrow-down\"></i></button><button type =\"button\" id=\"sort\" onclick=\"SortData(" + TransactionId + "," + 0 + ")\" ><i class=\"fas fa-arrow-up\"></i></button>";
+
+}
+<div id="grdAssignmentsData">
+    @Html.Grid(Model).Named("grdAssignments").Columns(columns =>
+{
+    columns.Add(model => model.FromUserName).Titled(DbRes.TResource("User.TransactionCertificate.SenderName"));
+    //columns.Add(model => model.FromUserInternalNumber).Titled(DbRes.TResource("رقم التحويلة"));
+    columns.Add(model => model.FromOrgUnitName).Titled(DbRes.TResource("User.TransactionCertificate.SenderDepartmentName"));
+    columns.Add(model => model.ToUserName).Titled(DbRes.TResource("User.TransactionCertificate.ReceiverName"));
+    columns.Add(model => model.ToOrgUnitName).Titled(DbRes.TResource("User.TransactionCertificate.ReceiverDepartmentName"));
+    columns.Add().Titled(DbRes.TResource("User.TransactionCertificate.duration")).Sanitized(false).Encoded(false).RenderValueAs(model => model.Duration);
+    columns.Add().RenderValueAs(model => model.DateH).Titled(DbRes.TResource("User.TransactionCertificate.AssignmentDateTime") + " " + sortButton);
+    //columns.Add(model => model.DateH).Titled(DbRes.TResource("User.TransactionCertificate.AssignmentDateTime") +" "+ sortButton);
+    columns.Add(model => model.ActionName).Titled(DbRes.TResource("User.TransactionCertificate.Procedure"));
+    columns.Add(model => model.Remarks).Titled(DbRes.TResource("User.TransactionCertificate.AssignmentExplanation"));
+    columns.Add(model => model.GeneralExplanation).Titled(DbRes.TResource("User.TransactionCertificate.ExplanationContent"));
+    columns.Add(model => model.SpecialExplanation).Titled(DbRes.TResource("User.Transaction.Copies.SpecialExplanation"));
+}).Sortable(false)
+</div>
+<script>
+    function SortData(transactionId, ascending) {
+
+
+        var id = transactionId;
+        var AscendingValue = ascending;
+
+        $.ajax({
+            type: 'Get',
+            cache: false,
+            url: '@Url.Action("GetTransactionAssignmentHistoriesData", "TransactionLog")',
+            data: { transactionId: id, Ascending: AscendingValue},
+            success:
+                function (data) {
+                    $("#grdAssignmentsData").html("");
+                    $("#grdAssignmentsData").html(data);
+                }
+        });
+    }
+</script>
+

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/YESSER.NCS.ECM.IntegrationService.Contracts.DataContracts" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/YESSER.NCS.ECM.IntegrationService.Contracts.DataContracts" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:complexType name="CheckInNewRequestData">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="AttachmentContent" nillable="true" type="xs:base64Binary" />
+      <xs:element minOccurs="0" name="AttachmentName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="CategoryID" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="DocID" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="DocumentTitle" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="DocumentType" type="tns:DocumentType" />
+      <xs:element minOccurs="0" name="MOR_DestinationEntity" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="MOR_SourceEntity" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="MOR_TransactionDate" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="MOR_TransactionDateHijri" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="MOR_TransactionID" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="MOR_TransactionId" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="MOR_UserID" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ProfileID" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="CheckInNewRequestData" nillable="true" type="tns:CheckInNewRequestData" />
+  <xs:simpleType name="DocumentType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Application" />
+      <xs:enumeration value="Binary" />
+      <xs:enumeration value="DigitalMedia" />
+      <xs:enumeration value="Document" />
+      <xs:enumeration value="OFFSITEREQUEST" />
+      <xs:enumeration value="REQUEST" />
+      <xs:enumeration value="RetentionCategory" />
+      <xs:enumeration value="System" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="DocumentType" nillable="true" type="tns:DocumentType" />
+  <xs:complexType name="CheckInNewResponseData">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="DocumentName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Header" nillable="true" type="tns:ResponseHeader" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="CheckInNewResponseData" nillable="true" type="tns:CheckInNewResponseData" />
+  <xs:complexType name="ResponseHeader">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="StatusCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="StatusDescription" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Success" type="xs:boolean" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ResponseHeader" nillable="true" type="tns:ResponseHeader" />
+  <xs:complexType name="GetFileRequestData">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="DocumentName" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="GetFileRequestData" nillable="true" type="tns:GetFileRequestData" />
+  <xs:complexType name="GetFileResponseData">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="AttachmentContent" nillable="true" type="xs:base64Binary" />
+      <xs:element minOccurs="0" name="AttachmentName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="AttachmentSize" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="DocID" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="DocumentName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="DocumentTitle" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Header" nillable="true" type="tns:ResponseHeader" />
+      <xs:element minOccurs="0" name="IsCheckedOut" type="xs:boolean" />
+      <xs:element minOccurs="0" name="MOR_DestinationEntity" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="MOR_SourceEntity" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="MOR_TransactionDate" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="MOR_TransactionID" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="MOR_UserID" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="RevisionID" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="WCC_CreateDate" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="WCC_LastModifiedDate" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="WCC_ReleaseDate" type="xs:dateTime" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="GetFileResponseData" nillable="true" type="tns:GetFileResponseData" />
+  <xs:complexType name="CheckInUniversalRequestData">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="AttachmentContent" nillable="true" type="xs:base64Binary" />
+      <xs:element minOccurs="0" name="AttachmentName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="CategoryID" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="DocID" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="DocumentName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="DocumentTitle" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="DocumentType" type="tns:DocumentType" />
+      <xs:element minOccurs="0" name="MOR_DestinationEntity" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="MOR_SourceEntity" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="MOR_TransactionDate" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="MOR_TransactionDateHijri" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="MOR_TransactionID" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="MOR_UserID" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ProfileID" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="CheckInUniversalRequestData" nillable="true" type="tns:CheckInUniversalRequestData" />
+  <xs:complexType name="CheckInUniversalResponseData">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="DocID" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Header" nillable="true" type="tns:ResponseHeader" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="CheckInUniversalResponseData" nillable="true" type="tns:CheckInUniversalResponseData" />
+</xs:schema>

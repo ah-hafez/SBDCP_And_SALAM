@@ -1,0 +1,428 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Framework.Controls.Mvc
+@using MCS.Framework.Controls
+<style>
+    .dropdown_search {
+        height: 33px !important
+    }
+
+    .dropdown_popup {
+        min-width: 222px !important;
+    }
+</style>
+<div class="search_sort">
+    <div class="sort_bar">
+        <div class="col">
+            <div class="form-group">
+                <label class="col-md-3 control-label">@DbRes.TResource("User.File.DateBetween")</label>
+                <div class="col-md-9" style="direction:ltr;">
+                    <div class="input-group">
+                        @Html.Hidden("hdnSearchToDateH", null, new { id = "hdnSearchToDateH" })
+                        @Html.Calendar("txtSearchToDate", "hdnSearchToDate", "hdnSearchToDateH", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+                        @Html.Hidden("hdnSearchToDate", null, new { id = "hdnSearchToDate" })
+                        <span class="input-group-addon add-on"> - </span>
+                        @Html.Hidden("hdnSearchFromDateH", null, new { id = "hdnSearchFromDateH" })
+                        @Html.Calendar("txtSearchFromDate", "hdnSearchFromDate", "hdnSearchFromDateH", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+                        @Html.Hidden("hdnSearchFromDate", null, new { id = "hdnSearchFromDate" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-group">
+                <label class="col-md-4 control-label">@DbRes.TResource("User.File.TransactionNumber")</label>
+                <div class="col-md-8">
+                    <div class="input-group">
+                        @Html.TextBox("txtSearchTransactionNumber", null, new { id = "txtSearchTransactionNumber", @class = "form-control", onkeypress = "return IsNumeric(event);", maxlength = 15 })
+                        <span class="input-group-addon add-on">
+                            <a id="ancSearch" data-bs-toggle="tooltip" data-placement="top" data-original-title="@DbRes.TResource("User.File.Search")"><i class="fa fa-angle-double-left"></i></a>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="icon_bar">
+
+        <div class="sort dropdown">
+            <a class="dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="fa fa-sort"></i></a>
+            <ul class="dropdown-menu animated zoomIn none_space">
+                <li><a data-dir="1" data-name="Date" class="SortTransactions">@DbRes.TResource("User.File.ByDate")</a></li>
+                <li><a data-dir="1" data-name="Priority" class="SortTransactions">@DbRes.TResource("User.File.ByPriority")</a></li>
+                <li><a data-dir="1" data-name="Confidentiality" class="SortTransactions">@DbRes.TResource("User.File.ByConfidentiality")</a></li>
+                @Html.Hidden("hdnDirection", 1, new { id = "hdnDirection" })
+                @Html.Hidden("hdnOrderBy", null, new { id = "hdnOrderBy" })
+            </ul>
+        </div>
+        <div id="dvFilterPopup" class="sort dropdown">
+            <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#"><i data-bs-toggle="tooltip" data-placement="top" title="@DbRes.TResource("User.File.Sort")" class="fa fa-filter"></i></a>
+            <div class="dropdown-menu animated zoomIn dropdown_popup">
+                <form role="form" class="form-horizontal form-row">
+                    <div class="form-group">
+                        <label class="col-md-4 control-label">@DbRes.TResource("User.File.Confidentiality")</label>
+                        <div class="col-md-8">
+                            <div class="">
+                                <select class="form-control dropdown_search" id="ddlFilterConfidentiality"></select>
+                                @Html.Hidden("hdnFilterConfidentiality", null)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label">@DbRes.TResource("User.File.Priority")</label>
+                        <div class="col-md-8">
+                            <div class="">
+                                <select class="form-control dropdown_search" id="ddlFilterPriorityLevel"></select>
+                                @Html.Hidden("hdnFilterPriorityLevel", null)
+                            </div>
+                        </div>
+                    </div>
+                    <div id="dvFilterDateType" class="form-group">
+                        <label class="col-md-4 control-label">@DbRes.TResource("User.File.TransactionDateType")</label>
+                        <div class="col-md-8">
+                            <div class="">
+                                <select class="form-control dropdown_search" id="ddlFilterDateType"></select>
+                                @Html.Hidden("hdnFilterDateType", null)
+                            </div>
+                        </div>
+                    </div>
+                    <div id="dvFilterFilterTransactionType" class="form-group">
+                        <label class="col-md-4 control-label">@DbRes.TResource("User.File.TransactionType")</label>
+                        <div class="col-md-8">
+                            <div class="">
+                                <select class="form-control dropdown_search" id="ddlFilterTransactionType"></select>
+                                @Html.Hidden("hdnFilterTransactionType", null)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <input id="btnFilterSearch" type="button" value="@DbRes.TResource("User.File.Search")" class="pull-right btn btn-save">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="list">
+
+
+
+            <a class="viewFile select" data-type="Horizontal" data-bs-toggle="tooltip" data-placement="top" data-original-title="@DbRes.TResource("User.File.List")"><i class="fa fa-list-ul"></i></a>
+            <a class="viewFile " data-type="Vertical" data-bs-toggle="tooltip" data-placement="top" data-original-title="@DbRes.TResource("User.File.Group")"><i class="fa fa-th"></i></a>
+        </div>
+    </div>
+    @Html.Hidden("hdnFilter", null, new { id = "hdnFilter" })
+    @Html.Hidden("hdnFromDateValue", null, new { id = "hdnFromDateValue" })
+    @Html.Hidden("hdnToDateValue", null, new { id = "hdnToDateValue" })
+    @Html.Hidden("hdnSearchTransactionNumberValue", null, new { id = "hdnSearchTransactionNumberValue" })
+</div>
+
+<div class="list-tags">
+
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        var confidentialityData = $.parseJSON('@ViewData["ConfidentialityData"].ToString()'.replace(/&quot;/g, '"'));
+
+        var options = $("#ddlFilterConfidentiality");
+        options.append($("<option/>").val(-1).text("@DbRes.TResource("User.Editor.Select")"));
+        $.each(confidentialityData, function () {
+            options.append($("<option />").val(this.value).text(this.label));
+        });
+
+        var prioritiesData = $.parseJSON('@ViewData["PrioritiesData"].ToString()'.replace(/&quot;/g, '"'));
+
+        var options = $("#ddlFilterPriorityLevel");
+        options.append($("<option/>").val(-1).text("@DbRes.TResource("User.Editor.Select")"));
+        $.each(prioritiesData, function () {
+            options.append($("<option />").val(this.value).text(this.label));
+        });
+
+        var transactionDateTypesData = $.parseJSON('@ViewData["TransactionDateTypesData"].ToString()'.replace(/&quot;/g, '"'));
+
+        var options = $("#ddlFilterDateType");
+        options.append($("<option/>").val(-1).text("@DbRes.TResource("User.Editor.Select")"));
+        $.each(transactionDateTypesData, function () {
+            options.append($("<option />").val(this.value).text(this.label));
+        });
+
+        var transactionTypesData = '@(ViewData["TransactionTypesData"] != null ? ViewData["TransactionTypesData"].ToString() : "")'.replace(/&quot;/g, '"');
+
+        if (transactionTypesData != "") {
+            var options = $("#ddlFilterTransactionType");
+            options.append($("<option/>").val(-1).text("@DbRes.TResource("User.Editor.Select")"));
+            $.each( $.parseJSON(transactionTypesData), function () {
+                options.append($("<option />").val(this.value).text(this.label));
+            });
+        }
+
+
+        if ($("#hdnTrayId").val() != "9") {
+            $("#dvFilterFilterTransactionType").hide();
+        }
+    })
+
+    $("#ddlFilterConfidentiality").change(function () {
+        if ($(this).val() != -1) {
+            $("#hdnFilterConfidentiality").val($(this).val());
+        }
+        else {
+            $("#hdnFilterConfidentiality").val("");
+        }
+    })
+
+    $("#ddlFilterPriorityLevel").change(function () {
+        if ($(this).val() != -1) {
+            $("#hdnFilterPriorityLevel").val($(this).val());
+        }
+        else {
+            $("#hdnFilterPriorityLevel").val("");
+        }
+    })
+
+    $("#ddlFilterDateType").change(function () {
+        if ($(this).val() != -1) {
+            $("#hdnFilterDateType").val($(this).val());
+        }
+        else {
+            $("#hdnFilterDateType").val("");
+        }
+    })
+
+    $("#ddlFilterTransactionType").change(function () {
+        if ($(this).val() != -1) {
+            $("#hdnFilterTransactionType").val($(this).val());
+        }
+        else {
+            $("#hdnFilterTransactionType").val("");
+        }
+    })
+
+
+    $(document).on("click", ".SortTransactions", function () {
+
+        var name = $(this).data("name");
+        var dir = $(this).data("dir");
+        var page = $("#hdnCurrentPage").val();
+        var filter = $("#hdnFilter").val();
+        var fromDate = $("#hdnFromDateValue").val();
+        var toDate = $("#hdnToDateValue").val();
+        var number = $("#hdnSearchTransactionNumberValue").val();
+        var dateType = $("#hdnFilterDateType").val();
+        var PageSize = $("#ddlPaging").val();
+
+        if (dir == 1) {
+            $(this).data("dir", 0);
+        }
+        else {
+            $(this).data("dir", 1);
+        }
+
+
+        var trayid = parseInt($("#hdnTrayId").val());
+
+        var data = {
+            trayId: trayid, page: page, gridColumn: name, dir: dir, filter: filter
+            , fromDate: fromDate, toDate: toDate, searchColumn: number, dateType: dateType, pageSize: PageSize
+        };
+
+        $.ajax({
+            url: '@Url.Action("UpdateTrayTransactions","File")',
+            type: 'POST',
+            cache: false,
+            data: data,
+            success: function (data) {
+                $("#dvTransactionsContainer").html("");
+                $("#dvTransactionsContainer").html(data.Html);
+                $("#txtCurrentPage").val(page);
+                $("#hdnCurrentPage").val(page);
+                $("#hdnOrderBy").val(name);
+                $("#hdnDirection").val(dir);
+                $("#ddlPaging option[value=" + PageSize + "]").attr('selected', 'selected');
+
+            },
+            error: function (a) {
+            }
+        });
+    })
+
+    $("#btnFilterSearch").click(function () {
+
+        var trayid = parseInt($("#hdnTrayId").val());
+        var columnName = $("#hdnOrderBy").val();
+        var dir = $("#hdnDirection").val();
+        var fromDate = $("#hdnFromDateValue").val();
+        var toDate = $("#hdnToDateValue").val();
+        var number = $("#hdnSearchTransactionNumberValue").val();
+        var dateType = $("#hdnFilterDateType").val();
+        var PageSize = $("#ddlPaging").val();
+        var filter = "";
+
+        $(".list-tags").html("");
+
+        if ($("#hdnFilterPriorityLevel").val() != "" && $("#hdnFilterPriorityLevel").val() != null) {
+            $(".list-tags").append("<span data-type='Priority' class='tag'><span>" + $("#ddlFilterPriorityLevel option:selected").text() + " &nbsp;&nbsp;</span><a class='removeTag' title='Removing tag'></a></span>");
+
+            filter += "Priority__1__" + $("#hdnFilterPriorityLevel").val();
+        }
+        if ($("#hdnFilterConfidentiality").val() != "" && $("#hdnFilterConfidentiality").val() != null) {
+            $(".list-tags").append("<span data-type='Confidentiality' class='tag'><span>" + $("#ddlFilterConfidentiality option:selected").text() + " &nbsp;&nbsp;</span><a class='removeTag' title='Removing tag'></a></span>");
+
+            if (filter.length > 0) {
+                filter += "&";
+            }
+            filter += "Confidentiality__1__" + $("#hdnFilterConfidentiality").val();
+        }
+
+        if ($("#hdnFilterTransactionType").val() != "" && $("#hdnFilterTransactionType").val() != null) {
+            $(".list-tags").append("<span data-type='TransactionType' class='tag'><span>" + $("#ddlFilterTransactionType option:selected").text() + " &nbsp;&nbsp;</span><a class='removeTag' title='Removing tag'></a></span>");
+
+            if (filter.length > 0) {
+                filter += "&";
+            }
+            filter += "TransactionType__1__" + $("#hdnFilterTransactionType").val();
+        }
+
+        if ($("#hdnFilterDateType").val() != "" && $("#hdnFilterDateType").val() != null) {
+            $(".list-tags").append("<span data-type='DateType' class='tag'><span>" + $("#ddlFilterDateType option:selected").text() + " &nbsp;&nbsp;</span><a class='removeTag' title='Removing tag'></a></span>");
+        }
+
+        $("#hdnFilter").val(filter);
+
+        var data = {
+            trayId: trayid, page: 1, gridColumn: columnName, dir: dir, filter: filter
+            , fromDate: fromDate, toDate: toDate, searchColumn: number, dateType: dateType, pageSize: PageSize
+        };
+
+
+        $.ajax({
+            url: '@Url.Action("UpdateTrayTransactions","File")',
+            type: 'POST',
+            data: data,
+            success: function (data) {
+                $("#dvTransactionsContainer").html("");
+                $("#dvTransactionsContainer").html(data.Html);
+                $("#txtCurrentPage").val(1);
+                $("#hdnCurrentPage").val(1);
+                $("#hdnOrderBy").val(name);
+                $("#hdnDirection").val(dir);
+                $("#ddlPaging option[value=" + PageSize + "]").attr('selected', 'selected');
+
+            },
+            error: function (a) {
+            }
+        });
+    })
+
+    $(document).on("click", ".removeTag", function () {
+
+        var type = $(this).parent().data("type");
+
+        $(this).parent().remove();
+
+        if (type == "Priority") {
+            $("#hdnFilterPriorityLevel").val("");
+            $("#ddlFilterPriorityLevel").val(-1);
+            $("#btnFilterSearch").trigger("click");
+        }
+
+        if (type == "Confidentiality") {
+            $("#hdnFilterConfidentiality").val("");
+            $("#ddlFilterConfidentiality").val(-1);
+            $("#btnFilterSearch").trigger("click");
+        }
+
+        if (type == "TransactionType") {
+            $("#hdnFilterTransactionType").val("");
+            $("#ddlFilterTransactionType").val(-1);
+            $("#btnFilterSearch").trigger("click");
+        }
+
+        if (type == "DateType") {
+            $("#hdnFilterDateType").val("");
+            $("#ddlFilterDateType").val(-1);
+            $("#btnFilterSearch").trigger("click");
+        }
+    })
+
+    $("#ancSearch").click(function () {
+        var trayid = parseInt($("#hdnTrayId").val());
+        var PageSize = $("#ddlPaging").val();
+
+        $("#hdnOrderBy").val("");
+        $("#hdnFilter").val("");
+        $("#hdnDirection").val("1");
+        $("#hdnFilterPriorityLevel").val("");
+        $("#ddlFilterPriorityLevel").val(-1);
+        $("#hdnFilterConfidentiality").val("");
+        $("#ddlFilterConfidentiality").val(-1);
+        $("#hdnFilterDateType").val("");
+        $("#ddlFilterDateType").val(-1);
+        $("#hdnFilterTransactionType").val("");
+        $("#ddlFilterTransactionType").val(-1);
+        $(".list-tags").html("");
+
+
+        var number = "";
+        var fromDate = $("#hdnSearchFromDate").val();
+        var toDate = $("#hdnSearchToDate").val();
+
+        if ($("#txtSearchTransactionNumber").val() != "") {
+            number = "Number__" + $("#txtSearchTransactionNumber").val();
+        }
+
+        var data = {
+            trayId: trayid, page: 1, fromDate: fromDate, toDate: toDate, searchColumn: number, pageSize: PageSize
+        };
+
+
+        $.ajax({
+            url: '@Url.Action("UpdateTrayTransactions","File")',
+            type: 'POST',
+            data: data,
+            success: function (data) {
+
+                if (data.Count == 0) {
+                    ShowErrorMessage(data.MessageText);
+                    return;
+                }
+
+                $("#dvTransactionsContainer").html("");
+                $("#dvTransactionsContainer").html(data.Html);
+                $("#hdnFromDateValue").val(fromDate);
+                $("#hdnToDateValue").val(toDate);
+                $("#hdnSearchTransactionNumberValue").val(number);
+                $("#ddlPaging option[value=" + PageSize + "]").attr('selected', 'selected');
+            },
+            error: function (a) {
+            }
+        });
+    })
+
+    $(document).on("click", ".viewFile", function () {
+
+        var type = $(this).data("type");
+
+        $(".viewFile").removeClass("select");
+        $(this).addClass("select");
+
+        if (type == "Horizontal") {
+            $("#list_transaction").addClass("col-md-3");
+            $("#list_transaction").removeClass("col-md-12").removeClass("gridView");
+            $("#editor_transaction").addClass("col-md-9");
+            $("#editor_transaction").removeClass("col-md-12");
+        }
+
+        if (type == "Vertical") {
+            $("#list_transaction").removeClass("col-md-3");
+            $("#list_transaction").addClass("col-md-12").addClass("gridView");
+            $("#editor_transaction").removeClass("col-md-9");
+            $("#editor_transaction").addClass("col-md-12");
+
+
+        }
+    })
+
+</script>

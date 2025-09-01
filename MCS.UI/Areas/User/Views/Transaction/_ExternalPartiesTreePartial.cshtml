@@ -1,0 +1,4 @@
+﻿@using MCS.Common;
+@model int
+
+@Html.DepartmentsTree(ViewData["TreeData"] as TreeViewModel, Model, TreeMode.Single, ViewData["DivName"].ToString(), true, ViewData["FunctionName"].ToString(), ViewData["ValidationGroupName"].ToString())

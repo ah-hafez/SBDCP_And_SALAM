@@ -1,0 +1,94 @@
+﻿@{
+    /**/
+
+    Layout = "~/Views/Shared/_EmptyLayout.cshtml";
+}
+<div class="mt-4">
+    <div class="form-row BasicInfo ml-3">
+        <div style="margin-right:-45px; margin-bottom:16px;">
+
+            <div class="pl-5 col-lg-4">
+                <span class="gray3">@DbRes.TResource("User.Transaction.Link.TransactionNumber") </span>
+                <span class="date-value Editor-lable">
+                    @ViewData["TransactionsNumber"]
+                </span>
+            </div>
+            <div class="pl-sm-5 col-lg-4">
+                <span class="gray3">@DbRes.TResource("User.Transaction.PriorityLevel")</span>
+                <span class="transaction-number Editor-lable" style="word-break:break-all">@ViewData["PriorityLevel"]</span>
+            </div>
+
+            <div class="pl-5 col-lg-4">
+                <span class="gray3">@DbRes.TResource("User.Transaction.ConfidentialityLevel") </span>
+                <span class="date-value Editor-lable">
+                    @ViewData["ConfidentialityName"]
+                </span>
+            </div>
+            <div class="pl-sm-5 col-lg-12 mt-3">
+                <span class="gray3">@DbRes.TResource("User.Inbound.BasicInfo.Subject")</span>
+                <span class="transaction-number Editor-lable">@ViewData["Subject"]</span>
+            </div>
+
+        </div>
+    </div>
+
+    <br />
+    <h2 class="site-color main-title " style="margin-left:40px">@DbRes.TResource("User.Transaction.Assignment.Print")</h2>
+    <div class="row ">
+        <div class="col-md-12">
+            @Html.Partial("~/Areas/User/Views/Shared/TransactionCertificate/_AssignmentGridElectronicreceipt.cshtml", ViewData["AssignmentsData"])
+        </div>
+        <div class="col-md-12">
+            <span>النسخ الخارجية</span>
+
+            @Html.Partial("~/Areas/User/Views/Shared/TransactionCertificate/_ExternalCopiesGridElectronicreceipt.cshtml", ViewData["ExternalCopiesData"])
+        </div>
+
+        <div class="col-md-12">
+            <span>النسخ الداخلية</span>
+
+            @Html.Partial("~/Areas/User/Views/Shared/TransactionCertificate/_CopiesGridElectronicreceipt.cshtml", ViewData["CopiesData"])
+        </div>
+    </div>
+
+</div>
+<div class="text-right panel-body">
+
+    <button id="TransactionPrint" class="btn btn-site" onclick="PrintAssignmentTransactionReport(@Session["TransactionId"])"><i class="la la-print"></i> @DbRes.TResource("User.Transaction.Assignment.PrintAssignment")</button>
+
+</div>
+<script>
+    var token = $('form:first').find("input[name='__RequestVerificationToken']").val();
+
+    function PrintAssignmentTransactionReport(TransactionId) {
+        var data = { transactionId: TransactionId  ,__RequestVerificationToken: token };
+        event.preventDefault();
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("PrintElectronicreceipt", "TransactionLog")' + '?transactionId=' + TransactionId,
+            data: data,
+            cache: false,
+            success:
+
+                function (data) {
+                    if (data.MessageType != 2) {
+
+                        var TransactionAssignmentWindow = window.open('', '_blank', 'width=900,height=500');
+
+                        TransactionAssignmentWindow.document.write(data);
+                        TransactionAssignmentWindow.document.close();
+                        TransactionAssignmentWindow.focus();
+
+                        setTimeout(function () {
+                            TransactionAssignmentWindow.print();
+                            TransactionAssignmentWindow.close();
+                        }, 2000);
+                    }
+                    else {
+                        ShowErrorMessage(data.MessageText);
+                    }
+                }
+        });
+    }
+
+</script>

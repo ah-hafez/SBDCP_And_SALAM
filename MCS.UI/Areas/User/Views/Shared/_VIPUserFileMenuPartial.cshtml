@@ -1,0 +1,255 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.File
+@using MCS.Common
+
+@{
+    var controllerName = HttpContext.Current.Request.RequestContext.RouteData.Values["controller"].ToString();
+    var actionName = ViewContext.RouteData.GetRequiredString("action").ToString();
+}
+
+
+
+<div>
+    <div class="menu-vip d-flex flex-row flex-wrap justify-content-center align-items-center mt-5">
+        <div id="divMyTransactions" class=" mv-list active">
+            <a href="@Url.Action("MyTransactions", "File", new { area = "user" })" onclick="goToPage('InboundDM');">
+                <div class="d-flex flex-column justify-content-center align-items-center">
+                    <div class="mv-icon d-flex justify-content-center align-items-center">
+                        <div class="mr-3">
+                            <span class="icon2-menu-vip-2 min"><span class="path1"></span><span class="path2"></span></span>
+                        </div>
+                        <div id="divInboundCounter" class="number align-self-center">
+                            <span id="spnCount_@((int)TrayType.MyTransactions)"></span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex mv-label">
+                        <span id="ctl00_ctl00_Label7">@DbRes.TResource("User.Inbound.Inbound")</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div id="divDraftOutbound" class=" mv-list">
+            <a href="@Url.Action("DraftOutbound", "File", new { area = "user" })" onclick="goToPage('OutboundDraftDM');">
+                <div class="d-flex flex-column justify-content-center align-items-center">
+                    <div class="mv-icon d-flex justify-content-center align-items-center">
+                        <div class="mr-3">
+                            <span class="icon2-menu-vip-4 min"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></span>
+                        </div>
+                        <div id="divDraftCounter" class="number align-self-center">
+                            <span id="spnCount_@((int)TrayType.DraftOutbound)"></span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex mv-label">
+                        <span id="ctl00_ctl00_Label9">@DbRes.TResource("User.Trays.LetterDraft")</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+
+        <div id="divSentTransactions" class=" mv-list">
+            <a href="@Url.Action("SentTransactions", "File", new { area = "user" })" onclick="goToPage('SentDM');">
+                <div class="d-flex flex-column justify-content-center align-items-center">
+                    <div class="mv-icon d-flex justify-content-center align-items-center">
+                        <div class="mr-3">
+                            <span class="icon2-menu-vip-6 min"><span class="path1"></span><span class="path2"></span></span>
+                        </div>
+                        <div id="divSentCounter" class="number align-self-center">
+                            <span id="spnCount_@((int)TrayType.SentTransactions)"></span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex mv-label">
+                        <span id="ctl00_ctl00_Label11">@DbRes.TResource("User.Trays.SentTransactions")</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div id="divCopies" class=" mv-list">
+            <a href="@Url.Action("Copies", "File", new { area = "user" })" onclick="goToPage('CopiesDM');">
+                <div class="d-flex flex-column justify-content-center align-items-center">
+
+
+                    <div class="mv-icon d-flex justify-content-center align-items-center">
+                        <div class="mr-3">
+                            <span class="icon2-menu-vip-3 min"><span class="path1"></span><span class="path2"></span></span>
+                        </div>
+                        <div id="divCopiesCounter" class="number align-self-center">
+                            <span id="spnCount_@((int)TrayType.Copies)"></span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex mv-label">
+                        <span id="ctl00_ctl00_Label8">@DbRes.TResource("User.Trays.ElecCopies") </span>
+
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div id="divOutbound" class=" mv-list">
+            <a href="@Url.Action("ElcOutBound", "File", new { area = "user" })" onclick="goToPage('ElcOutBoundDM');">
+                <div class="d-flex flex-column justify-content-center align-items-center">
+                    <div class="mv-icon d-flex justify-content-center align-items-center">
+                        <div class="mr-3">
+                            <span class="icon2-menu-vip-4 min"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></span>
+                        </div>
+                        <div id="divCopiesCounter" class="number align-self-center">
+                            <span id="spnCount_@((int)TrayType.ElcOutBound)"></span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex mv-label">
+                        <span id="ctl00_ctl00_Label8">@DbRes.TResource("User.File.ElcOutBound") </span>
+
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div id="divFollowUp" class=" mv-list">
+            <a href="@Url.Action("FollowUp", "File", new { area = "user" })" onclick="goToPage('FollowDM');">
+                <div class="d-flex flex-column justify-content-center align-items-center">
+                    <div class="mv-icon d-flex justify-content-center align-items-center">
+                        <div class="mr-3">
+                            <span class="icon2-menu-vip-5 min"><span class="path1"></span><span class="path2"></span></span>
+                        </div>
+                        <div id="divFollowCounter" class="number align-self-center">
+                            <span id="spnCount_@((int)TrayType.FollowUp)"></span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex mv-label">
+                        <span id="ctl00_ctl00_Label10">@DbRes.TResource("User.HomeVIP.FollowBox")</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Files.Saved))
+        {
+            <div id="divSaved" class=" mv-list">
+                <a href="@Url.Action("Saved", "File", new { area = "user" })" onclick="goToPage('SavedDM');">
+                    <div class="d-flex flex-column justify-content-center align-items-center">
+                        <div class="mv-icon d-flex justify-content-center align-items-center">
+                            <div class="mr-3">
+                                <span class="icon2-menu-vip-3 min"><span class="path1"></span><span class="path2"></span></span>
+                            </div>
+                            <div id="divSavedCounter" class="number align-self-center">
+                                <span id="spnCount_@((int)TrayType.Saved)"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex mv-label">
+                            <span id="ctl00_ctl00_Label10">@DbRes.TResource("User.Trays.Saved")</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
+        @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Files.OrgUnit))
+        {
+            <div id="divOrgUnitt" class=" mv-list">
+                <a href="@Url.Action("OrgUnit", "File", new { area = "user" })" onclick="goToPage('OrgUnitDM');">
+                    <div class="d-flex flex-column justify-content-center align-items-center">
+                        <div class="mv-icon d-flex justify-content-center align-items-center">
+                            <div class="mr-3">
+                                <span class="icon2-menu-vip-2 min"><span class="path1"></span><span class="path2"></span></span>
+                            </div>
+                            <div id="divOrgUnitCounter" class="number align-self-center">
+                                <span id="spnCount_@((int)TrayType.OrgUnit)"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex mv-label">
+                            <span id="ctl00_ctl00_Label10">@DbRes.TResource("User.Trays.Orgunit")</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+        }
+    </div>
+</div>
+@{
+
+
+    if (actionName.Contains("Search"))
+    {
+        <script>
+            goCardsView();
+        </script>
+    }
+    else
+    {
+        <script>
+
+            $(document).ready(function ()
+            {
+                switch (localStorage.getItem('CurrentTypeView'))
+                {
+                    case 'Card': goCardsView(event);
+                        break;
+                    case 'Table': goTableView(event);
+                        break;
+                    default: goCardsView(event);
+                }
+            });
+        </script>
+    }
+}
+<script>
+    $(document).ready(function ()
+    {
+
+
+        GetTraysCount();
+
+
+        var actionUrl = window.location.pathname.split("/")[4];
+        $("#divMyTransactions").removeClass("active");
+        $("#divDraftOutbound").removeClass("active");
+        $("#divSentTransactions").removeClass("active");
+        $("#divCopies").removeClass("active");
+        $("#divFollowUp").removeClass("active");
+        $("#divSaved").removeClass("active");
+        $("#divOrgUnit").removeClass("active");
+
+        switch (actionUrl)
+        {
+            case "MyTransactions":
+                $("#divMyTransactions").addClass("active");
+
+                break;
+            case "DraftOutbound":
+                $("#divDraftOutbound").addClass("active");
+                break;
+            case "SentTransactions":
+                $("#divSentTransactions").addClass("active");
+                break;
+            case "Copies":
+                $("#divCopies").addClass("active");
+                break;
+            case "FollowUp":
+                $("#divFollowUp").addClass("active");
+                break;
+            case "Saved":
+                $("#divSaved").addClass("active");
+                break;
+            case "OrgUnit":
+                $("#divOrgUnitt").addClass("active");
+                break;
+            default:
+                $("#selected").addClass("active");
+                break;
+
+
+
+        }
+    });
+
+
+
+
+
+
+</script>

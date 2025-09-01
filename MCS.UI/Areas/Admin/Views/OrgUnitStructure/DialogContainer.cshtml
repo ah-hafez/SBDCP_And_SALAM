@@ -1,0 +1,196 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Controllers;
+
+@{
+    Layout = "~/Views/Shared/_AdminDialogLayout.cshtml";
+    ViewMode orgUnitMode = ViewData["Mode"] == null ? ViewMode.Edit : (ViewMode)Convert.ToInt32(ViewData["Mode"]);
+    DialogMode dialogMode = (DialogMode)Convert.ToInt32(ViewData["DialogType"]);
+}
+
+<div class="content-rtl panel panel-default dialogbox_panel">
+    <div id="dvButton" class="panel-heading">
+        <h3 class="panel-title"></h3>
+        <div class="dia toolbar_structure structure_space_left pull-right">
+            <div class="buts_toolbar">
+                @if (orgUnitMode == ViewMode.Add && dialogMode == DialogMode.UnitInfo)
+                {
+                    <button id="@DialogMode.UnitInfo" data-type="@((int)DialogMode.UnitInfo)" class="example-p-01 btn btn-primary dialog_but">@DbRes.TResource("Admin.OrgUnitStructure.UnitInfo")</button>
+                }
+                else
+                {
+                    <button id="@DialogMode.UnitInfo" data-type="@((int)DialogMode.UnitInfo)" class="example-p-01 btn btn-primary dialog_but">@DbRes.TResource("Admin.OrgUnitStructure.UnitInfo")</button>
+                    <button id="@DialogMode.UnitCounter" data-type="@((int)DialogMode.UnitCounter)" class="example-p-02 btn btn-primary dialog_but">@DbRes.TResource("Admin.OrgUnitStructure.UnitCounter")</button>
+                    <button id="@DialogMode.UnitUsers" data-type="@((int)DialogMode.UnitUsers)" class="example-p-02 btn btn-primary dialog_but">@DbRes.TResource("Admin.OrgUnitStructure.UnitUsers")</button>
+                    <button id="@DialogMode.UnitLinks" data-type="@((int)DialogMode.UnitLinks)" class="example-p-02 btn btn-primary dialog_but">@DbRes.TResource("Admin.OrgUnitStructure.UnitLinks")</button>
+                    <button id="@DialogMode.BarcodeDesigner" data-type="@((int)DialogMode.BarcodeDesigner)" class="example-p-02 btn btn-primary dialog_but">@DbRes.TResource("Admin.OrgUnitStructure.BarcodeDesigner")</button>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="dvContainer">
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $('#dvButton').find("button[data-type='" + '@ViewData["DialogType"].ToString()' + "']").hide();
+        $('#dvButton .panel-title').html($('#dvButton').find("button[data-type='" + '@ViewData["DialogType"].ToString()' + "']").html());
+    });
+
+    var url;
+    var type;
+
+    $('#dvButton .dialog_but').click(function () {
+
+        type = $(this).data('type');
+
+
+        switch (type) {
+
+            case 1: {//UnitInfo
+                url = '@Url.Action("OrgUnitInfo")';
+                break;
+            }
+            case 2: {//UnitCounter
+                url = '@Url.Action("Counter")';
+                break;
+            }
+            case 3: {//UnitUsers
+                url = '@Url.Action("OrgUnitUsers")';
+                break;
+            }
+            case 4: {//AssignmentPaper
+                url = '@Url.Action("AssignmentPaper")';
+                break;
+            }
+            case 5: {//UnitLinks
+                url = '@Url.Action("OrgUnitLinks")';
+                break;
+            }
+            case 6: {//BarcodeDesigner
+                url = '@Url.Action("BarcodeDesigner")';
+                break;
+            }
+        }
+
+        ShowConfirmMessage("@DbRes.TResource("Admin.OrgUnitStructure.ChangePageConfirmMessage")", "CallPage")
+
+    });
+
+    function CallPage() {
+        var data = {
+            departmentsStructure: $('#hdnSaveDepartmentsData').val(),
+            orgUnitKey: $('#hdnOrgUnitKey').val()
+        };
+
+        $.ajax({
+            type: 'post',
+            data: data,
+            url: url,
+            success: function (data) {
+
+                switch (type) {
+
+                    case 1:
+                        {
+                            $('#dvContainer').html(data.View);
+
+                            if (data.Mode == 1)
+                                jQuery.validator.unobtrusive.parse('#frmAddOrgUnitInfo');
+                            else
+                                jQuery.validator.unobtrusive.parse('#frmEditOrgUnitInfo');
+
+                            $('#dvButton .dialog_but').show();
+
+                            $('#dvButton #UnitInfo').hide();
+                            $('#dvButton .panel-title').html($('#dvButton #UnitInfo').html());
+
+                            break;
+                        }
+                    case 2:
+                        {
+                            $('#dvContainer').html(data.View);
+
+                            if (data.Mode == 1)
+                                jQuery.validator.unobtrusive.parse('#frmAddCounter');
+                            else
+                                jQuery.validator.unobtrusive.parse('#frmEditCounter');
+
+                            $('#dvButton .dialog_but').show();
+
+                            $('#dvButton #UnitCounter').hide();
+                            $('#dvButton .panel-title').html($('#dvButton #UnitCounter').html());
+
+                            break;
+                        }
+                    case 3:
+                        {
+                            $('#dvContainer').html(data.View);
+
+                            jQuery.validator.unobtrusive.parse('#dvOrgUnitUsers');
+
+                            $('#dvButton .dialog_but').show();
+
+                            $('#dvButton #UnitUsers').hide();
+                            $('#dvButton .panel-title').html($('#dvButton #UnitUsers').html());
+
+                            break;
+                        }
+                    case 4:
+                        {
+                            if (data.MessageText == '') {
+
+                                $('#hdnSaveDepartmentsData').val(data.departmentsStructure);
+
+                                $('#dvContainer').html(data.View);
+
+                                jQuery.validator.unobtrusive.parse('#frmAssignmentPaperActions');
+                                jQuery.validator.unobtrusive.parse('#frmAssignmentPaperBeneficiaries');
+
+                                $('#dvButton .dialog_but').show();
+
+                                $('#dvButton #AssignmentPaper').hide();
+                                $('#dvButton .panel-title').html($('#dvButton #AssignmentPaper').html());
+                            }
+                            else {
+
+                                __dialog.close();
+                                ShowErrorMessage(data.MessageText);
+                            }
+
+                            break;
+                        }
+                    case 5:
+                        {
+                            $('#dvContainer').html(data.View);
+
+                            jQuery.validator.unobtrusive.parse('#dvOrgUnitLinks');
+
+                            $('#dvButton .dialog_but').show();
+
+                            $('#dvButton #UnitLinks').hide();
+                            $('#dvButton .panel-title').html($('#dvButton #UnitLinks').html());
+
+                            break;
+                        }
+                    case 6:
+                        {
+                            $('#dvContainer').html(data.View);
+
+                            $('#dvButton .dialog_but').show();
+
+                            $('#dvButton #BarcodeDesigner').hide();
+                            $('#dvButton .panel-title').html($('#dvButton #BarcodeDesigner').html());
+
+                            break;
+                        }
+                }
+            }
+        });
+    }
+</script>
+
+
+

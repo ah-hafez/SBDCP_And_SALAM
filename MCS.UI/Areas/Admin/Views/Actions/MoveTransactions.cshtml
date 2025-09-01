@@ -1,0 +1,204 @@
+﻿@using MCS.Framework.Localization;
+@using MCS.Common
+@using MCS.UI.Areas.Admin.Models.Actions;
+@model MoveTransactionVM
+@{
+    ViewBag.Title = DbRes.TResource("Admin.Actions.MoveTransactions");
+    Layout = "~/Areas/Admin/Views/Shared/_TransfersActionLayout.cshtml";
+}
+@*<div class="page-title">
+    <h2><span class="fa fa-arrow-circle-o-left"></span>@DbRes.TResource("Admin.Actions.MoveTransactions")</h2>
+</div>*@
+<div class="mx-3 mx-md-5 header-container d-flex flex-row align-items-center">
+    <div class="d-flex flex-column flex-md-row align-items-md-center flex-grow-1">
+        <h3 class="site-color mb-4">@DbRes.TResource("Admin.Actions.MoveTransactions")</h3>
+    </div>
+</div>
+@*<div class="page-content-wrap">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-horizontal form-row">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>*@
+<div class="white-container mx-3 mx-md-5">
+    @using (Html.BeginForm("", "", new { area = "Admin" }, FormMethod.Post, new { @class = "", id = "frmTransactions" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="form-row">
+            <div class="form-group col-lg-6 col-md-8 col-sm-12 col-xs-12">
+                <div id="dvDepartmentsTree">
+                    <fieldset class="field-set" id="dvFromEntityDepartmentsTree">
+                        @Html.DepartmentsTree(ViewData["orgUnitDataInfo"] as TreeViewModel, model => model.EntityFromId, TreeMode.Single, "treeDirectedToOrgUnit", true, "GetDirectedToUsersByOrgUnitId", "BasicInformation", "dvFromEntityDepartmentsTree")
+                    </fieldset>
+                    @*@Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.EntityFromId, TreeMode.Single, "treeDirectedToOrgUnit", true, "GetDirectedToUsersByOrgUnitId", "BasicInformation", "dvDepartmentsTree")*@
+                    @*<label>@DbRes.TResource("Admin.Actions.MoveUser.FromEntity")<span class="stark">*</span></label>
+        @Html.EditorFor(model => model.EntityFromId, "OrgHierarchyCaller", additionalViewData: new { treeId = "treeDirectedToOrgUnit", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Common"), GetNodeInfoByIdActionURL = @Url.Action("GetInternalPartyInfoById", "Common"), GetNodeInfoByNumActionURL = @Url.Action("GetInternalPartyInfoByNumber", "Common"), onClickfunction = "GetDirectedToUsersByOrgUnitId", ValidationGroup = "BasicInformation", ShowAddPartyButton = false })*@
+                    @Html.HiddenGroupFor(model => model.EntityFromId, null, "moveTransactions")
+                </div>
+            </div>
+            <div class="form-group col-lg-6 col-md-8 col-sm-12 col-xs-12">
+                <fieldset>
+                    <div class="">
+                        @Html.LabelFor(model => model.DirectedFromId, new { @class = "control-label" })<span class="stark">*</span>
+                        <div>
+                            @{ Html.EnableClientValidation(false); }
+                            @Html.AutoCompleteBuilder("ddlDirectedFromId", "hdnDirectedFromId",
+                           ViewData["OrgUnitsUsersData"] != null ? ViewData["OrgUnitsUsersData"].ToString() : null,
+                           Model != null ? Model.DirectedFromId.ToString() : null,
+                           true,
+                           "form-control")
+                            @Html.HiddenGroupFor(model => model.DirectedFromId, new { @Value = "", id = "hdnDirectedFromId" }, "moveTransactions")
+                            @{ Html.EnableClientValidation(true); }
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="form-group col-lg-6 col-md-8 col-sm-12 col-xs-12">
+                <div id="dvDepartmentsTree02">
+                    @Html.DepartmentsTree(ViewData["orgUnitDataInfo"] as TreeViewModel, model => model.EntityToId, TreeMode.Single, "treeDirectedToOrgUnit02", true, "GetDirectedToUsersByOrgUnitId02", "BasicInformation", "dvDepartmentsTree02")
+                    @*<label>@DbRes.TResource("Admin.Actions.MoveUser.ToEntity")<span class="stark">*</span></label>*@
+                    @*@Html.EditorFor(model => model.EntityToId, "OrgHierarchyCaller", additionalViewData: new { treeId = "treeDirectedToOrgUnit02", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Common"), GetNodeInfoByIdActionURL = @Url.Action("GetInternalPartyInfoById", "Common"), GetNodeInfoByNumActionURL = @Url.Action("GetInternalPartyInfoByNumber", "Common"), onClickfunction = "GetDirectedToUsersByOrgUnitId02", ValidationGroup = "BasicInformation", ShowAddPartyButton = false })*@
+                    @Html.HiddenGroupFor(model => model.EntityToId, null, "moveTransactions")
+                </div>
+            </div>
+            <div class="form-group col-lg-6 col-md-8 col-sm-12 col-xs-12">
+                <fieldset>
+                    <div class="">
+                        @Html.LabelFor(model => model.DirectedToId, new { @class = "control-label" })<span class="stark">*</span>
+                        <div>
+                            @Html.AutoCompleteBuilder("ddlDirectedToId", "hdnDirectedToId",
+                           ViewData["OrgUnitsUsersData"] != null ? ViewData["OrgUnitsUsersData"].ToString() : null,
+                           Model != null ? Model.DirectedToId.ToString() : null,
+                           true,
+                           "form-control")
+                            @Html.HiddenGroupFor(model => model.DirectedToId, new { @Value = "", id = "hdnDirectedToId" }, "moveTransactions")
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+    }
+</div>
+<div class="mx-3 mx-md-5 mb-4 d-flex">
+    <div class="ml-auto">
+        @Html.ActionButton(DbRes.TResource("Admin.MoveTransaction.Save"),Url.Action("MoveTransactionsPost", "Actions"),"", null,"", "onMoveTransactionSuccess", "","Post",
+                                 "moveTransactions","btnMoveTransactions", "frmTransactions", "btn btn-lg btn-st3 mx-1")
+        @Html.ResetButton("ResetForm()","","btn btn-lg btn-st3 mx-1")
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    function ResetForm() {
+        ClearInputs('frmTransactions');
+    }
+
+    function onMoveTransactionSuccess(data) {
+        var errors = [];
+        if (data.errors.length > 0) {
+            for (var counter = 0; counter < data.errors.length; counter++) {
+                switch (data.errors[counter].Key) {
+                    case "EntityFromId":
+                        errors.push('<li>' + '@DbRes.TResource("Admin.MoveTransactions.EntityFromId")' + '</li>');
+                        break;
+                    case "DirectedFromId":
+                        errors.push('<li>' + '@DbRes.TResource("Admin.MoveTransactions.DirectedFromId")' + '</li>');
+                        break;
+                    case "EntityToId":
+                        errors.push('<li>' + '@DbRes.TResource("Admin.MoveTransactions.EntityToId")' + '</li>');
+                        break;
+                    case "DirectedToId":
+                    errors.push('<li>' + '@DbRes.TResource("Admin.MoveTransactions.DirectedToId")' + '</li>');
+                      break;
+                }
+            }
+            var listOfErrors = '<ul style="list-style:none;">';
+            for (var counter = 0; counter < errors.length; counter++) {
+                listOfErrors += errors[counter];
+            }
+            listOfErrors += '</ul>';
+            ShowErrorMessage(listOfErrors);
+        }
+        else {
+            if (data.MessageType != 0) {
+                ShowErrorMessage('@DbRes.TResource("Admin.MoveTransactions.CantMove")');
+            }
+            else {
+                ShowSuccesMessage('@DbRes.TResource("Admin.MoveTransactions.Success")', redirect());
+
+            }
+
+        }
+    };
+    function redirect() {
+        setTimeout(function () {
+            window.location.href = '@Url.Action("MoveTransactions", "Actions",new { area = "Admin" })';
+        }, 3000);
+    };
+    function GetDirectedToUsersByOrgUnitId02() {
+   
+        var EntityToId = $('#EntityToId').val();
+        var token = $('#frmTransactions').find("input[name='__RequestVerificationToken']").val();
+        if (EntityToId != "") {
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("GetUsersByOrgUnitId","Actions")',
+                data: { id: EntityToId, __RequestVerificationToken: token },
+                success: function (data) {
+                    $("#ddlDirectedToId").val("");
+                    $("#hdnDirectedToId").val("");
+                    AutoCompleteChangeList("ddlDirectedToId", data);
+                    $("#ddlDirectedToId").prop('disabled', false);
+                },
+                error: function (jqXHR) {
+                    console.log(jqXHR.responseText);
+                }
+            });
+            return false;
+        }
+        else {
+            $("#ddlDirectedToId").prop('disabled', true);
+            $("#ddlDirectedToId").val("");
+            $("#hdnDirectedToId").val("");
+            AutoCompleteChangeList("ddlDirectedToId", "[]");
+        }
+
+    }
+
+    function GetDirectedToUsersByOrgUnitId() {
+  
+        var EntityFromId = $('#EntityFromId').val();
+        var token = $('#frmTransactions').find("input[name='__RequestVerificationToken']").val();
+        if (EntityFromId != "") {
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("GetUsersByOrgUnitId","Actions")',
+                data: { id: EntityFromId, __RequestVerificationToken: token },
+                success: function (data) {
+                    $("#ddlDirectedFromId").val("");
+                    $("#hdnDirectedFromId").val("");
+                    AutoCompleteChangeList("ddlDirectedFromId", data);
+                    $("#ddlDirectedFromId").prop('disabled', false);
+                },
+                error: function (jqXHR) {
+                    console.log(jqXHR.responseText);
+                }
+            });
+            return false;
+        }
+        else {
+            $("#ddlDirectedFromId").prop('disabled', true);
+            $("#ddlDirectedFromId").val("");
+            $("#hdnDirectedFromId").val("");
+            AutoCompleteChangeList("ddlDirectedFromId", "[]");
+        }
+    }
+
+</script>

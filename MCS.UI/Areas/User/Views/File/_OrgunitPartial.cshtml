@@ -1,0 +1,770 @@
+﻿@using MCS.Common
+@using MCS.Framework.Localization
+@using MCS.Framework.Controls.Mvc
+@using MCS.Framework.Controls
+@using MCS.UI.Areas.User.Models.File
+@model IList<TransactionTrayInfoVM>
+
+@{int trayId = (int)TrayType.OrgUnit;
+    string subject = string.Empty;
+    string ect = string.Empty;
+    bool isVip = false;
+    if ((bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser))
+    {
+        isVip = true;
+    }
+}
+<div class="mx-3 mx-md-5 header-container d-flex flex-row align-items-center">
+    <div class="d-flex flex-column flex-lg-row align-items-lg-center flex-grow-1 mb-3 mb-lg-0 mt-md-5 mt-auto">
+        @*<h3 class="site-color"> @DbRes.TResource("User.File.OrgUnit") </h3>*@
+        @*@Html.Partial("~/Areas/User/Views/File/_CreateTransactionButtonsPartial.cshtml", null)*@
+    </div>
+</div>
+
+<div class="content_container site_border">
+    <div class="">
+        <div class="d-block d-lg-flex mx-3 mx-md-5 mb-3 mt-5">
+            <div class="ml-auto align-items-baseline options p-0">
+                <div class="filter-link ml-md-auto mr-lg-3 my-2 mt-lg-auto">
+                    <div class="checkbox">
+                        <label for="CheckAllBoxes">
+                            <input id="CheckAllBoxes" type="checkbox" value="">
+                            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                            <span class="Darkgreen bold">
+                                @DbRes.TResource("User.File.SelectAll")
+                            </span>
+                        </label>
+                    </div>
+                    <a class="dashed-circle sort-target" href="javascript:toggleOrderBox()">
+                        <i class="uicon icon_order Darkgreen"></i>
+                        <span class="Darkgreen font-size-16">
+                            @DbRes.TResource("User.File.SortBy")
+
+                        </span>
+                    </a>
+                    <a href="javascript:toggleFilterBox()" class="dashed-circle filter-target">
+                        <i class="uicon icon_filter Darkgreen"></i>
+                        <span class="Darkgreen font-size-16">
+                            @DbRes.TResource("User.Layout.Search")
+
+                        </span>
+                    </a>
+                    @if ((bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser))
+                    {
+                        <a data-type="Card" onclick="goToView(1)" href="#" class=" system_1 Darkgreen font-size-16">
+                            <i class="uicon icon_cards Darkgreen font-size-16"></i>
+                            <span class="Darkgreen font-size-16">
+                                بطاقات
+
+                            </span>
+                        </a>
+                        <a data-type="Table" onclick="goToView(2)" href="#" class="active grid_system Darkgreen font-size-16">
+                            <i class="uicon icon_table Darkgreen font-size-16"></i>
+                            <span class="Darkgreen font-size-16">
+                                جدول
+                            </span>
+                        </a>
+                    }
+                    else
+                    {
+                        <a data-type="Card" onclick="goToView(1)" href="#" class="active system_1">
+                            <i class="uicon icon_cards Darkgreen font-size-16"></i>
+                            <span class="Darkgreen font-size-16">
+                                بطاقات
+                            </span>
+                        </a>
+                        <a data-type="Table" onclick="goToView(2)" href="#" class="active grid_system">
+                            <i class="uicon icon_table Darkgreen font-size-16"></i>
+                            <span class="Darkgreen font-size-16">
+                                جدول
+                            </span>
+                        </a>
+                    }
+
+                    <div class="toggling-menu">
+                        @*@if ((bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser))
+                            {
+                                <a data-type="Card" onclick="goCardsView(event)" href="#" class=" system_1" title="@DbRes.TResource("User.File.Cards")"><i class="icon-grid"></i></a>
+                                <a data-type="Table" onclick="goTableView(event)" href="#" class="active grid_system" title="@DbRes.TResource("User.File.Table")"><i class="icon-list"></i></a>
+
+                            }
+                            else
+                            {
+                            <a data-type="Card" onclick="goCardsView(event)" href="#" class="active system_1" title="@DbRes.TResource("User.File.Cards")"><i class="icon-grid"></i></a>
+
+                            }*@
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="search mx-5 mx-xs-3 white-container mt-2 pb-2 filter-box">
+        <div class="form-row">
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <label>@DbRes.TResource("User.Transaction.Link.TransactionNumber")</label>
+                <input type="text" class="form-control trans-input" id="TransId" onkeypress="return IsNumeric(event);">
+            </div>
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <label>@DbRes.TResource("User.Transaction.AssigmentFrom")</label>
+                @Html.AutoCompleteBuilder("Entitys", "hdnEntityId", ViewData["Orgunits"].ToString(), "", true, "form-control", "", "", "", true)
+                @Html.StickyHidden("hdnEntityId", "", new { @Value = "", id = "hdnEntityId" })
+            </div>
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 with-icon">
+                <label>@DbRes.TResource("User.File.AssignDate")</label>
+                @Html.Calendar("DateCal", "hdnDateCal", "hdnHasDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), "", "dataCal form-control")
+                <a class=" date-icon2 " onclick="showCalender('DateCal')"><img src="~/Content/User/lib/images/SystemIcon/main bar-08.svg" width="30" /></a>
+                @Html.StickyHidden("hdnDateCal", "", null)
+            </div>
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <label>@DbRes.TResource("User.Transaction.SortbyPriorityLevel")</label>
+                @Html.AutoCompleteBuilder("PriorityLevelId", "hdnPriorityLevelId", ViewData["PrioritiesData"].ToString(), "", true, "form-control", "", "", "", true)
+                @Html.StickyHidden("hdnPriorityLevelId", "", new { @Value = "", id = "hdnPriorityLevelId" })
+            </div>
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <label>@DbRes.TResource("User.Transaction.SortbyConfLevel")</label>
+                @Html.AutoCompleteBuilder("ConfidentialityLevelId", "hdnConfidentialityLevelId", ViewData["ConfidentialityDataList"].ToString(), "", true, "form-control", "", "", "", true)
+                @Html.StickyHidden("hdnConfidentialityLevelId", "", new { @Value = "", id = "hdnConfidentialityLevelId" })
+            </div>
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <label>@DbRes.TResource("User.File.Subject")</label>
+                <div id="datePicker">
+                    @Html.TextBox("Description", "", "", new { @class = "form-control", @id = "Description" })
+                </div>
+            </div>
+
+
+            <div class="col-xs-12 panel-body row text-right">
+                <input type="button" value="@DbRes.TResource("User.Search.SubmitSearch")" class="btn btn-st2" onclick="FilterBy()" />
+            </div>
+        </div>
+    </div>
+
+    <div class="search mx-5 mx-xs-3 white-container mt-2 pb-2 order-box">
+        <div class="form-row">
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <label class=" ">@DbRes.TResource("User.Transaction.SortbyTransactionNum")</label>
+                @Html.AutoCompleteBuilder("NumberAcsDesc", "NumberAcsDescId", ViewData["NumberAcsDesc"].ToString(), "", true, "form-control", onChangeCallback: "doSort")
+                @Html.StickyHidden("NumberAcsDescId", "", new { @Value = "", id = "NumberAcsDescId" })
+            </div>
+
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <label class=" ">@DbRes.TResource("User.Transaction.CreateDate")</label>
+                @Html.AutoCompleteBuilder("Date", "hdnSortByDate", ViewData["SortByDate"].ToString(), "", true, "form-control", onChangeCallback: "doSort")
+                @Html.StickyHidden("hdnSortByDate", "", new { @Value = "", id = "hdnSortByDate" })
+            </div>
+
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <label class="  ">@DbRes.TResource("User.Transaction.AssigmentFrom")</label>
+                @Html.AutoCompleteBuilder("FromEntity", "hdnEntityIdForSort", ViewData["Orgunits"].ToString(), "", true, "form-control", onChangeCallback: "doSort")
+                @Html.StickyHidden("hdnEntityIdForSort", "", new { @Value = "", id = "hdnEntityIdForSort" })
+            </div>
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <label class="  "> @DbRes.TResource("User.Transaction.SortbyPriorityLevel")</label>
+                @Html.AutoCompleteBuilder("Priority", "hdnPriorityLevel", ViewData["PriorityAscDesc"].ToString(), "", true, "form-control", onChangeCallback: "doSort")
+                @Html.StickyHidden("hdnPriorityLevel", "", new { @Value = "", id = "hdnPriorityLevel" })
+            </div>
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <label class=""> @DbRes.TResource("User.Transaction.SortbyConfLevel")</label>
+                @Html.AutoCompleteBuilder("Confidentiality", "hdnConfidentialityLevel", ViewData["ConfidentialityAscDesc"].ToString(), "", true, "form-control", onChangeCallback: "doSort")
+                @Html.StickyHidden("hdnConfidentialityLevel", "", new { @Value = "", id = "hdnConfidentialityLevel" })
+            </div>
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <label class=" ">@DbRes.TResource("User.File.AssignDate")</label>
+                @Html.AutoCompleteBuilder("AssignDate", "hdnSortByAssignDate", ViewData["SortByDate"].ToString(), "", true, "form-control", onChangeCallback: "doSort")
+                @Html.StickyHidden("hdnSortByAssignDate", "", new { @Value = "", id = "hdnSortByAssignDate" })
+            </div>
+        </div>
+    </div>
+    @Html.EncryptedStickyHidden("EncryptedFalse", "false", new { id = "EncryptedFalse" })
+    @Html.EncryptedStickyHidden("EncryptedTrue", "true", new { id = "EncryptedTrue" })
+    @Html.StickyHidden("hdnFilter")
+    <div class="content_container content_container--body" id="TransactionsBoxes">
+        @Html.Partial("~/Areas/User/Views/File/_OrgunitBoxesPartial.cshtml", Model)
+    </div>
+    @Html.StickyHidden("transactionsIds", "", new { id = "transactionsIds" })
+    @Html.StickyHidden("IsVip", isVip.ToString(), new { id = "IsVip" })
+
+    <div class="sidebarMultiOptions invisible transparent-bg">
+        <div class="options-list d-flex">
+
+            <div class="mr-auto text-right info-bottom">
+
+                @*<span class="paper_count"></span>
+                    <span>معاملات</span>*@
+                <a class="close-box" href="javascript:toggleSelectedPaperBox()">
+                    @*<i class="uicon icon_arrow_down"></i>*@
+                </a>
+            </div>
+            <div class="d-flex bottom-actions text-right">
+                <div class="d-flex text-center">
+                    <a id="btnSend" onclick="moveTransactionslist()" class="boardered-circle-transparent"><i class="fas fa-share-square"></i></a>
+                    <a onclick="moveTransactionslist()" class="mt-3">@DbRes.TResource("User.File.Assign")</a>
+                </div>
+                <a href="javascript:closeSendActionShowMessage()" class="close-box close-box-md hidden-success"><i class="uicon icon_close"></i></a>
+
+            </div>
+        </div>
+    </div>
+    <script>
+    var OutboundDraftStatusType = { Accept: 1, Reject: 2 };
+    var OutboundDraftStatus;
+    var OrgunitEventHandler = "@Html.Raw(Url.Action("UpdateTrayTransactions", "File",new { trayId = "5", dateType = ViewData["dateType"] ?? 1584 }))";
+    var RejectTransactionByTransactionIdAction = '@Url.Action("RejectTransaction", "File")';
+    function prepareOrgunit(optionalData) {
+        $(".grid-mvc").gridmvc();
+        pageGrids.OrgunitGrid.ajaxify(
+            {
+                getPagedData: OrgunitEventHandler,
+                getData: OrgunitEventHandler,
+                requestType: "POST",
+                callbackClientFunctionAfter: ["goToViewAfterPaging"],
+                optionalData: optionalData
+            });
+    }
+
+    var deliveryMethodId;
+    var transactionTypeId;
+    function showRejectionPopup() {
+        var currentTarget = $(event.currentTarget);
+        var isViewed = currentTarget.data('viewed');
+        deliveryMethodId = currentTarget.data('deliverymethodid');
+        transactionTypeId = currentTarget.data("transactiontypeid");
+        var tranId = currentTarget.data("id");
+        OutboundDraftStatus = OutboundDraftStatusType.Reject;
+        $('#transId').val(tranId);
+
+        switch (parseInt(deliveryMethodId)) {
+            case DeliveryMethodType.ElectronicPaper:
+                ShowVerifyTransactionNumberOrBarcode('@Url.Action("VerifyTransactionNumberOrBarcode", "Inbound")', tranId, transactionTypeId);
+                break;
+            case DeliveryMethodType.Electronic:
+                ShowRejectTransactionPopup('إرجاع المعاملة', '', ' يرجى ادخال سبب الارجاع *','', 'إرجاع');
+                break;
+        }
+    }
+
+    $(document).on("RejectButtonPopupClicked", function (event, param) {
+        if ($('#rejectionReason').val().trim() == '')
+        {
+            $('#errorMessageValidate').html(" أدخل سبب الإرجاع");
+            $("#CalMessageError").removeClass("hidden_");
+            $("#CalMessageError").show();
+            $("#rejectionReason").addClass("RedBorder");
+        }
+        else
+        {
+            if ($('#transId').val() != "") {
+                RejectTransaction($('#transId').val(), $('#rejectionReason').val().trim());
+            }
+        }
+        UpdateMenuFileInformation('@Url.Action("GetMenuFile", "Shared")');
+    });
+
+    function doReload() {
+        window.location.href = '@Url.Action("OrgUnit", "File")';
+    }
+
+    function RejectTransaction(transactionId, rejectionReason) {
+
+        var trayid = @((int)TrayType.MyTransactions);
+        var transactionId = parseInt(transactionId);
+        var trayActionType = @((int)TrayActionType.RejectRevert) ;
+        var remarks = rejectionReason;
+        var data = {
+            trayId: trayid,
+            transactionId: transactionId, trayActionType: trayActionType
+            , Remarks: remarks
+        };
+        $.ajax({
+            url: '@Url.Action("MoveTransaction", "File")',
+            type: 'POST',
+            data: data,
+            success: function (data) {
+                //ShowSuccesMessage("تم إرجاع المعاملة بنجاح");
+                doReload();
+                UpdateMenuFileInformation('@Url.Action("GetMenuFile", "Shared")');
+                $('#transId').val("");
+                $('#rejectionReason').val("");
+                $('#errorMessageValidate').html("");
+                $("#CalMessageError").addClass("hidden_");
+                $("#CalMessageError").hide();
+                $("#rejectionReason").removeClass("RedBorder");
+                $('.close-button-popup').click();
+            }
+        });
+    }
+
+    function RejectTransactionByTransaction() {
+        __dialogRejectTransaction = $.confirm({
+            title: false,
+            content: function ($obj) {
+                return $.ajax({
+                    url: RejectTransactionByTransactionIdAction,
+                    type: 'post',
+                    data: { id: $('#transId').val(), deliveryMethodId: deliveryMethodId, transactionCategoryId: transactionTypeId },
+                    success: function (data) {
+                        $obj.setContent(data.Html);
+                        jQuery.validator.unobtrusive.parse('#frmRejectAssign');
+                        $('#hdnTransEditorId').val($('#transId').val());
+                    }
+                });
+            },
+            onOpen: function () {
+                jQuery(function () {
+                    jQuery('.jconfirm-box').draggable({
+                        revert: false,
+                    });
+                });
+                $("#Loader").hide();
+            },
+            confirmButton: false,
+            icon: 'fa fa-info',
+            animation: 'scale',
+            columnClass: "dialogbox col-md-8 col-md-offset-2 col-xs-8 col-xs-offset-2",
+            backgroundDismiss: false,
+            closeIcon: true,
+            cancelButton: false
+        });
+    }
+
+     @if (ViewData["TransactionId"] != null && ViewData["TransactionCategoryId"] != null)
+     {
+         <text>
+    $(document).ready(function () {
+        $('#DateCal').attr('autocomplete', 'off');
+                if ('@ViewData["TransactionId"].ToString()' != 0) {
+                    OpenEditor('@trayId', '@ViewData["TransactionId"].ToString()', '@ViewData["TransactionCategoryId"].ToString()');
+                } else {
+                    $("#list_transaction").find(".view_Editor:first").trigger("click");
+                }
+
+
+
+            });
+            </text>
+     }
+     else
+     {
+         <text>
+            $(document).ready(function () {
+                $(".checkall").show();
+                $("#list_transaction").find(".view_Editor:first").trigger("click");
+            });
+            </text>
+     }
+
+
+     $(".view_Editor").click(function (e) {
+
+         var type = $(this).data("type");
+         var id = $(this).data("id");
+         var trayId = $(this).data("tray");
+         $(".view_group").removeClass("select");
+         $(this).parents(".view_group").addClass("select");
+
+         OpenEditor(trayId, id, type);
+
+     })
+
+
+     function OpenEditor(trayId, id, type) {
+         var data = {
+             trayId: trayId, transactionId: id, transactionCategoryId: type
+         };
+
+         $.ajax({
+             url: '@Url.Action("Index","Editor")',
+             type: 'Get',
+             cache: false,
+             data: data,
+             success: function (data) {
+                 $("#editor_transaction").html("");
+                 $("#editor_transaction").html(data);
+                 jQuery.validator.unobtrusive.parse('#editor_transaction');
+             },
+             error: function (a) {
+             }
+         });
+    }
+
+    function ShowTransactionLog() {
+        var currentTarget = $(event.currentTarget);
+        var transactionType = currentTarget.data('transactiontypeid');
+        var Id = currentTarget.data('id');
+        var url = '/MCS.UI/User/TransactionLog/Index' + '?transactionId=' + EncryptionKey(Id) + "&transactionType=" + transactionType;
+        ShowDialog(url, 'dialogbox col-md-12 ');
+    }
+
+    var dataToMoveTransaction;
+            function AssignToSelf(item) {
+
+        var currentTarget = $(event.currentTarget);
+        var isViewed = currentTarget.data('viewed');
+        var deliveryMethodId = currentTarget.data('deliverymethodid');
+        var transactionType = currentTarget.data('transactiontypeid');
+        var Id = currentTarget.data('id');
+        var trayid = parseInt($("#hdnTrayId").val());
+        var page = $("#hdnCurrentPage").val();
+        var orderBy = $("#hdnOrderBy").val();
+        var dir = $("#hdnDirection").val();
+        var filter = $("#hdnFilter").val();
+        var fromDate = $("#hdnFromDateValue").val();
+        var toDate = $("#hdnToDateValue").val();
+        var number = $("#hdnSearchTransactionNumberValue").val();
+        var viewType = $("#hdnViewFile").val();
+        var dateType = $("#hdnFilterDateType").val();
+        var transactionId = $(item).data("id");
+        var transactionIdEncrypt = $(item).data("idencrypt");
+        var trayActionType = $(item).data("type");
+        var PageSize = $("#ddlPaging").val();
+        OutboundDraftStatus = OutboundDraftStatusType.Accept;
+
+        dataToMoveTransaction = {
+            transactionTypeId: transactionType, trayId: trayid, page: page, gridColumn: orderBy, dir: dir, filter: filter, fromDate: fromDate,
+            toDate: toDate, searchColumn: number, viewType: viewType, transactionId: transactionId, trayActionType: trayActionType
+            , dateType: dateType, pageSize: PageSize, transactionIdEncrypt: transactionIdEncrypt
+        };
+
+        @*if (JSON.parse(isViewed.toLowerCase()) == false && deliveryMethodId == DeliveryMethodType.ElectronicPaper) {
+            ShowVerifyTransactionNumberOrBarcode('@Url.Action("VerifyTransactionNumberOrBarcode", "Inbound")', Id, transactionType);
+        }
+        else {
+            MoveTransactionFile(dataToMoveTransaction)
+        }*@
+
+        MoveTransactionFile(dataToMoveTransaction)
+    }
+
+    function ExecuteTargetFunction(id) {
+        switch (OutboundDraftStatus) {
+            case OutboundDraftStatusType.Accept:
+                SetTransactionAssignmentToViewedByTransactionId(id);
+                break;
+            case OutboundDraftStatusType.Reject:
+                RejectTransactionByTransaction();
+                break;
+        }
+    }
+
+    function SetTransactionAssignmentToViewedByTransactionId(transactionId) {
+        $.ajax({
+            url: '@Url.Action("SetTransactionAssignmentToViewedByTransactionId", "File")',
+            type: 'POST',
+            data: { transactionId: transactionId},
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    MoveTransactionFile(dataToMoveTransaction);
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            }
+        });
+    }
+
+            function MoveTransactionFile(dataToMoveTransaction) {
+                debugger;
+        var EncryptedFalse = $('#EncryptedFalse').val();
+        var EncryptedTrue = $('#EncryptedTrue').val();
+                var IsVip = $('#IsVip').val();
+        $.ajax({
+            url: '@Url.Action("MoveTransaction","File")',
+            type: 'POST',
+            data: dataToMoveTransaction,
+            success: function (data) {
+                debugger;
+                if (data.MessageType != 2) { 
+                    var url = "";
+                    if (dataToMoveTransaction.transactionTypeId != "" && dataToMoveTransaction.transactionTypeId != undefined) { 
+                        if (IsVip == 'True') { 
+                               switch (dataToMoveTransaction.transactionTypeId) {
+       case @(TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName)) :
+                                       url = "@Url.Action("Edit", "VipInbound")" + "?id=" + EncryptionKey(dataToMoveTransaction.transactionIdEncrypt) + '&defaultTabId=' + "";
+           break;
+       case @(TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName)) :
+                                       url = "@Url.Action("Edit", "VipOutboundInternal")" + "?id=" + EncryptionKey(dataToMoveTransaction.transactionIdEncrypt) + '&defaultTabId=' + "";
+           break;
+       case @(TransactionCategory.DraftOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName)) :
+                                       url = '@Url.Action("Edit", "VipOutboundDraft")?id=' + EncryptionKey(dataToMoveTransaction.transactionIdEncrypt) + '&defaultTabId=' + "";
+           break;
+       case @(TransactionCategory.ExternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName)) :
+                                       url = '@Url.Action("Edit", "VipOutboundDraft")?id=' + EncryptionKey(dataToMoveTransaction.transactionIdEncrypt) + '&defaultTabId=' + "";
+           break;
+       default:
+           break;
+   }
+                        } else {
+
+                        switch (dataToMoveTransaction.transactionTypeId) {
+                            case @(TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName)) :
+                                url = "@Url.Action("Editor", "Inbound")" + "?id=" + EncryptionKey(dataToMoveTransaction.transactionIdEncrypt);
+                                break;
+                            case @(TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName)) :
+                                url = "@Url.Action("Editor", "OutboundInternal")" + "?id=" + EncryptionKey(dataToMoveTransaction.transactionIdEncrypt);
+                                break;
+                            case @(TransactionCategory.DraftOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName)) :
+                                url = '@Url.Action("Edit","OutboundExternal")?id=' + EncryptionKey(dataToMoveTransaction.transactionIdEncrypt) + '&IsFromDraft=' + EncryptedTrue + '&isHubEditable=' + EncryptedFalse;
+                                break;
+                            case @(TransactionCategory.ExternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName)) :
+                                url = '@Url.Action("Edit","OutboundExternal")?id=' + EncryptionKey(dataToMoveTransaction.transactionIdEncrypt) + '&IsFromDraft=' + EncryptedFalse + '&isHubEditable=' + EncryptedFalse;
+                                break;
+                            default:
+                                break;
+                        }
+
+                        }
+
+                            window.location.href = url;
+                    }
+                    else {
+                        window.location.href = '@Url.Action("Orgunit", "File")';
+
+                    }
+
+
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            }
+        });
+    }
+    var sortingOrders = [];
+    var currentIndex = 1;
+
+    function updateSortingData(index, ascending, obj) {
+        var objIndex = checkIfExist(obj, ascending);
+
+        if (obj.value == "") {
+            sortingOrders.splice(objIndex, 1);
+        } else {
+            if (objIndex == -1) {
+                sortingOrders.push({ Index: index, Ascending: ascending, ColunmName: obj.id });
+                currentIndex++;
+            } else {
+                sortingOrders[objIndex].Ascending = ascending;
+            }
+        }
+    }
+
+    function checkIfExist(obj) {
+        var index = -1;
+        for (var i = 0; i < sortingOrders.length; i++) {
+            if (sortingOrders[i].ColunmName == obj.id) {
+                index = i;
+                break;
+            }
+        }
+        return index;
+    }
+        function doSort(obj) {
+            updateSortingData(currentIndex, obj.value, obj);
+         var filters = $("#hdnFilter").val();
+         var sortData = { trayId: @((int)TrayType.OrgUnit), sortType: obj.id, dir: obj.value, searchData: obj.value, SortingOrders: sortingOrders, filter: filters };
+        $.ajax({
+            url: '@Url.Action("UpdateTrayTransactions", "File")',
+            type: 'POST',
+            cache: false,
+            data: sortData,
+            success: function (data) {
+                $('#TransactionsBoxes').html("");
+                $('#TransactionsBoxes').html(data.Html);
+                goToViewAfterPaging();
+                prepareOrgunit(sortData);
+            }
+        });
+    }
+
+    function fillHidden(obj) {
+        $('#hdn' + obj.id).val("");
+        $('#hdn' + obj.id).val(obj.value);
+    }
+
+    function FilterBy() {
+        var trayid = @((int)TrayType.OrgUnit);
+        var filter = "";
+
+        if ($("#hdnPriorityLevelId").val() != "" && $("#hdnPriorityLevelId").val() != null) {
+
+            filter += "Priority__1__" + $("#hdnPriorityLevelId").val();
+        }
+
+        if ($("#hdnConfidentialityLevelId").val() != "" && $("#hdnConfidentialityLevelId").val() != null) {
+
+            if (filter.length > 0) {
+                filter += "&";
+            }
+            filter += "Confidentiality__1__" + $("#hdnConfidentialityLevelId").val();
+        }
+
+        if ($("#TransId").val() != "" && $("#TransId").val() != null) {
+
+            if (filter.length > 0) {
+                filter += "&";
+            }
+            filter += "Number__1__" + $("#TransId").val();
+        }
+
+        if ($("#hdnExternalPartyId").val() != "" && $("#hdnExternalPartyId").val() != null) {
+
+            if (filter.length > 0) {
+                filter += "&";
+            }
+            filter += "ExternalParty__1__" + $("#hdnExternalPartyId").val();
+        }
+
+        if ($("#hdnEntityId").val() != "" && $("#hdnEntityId").val() != null) {
+
+            if (filter.length > 0) {
+                filter += "&";
+            }
+            filter += "FromEntity__1__" + $("#hdnEntityId").val();
+        }
+
+        if ($("#hdnDocTypeId").val() != "" && $("#hdnDocTypeId").val() != null) {
+
+            if (filter.length > 0) {
+                filter += "&";
+            }
+            filter += "LetterType__1__" + $("#hdnDocTypeId").val();
+        }
+
+        if ($("#hdnDateCal").val() != "" && $("#hdnDateCal").val() != null) {
+
+            if (filter.length > 0) {
+                filter += "&";
+            }
+            filter += "Date__1__" + $("#hdnDateCal").val();
+        }
+
+        if ($("#Description").val() != "" && $("#Description").val() != null) {
+
+            if (filter.length > 0) {
+                filter += "&";
+            }
+            filter += "Subject__2__" + $("#Description").val();
+        }
+
+        $("#hdnFilter").val(filter);
+
+        var filterData = { trayId: trayid, filter: filter, SortingOrders: sortingOrders };
+
+        $.ajax({
+            url: '@Url.Action("UpdateTrayTransactions","File")',
+            type: 'POST',
+            data: filterData,
+            success: function (data) {
+                $('#TransactionsBoxes').html("");
+                $('#TransactionsBoxes').html(data.Html);
+                goToViewAfterPaging();
+                prepareOrgunit(filterData);
+            }
+        });
+    }
+
+    function OpenTransaction(transId) {
+        var trayid =@((int)TrayType.OrgUnit);
+        var filter = "";
+        if (transId != "" && transId != null && transId > 0) {
+
+            if (filter.length > 0) {
+                filter += "&";
+            }
+            filter += "Id__1__" + transId;
+        }
+        var data = {
+            trayId: trayid, filter: filter
+
+        };
+        window.location.href = '@Url.Action("GetTransactionDetails", "File")?trayId=' + trayid + '&transId=' + transId;
+    }
+
+    function OpenOrgUnitTransaction(obj) {
+        var transactionId = $(obj).data("id");
+        var transactionTypeId = $(obj).data("transactiontypeid");
+        @*var url = "";
+
+
+
+        if (transactionTypeId ==  @(TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName)))
+        {
+            url = '/MCS.UI/User/Shared/InboundCertificate' + '?transactionId=' + transactionId;
+        } else if (transactionTypeId == @(TransactionCategory.DraftOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName))) {
+            url = '/MCS.UI/User/Shared/OutboundCertificate' + '?transactionId=' + transactionId;
+        } else { }*@
+
+        var url = '@Url.Action("Index", "TransactionLog")' + '?transactionId=' + transactionId + "&transactionCategory=" + @((int)TransactionCategory.Inbound);
+
+        ShowDialog(url, 'dialogbox col-md-12 ');
+    }
+    $(document).ready(function () {
+        $('#DateCal').attr('autocomplete', 'off');
+            });
+
+    function moveTransactionslist() {
+        idsList = [];
+        $('.boxes input:checked').each(function (index, obj) {
+            idsList.push(parseInt(obj.id.replace("ch_", "")));
+        });
+        var transactionsIds = idsList.join(',');
+
+
+         if (transactionsIds.length === 0) {
+            ShowErrorMessage('@DbRes.TResource("User.File.ThereIsNoTrans")');
+         }
+         else {
+
+            var trayid = @((int)TrayType.OrgUnit);
+            var trayActionType = @((int)TrayActionType.Assign);
+            var data = {
+                transactionIds: transactionsIds, TrayActionType: trayActionType, trayId: trayid
+             };
+              $.ajax({
+                    url: '@Url.Action("MoveTransactionList", "File")',
+                    type: 'POST',
+                    data: data,
+                  success: function (data) {
+                       window.location.href = '@Url.Action("Orgunit", "File")';
+                    }
+             });
+         }
+            }
+
+            function showArchiving(transactionId) {
+                var url = '@Url.Action("PrintTransactions", "Shared")' + '?transId=' + EncryptionKey(transactionId) + '&withRelated=false&hidePrint=true';
+
+        ShowDialog(url, 'dialogbox col-md-12 ');
+            }
+
+            function showAssignmentHistories(transactionId) {
+                var url = '@Url.Action("GetTransactionAssignmentHistories", "TransactionLog")' + '?transactionId=' + transactionId;
+
+        ShowDialog(url, 'dialogbox col-md-12 ');
+            }
+
+                function goToView(id) {
+
+        var TypeData = { trayId: '@Convert.ToInt32(TrayType.OrgUnit)',dateType: '@Convert.ToInt32(TransactionDateType.Any)' , PageSize: @ViewData["PageSize"]!= null ?@ViewData["PageSize"]: '@UIHelper.PageSize', renderType : id};
+            $("#TransactionsBoxes").html("");
+            $.ajax({
+                url: '@Url.Action("UpdateTrayTransactions","File")',
+                type: 'POST',
+                data: TypeData,
+                success: function (data) {
+                    $("#TransactionsBoxes").html(data.Html);
+                    $('#selectedTab').val(TypeData.dateType);
+                    unfillSelectedAll();
+                    prepareOrgunit(TypeData);
+                },
+                error: function (a) {
+                }
+            });
+        }
+    </script>
+    <style>
+        .RedBorder {
+            border: 1px solid #fe0000 !important
+        }
+    </style>

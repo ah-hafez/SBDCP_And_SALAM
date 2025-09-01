@@ -1,0 +1,78 @@
+﻿
+@using MCS.Framework.Localization
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_BaseLayout.cshtml";
+    var controllerName = HttpContext.Current.Request.RequestContext.RouteData.Values["controller"].ToString();
+    var actionName = ViewContext.RouteData.GetRequiredString("action").ToString();
+}
+@section Menu
+{
+    <div class="align-self-start main_sidebar">
+        @*<div class="my-3 mx-3 d-flex logo_div">
+            <a class="main_logo" href="#">
+                <img src="../../Content/Admin/lib/images/logo.png" title="" alt="" class="logo">
+                <img src="../../Content/Admin/lib/images/GAMI_Logo_Color-01.svg" title="" class="GAMI_Logo_Color-01.svg">
+            </a>
+        </div>*@
+        <div class="d-none d-md-block mr-auto">
+            <a class="nav-link nav-menu-main menu-toggle hidden-xs is-active" href="#"><img src="../../Content/Admin/lib/images/menu/menu.svg" style="width:22px"></a>
+        </div>
+        <div class=" main-menu menu-fixed menu-light menu-accordion menu-icon-left" data-scroll-to-active="true" style="direction:ltr;">
+            <div class="main-menu-content">
+                <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
+                    <li class="@(controllerName == "Actions" && actionName == "MoveUser" ? "nav-item active" : "nav-item")">
+                        <a href="@Url.Action("MoveUser", "Actions")">
+                            <i>
+                                <img src="~/Content/Admin/lib/images/menu/transfer-of-staff.svg">
+                            </i>
+                            <span class="menu-title">@DbRes.TResource("Admin.Actions.MoveUser")</span>
+                        </a>
+                    </li>
+                    <li class="@(controllerName == "Actions" && actionName == "MoveSingleTransaction" ? "nav-item active" : "nav-item")">
+                        <a href="@Url.Action("MoveSingleTransaction", "Actions")">
+                            <i>
+                                <img src="~/Content/Admin/lib/images/menu/attachment.svg">
+                            </i>
+                            <span class="menu-title">@DbRes.TResource("Admin.Actions.MoveSingleTransaction")</span>
+                        </a>
+                    </li>
+                    <li class="@(controllerName == "Actions" && actionName == "MoveTransactions" ? "nav-item active" : "nav-item")">
+                        <a href="@Url.Action("MoveTransactions", "Actions")">
+                            <i>
+                                <img src="~/Content/Admin/lib/images/menu/document.svg">
+                            </i>
+                            <span class="menu-title">@DbRes.TResource("Admin.Actions.MoveTransactions")</span>
+                        </a>
+                    </li>
+                    <li class="@(controllerName == "Actions" && actionName == "MoveEntity" ? "nav-item active" : "nav-item")">
+                        <a href="@Url.Action("MoveEntity", "Actions")">
+                            <i>
+                                <img src="~/Content/Admin/lib/images/menu/transfer-of-departments.svg">
+                            </i>
+                            <span class="menu-title">@DbRes.TResource("Admin.Actions.MoveEntity")</span>
+                        </a>
+                    </li>
+                    <li class="@(controllerName == "Actions" && actionName == "MergeDepartments" ? "nav-item active" : "nav-item")">
+                        <a href="@Url.Action("MergeDepartments", "Actions")">
+                            <i>
+                                <img src="~/Content/Admin/lib/images/menu/merge-departments.svg">
+                            </i>
+                            <span class="menu-title">@DbRes.TResource("Admin.Actions.MergeDepartments")</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+<style>
+    .main_sidebar{
+        height:36%;
+    }
+</style>
+}
+@section Body
+{
+    @RenderBody()
+}

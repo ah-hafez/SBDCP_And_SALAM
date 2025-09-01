@@ -1,0 +1,352 @@
+@font-face {
+  font-family: 'icomoon';
+  src:  url('./icomoon.eot?k3ysdv');
+  src:  url('./icomoon.eot?k3ysdv#iefix') format('embedded-opentype'),
+    url('./icomoon.ttf?k3ysdv') format('truetype'),
+    url('./icomoon.woff?k3ysdv') format('woff'),
+    url('./icomoon.svg?k3ysdv#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icomoon' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-authorization:before {
+  content: "\e94b";
+}
+.icon-distribution:before {
+  content: "\e94c";
+}
+.icon-referral:before {
+  content: "\e94d";
+}
+.icon-signature:before {
+  content: "\e94e";
+}
+.icon-track:before {
+  content: "\e94f";
+}
+.icon-assignment-delivered:before {
+  content: "\e900";
+}
+.icon-assignment-new:before {
+  content: "\e901";
+}
+.icon-assignment-return:before {
+  content: "\e902";
+}
+.icon-hourglass:before {
+  content: "\e95e";
+}
+.icon-check-right:before {
+  content: "\e950";
+}
+.icon-document:before {
+  content: "\e951";
+}
+.icon-fill-up:before {
+  content: "\e952";
+}
+.icon-list-close:before {
+  content: "\e953";
+}
+.icon-outline-note-add:before {
+  content: "\e954";
+}
+.icon-outline-subtitles:before {
+  content: "\e955";
+}
+/*.icon-return:before {
+  content: "\e956";*/
+}
+.icon-sent:before {
+  content: "\e957";
+}
+.icon-checked:before {
+  content: "\e903";
+}
+.icon-delete:before {
+  content: "\e904";
+}
+.icon-inactive:before {
+  content: "\e905";
+}
+.icon-lamp:before {
+  content: "\e906";
+}
+.icon-lamp-off:before {
+  content: "\e907";
+}
+.icon-outline-edit:before {
+  content: "\e908";
+}
+.icon-buttons-add:before {
+  content: "\e909";
+}
+.icon-buttons-attach:before {
+  content: "\e90a";
+}
+.icon-create-1:before {
+  content: "\e958";
+}
+.icon-create-2:before {
+  content: "\e959";
+}
+.icon-create-3:before {
+  content: "\e95a";
+}
+.icon-create-4:before {
+  content: "\e95b";
+}
+.icon-calendar:before {
+  content: "\e90b";
+}
+.icon-edit-top-1:before {
+  content: "\e90c";
+}
+.icon-edit-top-2:before {
+  content: "\e90d";
+}
+.icon-edit-top-3:before {
+  content: "\e90e";
+}
+.icon-filter:before {
+  content: "\e90f";
+}
+.icon-filter-form:before {
+  content: "\e910";
+}
+.icon-grid:before {
+  content: "\e911";
+}
+.icon-list:before {
+  content: "\e912";
+}
+.icon-sort:before {
+  content: "\e913";
+}
+.icon-signature-bar-eraser:before {
+  content: "\e914";
+}
+.icon-signature-bar-pen:before {
+  content: "\e915";
+}
+.icon-tables-sitemap:before {
+  content: "\e95c";
+}
+.icon-tables-sitemap-sub:before {
+  content: "\e95d";
+}
+.icon-tables-delete:before {
+  content: "\e916";
+}
+.icon-tables-edit:before {
+  content: "\e917";
+}
+.icon-tables-lamp:before {
+  content: "\e947";
+}
+.icon-tables-lamp-off:before {
+  content: "\e948";
+}
+.icon-tables-lock:before {
+  content: "\e949";
+}
+.icon-tables-unlock:before {
+  content: "\e94a";
+}
+.icon-tab1:before {
+  content: "\e918";
+}
+.icon-tab2:before {
+  content: "\e919";
+}
+.icon-tab3:before {
+  content: "\e91a";
+}
+.icon-tab4:before {
+  content: "\e91b";
+}
+.icon-tab5:before {
+  content: "\e91c";
+}
+.icon-tab6:before {
+  content: "\e91d";
+}
+.icon-tab7:before {
+  content: "\e91e";
+}
+.icon-tab8:before {
+  content: "\e91f";
+}
+.icon-tab9:before {
+  content: "\e920";
+}
+.icon-tab10:before {
+  content: "\e921";
+}
+.icon-tab11:before {
+  content: "\e922";
+}
+.icon-toolbar1:before {
+  content: "\e923";
+}
+.icon-toolbar2:before {
+  content: "\e924";
+}
+.icon-toolbar3 .path1:before {
+  content: "\e925";
+  color: rgb(0, 0, 0);
+}
+.icon-toolbar3 .path2:before {
+  content: "\e926";
+  margin-left: -1em;
+  color: rgb(0, 0, 0);
+}
+.icon-toolbar3 .path3:before {
+  content: "\e927";
+  margin-left: -1em;
+  color: rgb(0, 0, 0);
+}
+.icon-toolbar3 .path4:before {
+  content: "\e928";
+  margin-left: -1em;
+  color: rgb(0, 0, 0);
+}
+.icon-toolbar3 .path5:before {
+  content: "\e929";
+  margin-left: -1em;
+  color: rgb(0, 0, 0);
+}
+.icon-toolbar3 .path6:before {
+  content: "\e92a";
+  margin-left: -1em;
+  color: rgb(0, 0, 0);
+}
+.icon-toolbar3 .path7:before {
+  content: "\e92b";
+  margin-left: -1em;
+  color: rgb(0, 0, 0);
+}
+.icon-toolbar3 .path8:before {
+  content: "\e92c";
+  margin-left: -1em;
+  color: rgb(0, 0, 0);
+}
+.icon-toolbar3 .path9:before {
+  content: "\e92d";
+  margin-left: -1em;
+  color: rgb(0, 0, 0);
+}
+.icon-toolbar3 .path10:before {
+  content: "\e92e";
+  margin-left: -1em;
+  color: rgb(0, 0, 0);
+}
+.icon-toolbar3 .path11:before {
+  content: "\e92f";
+  margin-left: -1em;
+  color: rgb(0, 0, 0);
+}
+.icon-toolbar3 .path12:before {
+  content: "\e930";
+  margin-left: -1em;
+  color: rgb(0, 0, 0);
+}
+.icon-toolbar3 .path13:before {
+  content: "\e931";
+  margin-left: -1em;
+  color: rgb(92, 156, 237);
+}
+.icon-toolbar3 .path14:before {
+  content: "\e932";
+  margin-left: -1em;
+  color: rgb(37, 182, 210);
+}
+.icon-toolbar3 .path15:before {
+  content: "\e933";
+  margin-left: -1em;
+  color: rgb(251, 110, 81);
+}
+.icon-toolbar3 .path16:before {
+  content: "\e934";
+  margin-left: -1em;
+  color: rgb(224, 79, 95);
+}
+.icon-toolbar3 .path17:before {
+  content: "\e935";
+  margin-left: -1em;
+  color: rgb(37, 182, 210);
+}
+.icon-toolbar3 .path18:before {
+  content: "\e936";
+  margin-left: -1em;
+  color: rgb(71, 206, 172);
+}
+.icon-toolbar3 .path19:before {
+  content: "\e937";
+  margin-left: -1em;
+  color: rgb(254, 205, 84);
+}
+.icon-toolbar3 .path20:before {
+  content: "\e938";
+  margin-left: -1em;
+  color: rgb(50, 190, 166);
+}
+.icon-toolbar4:before {
+  content: "\e939";
+}
+.icon-toolbar5:before {
+  content: "\e93a";
+}
+.icon-toolbar6:before {
+  content: "\e93b";
+}
+.icon-toolbar7:before {
+  content: "\e93c";
+}
+.icon-toolbar8:before {
+  content: "\e93d";
+}
+.icon-toolbar9:before {
+  content: "\e93e";
+}
+.icon-toolbar10:before {
+  content: "\e93f";
+}
+.icon-toolbar11:before {
+  content: "\e940";
+}
+.icon-toolbar12:before {
+  content: "\e941";
+}
+.icon-toolbar13:before {
+  content: "\e942";
+}
+.icon-toolbar14:before {
+  content: "\e943";
+}
+.icon-toolbar15:before {
+  content: "\e944";
+}
+.icon-toolbar16:before {
+  content: "\e945";
+}
+.icon-toolbar17:before {
+  content: "\e946";
+  color: #a4a4a4;
+}

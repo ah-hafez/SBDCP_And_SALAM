@@ -1,0 +1,22 @@
+﻿@model MCS.UI.Areas.Admin.Models.OrgHierarchyTreeViewModel
+
+<div class="modal fade in " id="orgHierarchyModal__@Model.TreeId" role="dialog">
+    <div class="modal-dialog medium-dialog">
+        <div class="modal-content modal-height">
+            <div class="modal-body">
+                <div class="directory mx-auto">
+                    <div class="">
+                        <div class="form-group">
+                            @*<label for="searchInput">أدخل اسم الوحدة</label>
+                                <input type="text" class="form-control" id="searchInput" placeholder="إسم الوحدة">*@
+                        </div>
+                    </div>
+                    <div class="dir-list d-flex flex-column">
+                        @Html.Partial("~/Areas/Admin/Views/Shared/EditorTemplates/OrgHierarchyModalItem.cshtml", Model)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*<script>AppendDepartmentText('@ViewBag.treeId')</script>*@

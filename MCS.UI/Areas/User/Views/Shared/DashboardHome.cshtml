@@ -1,0 +1,313 @@
+﻿@using MCS.Common
+@using MCS.Framework.Localization
+@using MCS.Framework.Controls
+@using MCS.UI.Areas.User.Models.Shared
+
+@model DashboardHomeVM
+
+@{
+    ViewBag.Title = DbRes.TResource("User.Home.DashboardHome");
+    Layout = "~/Areas/User/Views/Shared/_SearchLayout.cshtml";
+
+}
+
+@using (Html.BeginForm("DashboardSearch", "Shared", FormMethod.Post, new { id = "frmDashboard" }))
+{
+    <div class="mr-4 mt-5" style="direction:ltr;">
+        <a href='@Url.Action("MyTransactions", "File", new { area = "user" })' data-bs-toggle="tooltip" data-placement="bottom" title="الصفحة الرئيسة">
+            <i class="la la-arrow-circle-left" style="font-size:24px; color:black;"></i>
+        </a>
+    </div>
+    <div class="col-lg-3" style="margin-top:10px;">
+        <div class="white-container mx-xs-3">
+            <h1 style="text-align:Center">فلترة</h1>
+            <div class="content_container" id="dvDashboardHome">
+                @Html.AntiForgeryToken()
+
+                <div class="dashboard-form" id="Expanddetail" style="">
+                    <div class="form-row panel-body">
+                        <div class="col-lg-12" style="display:none;">
+                            <fieldset>
+                                <div class="form-group">
+                                    @Html.AutoCompleteBuilder("ddlYear", "hdnYear", LookupCategory.Year, DateTimeUtility.GetHijriYear(DateTime.Now).ToString(), true, "form-control", null, null, false)
+                                </div>
+                            </fieldset>
+                        </div>
+                        @if (ViewBag.Level > 2)
+                        {
+                            <div class="col-lg-12">
+                                <fieldset class="field-set" id="dvDepartmentsTree">
+                                    @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.DirectedToOrgUnitId, TreeMode.Single, "treeDirectedToOrgUnit", true, "GetDirectedToUsersByOrgUnitId", "BasicInformation", "dvDepartmentsTree")
+                                </fieldset>
+
+                            </div>
+                            <br />
+                            <div class="col-lg-12">
+                                <label class="w-100">@DbRes.TResource("اسم المستخدم")</label>
+                                <div>
+                                    @Html.EditorFor(model => model.DirectedToId, "AutoComplete", additionalViewData: new { autoCompleteControlid = "ddlDirectedToId", hdnIdToSaveValue = "hdnDirectedToId", items = ViewData["OrgUnitsUsersData"] != null ? ViewData["OrgUnitsUsersData"].ToString() : null, selectedId = Model.DirectedToId, matchAnywhere = true, hdnExtraParametersId = "", selectFirstIndex = false, validationGroup = "", onChangeCallback = "" })
+                                </div>
+                            </div>
+                        }
+
+                        <div class="col-lg-12">
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label ">@DbRes.TResource("User.TransactionCertificate.FromDate")</label>
+                                    <div id="datePicker">
+                                        @Html.Hidden("hdnFromDateUm", Model.FromDateH != "" ? Model.FromDateH : "", new { id = "hdnFromDateUm" })
+                                        @Html.CalendarCustom("FromDateCal", "hdnFromDateCal", "hdnFromDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), Model.FromDate.HasValue ? Model.FromDate.Value.ToString("dd/MM/yyyy") : "", "form-control")
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <br />
+                        <div class="col-lg-12">
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="control-label ">@DbRes.TResource("User.TransactionCertificate.ToDate")</label>
+                                    <div id="datePicker">
+                                        @Html.Hidden("hdnToDateUm", Model.ToDateH != "" ? Model.ToDateH : "", new { id = "hdnToDateUm" })
+                                        @Html.CalendarCustom("ToDateCal", "hdnToDateCal", "hdnToDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), Model.ToDate.HasValue ? Model.ToDate.Value.ToString("dd/MM/yyyy") : "", "form-control")
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+
+                        <div class="col-lg-12" style="padding-top:30px;padding-right:83px;">
+                            <input type="button" onclick="Search()" class="btn btn-st2 mx-1" value="بحث" />
+                        </div>
+                    </div>
+
+                    @Html.HiddenGroupFor(model => model.ToDate, new { id = "hdnToDateCal" }, "Dashboard")
+                    @Html.HiddenGroupFor(model => model.DateFormateSetting, new { id = "DateFormateSetting" }, "Dashboard")
+                    @Html.HiddenGroupFor(model => model.FromDate, new { id = "hdnFromDateCal" }, "Dashboard")
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<div class="col-lg-9" style="margin-top:10px;">
+
+    <div class="white-container mx-xs-3" id="dvCards">
+        @Html.Partial("~/Areas/User/Views/Shared/_DashboardHomeCards.cshtml", Model)
+    </div>
+</div>
+<script>
+
+    var progressBar = document.getElementById('divLateCircular');
+    var valueContainer = document.getElementById('divlate');
+
+    var progressBarCompleted = document.getElementById('divLateCircularComplete');
+    var valueContainerCompleted = document.getElementById('divlateComplete');
+
+    let progressValue = 0;
+    let prrogressEndValue = parseInt('@Model.LateAVG');
+    let speed = 50;
+
+    let progressValueComplete = 0;
+    let prrogressEndValueComplete = parseInt('@Model.TotalCompleted');
+
+    let progress = setInterval(() => {
+
+        valueContainer.textContent = `${progressValue}%`;
+        progressBar.style.background = `conic-gradient(
+                   #f23687 ${progressValue * 3.6}deg,
+                   #e5e5e5 ${progressValue * 3.6}deg )`;
+        progressValue++;
+        if (progressValue > prrogressEndValue || prrogressEndValue == 0) {
+            clearInterval(progress);
+        }
+
+    }, speed);
+
+
+
+    let progressComplete = setInterval(() => {
+
+        valueContainerCompleted.textContent = `${progressValueComplete}%`;
+        progressBarCompleted.style.background = `conic-gradient(
+                   #f23687 ${progressValueComplete * 3.6}deg,
+                   #e5e5e5 ${progressValueComplete * 3.6}deg )`;
+        progressValueComplete++;
+        if (progressValueComplete > prrogressEndValueComplete || prrogressEndValueComplete == 0) {
+            clearInterval(progressComplete);
+        }
+
+    }, speed);
+
+    var firstChart = JSON.parse('@(Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.transactionTypesReport)))');
+    var secondChart = JSON.parse('@(Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.transactionConfidentialityReports)))');
+
+    var globalItemId;
+
+    function initialVeiw() {
+                 Morris.Area({
+                element: 'area-chart',
+                lineColors: ['#336b6f', '#6cc9a3', '#5ecdd5'],
+                lineWidth: '2px',
+                data: firstChart,
+                xkey: 'year',
+                ykeys: ['internalv', 'inbound', 'external'],
+                labels: ['معاملات داخلية', 'معاملات واردة', 'معاملات صادرة'],
+
+            });
+
+            Morris.Area({
+                element: 'chart_line2',
+                lineColors: ['#0E8270', '#0E8270', '#1B2542', '#0E8270'],
+                lineWidth: '2px',
+                data: secondChart,
+                xkey: 'year',
+                ykeys: ['byHand', 'verysecret', 'secret', 'normal'],
+                labels: ['تسلم باليد', 'سري للغاية', 'سري', 'عادي'],
+            });
+
+
+            $('.card-grid').click(function (e) {
+                var itemId = $(e.currentTarget).data('itemid');
+                var fromDate = $("#hdnFromDateCal").val();
+                var toDate = $("#hdnToDateCal").val();
+                var departmentId = $(".hdnDepartmentId").val();
+                $('#ItemId').val(itemId);
+                $('#FromDate').val(fromDate);
+                $('#ToDate').val(toDate);
+                $('#DepartmentId').val(departmentId);
+                globalItemId = itemId
+
+                var url = '@Url.Action("DashboardDetails")' + "?FromDate=" + fromDate + "&ToDate=" + toDate + "&DepartmentId=" + departmentId + "&ItemId=" + itemId;
+                ShowDialog(url, 'dialogbox col-md-12');
+
+            });
+    }
+        $(document).ready(function () {
+
+            initialVeiw();
+    });
+</script>
+
+<script>
+
+
+        function Search() {
+        var token = $('#frmDashboard').find("input[name='__RequestVerificationToken']").val();
+            var filterData = { userId: $("#ddlDirectedToId_hdnIdToSaveValue").val(), entityId: $("#DirectedToOrgUnitId").val(), fromDate: $("#hdnFromDateUm").val(), toDate: $("#hdnToDateUm").val(),__RequestVerificationToken: token };
+
+        $.ajax({
+            url: '@Url.Action("DashboardSearch", "Shared")',
+            type: 'POST',
+            data: filterData,
+            success: function (data) {
+                debugger;
+                if (data.MessageType != 2) {
+                    $("#dvCards").html("");
+                    $("#dvCards").html(data.Html);
+                    initialVeiw();
+                }
+            }
+        });
+    }
+
+    var fromDateDefault = '@(Model.FromDate.HasValue ? Model.FromDate.Value.ToString("dd/MM/yyyy") : "")'
+    var toDateDefault = '@(Model.ToDate.HasValue ? Model.ToDate.Value.ToString("dd/MM/yyyy") : "")';
+
+    $(document).ready(function () {
+        var orgUnitValidation = $("#divForm__dvCopyDepartmentsTree").find("[for=OrgUnitId]");
+        orgUnitValidation.next().remove();
+        orgUnitValidation.remove();
+
+        var CalenderType = $('#DateFormateSetting').val().toLowerCase();
+        var year = parseInt($('#ddlYear').val());
+        SetStartEndDashBoard(year, 'FromDateCal', 'ToDateCal', CalenderType);
+
+        function SetStartEndDashBoard(CurrentYear, calendarFromId, calendarToId, CalenderType) {
+            var fromType = $('#' + calendarFromId)[0].name;
+            var toType = $('#' + calendarToId)[0].name;
+            var fromDate = fromDateDefault == '' ? $.calendars.instance(CalenderType).formatDate('dd/mm/yyyy', $.calendars.instance(CalenderType).today()) : fromDateDefault;
+            var toDate;
+            var today =  $.calendars.instance(CalenderType).formatDate('dd/mm/yyyy', $.calendars.instance(CalenderType).today());
+            var splitToday = today.split("/"); switch (CalenderType) {
+
+            }
+
+            if (splitToday[2] == CurrentYear) {
+                toDate = toDateDefault == '' ? today : toDateDefault
+            }
+
+            if (fromType == CalenderType) {
+                $('#' + calendarFromId).val(fromDate);
+            }
+            else {
+                DateConverter(fromDate, CalenderType, to, calendarFromId);
+            }
+            if (toType == CalenderType) {
+                $('#' + calendarToId).val(toDateDefault == '' ? today : toDateDefault);
+            }
+            else {
+                DateConverter(toDate, CalenderType, to, calendarToId);
+            }
+
+            $('#' + calendarFromId).trigger('focusout'); $('#' + calendarToId).trigger('focusout')
+        }
+        $(document).on("click", "span[data-node-id]", function () {
+        var elemnt = $(this);
+
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('InternalLoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetOrgUnitsNodes")',
+                data: { parentId: $(this).data("node-id"), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+                success:
+               function (data) {
+
+                   $(elemnt).closest('li').children('ul').last().empty()
+
+                   $(elemnt).closest('li').children('ul').last().append(data);
+
+                   $(elemnt).removeClass("InternalLoadedData");
+               }
+            });
+        }
+        });
+
+         GetTraysCount();
+    });
+
+    //function OnSuccess(result) {
+    //    if (result.MessageType != 2) {
+    //        $("#dvCards").html("");
+    //        $("#dvCards").html(result.data);
+    //    }
+    //}
+
+      function GetDirectedToUsersByOrgUnitId() {
+        $("#ddlDirectedToId_hdnIdToSaveValue").val('')
+          var token = $("#frmDashboard").find("input[name='__RequestVerificationToken']").val();
+          if ($("#DirectedToOrgUnitId").val() != "") {
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("GetUsersByOrgUnitId")',
+                data: { id: $("#DirectedToOrgUnitId").val(), __RequestVerificationToken: token  },
+                success:
+               function (data) {
+
+                   $("#ddlDirectedToId").val("");
+                   $("#hdnDirectedToId").val("");
+                   AutoCompleteChangeList("ddlDirectedToId", data);
+
+                   $("#ddlDirectedToId").prop('disabled', false);
+               }
+            });
+            return false;
+        }
+        else {
+            $("#ddlDirectedToId").prop('disabled', true);
+            $("#ddlDirectedToId").val("");
+            $("#hdnDirectedToId").val("");
+            AutoCompleteChangeList("ddlDirectedToId", "[]");
+        }
+    }
+
+
+
+</script>

@@ -1,0 +1,19 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+<form   method="post">
+    @Html.AntiForgeryToken()
+<textarea class="form-control" name="text">
+@ViewBag.Text
+</textarea>
+    <button type="submit" class="btn btn-primary">Save</button>
+
+    <iframe style="width:1000px;height:1000px" src="http://win-3935tak6el1/we/WordEditorFrame.aspx?WOPISrc=http://Yousef-Alaqra:5000/wopi/files/sample.docx&access_token=token&ui=us-EN">
+
+    </iframe>
+</form>
+

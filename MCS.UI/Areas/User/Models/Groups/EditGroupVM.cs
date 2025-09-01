@@ -1,0 +1,15 @@
+﻿using System.Collections.Generic;
+using MCS.Common.CustomAttributes;
+using MCS.UI.Areas.User.Models.Lookups;
+
+namespace MCS.UI.Areas.User.Models.Groups
+{
+    public class EditGroupVM
+    {
+        public int Id { get; set; }
+        public LookupVM Name { get; set; }
+        [CustomDisplayName("Admin.User.Permissions")]
+        [CustomRequired("Admin.Permissions.PermissionsRequired")]
+        public List<int> Permissions { get; set; }
+    }
+}

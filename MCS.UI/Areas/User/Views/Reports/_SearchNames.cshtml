@@ -1,0 +1,27 @@
+﻿@using MCS.UI.Areas.User.Models.Report;
+@model NamesVM
+@{ 
+    Html.ViewData.TemplateInfo.HtmlFieldPrefix = "NamesVM";
+}
+<div id="hidden_fields_two" class="" style="display: none;">
+    <h3 class="site-color sub-title ml-3">@DbRes.TResource("User.Transaction.Search.Names")</h3>
+    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+        <label class="w-100">@DbRes.TResource("User.Transaction.Name.FullName")</label>
+        <div class="FirstName">
+            @Html.TextBoxGroupFor(model => model.FullName, "Names", new { @class = "form-control", @Value = "", maxlength = "120" })
+        </div>
+    </div>
+    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+        <label class="w-100">@DbRes.TResource("User.Transaction.Name.CivilID")</label>
+        <div class="CivilID">
+            @Html.NumericTextBoxFor(model => model.CivilID, new { @class = "form-control", @Value = "", maxlength = "10" }, "Names")
+        </div>
+    </div>
+    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+        <label class="w-100">@DbRes.TResource("User.Transaction.Name.MobileNumber")</label>
+        <div class="MobileNumber">
+            @Html.NumericTextBoxFor(model => model.MobileNumber, new { @class = "form-control", maxlength = "14" }, "Names")
+        </div>
+    </div>
+</div>
+<hr />

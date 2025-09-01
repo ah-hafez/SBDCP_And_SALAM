@@ -1,0 +1,66 @@
+﻿@using MCS.UI.Areas.User.Models.Report;
+@using MCS.Framework.Controls;
+@using MCS.UI.Helpers;
+
+@model TransactionBasicResultVM
+
+@Html.HiddenFor(model => model.TotalCount)
+ 
+@if (ViewData["LogoFile"] != null)
+{
+    <img class="main_logo img center" src="@("data:image/png;base64, " + ViewData["LogoFile"])" alt="@Model.TenantName">
+}
+else
+{
+    <img class="main_logo img center" src="~/Content/User/lib/images/GAMI_Logo_Color-01.svg" />
+}
+<br>
+<div class="row m-0">
+    <div class="col-sm-6 mb-3">
+        <label class="w-100">
+            @DbRes.TResource("User.Transaction.Reports.DateOfCreationReport")
+        </label>
+        <label class="dark-color">
+            @DateHelper.DateCalendar(Model.CreateOn, SessionInfo.CultureShortName)
+        </label>
+    </div>
+    <div class="col-sm-6 mb-3">
+        <label class="w-100">
+            @DbRes.TResource("User.Transaction.Reports.DateFromTo")
+        </label>
+        <label class="dark-color">
+            @Model.DateFrom - @Model.DateTo
+        </label>
+    </div>
+    <div class="col-sm-6 mb-3">
+        <label class="w-100">
+            @DbRes.TResource("User.File.TransactionType")
+        </label>
+        <label class="dark-color">
+            @Model.TransactionType
+        </label>
+    </div>
+    <div class="col-sm-6 mb-3">
+        <label class="w-100">
+            @DbRes.TResource("User.Transaction.Reports.NameOfTheOriginator")
+        </label>
+        <label class="dark-color">
+            @Model.CreatedBy
+        </label>
+    </div>
+</div>
+<div class="col-xs-12">
+    <div class="mb-2">
+        <label class="d-inline-block">@DbRes.TResource("User.Transaction.Reports.TransactionTable")</label>
+        <label class="dark-color d-inline-block mx-1">(@DbRes.TResource("User.Transaction.Reports.Records") @Model.TotalCount)</label>
+    </div>
+</div>
+
+<style>
+    .center {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        /*width: 50%;*/
+    }
+</style>

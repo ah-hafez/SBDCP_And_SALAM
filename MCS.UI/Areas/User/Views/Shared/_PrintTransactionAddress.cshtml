@@ -1,0 +1,76 @@
+﻿@model MCS.UI.Areas.User.Models.Transaction.TransactionAddressVM
+@using MCS.Common;
+@using MCS.Framework.Localization
+@{
+    Layout = null;
+}
+@{string controller = TempData.Peek("ControllerName") != null ? TempData.Peek("ControllerName").ToString() : ViewContext.RouteData.Values["controller"].ToString();}
+
+
+<div class="col-xs-12">
+    <div class="single-wrapper">
+        <div class="content_container content_container--header extra-padding">
+            <div class="row">
+                <div class="col-xs-12">
+                    <h4 class="title4 control-label">@DbRes.TResource("User.Transaction.PrintAddress") </h4>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <!-- Form start -->
+            <div class="form-horizontal form-row" id="dvLinksBody">
+                <div class="col-sm-4">
+                    <fieldset>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Transactionnumber, new { @class = "control-label" }) :
+                            <div>
+                                @Html.DisplayFor(model => model.Transactionnumber)
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-sm-4">
+                    <fieldset>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.TransactionDate, new { @class = "control-label" }) :
+                            <div>
+                                @Html.DisplayFor(model => model.TransactionDate)
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-sm-4">
+                    <fieldset>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.DocumentType, new { @class = "control-label" }) :
+                            <div>
+                                @Html.DisplayFor(model => model.DocumentType)
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-sm-4">
+                    <fieldset>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.DirectedToOrgUnit, new { @class = "control-label" }) :
+                            <div>
+                                @Html.DisplayFor(model => model.DirectedToOrgUnit)
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-sm-4">
+                    <fieldset>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.DirectedTo, new { @class = "control-label" }) :
+                            <div>
+                                @Html.DisplayFor(model => model.DirectedTo)
+                            </div>
+                        </div>
+                    </fieldset>
+                </div> 
+            </div>
+        </div>
+    </div>
+</div>

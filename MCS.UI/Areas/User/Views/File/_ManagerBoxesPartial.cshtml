@@ -1,0 +1,77 @@
+﻿@using MCS.Common
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.File
+@using MCS.UI;
+@model IList<TransactionTrayInfoVM>
+
+@{
+    bool isVIP = (bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser);
+    DefaultDisplay defaultDisplay = (DefaultDisplay)SessionInfo.GetObjectFromSession(Constants.DefaultDisplay);
+    Session["viewType"] = "Manager";
+}
+
+<script>
+    var isVIPUser = '@SessionInfo.GetObjectFromSession(Constants.IsVIPUser)';
+    $(document).ready(function () {
+        if ($('#selectAll').is(":checked")) {
+            $('#selectAll').click();
+        }
+
+        if (isVIPUser.toLowerCase() == 'true') {
+            goTableView();
+        }
+        else {
+            goCardsView();
+        }
+
+    });
+</script>
+
+@if (defaultDisplay == DefaultDisplay.Cards@*&& !isVIP*@)
+{
+    <div class="col-xs-12">
+        <div class="boxes">
+            <div class="row">
+                @{
+                    Session["renderType"] = "cardItem";
+                    Html.RenderPartial("~/Areas/User/Views/File/_FileGrid.cshtml",
+                            Model,
+                            new ViewDataDictionary {
+                        { "ListItemName", "_Manager_Item" },
+                        { "GridName", "Manager" },
+                        { "renderType", "cardItem" }
+});}
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    Session["renderType"] = "tableItem";
+    Html.RenderPartial("~/Areas/User/Views/File/_FileGrid.cshtml", Model,
+        new ViewDataDictionary {
+        { "ListItemName", "_Manager_TableItem" },
+        { "GridName", "Manager" },
+        { "dateType", ViewData["dateType"] },
+        { "renderType", "tableItem" }
+                                            });
+}
+
+<script>
+    var myManagerGridEventHandler = "@Url.Action("Manager", "File")";
+    function prepareManagerGrid() {
+        if (!pageGrids.Manager) {
+            $(".grid-mvc").gridmvc();
+        }
+        pageGrids.Manager.ajaxify({
+            getPagedData: myManagerGridEventHandler,
+            getData: myManagerGridEventHandler,
+            callbackClientFunctionAfter: ["goToViewAfterPaging"]
+        });
+    }
+
+    $(document).ready(function () {
+        prepareManagerGrid();
+    });
+
+</script>

@@ -1,0 +1,97 @@
+﻿@model MCS.UI.Areas.User.Models.Search.TransactionCertificate.InboundCertificateVM
+@using MCS.Common
+@using MCS.UI.Helpers
+@using MCS.Framework.Localization
+
+@{
+    string GUID = Guid.NewGuid().ToString();
+}
+
+<div id="dvCerArchiving" class="tabscontent archiving">
+    <ul class="nav nav-tabs custom-sub-nav-tabs mb-3" role="tablist">
+        @Html.StickyHidden("hdnGUID", GUID, new { @class = "hdnGUID" })
+      
+       
+    </ul>
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="RecoveryAttachments">
+
+            @if (Model.Attachments.Count > 0)
+            {
+                <div class="archiving_group">
+                    <div class="archiving_group_title">
+                        @DbRes.TResource("User.InboundCertificate.Attachments")
+                    </div>
+                    @for (int i = 0; i < Model.Attachments.Count; i++)
+                    {
+                        <div class="checkbox">
+                            <label>
+                                <input onchange="UpdateIsRecovery(this);" type="checkbox" id="ch_@Html.IdFor(a => a.Attachments[i].IsCheckRecovery).ToString()" class="checkboxselectedforalldata">
+                                <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                @Html.HiddenFor(a => a.Attachments[i].IsCheckRecovery, new { id = "hdn_" + Html.IdFor(a => a.Attachments[i].IsCheckRecovery).ToString(), @class = "IsCopy" })
+                                @Html.HiddenFor(a => a.Attachments[i].DocumentVM.Id, new { id = "hdn_" + Html.IdFor(a => a.Attachments[i].Id).ToString(), @class = "IsCopy" })
+                                <span class=""><a href="" onclick="ShowDocumentViewer('@Model.Attachments[i].DocumentVM.EncryptedId','@ViewData["DocumentSessionKey"]'); return false;" target="_blank">@Model.Attachments[i].AttachmentName </a></span>
+
+                            </label>
+                        </div>
+
+                    }
+                </div>
+            }
+        </div>
+        <a class="btn-site btn-icon" onclick="RecoveryArchiving()"> @DbRes.TResource("إستيراد الأرشفة") </a>
+    </div>
+</div>
+
+<script>
+    function UpdateIsRecovery(obj) {
+        var objId = obj.id;
+        var hdnId = objId.replace("ch_", "hdn_");
+        if (obj.checked) {
+            $('#' + hdnId).val(true);
+        } else {
+            $('#' + hdnId).val(false);
+        }
+    }
+    function RecoveryArchiving() {
+        var RecoveryAttachments = $("#RecoveryAttachments :input").serialize();
+
+        var requestData = RecoveryAttachments + '&TransactionId=' + '@Model.Id';
+        
+           $.ajax({
+                type: 'post',
+                cache: false,
+                url: '@Url.Action("PostTransactionAttachments", "Shared")',
+                data: requestData,
+               success:
+                   function (data) {
+                       if (data.MessageType != 2) {
+                           $.ajax({
+                               type: "POST",
+
+                               url:  '@Url.Action("AddArchive1", "Inbound")',
+                               data: { transactionId: '@Model.Id' },
+                               success: function (data) {
+                                   if (data.MessageType != 2) {
+                                        
+                                       $(parent.document.getElementById("grid-table-grdArchiving")).find("tbody > .grid-empty-text").remove()
+                                       $(parent.document.getElementById("grid-table-grdArchiving")).find("tbody:last").append(data.Html)
+
+                                   }
+
+                               },
+
+                           });
+
+                           parent.document.getElementById('frameViewerAttachment').contentWindow.location.reload();
+                           document.getElementById('frameViewer').contentWindow.location.reload();
+                           __dialog.close();
+                       }
+                   }
+            });
+    }
+     function ShowDocumentViewer(documentId, documentSessionKey) {
+        var url = '@Url.Action("ShowDocumentViewer","Shared")' + '?documentId=' + documentId + "&documentSessionKey=" + documentSessionKey;
+        ShowDialog(url);
+    }
+</script>

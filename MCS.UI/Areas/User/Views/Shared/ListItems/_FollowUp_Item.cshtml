@@ -1,0 +1,564 @@
+﻿@using MCS.UI.Helpers
+@using MCS.Common
+@using MCS.UI.Areas.User.Models.File
+@model TransactionTrayInfoVM
+
+@{
+
+    ViewData["dateType"] = ViewData["dateType"] ?? TransactionDateType.Any;
+    int loggedInUserId = int.Parse(Session["loggedInUserId]"].ToString());
+    string colorType = string.Empty;
+    string className = "result";
+    string classNameTo = "result";
+    string Important = "NotImportant";
+    string ImportantBack = "NotImportantBack";
+
+    
+
+    if (Model.TransactionDetailsInfoVM.ConfidentialityId == 28 || Model.TransactionDetailsInfoVM.ConfidentialityId == 29)
+    {
+        className = "resultReed";
+    }
+    if (Model.TransactionDetailsInfoVM.TransactionTypeId == 2)
+    {
+        classNameTo = "resultReed";
+    }
+
+    if (Model.TransactionDetailsInfoVM.TransactionTypeColorId == Color.Red.LookupIdentity(LookupCategory.Color, SessionInfo.CultureShortName))
+    {
+        if (Model.TransactionAssignmentInfoVMs.FirstOrDefault().Viewed)
+        {
+            colorType = "box yellow animated zoomIn buttons-action";
+        }
+        else
+        {
+            colorType = "box red animated zoomIn buttons-action";
+        }
+    }
+    else if (Model.TransactionDetailsInfoVM.TransactionTypeColorId == Color.Blue.LookupIdentity(LookupCategory.Color, SessionInfo.CultureShortName))
+    {
+        if (Model.TransactionAssignmentInfoVMs.FirstOrDefault().Viewed)
+        {
+            colorType = "box gray animated zoomIn buttons-action";
+        }
+        else
+        {
+            colorType = "box blue animated zoomIn buttons-action";
+        }
+
+    }
+    else
+    {
+        colorType = "box green animated zoomIn buttons-action";
+    }
+    if (Model.TransactionDetailsInfoVM.isImportant)
+    {
+        Important = "Important";
+        ImportantBack = "ImportantBack";
+    }
+
+    string remindDate = (((TransactionDateType)ViewData["dateType"] == TransactionDateType.HasDate)
+                                                                                                    ? @DateHelper.GetDate(@Model.TransactionDetailsInfoVM.RemindDateH) + " - " + Model.TransactionDetailsInfoVM.RemindDate.Value.ToString("hh:mm tt")
+                                                                                                    : (TransactionDateType)ViewData["dateType"] == TransactionDateType.Late
+                                                                                                    ? DateTime.Now.Date >= Model.TransactionDetailsInfoVM.Date.Date.AddDays(2)
+                                                                                                    ? (Int32.Parse((DateTime.Now.Date - Model.TransactionDetailsInfoVM.Date.Date.AddDays(2)).Days.ToString()) + 1).ToString()
+                                                                                                    : Model.TransactionDetailsInfoVM.RemindDate.ToString() != ""
+                                                                                                    ? (Int32.Parse((DateTime.Now.Date - Model.TransactionDetailsInfoVM.Date.Date).Days.ToString()) + 1).ToString()
+                                                                                                    : "---"
+                                                                                                    : "");
+
+    string followupDays = Model.TransactionDetailsInfoVM.FollowupDate.HasValue ? (Int32.Parse((Model.TransactionDetailsInfoVM.FollowupDate.Value.Date - DateTime.Now.Date).Days.ToString())).ToString() : string.Empty;
+
+    string isIndivisualText = Model.TransactionDetailsInfoVM.TransactionCategoryId == TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName) ? Model.TransactionDetailsInfoVM.IsIndividual ? string.Format("({0})", DbRes.TResource("User.Inbound.BasicInfo.InboundDestination.Individual")) : string.Format("({0})", DbRes.TResource("User.Inbound.BasicInfo.InboundDestination.Entities")) : string.Empty;
+
+}
+<script>
+    $(document).ready(function () {
+        if ($('#selectAll').is(":checked")) {
+            $('#selectAll').click();
+        }
+    });
+</script>
+<style>
+    .cardTable {
+        max-height: 200px;
+        min-height: 197px;
+    }
+
+        .cardTable .table.section2 {
+            transform: translateY(-169px);
+            background: white;
+            display: none;
+        }
+
+        .cardTable:hover .table.section2 {
+            transform: translateY(-169px);
+            display: inline-table;
+            min-height: 197px;
+        }
+
+   
+
+</style>
+<div class="box-grid" data-id="@Model.TransactionDetailsInfoVM.Id">
+    <div class="box animated zoomIn buttons-action @Important">
+        <div class="correspondence-t">
+            <div class="d-flex">
+                @*<div class="treaty-name">
+                        @Model.TransactionDetailsInfoVM.TransactionCategory @isIndivisualText
+                    </div>*@
+                <div class="col-lg-9">
+                    <div class="mr-auto d-flex">
+                        <div class="checkbox" style="display:none">
+                            @if (Model.TransactionDetailsInfoVM.HasPermission)
+                            {
+                                <label>
+                                    <input type="checkbox" value="" onchange="holdDataFromBox(this)" id="ch_@Model.TransactionDetailsInfoVM.Id" data-id="@Model.TransactionDetailsInfoVM.Id" class="FillIds">
+                                    <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                </label>
+                            }
+                        </div>
+                        <div class="pl-2">@Model.TransactionDetailsInfoVM.Number</div>
+
+                        @if (Model.TransactionDetailsInfoVM.isImportant)
+                        {
+                            <div class="badgeReject">
+                                <span>@DbRes.TResource("هام")</span>
+                            </div>
+                        }
+
+                    </div>
+                    <div class="title" id="entityName_@Model.TransactionDetailsInfoVM.Id">
+                        @if (Model.TransactionDetailsInfoVM.EncryptedTransactionCategoryId != TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName).ToString())
+                        {
+                            if (Model.TransactionDetailsInfoVM.ExternalPartyName.Length > 20)
+                            {
+                                <div title="@Model.TransactionDetailsInfoVM.ExternalPartyName">
+                                    @Model.TransactionDetailsInfoVM.ExternalPartyName.Substring(0, 15) ...
+                                </div>
+                            }
+                            else
+                            {
+                                @Model.TransactionDetailsInfoVM.ExternalPartyName
+                            }
+
+                        }
+                        else
+                        {
+                            if (Model.TransactionDetailsInfoVM.EntityName.Length > 20)
+                            {
+                                <div title="@Model.TransactionDetailsInfoVM.EntityName">
+                                    @Model.TransactionDetailsInfoVM.EntityName.Substring(0, 15) ...
+                                </div>
+                            }
+                            else
+                            {
+                                @Model.TransactionDetailsInfoVM.EntityName
+                            }
+
+                        }
+                    </div>
+                    <div class="correspondence-h">
+                        <div class="" style="margin-top:-10px;">
+                            @DateHelper.GetDate(@Model.TransactionDetailsInfoVM.DateH)
+                            @Model.TransactionDetailsInfoVM.Date.ToShortTimeString()
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr style="margin-top:-8px;" />
+
+        <div onclick='redirect()' class=" correspondence-t hover-area">
+            @*<div class="correspondence-h">
+                    <div class="title" id="entityName_@Model.TransactionDetailsInfoVM.Id">
+                        @if (Model.TransactionDetailsInfoVM.EncryptedTransactionCategoryId != TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName).ToString())
+                        {
+                            @Model.TransactionDetailsInfoVM.ExternalPartyName
+                        }
+                        else
+                        {
+                            @Model.TransactionDetailsInfoVM.EntityName
+                        }
+                    </div>
+                    <div class="date">
+                        <div class="date">
+                            @DateHelper.GetDate(@Model.TransactionDetailsInfoVM.DateH)
+                            @Model.TransactionDetailsInfoVM.Date.ToShortTimeString()
+                        </div>
+                    </div>
+                </div>*@
+            <div class=" correspondence-b d-flex flex-wrap cardTable">
+                <table class="table table-bordered section1" style="margin-top:10px;">
+                    <tbody>
+                        <tr>
+                            <th scope="row" class="headerAddress">@DbRes.TResource("User.FollowUp.CreateDate")</th>
+                            <td class="result">
+                                @DateHelper.GetDate(@Model.TransactionDetailsInfoVM.FollowupDateH)
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="headerAddress">@DbRes.TResource("User.Transaction.FollowUp.Days")</th>
+                            <td class="result">
+                                @followupDays @DbRes.TResource("Admin.User.Day")
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="headerAddress">@DbRes.TResource("User.File.Priority")</th>
+                            <td class="result">
+                                @Model.TransactionDetailsInfoVM.PriorityName
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="headerAddress">@DbRes.TResource("User.File.Confidentiality")</th>
+                            <td class="result">
+                                @Model.TransactionDetailsInfoVM.ConfidentialityName
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table table-bordered section2">
+                    <tbody>
+                        <tr>
+                            <th scope="row" class="headerAddress">@DbRes.TResource("User.Inbound.BasicInfo.InboundType")</th>
+                            <td class="result">
+                                @Model.TransactionDetailsInfoVM.TransactionTypeName
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="headerAddress">@DbRes.TResource("Admin.AssignmentPaperActions.Action")</th>
+                            <td>
+                                @if (Model.TransactionAssignmentInfoVMs != null && Model.TransactionAssignmentInfoVMs.Count > 0)
+                                {
+                                    <div class="result">
+
+                                        @Model.TransactionAssignmentInfoVMs.FirstOrDefault().Action
+                                        @if (Model.TransactionAssignmentInfoVMs.FirstOrDefault().Action == null)
+                                        {
+                                            <div class="result">
+                                                ---
+                                            </div>
+                                        }
+
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="result">
+                                        ---
+                                    </div>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="headerAddress">@DbRes.TResource("User.File.AssignDate")</th>
+                            <td>
+                                @if (Model.TransactionAssignmentInfoVMs.FirstOrDefault().Date != null && Model.TransactionAssignmentInfoVMs.FirstOrDefault().Action != null)
+                                {
+                                    <div class="result" data-bs-toggle="tooltip" data-placement="bottom" title="@Model.TransactionAssignmentInfoVMs.FirstOrDefault().Date">
+                                        @if (Model.TransactionAssignmentInfoVMs.FirstOrDefault().Date.ToString().Length > 10)
+                                        {
+                                            @Model.TransactionAssignmentInfoVMs.FirstOrDefault().Date.ToString().Substring(0, 10)
+                                        }
+                                        else
+                                        {
+                                            @Model.TransactionAssignmentInfoVMs.FirstOrDefault().Date.ToString()
+                                        }
+
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="result">
+                                        ---
+                                    </div>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="headerAddress">@DbRes.TResource("User.Transaction.AssignmentFromEntity")</th>
+                            <td>
+                                @if (Model.TransactionAssignmentInfoVMs.FirstOrDefault().FromEntity != null && Model.TransactionAssignmentInfoVMs.FirstOrDefault().Action != null)
+                                {
+                                    <div class="result" data-bs-toggle="tooltip" data-placement="bottom" title="@Model.TransactionAssignmentInfoVMs.FirstOrDefault().FromEntity">
+                                        @if (Model.TransactionAssignmentInfoVMs.FirstOrDefault().FromEntity.Length > 15)
+                                        {
+                                           <div>
+                                               @Model.TransactionAssignmentInfoVMs.FirstOrDefault().FromEntity.Substring(0, 10) ...
+                                           </div> 
+                                        }
+                                        else
+                                        {
+                                            @Model.TransactionAssignmentInfoVMs.FirstOrDefault().FromEntity
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="result">
+                                        ---
+                                    </div>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="headerAddress">@DbRes.TResource("تاريخ الانجاز")</th>
+                            <td class="result">
+                                @if (@Model.TransactionDetailsInfoVM.RemindDateH != null && @Model.TransactionDetailsInfoVM.RemindDateH != "")
+                                {
+                                    @DateHelper.GetDate(@Model.TransactionDetailsInfoVM.RemindDateH)
+                                }
+                                else
+                                {
+                                    @DateTimeUtility.ConvertToUmAlQuraCalendar(Model.TransactionDetailsInfoVM.Date.Date.AddDays(2))
+                                }
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+
+
+
+
+
+            <!--<div class="correspondence-b d-flex flex-wrap">
+                <div class="f-line w-medium w-small">
+                    <div class="headerAddress">@DbRes.TResource("User.FollowUp.CreateDate")</div>
+                    <div class="result">
+                        @DateHelper.GetDate(@Model.TransactionDetailsInfoVM.FollowupDateH)
+                    </div>
+                </div>
+                <div class="f-line w-medium w-small">
+                    <div class="headerAddress">@DbRes.TResource("User.Transaction.FollowUp.Days")</div>
+                    <div class="result">@followupDays @DbRes.TResource("Admin.User.Day")</div>
+                </div>
+                <div class="f-line w-medium w-small">
+                    <div class="headerAddress">@DbRes.TResource("User.File.Priority")</div>
+                    <div class="result">@Model.TransactionDetailsInfoVM.PriorityName</div>
+                </div>
+                <div class="f-line w-medium w-small">
+                    <div class="headerAddress">@DbRes.TResource("User.File.Confidentiality")</div>
+                    <div class="@className"> @Model.TransactionDetailsInfoVM.ConfidentialityName</div>
+                </div>
+                <div class="f-line w-medium w-small">
+                    <div class="headerAddress">@DbRes.TResource("User.Inbound.BasicInfo.InboundType")</div>
+                    <div class="@classNameTo">@Model.TransactionDetailsInfoVM.TransactionTypeName</div>
+                </div>-->
+            @*@if ((TransactionDateType)ViewData["dateType"] == TransactionDateType.Late || (TransactionDateType)ViewData["dateType"] == TransactionDateType.HasDate)
+                {
+                    <div class="f-line w-medium w-small">
+                        <div class="heading">
+                            @(((TransactionDateType)ViewData["dateType"] == TransactionDateType.HasDate) ? DbRes.TResource("User.File.appointment") : (TransactionDateType)ViewData["dateType"] == TransactionDateType.Late ? DbRes.TResource("User.File.DaysDelay") : "" )
+                        </div>
+                        <div>
+                            @if (!string.IsNullOrWhiteSpace(remindDate) && remindDate.Length > 10)
+                            {
+                                <div data-bs-toggle="tooltip" data-placement="bottom" title="@remindDate">
+                                    @remindDate.Substring(0, 10)
+                                    ...
+                                </div>
+                            }
+                            else
+                            {
+                                <div>
+                                    @remindDate
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }*@
+
+
+
+
+
+            <!--<div class="f-line w-medium w-small">
+                <div class="headerAddress">@DbRes.TResource("Admin.AssignmentPaperActions.Action")</div>
+                @if (Model.TransactionAssignmentInfoVMs != null && Model.TransactionAssignmentInfoVMs.Count > 0)
+                {
+                    <div class="result">
+
+                        @Model.TransactionAssignmentInfoVMs.FirstOrDefault().Action
+                        @if (Model.TransactionAssignmentInfoVMs.FirstOrDefault().Action == null)
+                        {
+                            <div class="result">
+                                ---
+                            </div>
+                        }
+
+                    </div>
+                }
+                else
+                {
+                    <div class="result">
+                        ---
+                    </div>
+                }
+            </div>
+            <div class="f-line w-medium w-small">
+                <div class="headerAddress">@DbRes.TResource("User.File.AssignDate")</div>
+                @if (Model.TransactionAssignmentInfoVMs.FirstOrDefault().Date != null && Model.TransactionAssignmentInfoVMs.FirstOrDefault().Action != null)
+                {
+                    <div class="result" data-bs-toggle="tooltip" data-placement="bottom" title="@Model.TransactionAssignmentInfoVMs.FirstOrDefault().Date">
+                        @if (Model.TransactionAssignmentInfoVMs.FirstOrDefault().Date.ToString().Length > 10)
+                        {
+                            @Model.TransactionAssignmentInfoVMs.FirstOrDefault().Date.ToString().Substring(0, 10)
+                        }
+                        else
+                        {
+                            @Model.TransactionAssignmentInfoVMs.FirstOrDefault().Date.ToString()
+                        }
+
+                    </div>
+                }
+                else
+                {
+                    <div class="result">
+                        ---
+                    </div>
+                }
+            </div>
+            <div class="f-line w-medium w-small">
+                <div class="headerAddress">@DbRes.TResource("User.Transaction.AssignmentFromEntity")</div>
+                @if (Model.TransactionAssignmentInfoVMs.FirstOrDefault().FromEntity != null && Model.TransactionAssignmentInfoVMs.FirstOrDefault().Action != null)
+                {
+                    <div class="result" data-bs-toggle="tooltip" data-placement="bottom" title="@Model.TransactionAssignmentInfoVMs.FirstOrDefault().FromEntity">
+                        @Model.TransactionAssignmentInfoVMs.FirstOrDefault().FromEntity
+                        @if (Model.TransactionAssignmentInfoVMs.FirstOrDefault().FromEntity.Length > 15)
+                        {
+                            @Model.TransactionAssignmentInfoVMs.FirstOrDefault().FromEntity.Substring(0, 10)
+                        }
+                        else
+                        {
+                            @Model.TransactionAssignmentInfoVMs.FirstOrDefault().FromEntity
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="result">
+                        ---
+                    </div>
+                }
+            </div>
+            <div class="f-line w-medium w-small">
+                <div class="headerAddress">@DbRes.TResource("User.TransactionCertificate.SenderName")</div>
+                @if (Model.TransactionAssignmentInfoVMs.FirstOrDefault().FromUser != null && Model.TransactionAssignmentInfoVMs.FirstOrDefault().Action != null)
+                {
+                    <div class="result" data-bs-toggle="tooltip" data-placement="bottom" title="@Model.TransactionAssignmentInfoVMs.FirstOrDefault().FromUser">
+                        @if (Model.TransactionAssignmentInfoVMs.FirstOrDefault().FromUser.Length > 15)
+                        {
+                            @Model.TransactionAssignmentInfoVMs.FirstOrDefault().FromUser.Substring(0, 10)
+                        }
+                        else
+                        {
+                            @Model.TransactionAssignmentInfoVMs.FirstOrDefault().FromUser
+                        }
+
+
+                    </div>
+                }
+                else
+                {
+                    <div class="result">
+
+                        ---
+
+
+                    </div>
+                }
+            </div>-->
+            @*<div class="f-line w-medium w-small">
+                    <div class="headerAddress">
+                        @DbRes.TResource("User.File.DaysDelay")
+
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(remindDate) && remindDate.Length > 10)
+                    {
+                        <div class="result" data-bs-toggle="tooltip" data-placement="bottom" title="@remindDate">
+                            @remindDate.Substring(0, 10)
+                            ...
+                        </div>
+                    }
+                    else if (remindDate.Length <= 0)
+                    {
+                        <div class="result">
+                            ---
+
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="result">
+                            @remindDate
+
+                        </div>
+                    }
+                </div>*@
+            <!--<div class="f-line w-medium w-small">
+                    <div class="headerAddress" data-bs-toggle="tooltip" data-placement="bottom" title="@DbRes.TResource("User.File.FinishTime")">
+                        @DbRes.TResource("User.File.FinishTime"):
+                    </div>
+                    <div class="result">
+                        @if (@Model.TransactionDetailsInfoVM.RemindDateH != null && @Model.TransactionDetailsInfoVM.RemindDateH != "")
+                        {
+                            @DateHelper.GetDate(@Model.TransactionDetailsInfoVM.RemindDateH)
+                        }
+                        else
+                        {
+                            @DateTimeUtility.ConvertToUmAlQuraCalendar(Model.TransactionDetailsInfoVM.Date.Date.AddDays(2))
+                        }
+                    </div>
+                </div>
+            </div>-->
+        </div>
+        @Html.StickyHidden("TransactionType", ((TransactionCategory)Model.TransactionDetailsInfoVM.TransactionTypeId).ToString(), new { id = "hdnTransactionType_" + Model.TransactionDetailsInfoVM.Id })
+
+        <div class="correspondence-t">
+            <div class="correspondence-icon d-flex @ImportantBack" style="padding-right: 2px;">
+                <a href="#" data-bs-toggle="tooltip" data-placement="top" title="@DbRes.TResource("User.FollowUp.Certificat")" onclick="OpenFollowUpCertificate(@Model.TransactionDetailsInfoVM.Id)" transactionId="@Model.TransactionDetailsInfoVM.Id"><img src="~/Content/User/lib/images/SystemIcon/testimonial.svg" width="30" /></a>
+                <div style="border-left: 3px solid white; "></div>
+
+                @*<a class="circle color-delet" href="#" data-bs-toggle="tooltip" data-placement="top" title="@DbRes.TResource("User.FollowUp.UnFollowUp")" onclick="UnFollowUp(@Model.TransactionDetailsInfoVM.Id)" transactionId="@Model.TransactionDetailsInfoVM.Id"><i class="icon-return"></i></a>*@
+                @if (Model.TransactionDetailsInfoVM.HasPermission)
+                {
+                    <div class="mr-auto d-flex">
+                        @if (Model.TransactionDetailsInfoVM.TransactionTypeId != TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName))
+                        {
+                            <a id="link" class="edit_trash" href="#" data-bs-toggle="tooltip" data-placement="top" title="@DbRes.TResource("User.InboundSearch.Certificate")" onclick="InboundCertificate('@Model.TransactionDetailsInfoVM.Id')"><img src="~/Content/User/lib/images/SystemIcon/main bar-14.svg" width="30" /></a>
+                        }
+                        else
+                        {
+                            <a id="link" class="edit_trash" href="#" data-bs-toggle="tooltip" data-placement="top" title="@DbRes.TResource("User.Task.RecivedTask.TransactionCertificate")" onclick="OutboundInternalCertificate('@Model.TransactionDetailsInfoVM.Id')"><img src="~/Content/User/lib/images/SystemIcon/main bar-14.svg" width="40" /></a>
+                        }
+                    </div>
+                    <div class="ml-auto d-flex">
+                        <div class="info d-flex align-items-center" style="color:white !important">
+                            <i class="fas fa-paperclip pl-2" style="margin-left:3px; font-size:small;"></i>
+                            <span class="" ><i>@Model.TransactionDetailsInfoVM.AttachmentCount</i> @DbRes.TResource("User.Transaction.Attachments") </span>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="mr-auto d-flex" style="display:none">
+                        <a title="@DbRes.TResource("User.FollowUp.Certificat")" onclick="javascript:OpenFollowUpCertificate(@Model.TransactionDetailsInfoVM.Id)"><img src="~/Content/User/lib/images/SystemIcon/main bar-14.svg" width="25" /></a>
+                        @Html.StickyHidden("transId")
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+    function redirect() {
+        var link = $(event.currentTarget).parent().find('.correspondence-icon').children()[0];
+        link.click();
+    }
+</script>

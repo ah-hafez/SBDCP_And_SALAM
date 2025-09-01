@@ -1,0 +1,72 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.Lookups
+@using MCS.Common
+@using UserLookups = MCS.UI.Areas.User.Models.Lookups
+@model SpecificLevelAddVM
+@{
+    ViewBag.Title = "_SpecificLevelLookupAddPartial";
+}
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmAddSpecificLevel", @class = "" }))
+{
+    @Html.AntiForgeryToken()
+    <div id="AddSpecificLevelContent" class="form-row">
+        @{List<UserLookups.CultureVM> cultureVMs = ViewData["Culture"] as List<UserLookups.CultureVM>; }
+        @if (cultureVMs != null)
+        {
+            for (int i = 0; i < cultureVMs.Count; i++)
+            {
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                    @Html.CustomLabelFor(model => model.Description[i].CultureName, new { @class = "" }, DbRes.TResource("Admin.SpecificLevel.Name." + cultureVMs[i].ShortName))
+                    @Html.StickyHiddenFor(model => model.Description[i].CultureId, new { Value = cultureVMs[i].Id })
+                    @Html.TextBoxGroupFor(model => model.Description[i].Text, null, new { @class = "form-control" }, DbRes.TValidation("Admin.SpecificLevel.NameRequired." + cultureVMs[i].ShortName))
+                </div>
+            }
+
+        }
+
+        @for (int i = 0; i < Model.TransactionCategories.Count; i++)
+        {
+            @Html.StickyHiddenFor(model => model.TransactionCategories[i].IsSelected, new { @Value = true })
+            @Html.StickyHiddenFor(model => model.TransactionCategories[i].Id)
+        }
+
+        @for (int i = 0; i < Model.List.Count; i++)
+        {
+            if (Model.List[i].Id == LetterListType.Formal.LookupIdentity(LookupCategory.LetterListType,SessionInfo.CultureShortName))
+            {
+                @Html.StickyHiddenFor(model => model.List[i].IsSelected, new { @Value = true })
+                @Html.StickyHiddenFor(model => model.List[i].Id)
+            }
+            else
+            {
+                @Html.StickyHiddenFor(model => model.List[i].IsSelected, new { @Value = false })
+                @Html.StickyHiddenFor(model => model.List[i].Id)
+            }
+        }
+    </div>
+    <div class="mx-3 mx-md-5 mb-4 d-flex">
+        <div class="ml-auto">
+            @Html.ActionButton(DbRes.TResource("Admin.SpecificLevel.Save"), "AddSpecificLevel", "dvGrid", null, null, "OnAddSuccess", null, "post", null, "btnAdd", "frmAddSpecificLevel", "btn btn-lg btn-st3 mx-1")
+            @Html.ResetButton("ClearInputs('AddSpecificLevelContent')")
+        </div>
+    </div>
+}
+
+<script>
+    $.validator.addMethod('require-oneLetter', function (value) {
+        return $('.require-oneLetter:checked').size() > 0;
+    });
+
+    var checkboxes = $('.require-oneLetter');
+    var checkbox_names = $.map(checkboxes, function (e, i) {
+        return $(e).attr("name")
+    }).join(" ");
+
+    $('.require-oneLetter').change(function () {
+        if ($(this).is(':checked')) {
+            $("#_msgvalLetter")
+                .removeClass("field-validation-error")
+                .addClass("field-validation-valid")
+        }
+    });
+</script>

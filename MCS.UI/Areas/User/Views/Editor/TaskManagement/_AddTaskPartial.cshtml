@@ -1,0 +1,453 @@
+﻿
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Transaction
+@model TaskAddVM
+
+
+@{string controller = "Editor";
+    MCS.UI.Areas.Admin.Models.Shared.SettingVM dateType = SessionInfo.GetObjectFromSession(Constants.SettingDate) as MCS.UI.Areas.Admin.Models.Shared.SettingVM;
+    var settingDateType = Convert.ToInt32(dateType.Value);
+    var DateValue = (int)DateType.Gregorian;
+}
+
+<div id="dvAddtaskBodyContainer">
+    @{ViewData.TemplateInfo.HtmlFieldPrefix = "TaskAdd";}
+    @Html.Partial("~/Areas/User/Views/Editor/TaskManagement/_AddTaskBodyPartial.cshtml", Model)
+
+    <div class="col-xs-12 text-right panel-body" style="margin-top:-75px">
+        <button class="btn-site" id="btnConfirmAddTask" type="button" validationgroup="AddTask" value="اضافه"><i class="glyphicon glyphicon-plus"></i>اضافه</button>
+        @Html.ClientActionButton(DbRes.TResource("User.Task.TaskAdd.Add"), Url.Action("AddTask", controller), null, "OnAddTaskSuccess", null, "AddTask", "btnAppendTask", "dvAddtaskBodyContainer", "  btn-site clsHidden", null, "CheckInputs", UserClaims.Tasks.Add, "<i class='glyphicon glyphicon-plus'></i>")
+        @*@Html.ClientActionButton(DbRes.TResource("User.Task.TaskAdd.Send"), Url.Action("PostTasks", controller), null, "OnAddTasksSuccess", null, "SaveTask", "OutboundDraft", "dvAddtaskBodyContainer", " btn-site ", null, "CheckIfHasTasks")*@
+        @Html.ClientActionButton(DbRes.TResource("User.Task.TaskAdd.Edit"), Url.Action("EditTask", controller), "dvGridContainer", "OnEditTaskSuccess", null, null, "btnEditTask", "dvAddtaskBodyContainer", " btn-site hidden_", null, "CheckInputs", UserClaims.Tasks.Edit)
+        <a class="btn-site " style="display:none" id="aCancelTask" onclick="CancelTaskEdit(); return false;">@DbRes.TResource("User.Transaction.Name.Cancel")</a>
+        @*@Html.ClientActionButton(DbRes.TResource("User.Task.TaskAdd.Delete"), Url.Action("SaveTasks", controller), "dvGridContainer", "OnDeleteTaskSuccess", null, null, "btnDeleteTask", "dvAddtaskBodyContainer", " btn-site hidden_", null)*@
+
+    </div>
+
+
+    <div class="panel-body">
+        <h4 class="title4">@DbRes.TResource("User.Tasks.TasksTable")</h4>
+        <div id="dvGridContainer">
+            @Html.Partial("~/Areas/User/Views/Editor/TaskManagement/_TasksGridPartial.cshtml", Model.TasksGrid)
+        </div>
+    </div>
+
+
+
+    <div id="dvReplyGridContainer" class="panel-body">
+        <h4 class="title4">@DbRes.TResource("User.Tasks.TasksReplay")</h4>
+        @Html.Partial("~/Areas/User/Views/Editor/TaskManagement/_TaskReplyGridPartial.cshtml", ViewData["ReplyGridData"])
+    </div>
+</div>
+@Html.Hidden("GridData", ViewData["GridData"].ToString())
+@Html.Hidden("DeletedTaskId")
+@Html.Hidden("ResendTaskId")
+<script>
+
+    function ShowNotes(notes) {
+        debugger;
+        ShowInformationMessage(notes);
+    }
+
+    function ShowAttachments(taskId)
+    {
+
+        var url = '@Url.Action("GetTaskAttachments", "File")?TransactionId=' + $('#TransactionIdForTask').val() + "&TaskId=" + taskId ;
+        ShowDialog(url);
+    }
+
+    
+
+
+    function CheckInputs() {
+        var ErrorCounter = 0;
+        if ($("#dvAddtaskBodyContainer  .txtDepartmentNumber").val() == "") {
+            $("#ToOrgUnitValidateMessage").removeClass("hidden_");
+            $('#dvAddtaskBodyContainer  .txtDepartmentNumber  ,  #dvAddtaskBodyContainer  .txtDepartmentName ').addClass('RedBorder');
+            $("#ToOrgUnitValidateCallMessage").removeClass("hidden_");
+            $("#ToOrgUnitValidateCallMessage").show();
+            ErrorCounter++;
+        } else {
+            $("#ToOrgUnitValidateMessage").addClass("hidden_");
+            $('#dvAddtaskBodyContainer  .txtDepartmentNumber  ,  #dvAddtaskBodyContainer  .txtDepartmentName ').removeClass('RedBorder');
+            $("#ToOrgUnitValidateCallMessage").hide();
+            $("#TaskToUserValidateMessage").addClass("hidden_");
+            $('#ddlTaskToUser').removeClass('RedBorder');
+            $("#TaskToUserValidateCallMessage").hide();
+        }
+
+        if ($("#hdnTaskToUser").val() == "" & !$("#ddlTaskToUser").hasClass("invalid-input")) {
+            $("#TaskToUserValidateMessage").removeClass("hidden_");
+            $('#ddlTaskToUser').addClass('RedBorder');
+            $("#TaskToUserValidateCallMessage").removeClass("hidden_");
+            $("#TaskToUserValidateCallMessage").show();
+
+            ErrorCounter++;
+        } else {
+            $("#TaskToUserValidateMessage").addClass("hidden_");
+            $('#ddlTaskToUser').removeClass('RedBorder');
+            $("#TaskToUserValidateCallMessage").hide();
+        }
+
+        if ($("#TaskAdd_TaskDescription").val().trim() == "") {
+            $("#DescriptionValidateMessage").removeClass("hidden_");
+            $('#TaskAdd_TaskDescription').addClass('RedBorder');
+            $("#DescriptionValidateCallMessage").removeClass("hidden_");
+            $("#DescriptionValidateCallMessage").show();
+            ErrorCounter++
+        } else {
+            var Descriptionlength = $("#TaskAdd_TaskDescription").val().trim();
+            if (Descriptionlength.length < 6 || Descriptionlength.length >255) {
+                $("#DescriptionValidateMessage").html('@Html.Raw(DbRes.TValidation("User.Inbound.BasicInfo.SubjectLength"))');
+                $("#DescriptionValidateMessage").removeClass("hidden_");
+                $('#TaskAdd_TaskDescription').addClass('RedBorder');
+                $("#DescriptionValidateCallMessage").removeClass("hidden_");
+                $("#DescriptionValidateCallMessage").show();
+                ErrorCounter++;
+            }
+            else {
+                $("#DescriptionValidateMessage").addClass("hidden_");
+                $('#TaskAdd_TaskDescription').removeClass('RedBorder');
+                $("#DescriptionValidateCallMessage").hide();
+            }
+
+        }
+        if ($("#hdnEndDateUm").val() == "") {
+            $("#DeliveryDateValidateMessage").removeClass("hidden_");
+            $('#EndDateCal').addClass('RedBorder');
+            $("#DeliveryDateValidateCallMessage").removeClass("hidden_");
+            $("#DeliveryDateValidateCallMessage").show();
+            ErrorCounter++;
+        } else {
+            $("#DeliveryDateValidateMessage").addClass("hidden_");
+            $('#EndDateCal').removeClass('RedBorder');
+            $("#DeliveryDateValidateCallMessage").hide();
+        }
+
+        if (ErrorCounter == 0) {
+            return CheckDeliveryDate();
+        } else {
+            return false;
+        }
+    }
+
+
+    function GetUsersByOrgUnitId() {
+     
+        if ($("#divForm__treeToOrgUnit").find(".hdnDepartmentId").val() != '' && $("#dvAddtaskBodyContainer .txtDepartmentName").val() != '') {
+            $("#hdnTaskToUser").val('');
+            $("#ddlTaskToUser").val('');
+            $("#hdnTaskToUserName").val('');
+            $("#hdnTaskToOrgUnitName").val($("#dvAddtaskBodyContainer .txtDepartmentName").val());
+            // $('#hdnOrgUnitName').val($('#dvAddtaskBodyContainer .txtDepartmentName').val());
+
+
+            if ($("#treeToOrgUnit_hdnDepartmentId").val() != '' && $("#treeToOrgUnit_hdnDepartmentId").val() != undefined)
+            {
+                 $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetUnitUsers", "Editor")',
+                data: { id: $("#treeToOrgUnit_hdnDepartmentId").val()  },
+                success:
+                    function (data) {
+                        AutoCompleteChangeList("ddlTaskToUser", data);
+                        $("#ddlTaskToUser").trigger('change');
+                        $("#hdnTaskToUser").trigger('change');
+                        $("#ddlTaskToUser").prop('disabled', false);
+                    }
+            });
+
+            }
+
+            return false;
+        }
+        else {
+            AutoCompleteChangeList("ddlTaskToUser", "[]");
+            $("#hdnTaskToUser").val('');
+            $("#ddlTaskToUser").trigger('change');
+            $("#hdnTaskToUser").trigger('change');
+            $("#ddlTaskToUser").prop('disabled', true);
+        }
+    }
+    var AllTaskGridData = [];
+    function ConfirmDeleteTask(Id, key) {
+
+        $("#TaskAdd_DeletedTaskId").val(Id);
+        DeleteActionGrid('grdTasks', key, '@DbRes.TResource("Grid.DeleteMassage")', 'dvGridContainer', 'CancelTaskEdit');
+    }
+
+    $(document).on("confirmDeleteClicked", function () {
+        DeleteTaskById();
+    });
+
+    function ResendTask(TaskId)
+    {
+        $("#TaskAdd_ResendTaskId").val(TaskId);
+        ShowRejectTransactionPopup('إعادة إرسال المهمة','', 'سبب إعادة الإرسال', 'تنتهي المهمة بعد " بالايام"' ,'أرسال')
+    }
+
+    $(document).on("RejectButtonPopupClicked", function () {
+
+        if ($('#rejectionReason').val().trim() == '') {
+            $('#errorMessageValidate').html(" أدخل سبب أعادة إرسال المهمة");
+            $("#CalMessageError").removeClass("hidden_");
+            $("#CalMessageError").show();
+            $("#rejectionReason").addClass("RedBorder");
+        }
+        if ($('#expectedDays').val().trim() == '') {
+            $('#errorDaysMessageValidate').html("ادخل عدد الأيام لانتهاء المهمة");
+            $("#CalDaysMessageError").removeClass("hidden_");
+            $("#CalDaysMessageError").show();
+            $("#expectedDays").addClass("RedBorder");
+        }
+
+        if ($('#RejectedTaskId').val() != "" && $('#rejectionReason').val().trim() != '' && $('#expectedDays').val().trim() != '') {
+            DoResendTask($("#TaskAdd_ResendTaskId").val(), $("#rejectionReason").val().trim(), $('#expectedDays').val().trim() );
+        }
+    });
+
+    function DoResendTask(taskId, reason, expectedDays) {
+
+        var token = $('form:first').find("input[name='__RequestVerificationToken']").val();
+        var data = {
+            TaskId: taskId,
+            Reason: reason,
+            ExpectedDays: expectedDays,
+            TransactionId: $('#hdnTransactionID').val(),
+            __RequestVerificationToken: token
+        };
+
+        $.ajax({
+            type: 'post',
+            url: '@Url.Action("ResendTask", "Editor")',
+            data: data,
+            success:
+                function (data) {
+                    if (data.MessageType != 2) {
+                        $('#dvGridContainer').html(data.Html);
+                        $('#TaskAdd_ResendTaskId').val("");
+                        $('#rejectionReason').val("");
+                        $('#errorMessageValidate').html("");
+                        $("#CalMessageError").addClass("hidden_");
+                        $("#CalMessageError").hide();
+                        $("#rejectionReason").removeClass("RedBorder");
+                        $("#CalDaysMessageError").addClass("hidden_");
+                        $("#CalDaysMessageError").hide();
+                        $("#expectedDays").removeClass("RedBorder");
+                        $("#expectedDays").val("");
+                        $('.close-button-popup').click();
+                    }
+                }
+        });
+    }
+
+    function DeleteTaskById() {
+        var taskId = $("#TaskAdd_DeletedTaskId").val();
+        if (taskId == 0) {
+            return;
+        }
+
+        var transactionId = $("#TransactionIdForTask").val();
+        var token = $('form:first').find("input[name='__RequestVerificationToken']").val();
+        $.ajax({
+            type: 'post',
+            url: '@Url.Action("DeleteTask", "Editor")',
+            data: { TaskId: taskId, TransactionId: transactionId, __RequestVerificationToken: token},
+            success:
+                function (data) {
+                    if (data.MessageType == 2) {
+                        ShowErrorMessage(data.MessageText);
+                    }
+                }
+        });
+    }
+
+function EditTask(keyValue) {
+        SetTreeDefaultInfo('treeToOrgUnit', $("#grdTasksSentToOrgUnitId_" + keyValue).val());
+
+        //$("#dvTasksBody #divForm__treeToOrgUnit").find(".hdnDepartmentId").val($("#grdTasksSentToOrgUnitId_" + keyValue).val());
+        //$("#dvAddtaskBodyContainer .txtDepartmentName").val($("#grdTasksSentToOrgUnitName_" + keyValue).val());
+        //$("#dvAddtaskBodyContainer .txtDepartmentNumber").val($("#grdTasksSentToUserId_" + keyValue).val());
+        //FillOrgUnitsTreeControls('treeToOrgUnit', $("#grdTasksSentToOrgUnitId_" + keyValue).val());
+        GetUsersByOrgUnitId();
+        $("#ddlTaskToUser").val($("#grdTasksSentToUserName_" + keyValue).val());
+        $("#hdnTaskToUserName").val($("#grdTasksSentToUserName_" + keyValue).val());
+        $("#hdnTaskToUser").val($("#grdTasksSentToUserId_" + keyValue).val());
+        $("#TaskAdd_TaskDescription").val($("#grdTasksTaskDescription_" + keyValue).val());
+        if (@settingDateType != @DateValue)
+        {
+            $("#EndDateCal").val($("#grdTasksDeliveryDate_" + keyValue).val());
+            $("#hdnEndDateUm").val($("#grdTasksDeliveryDateH_" + keyValue).val());
+        }
+        else {
+            $("#EndDateCal").val($("#grdTasksDeliveryDate_" + keyValue).val());
+            $("#hdnEndDateUm").val($("#grdTasksDeliveryDateH_" + keyValue).val());
+        }
+        $("#hdnEndDateGreg").val($("#grdTasksDeliveryDate_" + keyValue).val());
+        $("#hdnTaskToOrgUnitName").val($("#grdTasksSentToOrgUnitName_" + keyValue).val());
+        $("#hdnTaskId").val($("#grdTasksId_" + keyValue).val());
+        $("#hdnEditTaskKey").val(keyValue);
+        $("#btnAppendTask").hide();
+        $("#btnEditTask").show();
+        $("#aCancelTask").show();
+        $("#btnEditTask").removeClass("hidden_");
+    }
+    function RemindTask(taskId) {
+        var token = $('form:first').find("input[name='__RequestVerificationToken']").val();
+        $.ajax({
+            type: 'post',
+            url: '@Url.Action("RemindTask", "Editor")',
+            data: { taskId: taskId,__RequestVerificationToken: token},
+            success:
+                function (data) {
+
+                    if (data.MessageType == 2) {
+                        ShowErrorMessage(data.MessageText);
+                    }
+                    else {
+                        ShowSuccesMessage("تمت العمليه بنجاح");
+                    }
+                }
+        });
+    }
+
+    function CancelTaskEdit() {
+       // $("#btnAppendTask").show();
+        $("#btnEditTask").addClass('hidden_');
+        $("#aCancelTask").hide();
+        ClearInputs('dvTasksBody');
+    }
+
+    function OnDeleteTaskSuccess() {
+
+        var data = $("#TaskAdd_GridData").val();
+        var transactionId = $("#TransactionIdForTask").val();
+        $.ajax({
+            type: 'post',
+            url: '@Url.Action("SaveTasks", "Editor")',
+            data: { TasksGrid: data, TransactionId: transactionId },
+            success:
+                function (data) {
+                    $("#btnAppendTask").hide();
+                }
+        });
+    }
+
+    function OnEditTaskSuccess(data) {
+        if (data.MessageType != 2) {
+            //if (data.Key != "") {
+            //    $('#grid-table-grdTasks').find('#Key_' + data.Key).closest('tr').replaceWith(data.Html);
+            //}
+            $("#dvGridContainer").html("");
+            $("#dvGridContainer").html(data.Html);
+            $("#TaskAdd_GridData").val(data.Result);
+
+            ClearInputs('dvTasksBody');
+            $('#hdnTaskId').val(0);
+            //$("#btnAppendTask").show();
+            $("#btnEditTask").hide();
+            $("#aCancelTask").hide();
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+
+
+    function CheckDeliveryDate() {
+        if ($("#hdnEndDateGreg").val() != "") {
+            var dateNow = $.datepicker.formatDate('dd/mm/yy', new Date($.now()));
+            var currentDate = convertdate(dateNow);
+            var selectedDate = convertdate($("#hdnEndDateGreg").val());
+
+            if (selectedDate < currentDate) {
+                $("#DeliveryDateValidateMessage").removeClass("hidden_");
+                $("#DeliveryDateValidateMessage").html("");
+                $("#DeliveryDateValidateMessage").html('@Html.Raw(DbRes.TValidation("User.Inbound.RemindDateCompare"))');
+                $('#EndDateCal').addClass('RedBorder');
+                $("#DeliveryDateValidateCallMessage").removeClass("hidden_");
+                $("#DeliveryDateValidateCallMessage").show();
+                return false;
+            }
+            else {
+                $('#EndDateCal').removeClass('RedBorder');
+                $("#DeliveryDateValidateCallMessage").hide();
+            }
+        }
+        return true;
+    }
+
+    $(document).ready(function () {
+        $('#dvAddtaskBodyContainer  .txtDepartmentNumber  ,  #dvAddtaskBodyContainer  .txtDepartmentName ').val('');
+        $('#ddlTaskToUser').change(function () {
+            $('#hdnTaskToUserName').val($('#ddlTaskToUser').val());
+        });
+
+        $('#btnConfirmAddTask').click(function () {
+            if (CheckInputs()) {
+                debugger;
+                ShowConfirmMessage("هل انت متأكد من الاضافة؟", 'addTask');
+            }
+        });
+    });
+
+    function addTask() {
+        $('#btnAppendTask').click();
+    }
+
+    function OnAddTaskSuccess(data) {
+        debugger;
+        if (data.MessageType != 2)
+        {
+         
+            ShowSuccesMessage(data.MessageText);
+            $("#hdnTaskArray").val(data.hdnValue);
+            $("#grid-table-grdTasks").find("tr:gt(0)").remove();
+            $("#grid-table-grdTasks > tbody:last").append(data.Html);
+            /*   $("#TaskAdd_GridData").val(data.Result);*/
+            $('#TaskAdd_TaskDescription').val("");
+            ClearInputs('dvTasksBody');
+        } else {
+            ShowErrorMessage(data.MessageText);
+        }
+
+    }
+
+
+    function OnAddTasksSuccess(data) {
+        debugger;
+        if (data.MessageType != 2) {
+            ShowSuccesMessage(data.MessageText);
+            $("#hdnTaskArray").val("");
+            $('#dvGridContainer').html(data.GridHtml);
+            $('#dvCurrentTasksGridContainer').html(data.HtmlCurrentTasks);
+            $('#TaskDescription').val("")
+            return true;
+        }
+
+        ShowErrorMessage(data.MessageText);
+    }
+
+    function OnDeleteTasksSuccess(data, div) {
+
+        $("#hdnTaskArray").val(data.hdnValue);
+        $("#grid-table-grdTasks").find("tr:gt(0)").remove();
+        $("#grid-table-grdTasks > tbody:last").append(data.Html);
+    }
+
+    function CheckIfHasTasks() {
+        if ($("#hdnTaskArray").val() == "" || $("#hdnTaskArray").val() == "[]" ) {
+            ShowErrorMessage('@Html.Raw(DbRes.TValidation("User.Editor.Task.TasksRequired"))');
+            return false;
+        }
+        return true;
+    }
+  
+</script>
+
+<style>
+    .clsHidden {
+        display: none;
+    }
+</style>

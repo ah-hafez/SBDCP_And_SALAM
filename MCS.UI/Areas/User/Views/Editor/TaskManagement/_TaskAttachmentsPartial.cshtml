@@ -1,0 +1,13 @@
+﻿@model AjaxGrid<MCS.UI.Areas.User.Models.Shared.DocumentVM>
+
+
+<div class="content_container content_container--body white-bg" id="dvTaskAttachments">
+    <div class="row">
+        <div class="col-md-12">
+            <label></label>
+            <div>
+                @Html.Partial("~/Areas/User/Views/Editor/TaskManagement/_TaskAttachmentsGridPartial.cshtml", Model)
+            </div>
+        </div>
+    </div>
+</div>

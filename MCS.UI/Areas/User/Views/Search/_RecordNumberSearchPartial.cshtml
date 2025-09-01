@@ -1,0 +1,80 @@
+﻿
+@using MCS.Common
+@model MCS.UI.Areas.User.Models.Search.SearchCriteriaByRecordNumberVM
+
+<div class="panel-body panel_dark">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label>رقم الوثيقة</label><span class="stark">*</span>
+                <div>
+                    @*@Html.TextBoxGroupFor(model => model.RecordNumber, "Search", new { @Value = "", @class = "form-control" })*@
+                    @Html.NumericTextBoxFor(model => model.RecordNumber, new { @Value = "", @class = "form-control" })
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12 mt-3">
+            <h4>
+                <a role="button" style="display:flex" onclick="GetAdvancedSearch(@Convert.ToInt32(SearchType.SearchByRecordNumber))">
+                    <span onclick="CollapseDiv('AdvancedDiv'); return false;" style="cursor: pointer;">
+                        <img src="~/Content/User/lib/images/plus-icon.svg" id="AdvancedDivPlusIcon" width="25" />
+                        <img src="~/Content/User/lib/images/Dash-icon.svg" id="AdvancedDivDashIcon" width="25" style="display: none;" />
+                    </span>
+                    <span class="ml-3 mt-1">@DbRes.TResource("User.Names.ExtraOptions")</span>
+                </a>
+            </h4>
+            <div role="tabpanel" class="tab-pane" id="AdvancedDiv" style="display:none">
+            </div>
+        </div>
+
+        @*<a class="btn btn-st2 btn-lg pull-right mr-1 " id="btnAdvancedSearch" onclick="GetAdvancedSearch(@Convert.ToInt32(SearchType.SearchByRecordNumber))">اضافية</a>
+        <a class="btn btn-st2 btn-lg pull-right mr-1 hidden" id="btnCloseAdvancedSearch" onclick="CloseAdvancedSearch()">أغلاق</a>*@
+
+    </div>
+    @Html.EncryptedStickyHidden("EncryptedFalse", "false", new { id = "EncryptedFalse" })
+    @Html.EncryptedStickyHidden("EncryptedTrue", "true", new { id = "EncryptedTrue" })
+</div>
+
+<script>
+    $(function () {
+        $('#btnSearch').removeClass('hidden_');
+    });
+
+           function CloseAdvancedSearch() {
+          $("#AdvancedDiv").html("");
+        $("#btnAdvancedSearch").removeClass("hidden");
+           $("#btnCloseAdvancedSearch").addClass("hidden");
+
+    }
+
+    function CollapseDiv(divName) {
+        if ($('#' + divName).css('display') == 'block') {
+            $('#' + divName).css("display", "none");
+            $('#' + divName + 'PlusIcon').css("display", "inline-block");
+            $('#' + divName + 'DashIcon').css("display", "none");
+        }
+        else {
+            $('#' + divName).css("display", "block");
+            $('#' + divName + 'PlusIcon').css("display", "none");
+            $('#' + divName + 'DashIcon').css("display", "inline-block");
+        }
+    }
+
+   function GetAdvancedSearch(id)
+       {
+      
+        $.ajax({
+            type: 'Get',
+            url: '@Url.Action("GetAdvancedSearchView")',
+            data: { SearchTypeId: id , TransactionCategoryId :  @Convert.ToInt32(TransactionCategory.Inbound)},
+            success:
+                function (response) { 
+                    $("#AdvancedDiv").html(response.html);
+                     $("#btnAdvancedSearch").addClass("hidden");
+                    $("#btnCloseAdvancedSearch").removeClass("hidden");
+               
+           }
+        });
+    }
+
+</script>

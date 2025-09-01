@@ -1,0 +1,607 @@
+﻿@using MCS.Common
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.Lookups
+@model MCS.UI.Areas.Admin.Models.BarcodeDesigner.BarcodeDesignerVM
+@{
+    Layout = null;
+}
+
+<style>
+    .FitBox {
+        position: absolute;
+    }
+    select.select
+    {
+        -webkit-appearance: menulist !important;
+        padding : 0px 0px !important;
+    }
+      .form-control
+    {
+        padding : 0px 0px !important;
+    }
+</style>
+
+
+<script>
+    var contianerDesign
+    var Design
+    var PosX;
+    var PosY;
+
+    $.validator.unobtrusive.adapters.add(
+                'CheckIfDepartmentSelected',
+                ['validationgroup'],
+                function (options) {
+                    options.rules['CheckIfDepartmentSelected'] = {
+                        validationgroup: options.params['validationgroup']
+                    };
+                    options.messages['CheckIfDepartmentSelected'] = options.message;
+                });
+
+    $.validator.addMethod('CheckIfDepartmentSelected',
+        function (value, element, parameters) {
+            if (!$("#IsGeneral").is(':checked') && value == "") {
+
+                return false;
+            }
+            return true;
+        }
+);
+
+    $(document).ready(function () {
+
+        $('#barCode').children().each(function () {
+
+            $(this).removeClass('draggable2');
+
+            $(this).draggable({ containment: 'barCode' });
+        });
+
+        SetStyles();
+
+        SetSelectedSetting();
+
+        $("#mainDiv").mousemove(function (event) {
+            $('#barCode').children().each(function () {
+                var childOffest = $(this).css('top');
+                var childLeft = $(this).css('left');
+                var childWidth = $(this).width();
+                var childHeight = $(this).height();
+                var barcodHight = $("#barCode").height();
+                var barcodWidth = $("#barCode").width();
+
+                if (parseInt(childOffest) < 0) {
+                    $(this).css('top', '0');
+                }
+
+                if ((parseInt(childOffest) + parseFloat(childHeight)) > parseInt(barcodHight)) {
+                    $(this).css('top', parseFloat(barcodHight) - parseFloat(childHeight));
+                }
+
+                if (parseInt(childLeft) < 0) {
+                    $(this).css('left', '0');
+                }
+
+                if ((parseFloat(childLeft) + parseFloat(childWidth)) > parseInt(barcodWidth)) {
+                    $(this).css('left', parseFloat(barcodWidth) - parseFloat(childWidth));
+                }
+            });
+        });
+
+        var $container = $("#barCode");
+
+        $container.children().each(function () {
+
+            $(this).css("marginLeft", "");
+            $(this).css("width", "");
+            $(this).css({ left: $(this).attr("data-Left") });
+        });
+    });
+
+    var items = [
+          {
+              label: "Delete",
+              action: function (element) {
+                  $("#hdnSelected").val($(element.currentTarget).data("id"));
+                  Delete();
+              }
+          }
+    ];
+
+
+    function GetDesign(typeId, orgUnitId) {
+        $("#typeID").val(typeId);
+        $(".dialog_but").removeClass("select");
+        $("#btn_" + typeId).addClass("select")
+        var token = $('#frmAddDesign').find("input[name='__RequestVerificationToken']").val();
+        $.ajax({
+            cache: false,
+            type: "Post",
+            url: '@Url.Action("GetDesign")',
+            data: {
+                "orgUnitKey": orgUnitId,
+                "typeId": typeId,
+                "departmentsStructure": $("#hdnDepartmentsStructure").val(),
+                "__RequestVerificationToken": token
+            },
+            success: function (response) {
+                $("#BarCodecontainer").html(response.Html);
+
+                $('#barCode').children().each(function () {
+
+                    $(this).removeClass('draggable2');
+
+                    $(this).draggable({ containment: 'barCode' });
+                });
+
+                SetStyles();
+                SetSelectedSetting();
+
+                setBarcodeChildern()
+
+                jQuery.validator.unobtrusive.parse('#frmAddDesign');
+            }
+        });
+    }
+
+
+    function getXY(evt) {
+        var element = document.getElementById('barCode');
+        var rect = element.getBoundingClientRect();
+        var scrollTop = document.documentElement.scrollTop ?
+                        document.documentElement.scrollTop : document.body.scrollTop;
+        var scrollLeft = document.documentElement.scrollLeft ?
+                        document.documentElement.scrollLeft : document.body.scrollLeft;
+        var elementLeft = rect.left + scrollLeft;
+        var elementTop = rect.top + scrollTop;
+
+        if (document.all) {
+            PosX = event.clientX + scrollLeft - elementLeft;
+            PosY = event.clientY + scrollTop - elementTop;
+        }
+        else {
+            PosX = evt.pageX - elementLeft;
+            PosY = evt.pageY - elementTop;
+        }
+    }
+
+    function SetStyles() {
+
+        $(".draggable2").draggable({ containment: 'barCode', helper: 'clone' });
+
+        $("#barCode>div[data-id]").contextPopup({
+            items: items
+        });
+        if ($("#IsGeneral").is(':checked')) {
+            $("#treeDiv").hide();
+        } else {
+            $("#treeDiv").show();
+        }
+
+        $(".draggable").draggable({ containment: 'barCode', helper: 'clone' });
+
+        $(".droppable").droppable({
+            activeClass: "ui-state-default",
+            hoverClass: "ui-state-hover",
+            drop: function (event, ui) {
+
+                var html;
+                var id = $(ui.helper).data("id");
+
+                var $menu = $("#menu").clone();
+
+                switch (id) {
+
+                    case 1:
+                    case 'attachment2DImage':
+                        $menu.find("[data-id='" + id + "']:first").find('a').children().first().next().html("<img class='imag2D' src='" + '@Url.Content("~/Content/Admin/Lib/images/morasalat/code_2d_v.png")' + "'  alt=''>");
+
+                        $menu.find("[data-id='" + id + "']:first").find('a').children().first().next().children().first().width(parseFloat($(".droppable").width()) * 0.6);
+                        $menu.find("[data-id='" + id + "']:first").find('a').children().first().next().children().first().height(parseFloat($(".droppable").height()) * 0.2);
+
+                        html = $menu.find("[data-id='" + id + "']:first").find('a').children().first().next().html();
+                        break;
+
+                    case 3:
+                    case 'attachment3DImage':
+                        $menu.find("[data-id='" + id + "']:first").find('a').children().first().next().html("<img class='imag3D' src='" + '@Url.Content("~/Content/Admin/Lib/images/morasalat/code_3d_v.png")' + "'  alt=''>");
+                        $menu.find("[data-id='" + id + "']:first").find('a').children().first().next().children().first().width(parseFloat($(".droppable").width()) * 0.195);
+                        $menu.find("[data-id='" + id + "']:first").find('a').children().first().next().children().first().height(parseFloat($(".droppable").height()) * 0.3);
+
+                        html = $menu.find("[data-id='" + id + "']:first").find('a').children().first().next().html();
+                        break;
+
+                    default:
+                        html = $menu.find("[data-id='" + id + "']:first").find('a')[0].outerText;
+                }
+
+                var controlelm;
+
+                var xcxc
+                var dropPositionX = event.pageX - $(this).offset().left;
+                var dropPositionY = event.pageY - $(this).offset().top;
+                var dragItemOffsetX = event.offsetX;
+                var dragItemOffsetY = event.offsetY;
+                var dragItemPositionX = dropPositionX - dragItemOffsetX;
+                var dragItemPositionY = dropPositionY - dragItemOffsetY;
+                var $newPosX = ui.offset.left - $(this).offset().left;
+                var $newPosY = ui.offset.top - $(this).offset().top;
+
+
+                ui.draggable.draggable('disable');
+                ui.draggable.children().addClass("disabled");
+                controlelm = ui.draggable.clone();
+
+                if (ui.draggable.attr('data-info') == '1') {
+                    ui.draggable.remove();
+                }
+                else {
+
+                    $(controlelm).html('');
+                    $(controlelm).append(html);
+                    $(controlelm).css("left", dragItemPositionX);
+                    $(controlelm).css("top", dragItemPositionY);
+                }
+
+                controlelm.attr('data-info', '1');
+                $(controlelm).addClass("FitBox");
+                $('#barCode').append(controlelm);
+                $(controlelm).draggable();
+                $(controlelm).contextPopup({
+                    items: items
+                });
+
+                SetPosition($(controlelm));
+            }
+        });
+
+        $("#BarcodeSize").change(function () {
+
+            $('#barCode').removeClass("size_a");
+            $('#barCode').removeClass("size_b");
+            $('#barCode').removeClass("size_c");
+            $('#barCode').addClass($(this).val());
+
+            SetBarcodeImagesSize();
+
+            $('#barCode').children().each(function () {
+                var childOffest = $(this).css('top');
+                var childLeft = $(this).css('left');
+                var childWidth = $(this).width();
+                var childHeight = $(this).height();
+                var barcodHight = $("#barCode").height();
+                var barcodWidth = $("#barCode").width();
+
+                if (parseInt(childOffest) < 0) {
+                    $(this).css('top', '0');
+                }
+
+                if ((parseInt(childOffest) + parseFloat(childHeight)) > parseInt(barcodHight)) {
+                    $(this).css('top', parseFloat(barcodHight) - parseFloat(childHeight));
+                }
+
+                if (parseInt(childLeft) < 0) {
+                    $(this).css('left', '0');
+                }
+
+                if ((parseFloat(childLeft) + parseFloat(childWidth)) > parseInt(barcodWidth)) {
+                    $(this).css('left', parseFloat(barcodWidth) - parseFloat(childWidth));
+                }
+            });
+        });
+
+        $("#SizeUnit").change(function () {
+
+            ValidateSize();
+        });
+
+        function ConvertToPixel(value, unit) {
+            if (unit == "cm") {
+                return 37.795276 * value;
+            }
+
+            return 96 * value
+        }
+
+        function ValidateSize() {
+
+            if ($("#SizeUnit").val() == "in" && parseFloat($("#txtSizeWidthValue").val()) <= 8 && parseFloat($("#txtSizeHeightValue").val()) <= 10) {
+                RefreshBarcodeSetting()
+            }
+
+            if ($("#SizeUnit").val() == "cm" && parseFloat($("#txtSizeWidthValue").val()) <= 20 && parseFloat($("#txtSizeHeightValue").val()) <= 30) {
+
+                RefreshBarcodeSetting()
+            }
+
+        }
+
+        $("#txtSizeWidthValue").on('input', function (e) {
+            if ($("#SizeUnit").val() == "in" && parseFloat($("#txtSizeWidthValue").val()) <= 8) {
+                RefreshBarcodeSetting()
+            }
+
+            if ($("#SizeUnit").val() == "cm" && parseFloat($("#txtSizeWidthValue").val()) <= 20) {
+                RefreshBarcodeSetting()
+            }
+        });
+
+        $('#txtSizeHeightValue').on('input', function (e) {
+
+            if ($("#SizeUnit").val() == "in" && parseFloat($("#txtSizeHeightValue").val()) <= 10) {
+                RefreshBarcodeSetting()
+            }
+
+            if ($("#SizeUnit").val() == "cm" && parseFloat($("#txtSizeHeightValue").val()) <= 30) {
+                RefreshBarcodeSetting()
+            }
+
+        });
+
+        $(".size-Settings").change(function () {
+            ValidateSize();
+        });
+
+        function RefreshBarcodeSetting() {
+
+            $("#barCode").css("width", ConvertToPixel($("#txtSizeWidthValue").val(), $("#SizeUnit").val()));
+
+            $("#barCode").css("height", ConvertToPixel($("#txtSizeHeightValue").val(), $("#SizeUnit").val()));
+
+
+            SetBarcodeImagesSize();
+
+            $('#barCode').children().each(function () {
+                var childOffest = $(this).css('top');
+                var childLeft = $(this).css('left');
+                var childWidth = $(this).width();
+                var childHeight = $(this).height();
+                var barcodHight = $("#barCode").height();
+                var barcodWidth = $("#barCode").width();
+                if (parseInt(childOffest) < 0) {
+                    $(this).css('top', '0');
+                }
+
+                if ((parseInt(childOffest) + parseFloat(childHeight)) > parseInt(barcodHight)) {
+                    $(this).css('top', parseFloat(barcodHight) - parseFloat(childHeight));
+                }
+
+                if (parseInt(childLeft) < 0) {
+                    $(this).css('left', '0');
+                }
+
+                if ((parseFloat(childLeft) + parseFloat(childWidth)) > parseInt(barcodWidth)) {
+                    $(this).css('left', parseFloat(barcodWidth) - parseFloat(childWidth));
+                }
+            });
+
+
+        }
+
+
+        $("#fs").change(function () {
+
+            $('#barCode').css("font-family", $(this).val());
+        });
+
+        $("#size").change(function () {
+
+            $('#barCode').css("font-size", $(this).val() + "px");
+
+            SetBarcodeImagesSize()
+        });
+
+
+        $("#barCode>div[data-id]").each(function () {
+            $('#menu>div[data-id=' + $(this).data("id") + ']').draggable('disable');
+            $('#menu>div[data-id=' + $(this).data("id") + ']>a').addClass("disabled");
+        });
+
+        $('#barCode').css("font-size", $('#barCode').attr('data-Font-Size') + "px");
+
+        $('#barCode').css("font-family", $('#barCode').attr('data-Font-Name'));
+    }
+
+    function SetSelectedSetting() {
+        $("#txtSizeWidthValue").val($('#barCode').attr('data-Width-Value'))
+
+        $("#txtSizeHeightValue").val($('#barCode').attr('data-Height-Value'))
+
+        $("#SizeUnit").val($('#barCode').attr('data-Size-Unit'))
+
+        $("#fs").val($('#barCode').attr('data-Font-Name'))
+
+        $("#size").val($('#barCode').attr('data-Font-Size'))
+
+        $('#barCode').css('width', $('#barCode').attr('data-Width-Value') + $('#barCode').attr('data-Size-Unit'));
+
+        $('#barCode').css('height', $('#barCode').attr('data-Height-Value') + $('#barCode').attr('data-Size-Unit'));
+    }
+
+    function setBarcodeChildern() {
+        $("#barCode").children().each(function () {
+            $(this).css("marginLeft", "");
+
+            $(this).css("left", $(this).attr('data-Left'));
+
+            $(this).css("width", "");
+
+        });
+    }
+
+    function SetBarcodeImagesSize() {
+        var $containerWidth = $("#barCode").width();
+        var $containerheight = $("#barCode").height();
+
+        $(".imag2D").width(parseFloat($containerWidth) * 0.6);
+        $(".imag2D").height(parseFloat($containerheight) * 0.2);
+        $(".imag3D").width(parseFloat($containerheight) * 0.3);
+        $(".imag3D").height(parseFloat($containerheight) * 0.3);
+    }
+
+    function SetPosition(element) {
+        var childOffest = element.css('top');
+        var childLeft = element.css('left');
+
+        var barcodHight = $("#barCode").height();
+
+        var barcodWidth = $("#barCode").width();
+
+        if (parseInt(childOffest) < 0) {
+            element.css('top', '0');
+        }
+
+        if (parseInt(childOffest) > parseInt(barcodHight)) {
+            element.css('top', barcodHight);
+        }
+
+        if (parseInt(childLeft) < 0) {
+            element.css('left', '0');
+        }
+
+        if (parseInt(childLeft) > parseInt(barcodWidth)) {
+            element.css('left', barcodWidth);
+        }
+    }
+
+    function UpdateHTML() {
+        var $container = $("#barCode").clone();
+        var $containerWidth = $("#barCode").width()
+        var elemntBarCode = document.getElementById("barCode");
+
+        $container.attr('data-Width-Value', $("#txtSizeWidthValue").val());
+
+        $container.attr('data-Height-Value', $("#txtSizeHeightValue").val());
+
+        $container.attr('data-Size-Unit', $("#SizeUnit").val());
+
+        $container.attr('data-Font-Name', $("#fs").val());
+
+        $container.attr('data-Font-Size', $("#size").val());
+
+        $container.css('width', "");
+
+        $container.css('height', "");
+
+
+        $container.children().each(function () {
+
+            var child = elemntBarCode.getElementsByClassName("dataid" + $(this).data("id"));
+
+            var newWidth = parseInt($(this).css('left'));
+
+            var newHeight = parseInt(child[0].offsetHeight);
+
+            $(this).attr('data-Left', $(this).css('left'));
+
+            $(this).css('position', 'absolute');
+
+            $(this).css("marginLeft", "0px");
+
+            $(this).css("left", "");
+
+            newWidth = newWidth + parseInt(child[0].offsetWidth);
+
+            $(this).width(newWidth);
+
+            $(this).height(newHeight);
+
+            var id = parseInt($(this).data("id")) + 1;
+
+            $(this).css("direction", 'rtl')
+
+            $(this).text("{" + $(this).data("id") + "} {" + id + "}")
+        });
+
+        $("#hdnHtml").val($container[0].outerHTML);
+
+        $("#hdnWidth").val($('#barCode').width());
+
+        $("#hdnHeight").val($('#barCode').height());
+
+        return true;
+    }
+
+    function OnAdd(data) {
+        if (data.MessageType != 2) {
+            ShowSuccesMessage(data.MessageText)
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function DeleteAll() {
+        $("#barCode").html("");
+
+        $('#menu .draggable2').each(function () {
+
+            $(this).draggable('enable');
+
+            $('#menu>div[data-id=' + $(this).data("id") + ']>a').removeClass("disabled");
+        });
+    }
+
+    function Select(id) {
+        $("#hdnSelected").val(id);
+    }
+
+    function Delete() {
+        var id = $("#hdnSelected").val();
+        $('#barCode>div[data-id=' + id + ']').remove();
+        $('#menu>div[data-id=' + id + ']').draggable('enable');
+        $('#menu>div[data-id=' + id + ']>a').removeClass("disabled");
+    }
+
+
+
+</script>
+
+<div class="modal-body" id="mainDiv">
+    <div class="panel-body none_bottom">
+        <div class="row">
+            <div class="panel-group accordion accordion-dc">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @{List<TransactionCategoryVM> TransactionsTypes = (List<TransactionCategoryVM>)ViewData["TransactionCategory"];}
+                        <label class="col-md-3 ">
+                            <input type="radio" name="optionsRadios" id="btn_@TransactionsTypes[0].Id" onclick="GetDesign(@TransactionsTypes[0].Id, @ViewData["OrgUnitKey"]);" value="option1" checked="" class="iradio icheckbox">
+                            @TransactionsTypes[0].Text
+                        </label>
+                        @for (int i = 1; i < TransactionsTypes.Count; i++)
+                        {
+                            if (TransactionsTypes[i].Id == BarcodeDesignType.OutboundInternal.LookupIdentity(LookupCategory.BarcodeDesignType,SessionInfo.CultureShortName))
+                            {
+                                <label class="col-md-4">
+                                    <input type="radio" name="optionsRadios" id="btn_@TransactionsTypes[i].Id" onclick="GetDesign(@TransactionsTypes[i].Id, @ViewData["OrgUnitKey"]);" value="option1" class="iradio icheckbox">
+                                    @TransactionsTypes[i].Text
+                                </label>
+                            }
+                            else
+                            {
+                                <label class="col-md-3">
+                                    <input type="radio" name="optionsRadios" id="btn_@TransactionsTypes[i].Id" onclick="GetDesign(@TransactionsTypes[i].Id, @ViewData["OrgUnitKey"]);" value="option1" class="iradio icheckbox">
+                                    @TransactionsTypes[i].Text
+                                </label>
+                            }
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmAddDesign" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.Hidden("orgUnitKey", ViewData["OrgUnitKey"], new { id = "hdnOrgUnitKey" })
+        @Html.Hidden("departmentsStructure", ViewData["DepartmentsStructure"], new { id = "hdnDepartmentsStructure" })
+        <div id="BarCodecontainer">
+            @Html.Partial("_InboundBarcodeDesignerPartial", Model)
+        </div>
+    }
+    <div class="panel-footer">
+        @Html.ConfirmAction(OperationType.Save, "btnAddDesign", DbRes.TResource("Admin.BarcodeDesigner.Save"), "AddDesign", null, null, null, "OnAdd", null, "", "post", "frmAddDesign", null, "btn btn-lg btn-st3 mx-1 pull-right", "UpdateHTML")
+        <button type="button" onclick="DeleteAll();" class="btn btn-lg btn-st3 mx-1 pull-left">@DbRes.TResource("Admin.BarcodeDesigner.Delete")</button>
+    </div>
+</div>

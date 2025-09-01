@@ -1,0 +1,52 @@
+﻿@{
+
+    ViewBag.Title = DbRes.TResource("User.Survey");
+    Layout = "~/Areas/User/Views/Shared/_SearchLayout.cshtml";
+
+}
+<div style="display:flex; place-content:space-between">
+    
+    <div class="mx-3 mx-sm-5 header-container d-flex  flex-column flex-lg-row align-items-md-center mt-5">
+        <div class="ml-lg-auto mr-auto mr-lg-3  d-sm-flex d-block ">
+            @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.SurveyReport.UserSuggestionsReport))
+            {
+                <div class="mb-3 mb-sm-auto">
+                    <a class="btn btn-st8 btn-lg mr-auto mr-sm-3" href="#">
+                        @DbRes.TResource("User.Survey.SuggestionsUser")
+                    </a>
+                </div>
+            }
+            @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.SurveyReport.UserReport))
+            {<div class="mb-3 mb-sm-auto">
+                    <a class="btn btn-st3 btn-lg" href="#"> </a>
+                </div>
+                @DbRes.TResource("User.Survey.OverallEvaluation")
+
+            }
+        </div>
+    </div>
+
+</div>
+@using (Html.BeginForm("DeleteUserSurvey", "Survey", FormMethod.Post, new { id = "frmDeleteSurvey", @class = "tab-content" }))
+{@Html.AntiForgeryToken(); 
+    <div style="display:flex; place-content:space-between">
+        <div>
+            <h2 class="mt-5" style="margin-right:44px;">@DbRes.TResource("User.Survey.SurveyAlreadyFilled")</h2>
+
+        </div>
+
+    </div>
+    <div class="row text-right mr-5 mt-4 ml-xs-3 mb-4">
+        @Html.ConfirmAction(OperationType.Delete, "btnDeleteUserSurvey", DbRes.TResource("User.Survey.DeleteUserSurvey"), Url.Action("DeleteUserSurvey", "Survey"), null, null, null, "OnSuccess", null, "", "post", "frmDeleteSurvey", "", "btn btn-st1 btn-lg pull-right")
+    </div>
+ 
+}
+
+<script>
+
+    function OnSuccess() {
+
+        window.location.href = '@Url.Action("Index", "Survey")';
+
+        }
+</script>

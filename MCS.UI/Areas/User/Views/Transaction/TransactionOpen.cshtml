@@ -1,0 +1,179 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.Common;
+@model MCS.UI.Areas.User.Models.Transaction.TransactionOpenVM
+
+@{
+    ViewBag.Title = DbRes.TResource(string.Format("User.Transaction.Open.{0}Title", Model.TransactionCategory));
+    Layout = "~/Areas/User/Views/Shared/_OldLayout.cshtml";
+}
+
+<div id="dvContenar">
+    <div class="page-title">
+        <h2><span class="fa fa-arrow-circle-o-left"></span> @DbRes.TResource(string.Format("User.Transaction.Open.{0}Title", Model.TransactionCategory))</h2>
+    </div>
+    <div class="page-content-wrap">
+        <div class="row">
+            <div class="col-md-12">
+                @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmOpenTransaction", @class = "form-horizontal form-row" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">@DbRes.TResource(string.Format("User.Transaction.Open.{0}Title", Model.TransactionCategory))</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="col-xs-12">
+                                <p class="stark">@DbRes.TResource("Admin.User.MustFill") * </p>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        @Html.CustomLabelFor(model => Model.TransactionNumber, new { @class = "col-md-4 control-label" }, DbRes.TResource(string.Format("User.Transaction.Open.{0}Number", Model.TransactionCategory)))
+                                        <div class="col-md-8">
+                                            <div class="">
+                                                @Html.NumericTextBoxFor(model => model.TransactionNumber, new { @class = "form-control", @Value = "", maxlength = "10" }, "OpenTransaction", DbRes.TValidation(string.Format("User.Transaction.Open.{0}NumberRequired", Model.TransactionCategory)))
+                                            </div>
+                                            <span class="help-block"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Year, new { @class = "col-md-4 control-label" })
+                                        <div class="col-md-8">
+                                            @Html.AutoCompleteBuilder("ddlYear", "hdnYear", LookupCategory.Year, DateTimeUtility.GetHijriYear(DateTime.Now).ToString(), true, "form-control", null, null, false)
+                                            @Html.HiddenGroupFor(model => model.Year, new { @Value = "", id = "hdnYear" }, "OpenTransaction")
+                                            <span class="help-block"></span>
+                                        </div>
+                                    </div>
+                                    @if (Model.TransactionCategory != TransactionCategory.Inbound)
+                                    {
+                                        @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.OrgUnitId, TreeMode.Single, "dvOrgUnitsTree", true)
+                                    }
+                                </div>
+                                <div class="col-md-6">
+                                    @if (Model.TransactionCategory != TransactionCategory.Inbound)
+                                    {
+                                        <div class="form-group">
+                                            <div class="col-md-12">
+                                                <div class="col-md-4">
+                                                    <div class="radio">
+                                                        <label>
+                                                            @Html.RadioButton("Outbound", true, new { id = "\"" + TransactionCategory.ExternalOutbound + "\"", onchange = "GetTransactionTypes(\"" + TransactionCategory.ExternalOutbound + "\")", @checked = "checked" })@DbRes.TResource("User.Transaction.Open.ExtenalOutbound")
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="radio">
+                                                        <label>
+                                                            @Html.RadioButton("Outbound", false, new { id = "\"" + TransactionCategory.InternalOutbound + "\"", onchange = "GetTransactionTypes(\"" + TransactionCategory.InternalOutbound + "\")" })@DbRes.TResource("User.Transaction.Open.InternalOutbound")
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="radio">
+                                                        <label>
+                                                            @Html.RadioButton("Outbound", false, new { id = "\"" + TransactionCategory.DraftOutbound + "\"", onchange = "GetTransactionTypes(\"" + TransactionCategory.DraftOutbound + "\")" })@DbRes.TResource("User.Transaction.Open.DraftOutbound")
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <span class="help-block"></span>
+                                            </div>
+                                        </div>
+                                    }
+                                    @Html.StickyHiddenFor(model => model.TransactionCategory, new { id = "hdnTransactionType" })
+                                    <div class="form-group">
+                                        @Html.CustomLabelFor(model => Model.TransactionTypeId, new { @class = "col-md-4 control-label" }, DbRes.TResource(string.Format("User.Transaction.Open.{0}Source", Model.TransactionCategory)))
+                                        <div class="col-md-8">
+                                            @Html.AutoCompleteBuilder("ddlTransactionSourceType", "hdnTransactionSourceType", ViewData["TransactionTypesData"].ToString(), null, true, "form-control", null, null, null, true)
+                                            @Html.HiddenGroupFor(model => model.TransactionTypeId, new { @Value = "", id = "hdnTransactionSourceType" }, "OpenTransaction", DbRes.TValidation(string.Format("User.Transaction.Open.{0}SourceRequired", Model.TransactionCategory)))
+                                            <span class="help-block"></span>
+                                        </div>
+                                    </div>
+                                    @if (Model.TransactionCategory == TransactionCategory.Inbound)
+                                    {
+                                        @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.OrgUnitId, TreeMode.Single, "dvOrgUnitsTree", true)
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-footer">
+                            <button class="btn btn-save pull-right" onclick="Open(); return false;">@DbRes.TResource("User.Transaction.Open.Update")</button>
+                            <button class="btn btn-default" onclick="ClearInputs('frmOpenTransaction'); return false">@DbRes.TResource("User.Transaction.Open.Rewrite")</button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function Open() {
+        if (!$('#frmOpenTransaction').valid()) {
+            return false;
+        }
+
+        var type = $('#hdnTransactionType').val();
+
+        var url;
+
+        switch (type) {
+
+            case 'Inbound':
+                url = '@Url.Action("Edit", "Inbound")';
+                break;
+            case 'ExternalOutbound':
+                url = '@Url.Action("Edit", "OutboundExternal")';
+                break;
+            case 'InternalOutbound':
+                url = '@Url.Action("Edit", "OutboundInternal")';
+                break;
+            case 'DraftOutbound':
+                url = '@Url.Action("Edit", "OutboundDraft")';
+                break;
+        }
+
+        $.ajax({
+            type: 'Get',
+            dataType: "json",
+            cache: false,
+            url: '@Url.Action("GetTransaction")' + "?" + $('#frmOpenTransaction').serialize(),
+            success: function (data) {
+
+                if (data.MessageType != 2) {
+
+                    window.location.href = url;
+                }
+                else {
+
+                    ShowErrorMessage(data.MessageText);
+                }
+            }
+        });
+    }
+
+    function GetTransactionSourceTypes(transactionType) {
+
+        $.ajax({
+            type: 'Get',
+            url: '@Url.Action("GetTransactionSourceTypes")',
+            data: { transactionType: transactionType },
+            success: function (data) {
+
+                AutoCompleteChangeList("ddlTransactionSourceType", data);
+
+                $("#ddlTransactionSourceType").trigger('change');
+                $("#hdnTransactionSourceType").trigger('change');
+
+                $("#ddlTransactionSourceType").val('');
+                $("#hdnTransactionSourceType").val('');
+
+                $('#hdnTransactionType').val(transactionType);
+            }
+        });
+        return false;
+    }
+</script>

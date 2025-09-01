@@ -1,0 +1,17 @@
+﻿@model AjaxGrid<MCS.UI.Areas.User.Models.Assignment.TransactionAssignmentVM>
+
+@Html.Grid(Model).Named("grdAssignmentGroupEditDetails").Columns(columns =>
+{
+    columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").Titled(DbRes.TResource("User.Transaction.Assignmnet.Assign"))
+                                        .RenderValueAs(o => @Html.CheckBox("IsAssigned", o.IsAssigned, new { @class = "_isAssigned", id = "IsAssigned" + o.Id }));
+    columns.Add(model => model.Id, true);
+    columns.Add(model => model.ToOrgUnitName).Titled(DbRes.TResource("User.Transaction.Assignment.ToOrgUnitId"));
+    columns.Add(model => model.ToUserName).Titled(DbRes.TResource("User.Transaction.Assignment.ToUserId"));
+    columns.Add().Encoded(false).Sanitized(false).Titled("<div class='row'><span class='col-md-3 light'></span><span class='col-md-9'>" + Html.AutoCompleteBuilder("ddlHeaderActionId", "hdnHeaderActionId", ViewData["AllActionsData"].ToString(), null, true, "form-control").ToString() + "</span></div>")
+                            .RenderValueAs(o => @<div class="row">
+                                <span class="col-md-3"></span>
+                                <span class="col-md-9">
+                                    @Html.AutoCompleteBuilder("ddlActionId" + o.Id, "hdnActionId" + o.Id, ViewData["AllActionsData"].ToString(), o.ActionId.ToString(), true, "form-control _ddlActionId", "hdnActionType" + o.Id)
+                                </span>
+                            </div>);
+        })

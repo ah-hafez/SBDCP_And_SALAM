@@ -1,0 +1,95 @@
+<li class="nav-item">
+                        <a href="#"><i>
+                            <img src="../assets/images/menu/archive.svg"></i>
+                            <span class="menu-title">XXX</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#"><i>
+                            <img src="../assets/images/menu/attachment.svg"></i>
+                            <span class="menu-title">XXX</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#"><i>
+                            <img src="../assets/images/menu/attachment-speech.svg"></i>
+                            <span class="menu-title">XXX</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#"><i>
+                            <img src="../assets/images/menu/classification.svg"></i>
+                            <span class="menu-title">XXX</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#"><i>
+                            <img src="../assets/images/menu/correspondents.svg"></i>
+                            <span class="menu-title">XXX</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#"><i>
+                            <img src="../assets/images/menu/document.svg"></i>
+                            <span class="menu-title">XXX</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#"><i>
+                            <img src="../assets/images/menu/friends.svg"></i>
+                            <span class="menu-title">XXX</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#"><i>
+                            <img src="../assets/images/menu/lock.svg"></i>
+                            <span class="menu-title">XXX</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#"><i>
+                            <img src="../assets/images/menu/menu.svg"></i>
+                            <span class="menu-title">XXX</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#"><i>
+                            <img src="../assets/images/menu/numbered-information.svg"></i>
+                            <span class="menu-title">XXX</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="#"><i>
+                            <img src="../assets/images/menu/refresh.svg"></i>
+                            <span class="menu-title">XXX</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="#"><i>
+                            <img src="../assets/images/menu/settings-gears.svg"></i>
+                            <span class="menu-title">XXX</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="#"><i>
+                            <img src="../assets/images/menu/third-party.svg"></i>
+                            <span class="menu-title">XXX</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="#"><i>
+                            <img src="../assets/images/menu/type-of-speech.svg"></i>
+                            <span class="menu-title">XXX</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="#"><i>
+                            <img src="../assets/images/menu/types-of-binding.svg"></i>
+                            <span class="menu-title">XXX</span>
+                        </a>
+                    </li>

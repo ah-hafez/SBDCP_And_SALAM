@@ -1,0 +1,261 @@
+﻿@model MCS.UI.Areas.User.Models.Transaction.VIPTransactionFollowUpVM
+@using MCS.Common;
+@using MCS.Framework.Controls
+@using MCS.Framework.Localization
+@{
+    Html.ViewData.TemplateInfo.HtmlFieldPrefix = "TransactionFollowUp";
+
+
+    if (ViewData["FollowUpOrgId"] != null)
+    {
+        Model.FollowUpEntityId = Convert.ToInt32(ViewData["FollowUpOrgId"]);
+    }
+    if (ViewData["FollowUpUserId"] != null)
+    {
+        Model.UserId = Convert.ToInt32(ViewData["FollowUpUserId"]);
+    }
+    if (ViewData["TransactionId"] != null)
+    {
+
+        Model.TransactionId = (int)ViewData["TransactionId"];
+    }
+
+   Model.UserId =   SessionInfo.CurrentUser.Id;
+   Model.FollowUpEntityId  =SessionInfo.OrgUnitId;
+}
+
+ 
+<ul class="nav nav-pills MCShomeTabs pl-3">
+    <li id="liPublicFollowup" role="presentation">
+        <a id="tblPublicFollowup" class="active">
+
+            <span>
+                @DbRes.TResource("User.OutboundDraft.PublicFollowUp")
+
+            </span>
+        </a>
+    </li>
+    <li id="liPrivetFollowup" role="presentation" class="">
+        <a id="tblPrivetFoloolwup">
+
+            <span>
+                @DbRes.TResource("User.OutboundDraft.PrivetFollowUp")
+
+            </span>
+        </a>
+    </li>
+</ul>
+
+<div class="content_container p-3" id="divFollowUpForm">
+    <div>
+
+        <div class="form-horizontal form-row">
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                <label class="w-100">@DbRes.TResource("User.Transaction.FollowUp.Proccess") <span class="stark">*</span></label>
+                @Html.AutoCompleteBuilder("ddlFollowUpCopyProccess", "FollowUpCopyProccessId", ViewData["FollowUpProccess"].ToString(), null, true, "form-control", selectFirstIndex: true)
+                @Html.HiddenGroupFor(model => model.FollowUpProccessId, new { @Value = "", id = "FollowUpCopyProccessId" }, "")
+            </div>
+
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                <label class="w-100">@DbRes.TResource("User.Transaction.FollowUp.Period")</label>
+                @Html.AutoCompleteBuilder("ddlFollowUpCopyPeriod", "FollowUpCopyPeriodId", ViewData["FollowUpPeriod"].ToString(), null, true, "form-control", selectFirstIndex: true)
+                @Html.HiddenGroupFor(model => model.ProccessPeriod, new { @Value = "", id = "FollowUpCopyPeriodId" })
+            </div>
+            <div class="form-group col-lg-6 col-md-4 col-sm-6 col-xs-12 mb-3" id="dvFollowUpDepartment" style="display:none">
+                <div id="divFollowUpEntityTree">
+                    @Html.DepartmentsTree(ViewData["FollowUpDepartmentsData"] as TreeViewModel, model => model.FollowUpEntityId, TreeMode.Single, "treeFollowUpToOrgUnit", true, "GetFollowUpUsersByOrgUnitId", null, "divFollowUpEntityTree")
+                    @Html.HiddenFor(model => model.FollowUpEntityId, new { id = "hdnFromEntityName" })
+                </div>
+            </div>
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3" id="dvfollowUpEmp" style="display:none">
+                <label class="w-100">@DbRes.TResource("User.Transaction.FollowUp.Employee")<span class="stark NotIndividual">*</span></label>
+                @Html.AutoCompleteBuilder("autoCompleteToUserId", "hdnFollowUpCopyToUserId", ViewData["OrgUnitsUsersData"] != null ? ViewData["OrgUnitsUsersData"].ToString() : null, SessionInfo.CurrentUser.Id.ToString(), true, "form-control")
+                @Html.HiddenGroupFor(model => model.FollowUpUserId, new { @Value = "", id = "hdnFollowUpCopyToUserId" }, "")
+                @Html.HiddenFor(model => model.EmployeeName, new { id = "hdnEmployeeName", @class = "UserName" })
+            </div>
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                <label>
+                    @Html.CheckBoxFor(model => model.IsImportant, new { id = "chkIsImportant", @class = "" })
+                    @Html.StickyHiddenFor(model => model.IsImportant, new { id = "hdnIsImportant" })
+                   هامة
+                </label>
+            </div>
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3" id="divFollowupDate" style="display:none">
+
+                <label class="w-100">@DbRes.TResource("User.Transaction.FollowUp.EndDate")<span class="stark NotIndividual">*</span></label>
+                <div class="with-icon">
+                    @Html.CalendarCustom("FollowUpDateCal", "hdnFolloupDateGreg", "hdnFollowUpDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), Model != null ? Model.DateToH : null, "form-control")
+                    <a class=" date-icon2 " onclick="showCalender('FollowUpDateCal')"><img src="~/Content/User/lib/images/SystemIcon/main bar-08.svg" width="30" /></a>
+                    @Html.HiddenGroupFor(model => model.DateTo, new { id = "hdnFolloupDateGreg", AutoComplete = "off" }, "")
+                    @Html.HiddenGroupFor(model => model.DateToH, new { id = "hdnFollowUpDateUm", AutoComplete = "off" }, "")
+                    <i id="FollowUpMessage" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                    <span id="FollowUpdateMessage" style="color:red"></span>
+                </div>
+
+
+            </div>
+        </div>
+
+        @Html.StickyHiddenFor(model => model.TransactionId)
+        @Html.StickyHiddenFor(model => model.FollowUpTypeId, new { id = "hdnfollowuptype" })
+
+    </div>
+</div>
+<script>
+
+    $(function ()
+    {    function callback() {
+        debugger;
+        if ('@ViewData["FollowUpUserId"]' != null) {
+
+                $("#hdnFollowUpCopyToUserId").val('@ViewData["FollowUpUserId"]');
+                $("#autoCompleteToUserId").trigger('change');
+                $("#hdnFollowUpCopyToUserId").trigger('change');
+        }
+    }
+        if ($('#tblPublicFollowup').hasClass("active")) {
+            $("#hdnfollowuptype").val("2");
+        } else if ($('#tblPrivetFoloolwup').hasClass("active")) {
+            $("#hdnfollowuptype").val("1"); // خاصة
+        } else {
+              $("#hdnfollowuptype").val("2");
+        }
+
+
+        $('#ddlFollowUpPeriod').change(function () {
+            debugger;
+        var selectedPeriod= $(this).val();
+        if (selectedPeriod == "أخرى") {
+            $('#FollowUpDateCal').attr('autocomplete', 'off');
+            $('#divFollowupDate').show();
+        } else {
+            $('#divFollowupDate').hide();
+
+        }
+         });
+
+        $('#tblPublicFollowup').click(function (e) {
+
+            $('#tblPublicFollowup').addClass("active");
+            $('#tblPrivetFoloolwup').removeClass("active");
+            $('#dvFollowUpDepartment').hide();
+            $('#dvfollowUpEmp').hide();
+            $("#hdnfollowuptype").val("2");
+        });
+
+        $('#tblPrivetFoloolwup').click(function (e) {
+
+            $('#dvFollowUpDepartment').show();
+            $('#dvfollowUpEmp').show();
+            $('#tblPrivetFoloolwup').addClass("active");
+            $('#tblPublicFollowup').removeClass("active");
+            $("#hdnfollowuptype").val("1"); // خاصة
+
+        });
+    });
+
+
+    $(document).ready(function () {
+        $('#FollowUpDateCal').attr('autocomplete', 'off');
+         
+
+    });
+
+    function GetFollowUpUsersByOrgUnitId(callback) {
+        debugger;
+        if ($("#TransactionFollowUp_FollowUpEntityId").val() != "" && $("#TransactionFollowUp_FollowUpEntityId").val() != undefined)
+        {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetUnitUsers")',
+                data: { id: $("#TransactionFollowUp_FollowUpEntityId").val() },
+                success:
+                    function (data) {
+                        debugger;
+                   $("#autoCompleteToUserId").val("");
+                   $("#hdnFollowUpCopyToUserId").val("");
+                   AutoCompleteChangeList("autoCompleteToUserId", data);
+                   $("#autoCompleteToUserId").prop('disabled', false);
+
+                   if (typeof callback !== 'undefined' && $.isFunction(callback)) {
+                       callback();
+                   }
+               }
+            });
+            return false;
+        }
+        else {
+            $("#autoCompleteToUserId").prop('disabled', true);
+            $("#autoCompleteToUserId").val("");
+            $("#hdnFollowUpCopyToUserId").val("");
+            AutoCompleteChangeList("autoCompleteToUserId", "[]");
+        }
+    } 
+    $(document).on("click", "span[data-node-id]", function () {
+
+        var elemnt = $(this);
+
+ 
+
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('LoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetExternalPartyNodes")',
+                data: { parentId: $(this).data("node-id"), letterId: $("#hdnInboundDocumentType").val(), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+                success:
+               function (data) {
+
+                   $(elemnt).closest('li').children('ul').last().empty()
+
+ 
+
+                   $(elemnt).closest('li').children('ul').last().append(data);
+
+ 
+
+                   if ($(elemnt).attr('data-isRefreshEnabled').toLowerCase() == 'false') {
+
+ 
+
+                       $(elemnt).removeClass("LoadedData")
+
+ 
+
+                   }
+
+ 
+
+               }
+            });
+        }
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('InternalLoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetOrgUnitsNodes")',
+                data: { parentId: $(this).data("node-id"), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+                success:
+               function (data) {
+
+                   $(elemnt).closest('li').children('ul').last().empty()
+
+ 
+
+                   $(elemnt).closest('li').children('ul').last().append(data);
+
+ 
+
+                   $(elemnt).removeClass("InternalLoadedData");
+               }
+            });
+        }
+    });
+</script>
+<style>
+    .RedBorder {
+        border: 1px solid #fe0000 !important
+    }
+
+    .clsHidden {
+        display: none;
+    }
+</style>

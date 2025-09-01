@@ -1,0 +1,62 @@
+﻿
+@using MCS.Framework.Localization
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+<div class="align-self-start main_sidebar">
+    <div class="d-none d-md-block text-left">
+        <a class="nav-link nav-menu-main menu-toggle hidden-xs"
+           href="#"><i><img src="~/Content/Admin/newLib/assets/images/menu/menu.svg"></i></a>
+    </div>
+    <div class=" main-menu menu-fixed menu-light menu-accordion menu-icon-left" data-scroll-to-active="true"
+         style="direction:ltr;" id="MenuSideBar">
+
+        <div class="main-menu-content">
+            <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
+                <li class="nav-item" id="SubLi_1">
+                    @*<a href="System-admin1.html">
+                            <i>
+                                <img src="~/Content/Admin/newLib/assets/images/menu/archive.svg">
+                            </i>
+                            <span class="menu-title">@DbRes.TResource("Admin.GeneralSettings.Title")</span>
+                        </a>*@
+                    @Html.MenuLink(DbRes.TResource("Admin.Layout.TransactionBarcode"), "Index", "BarcodeDesigner", "Admin")
+                </li>
+                <li class="nav-item" id="SubLi_2">
+                    @*<a href="attach.html">
+                            <i>
+                                    <img src="~/Content/Admin/newLib/assets/images/menu/attachment.svg">
+                                </i>
+                            <span class="menu-title">@DbRes.TResource("Admin.TraySettings.Title")</span>
+                        </a>*@
+                    @Html.MenuLink(DbRes.TResource("Admin.Layout.VisitTicketBarcode"), "VisitTicket", "BarcodeDesigner", "Admin")
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- END: Vertical Menu -->
+</div>
+<div class="app-content content">
+    @RenderBody()
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        var UrlActionName = window.location.pathname.split("/")[4];
+
+        switch (UrlActionName) {
+            case "Index":
+                $("#SubLi_1").addClass("active");
+                break;
+            case "VisitTicket":
+                $("#SubLi_2").addClass("active");
+                break;
+            default:
+                $("#SubLi_1").addClass("active");
+                break;
+        }
+    });
+</script>

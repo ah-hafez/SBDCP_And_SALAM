@@ -1,0 +1,120 @@
+﻿@using MCS.Framework.Localization
+@model MCS.UI.Areas.Admin.Models.OrgUnit.OrgUnitUserVM
+
+@{
+    Layout = "~/Views/Shared/_AdminDialogLayout.cshtml";
+
+}
+
+
+<script>
+
+    $(document).on('focusout', '#ddlUser',function () {
+
+        $('#hdnUserName').val($('#ddlUser').val());
+    });
+
+    var paramArray = $.parseJSON($('#hdnSaveDepartmentsData').val());
+    var paramElementIndex = ElementIndex(paramArray, @ViewData["OrgUnitKey"]);
+    pageGrids.grdOrgUnitUsers.param = new Array();
+    if (paramArray) {
+        pageGrids.grdOrgUnitUsers.param.push(JSON.stringify(paramArray[paramElementIndex]));
+    }
+
+    function OnSuccess(departmentData) {
+        if (departmentData.MessageType != 2) {
+            $('#hdnDepartmentsStructure').val($('#hdnSaveDepartmentsData').val());
+            $('#dvOrgUnitUsersGrid').html(departmentData.Html);
+            ClearInputs('OrgUnitUsersContent');
+        }
+        else {
+
+            ShowWarningMessage(departmentData.MessageText);
+        }
+    }
+    function DeleteUser(departmentData) {
+        
+        $('#hdnDepartmentsStructure').val($('#hdnSaveDepartmentsData').val());
+        $('#dvOrgUnitUsersGrid').html(departmentData.Html);
+
+        //var paramArray = $.parseJSON($('#hdnSaveDepartmentsData').val());
+        //pageGrids.grdOrgUnitUsers.param[0]= JSON.stringify(paramArray[paramElementIndex]);
+
+        ClearInputs('OrgUnitUsersContent');
+
+        var usersRelatedToAssignmentPaper = $.parseJSON(departmentData.UsersRelatedToAssignmentPaper);
+
+        if (usersRelatedToAssignmentPaper.length > 0) {
+
+            for (var i = 0; i < usersRelatedToAssignmentPaper.length; i++) {
+
+                var msg = usersRelatedToAssignmentPaper[i] + '&nbsp' + '@DbRes.TResource("Admin.OrgUnitUsers.DeleteUsersConnectWithAPErrorMsg")';
+                ShowErrorMessage(msg);
+            }
+        }
+
+        if (departmentData.ManagerName != null && departmentData.ManagerName != "" ) {
+            ShowErrorMessage(departmentData.ManagerMsg);
+        }
+    }
+
+</script>
+
+<div class="modal-body" id="dvOrgUnitUsers">
+    @using (Html.BeginForm("OrgUnitUsers", "OrgUnitStructure", FormMethod.Post, new { id = "frmOrgUnitUsers" }))
+    {
+        @Html.AntiForgeryToken()
+        <div id="OrgUnitUsersContent">
+            @Html.StickyHidden("orgUnitKey", ViewData["OrgUnitKey"].ToString(), new { id = "hdnOrgUnitKey" });
+            @Html.StickyHidden("departmentsStructure", null, new { id = "hdnDepartmentsStructure" })
+            <script>
+                $('#hdnDepartmentsStructure').val($('#hdnSaveDepartmentsData').val());
+            </script>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            @Html.CustomLabelFor(model => model.Id, new { id = "lblUserNoTitle", @class = "col-md-2 control-label" })
+                            <div class="col-md-10">
+                                <div class="">
+                                    @Html.AutoComplete("ddlUser", "hdnUser", Newtonsoft.Json.JsonConvert.SerializeObject(ViewData["ListOfUsers"]).ToString(), true, null, "form-control")
+                                    @Html.HiddenGroupFor(model => model.UserName, new { id = "hdnUserName" })
+                                    @Html.HiddenGroupFor(model => model.Id, new { id = "hdnUser", @Value = "" }, "OrgUnitUsers")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style=" clear:both;"></div>
+            <div class="panel-footer middle">
+                @Html.ActionButton(DbRes.TResource("Admin.OrgUnitUsers.Add"), "OrgUnitAddUsers", null, null, null, "OnSuccess", null, "post", "OrgUnitUsers", "Add", "frmOrgUnitUsers", "btn btn-permissions pull-right")
+                @Html.ClientButton("<i class='glyphicon glyphicon-user'></i> " + DbRes.TResource("Admin.OrgUnitUsers.CreateUser"), "btnCreateUser", "btn btn-primary pull-left", "CreateUser")
+            </div>
+        </div>
+    }
+    <div class="panel-body">
+        <div class="row" id="dvOrgUnitUsersGrid">
+            @Html.Partial("~/Areas/Admin/Views/OrgUnitStructure/_OrgUnitUsersGridPartial.cshtml", ViewData["GridData"])
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+</div>
+
+
+<script>
+    function CreateUser() {
+        var token = $('#frmOrgUnitUsers').find("input[name='__RequestVerificationToken']").val();
+        ShowDialogAjax('@Url.Action("CreateUser")', {
+            orgUnitKey: "@ViewData["OrgUnitKey"]",
+            __RequestVerificationToken: token
+        }, 'OpenCreateUserDialogSuccess', 'dialogbox col-md-12 ');
+    }
+
+    function OpenCreateUserDialogSuccess(data, $obj)
+    {
+        $obj.setContent(data.Html);
+        jQuery.validator.unobtrusive.parse('#formAddUser');
+    }
+</script>

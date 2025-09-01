@@ -1,0 +1,352 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models
+@using MCS.GridMvc.Ajax.GridExtensions
+
+
+@model List<UserPendingGroupVM>
+@{
+    ViewBag.Title = DbRes.TResource("Admin.UserManagement.UserManagement");
+    Layout = "~/Areas/Admin/Views/Shared/_UsersTraysLayout.cshtml";
+}
+
+<div class="content_container site_border">
+    <div class="mx-3 mx-md-5 header-container d-flex flex-row align-items-center ">
+        <div class="d-flex flex-column flex-lg-row align-items-lg-center flex-grow-1 mb-3 mb-lg-0">
+            <h3 class="site-color mb-2 mb-lg-4">@DbRes.TResource("Global.admin.RoleRequest") </h3>
+         
+        </div>
+  
+    </div>
+
+
+
+
+
+
+    <div class="boxes px-md-1 mx-aut">
+        <div class="flex-wrap mx-auto mx-md-4" >
+            <div style="margin-bottom:50px;">
+                <div class="boxes px-md-2 grid-mvc" data-lang="ar" data-gridname="UsersGrid" data-selectable="true" data-multiplefilters="false">
+                    <div class="tbody">
+                        <div class="d-flex flex-wrap mx-auto mx-md-4">
+                            <input type="hidden" name="UserProfileVMs.index" autocomplete="off" value="50ffa560-adca-48a0-a1ed-b7bf653afd8e">
+                            @foreach (var item in Model)
+                            {
+                                <div class="box-grid">
+
+                                    <div class="box no_sorting animated zoomIn buttons-action">
+                                        <div class="correspondence-b d-flex flex-wrap">
+                                            <div class="correspondence-h">
+                                                <div class="title">
+
+                                                    @item.GroupName
+                                                </div>
+                                            </div>
+                                            <div class="f-line w-full contact">
+                                                <div class="heading">المستخدم </div>
+                                                <div class="ml-2">     @item.UserName</div>
+
+                                            </div>
+                                            <div class="correspondence-icon d-flex" style="width:100%">
+                                                <div>
+                                                    <a class="btn btn-site p-1 pr-2 pl-2" title="قبول" onclick="ShowCustomConfirmMessage('@DbRes.TValidation("Admin.Confirm.Activation")', 'ApproveRoleRequested',  @item.Id)">
+                                                        قبول
+                                                    </a>
+                                                    <a class="btn btn-site  p-1 pr-2 pl-2" title="قبول" onclick="ShowCustomConfirmMessage('@DbRes.TValidation("Admin.Confirm.Activation")', 'RejectRoleRequested',  @item.Id)">
+                                                        رفض
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    
+                                </div>
+                            }
+
+                            </div>
+
+                    </div>
+               
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    function ApproveRoleRequested(id) {
+     
+        $.ajax({
+            type: 'get',
+            data: { id: id },
+            url: '@Url.Action("ApproveRoleRequest", "User")',
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    // ShowInformationMessage('تمت العملية')
+                    redirect();
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            }
+        });
+    }
+
+    function RejectRoleRequested(id) {
+     
+        $.ajax({
+            type: 'get',
+            data: { id: id },
+            url: '@Url.Action("RejectRoleRequest", "User")',
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    ShowInformationMessage(data.MessageText, redirect());
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            }
+        });
+    }
+
+
+    
+    function redirect() {
+        setTimeout(location.reload(), 2000);
+
+    }
+
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+@*<div class="page-title">
+        <h2><span class="fa fa-arrow-circle-o-left"></span>@DbRes.TResource("Admin.UserCategory.UsersAndTrays")</h2>
+    </div>
+    <div class="page-content-wrap">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-horizontal form-row">
+                    <div class="panel panel-default">
+                        <div id="divAddUser">
+                            <div id="toggleAdd">
+                                @Html.Partial("_UserManagementAddPartial", Model.UserProfileAddVM)
+                            </div>
+                        </div>
+                        <div id="divEditUser" style="" class="heddin_">
+                            <div id="toggleEdit">
+                                @Html.Partial("_UserManagementEditPartial", Model.UserProfileEditVM)
+                            </div>
+                        </div>
+
+                        <div id="divGridContainer">
+                            <div class="panel-body">
+                                <div class="row">
+                                    @Html.Partial("~/Areas/Admin/Views/User/_UserManagementGridPartial.cshtml", ViewData["GridData"])
+                                    <input type="hidden" id="hdnPermissionId" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+
+        //function ShowEditDiv() {
+        //    $("#divEditUser").css("display", "block");
+        //    $("#divAddUser").css("display", "none");
+        //}
+
+        //function HideEditDiv() {
+        //    $("#divEditUser").css("display", "none");
+        //    $("#divAddUser").css("display", "block");
+        //}
+
+        function OnDeleteSuccess(data, divUpdatData, deletedList) {
+
+            if (data.UsersUsedList.length == 0) {
+
+                ShowSuccesMessage(data.MessageText);
+            }
+            else {
+
+                var msg = '';
+
+                for (var i = 0; i < data.UsersUsedList.length; i++) {
+
+                    if (msg == '')
+                        msg = data.UsersUsedList[i];
+                    else
+                        msg = msg + '</br>' + data.UsersUsedList[i];
+                }
+
+                msg = '@DbRes.TResource("Admin.User.DeleteUsersErrorMsg")' + '</br>' + msg;
+
+                ShowErrorMessage(msg);
+            }
+
+            var deletedArray = deletedList.split(',');
+
+            for (var i = 0; i < deletedArray.length; i++) {
+
+                var deleted = true;
+
+                for (var y = 0; y < data.UsersUsedList.length; y++) {
+
+                    if (deletedArray[i] == data.UsersUsedList[y]) {
+
+                        deleted = false;
+                    }
+                }
+
+                if (deleted)
+                    if (deletedArray[i] == $('#hdnEditId').val())
+                        HideEditDiv();
+            }
+        }
+    </script>
+    <script type="text/javascript">
+        function OpenDialog(Id) {
+            ShowDialogAjax('@Url.Action("RenderAddPermissionDialog", "Permissions" )', { groupId: Id }, 'OpenDialogSuccess');
+
+        }
+        function OpenDialogSuccess(data, $obj) {
+            $obj.setContent(data.Html);
+            jQuery.validator.unobtrusive.parse('#frmAddPermission');
+        }
+
+        function OnSuccess(data, div) {
+            if (data.MessageType != 2) {
+                $("#" + div).html("");
+                $("#" + div).html(data.Html);
+                jQuery.validator.unobtrusive.parse('#' + div);
+
+                ShowSuccesMessage(data.MessageText);
+                __dialog.close();
+            }
+            else {
+
+                ShowErrorMessage(data.MessageText);
+            }
+        }
+
+        function EditPermission(Id) {
+            ShowDialogAjax('@Url.Action("RenderEditPermissionDialog", "Permissions" )', { PermissionId: Id }, 'OpenDialogSuccess');
+        }
+        function DeletePermission(Id) {
+            ShowConfirmMessage('@(DbRes.TResource("Admin.Permissions.DeleteConfirm"))', "ConfirmDeletePermission");
+            $("#hdnPermissionId").val(Id);
+        }
+        function ConfirmDeletePermission() {
+            var id = $("#hdnPermissionId").val();
+            $.ajax({
+                type: 'post',
+                data: { permissionId: id },
+                url: '@Url.Action("DeletePermission")',
+                success: function (data) {
+                    if (data.MessageType != 2) {
+                        $("#AddTree").html("");
+                        $("#AddTree").html(data.Html);
+                        jQuery.validator.unobtrusive.parse('#AddTree');
+
+                        ShowSuccesMessage(data.MessageText);
+                    }
+                    else {
+                        ShowErrorMessage(data.MessageText);
+                    }
+                }
+            });
+        }
+        function SendEmail(id) {
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("ResendEmail")',
+                data: { userId: id },
+                success:
+               function (data) {
+                   if (data.MessageType != 2) {
+                       ShowSuccesMessage(data.MessageText);
+                   }
+
+                   else {
+                       ShowErrorMessage(data.MessageText);
+                   }
+               }
+            });
+        }
+        $(document).ready(function () {
+            $(".switch").click(function () {
+                var token = $('form:first').find("input[name='__RequestVerificationToken']").val();
+                var id = $(this).children(':first').data("id");
+                var checked = $(this).children(':first').is(':checked');
+                $.ajax({
+                    type: 'post',
+                    url: '@Url.Action("ActivateUser")',
+                    data: { userId: id, isActive: checked, __RequestVerificationToken: token },
+                    success:
+                   function (data) {
+
+                   }
+                });
+            });
+
+            $('#divEditUser').hide();
+        });
+    </script>
+
+*@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

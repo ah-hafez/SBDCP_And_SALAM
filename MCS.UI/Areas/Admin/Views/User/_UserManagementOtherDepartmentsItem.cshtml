@@ -1,0 +1,19 @@
+﻿@model MCS.DTO.OrgUnitDTO
+@using (Html.BeginCollectionItem("OrgUnitList"))
+{
+    <div class='added_item mr-4 mb-3' id='EntityBox_@Model.Id'>
+        <span class='added-class d-flex'>
+            <span> @Model.Name </span>
+            <a onclick='deleteEntityBox(@Model.Id)' class='color-burgundy ml-2'><i class='icon-tables-delete'></i></a>
+        </span>
+    </div>
+
+    @Html.HiddenFor(m => m.Id)
+}
+<script>
+    $(document).ready(function () {
+       
+        selectedEntities.push("@Model.Id");
+        $("#selectedEntities").val(selectedEntities.join(','));
+    });
+</script>

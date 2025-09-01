@@ -1,0 +1,58 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.Tray
+@using MCS.UI.Areas.User.Models.Lookups
+@model EditTrayVM
+@{
+    Layout = null;
+}
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmEditTray", @class = "form-horizontal form-row" }))
+{
+    @Html.AntiForgeryToken()
+    <p>@DbRes.TResource("Global.Forms.MandatoryFields")</p>
+    <div class="row">
+        <div class="col-md-6">
+            @{List<CultureVM> Culture = (List<CultureVM>)ViewData["Culture"];}
+            @for (int i = 0; i < Culture.Count; i++)
+            {
+                <div class="form-group">
+                    @Html.CustomLabelFor(model => model.Names[i].CultureName, new { @class = "col-md-4 control-label" }, DbRes.TResource("Admin.Trays.TrayName." + Culture[i].ShortName))
+                    @Html.StickyHiddenFor(model => model.Names[i].CultureId, new { Value = Culture[i].Id })
+                    @Html.HiddenFor(model => model.Names[i].Id)
+                    <div class="col-md-8">
+                        <div class="">
+                            @Html.TextBoxGroupFor(model => model.Names[i].Text, "EditTray", new { @class = "form-control" }, DbRes.TValidation(string.Format("Admin.Trays.NameRequired.{0}", Culture[i].ShortName)))
+                        </div>
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+            }
+            @Html.HiddenFor(model => model.Id)
+        </div>
+        <div class="col-md-6">
+
+        </div>
+    </div>
+    <div class="panel-footer middle">
+        @Html.ActionButton(DbRes.TResource("Admin.Trays.Edit"), "EditTray", "GridDiv", null, null, "OnSuccess", null, "post", "EditTray", "btnEditTray", "frmEditTray", "btn btn-save pull-right")
+        <a class="btn-link pull-right" id="btnCancel" onclick="HideEditDiv()">@DbRes.TResource("Admin.Trays.Cancel")</a>
+    </div>
+}
+<script>
+    function OnSuccess(data, div) {
+        if (data.MessageType != 2) {
+            $("#" + div).html("");
+            $("#" + div).html(data.Html);
+            jQuery.validator.unobtrusive.parse('#' + div);
+            ShowSuccesMessage(data.MessageText)
+            $("#EditDiv").hide();
+
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function HideEditDiv() {
+        $("#EditDiv").hide();
+    }
+</script>

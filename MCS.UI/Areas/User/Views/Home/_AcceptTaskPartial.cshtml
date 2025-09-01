@@ -1,0 +1,53 @@
+﻿@using MCS.Framework.Localization
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <title></title>
+</head>
+<body>
+    <div class="content-rtl panel panel-default dialogbox_panel">
+        <div class="panel-heading">
+            <h3 class="panel-title">@DbRes.TResource("User.Task.AcceptTask.CompleteTask")</h3>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label">@DbRes.TResource("User.Task.AcceptTask.Subject")</label>
+                    <div class="col-md-8">
+                        <div class="">
+                            <input type="text" class="form-control" value="">
+                        </div>
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label">@DbRes.TResource("User.Task.AcceptTask.DownloadFile")</label>
+                    <div class="col-md-8">
+                        <div class="">
+                            <input type="file" class="fileinput" name="filename2" id="filename2" title='@DbRes.TResource("User.Task.AcceptTask.Show")' />
+                        </div>
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-12 control-label">@DbRes.TResource("User.Task.AcceptTask.Description")</label>
+                    <div class="col-md-12">
+                        <div class="">
+                            <textarea class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+        <div class="panel-footer">
+            <button class="btn btn-save pull-right">@DbRes.TResource("User.Task.AcceptTask.Send")</button>
+
+            <button class="btn btn-default" type="button" onclick="__dialog.close();">@DbRes.TResource("User.Task.AcceptTask.Close")</button>
+        </div>
+    </div>
+
+</body>
+</html>

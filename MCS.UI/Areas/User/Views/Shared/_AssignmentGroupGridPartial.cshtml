@@ -1,0 +1,22 @@
+﻿@using MCS.UI.Areas.User.Models.Assignment;
+@model AjaxGrid<TransactionAssignmentVM>
+
+@{string controller = TempData.Peek("ControllerName") != null ? TempData.Peek("ControllerName").ToString() : ViewContext.RouteData.Values["controller"].ToString();}
+
+@Html.Grid(Model).Named("grdAssignmentGroup").Columns(columns =>
+    {
+        columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").Titled("", "<input type='checkbox' id='chkall'></input>")
+                                          .RenderValueAs(o =>
+                                            @<div class="chkCol" id="spanCheckBox">
+                                                <input id="AssigneeSelectorcheckbox" type="checkbox" />
+                                            </div>);
+
+                columns.Add(model => model.GroupId, true);
+                columns.Add().Encoded(false).Sanitized(false).Titled(DbRes.TResource("User.Transaction.Assignment.GroupId")).RenderValueAs(o => @<a class="group_content" data-groupid="@o.GroupId">@o.GroupName</a>);
+                        columns.Add(model => model.ActionNameForAll).Titled(DbRes.TResource("User.Transaction.Assignment.ActionForAllId"));
+            columns.Add(model => model.Count).Titled(DbRes.TResource("User.Transaction.Assignment.Count"));
+
+                        columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => Html.ConfirmImageButton(Url.Action("DeleteAssignmentGroups", controller), "grdAssignmentGroup", 1, "dvAssignmentGroupGrid", "dvAssignmentGroupBody :input", null, "OnDeleteGroupSuccess", null, "post", DbRes.TResource("Grid.DeleteMassage"))).Titled(DbRes.TResource("Grid.Delete"));
+                    }).WithPaging(GridHelper.PageSize).Sortable().Filterable().WithMultipleFilters().UpdateActionUrl(Url.Action("UpdateGridAssignmentGroup", controller)).RenderDeleteButton(Url.Action("DeleteAssignmentGroups", controller), 1, "dvAssignmentGroupBody :input", "dvAssignmentGroupGrid", "OnDeleteGroupSuccess")
+
+

@@ -1,0 +1,46 @@
+﻿
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.Escalation
+@using MCS.GridMvc.Html;
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<EscalationVM>
+
+@{
+    ViewBag.Title = "_EscalationsGridPartial";
+}
+<span class="roundedred ml-3">@Model.GridItems.Count</span><span class="pl-2 gray4">@DbRes.TResource("Admin.Grid.Records")</span>
+
+@Html.Grid(Model).CollectionName("EscalationsGrid").Named("grdEscalations").Columns(columns =>
+{
+    columns.Add(model => model.Id).Titled(DbRes.TResource("")).Css("hidden_");
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Id, new { id = "Id_" + model.Id }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.EscalationActionId, new { id = "EscalationActionId_" + model.Id }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.EscalationAction, new { id = "EscalationActionName_" + model.Id }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.EscalationTo, new { id = "EscalationToName_" + model.Id }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.EscalationToId, new { id = "EscalationToId_" + model.Id }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.EscalationAfterDays, new { id = "EscalationAfterDays_" + model.Id }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.TransactionCategory, new { id = "TransactionCategory_" + model.Id }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.PriorityId, new { id = "PriorityId_" + model.PriorityId }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+
+
+    columns.Add(model => model.EscalationAfterDays, "EscalationAfterDays").Titled(DbRes.TResource("Admin.Escalation.NumberofDays"));
+    columns.Add(model => model.EscalationAction, "EscalationAction").Titled(DbRes.TResource("User.Transaction.Assignment.ActionId"));
+    columns.Add(model => model.EscalationTo, "EscalationTo").Titled(DbRes.TResource("Admin.Setting.EscalationTo"));
+
+
+    columns.Add().Encoded(false).Sanitized(false).Css("table-icon d-flex align-items-center").RenderValueAs(model => @Html.ClientLinkTag("", cssClass: "color-green", title: DbRes.TResource("Grid.Edit"), clientFunctionToCall: "GetEscalationById(" + model.Id + " , " + model.PriorityId + ")", innerHtml: "<i class='icon-tables-edit'></i>"));
+    columns.Add().Encoded(false).Sanitized(false).Css("table-icon d-flex align-items-center").RenderValueAs(model => @Html.ClientLinkTag("", cssClass: "color-burgundy",  clientFunctionToCall: "DeleteEscalation(" + model.Id + ")", innerHtml: "<i class='icon-tables-delete'></i>"));
+
+    columns.Add().Encoded(false).Sanitized(false).Css("").RenderValueAs(model =>
+
+   MvcHtmlString.Create(
+       "<div class=''>" +
+
+            //@Html.GridImageButton("GetEscalation", "grdEscalations", 0, OperationType.Update, "dvEscalationForm_" + model.PriorityId, null, null, "EscalationOnEditSuccess", "", "get") +
+
+            //@Html.GridImageButton("DeleteEscalation", "grdEscalations", 0, OperationType.Delete, "EscalationsGrid_" + model.PriorityId, null, null, "EscalationOnDeleteSuccess", "") +
+            "</div>"));
+
+
+})
+
+

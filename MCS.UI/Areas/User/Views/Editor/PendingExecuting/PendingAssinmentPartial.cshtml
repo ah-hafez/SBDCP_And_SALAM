@@ -1,0 +1,789 @@
+﻿
+@using MCS.Framework.Localization
+@using MCS.Common
+@using MCS.UI.Areas.User.Models.Assignment
+@model TransactionAssignmentVM
+
+@{
+    string controller = ViewData["ControllerName"] != null ? ViewData["ControllerName"].ToString() : ViewContext.RouteData.Values["controller"].ToString();
+    TempData["isAssignmentView"] = true;
+}
+@{
+    Model.ToOrgUnitId = SessionInfo.OrgUnitId;
+    Model.ToUserId = SessionInfo.CurrentUser.Id;
+    Model.DeliveryMethodId = 236;
+}
+<script src="~/Scripts/Transaction.js"></script>
+<div class="content_container white-bg">
+
+    @using (Html.BeginForm("SendAssignmentsByEditor", "File", FormMethod.Post, new { id = "frmEditorAssignment" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class=" editor">
+            <div id="dvEditorAssignmentContainer">
+                <div class="single-wrapper">
+                    <div class="row">
+                        <div class="form-horizontal">
+                            @Html.HiddenGroupFor(model => model.ToOrgUnitName, new { id = "hdnAssignmentToOrgUnitName" }, "AssignmentIndividual")
+                            <hr />
+
+                            <div class="form-group col-xs-12  hide">
+                                <label>@DbRes.TResource("User.Transaction.Assignment.SearchType")</label>
+                                <div>
+                                    @Html.RadioButton("rbgSearchMethod", @DbRes.TResource("User.Transaction.Assignment.SearchByUser"), true, htmlAttributes: new { @onchange = "toggleSearchMethod()", id = "EditorAssignmentPaper_rbSearchByUser" })
+                                    @DbRes.TResource("User.Transaction.Assignment.SearchByUser")
+                                    @Html.RadioButton("rbgSearchMethod", @DbRes.TResource("User.Transaction.Assignment.SearchByOrgUnit"), false, htmlAttributes: new { @onchange = "toggleSearchMethod()", id = "EditorAssignmentPaper_rbSearchByOrgUnit" })
+                                    @DbRes.TResource("User.Transaction.Assignment.SearchByOrgUnit")
+                                </div>
+                            </div>
+                            <div class="form-group col-xs-12" id="divUser">
+                                @Html.LabelFor(model => model.ToUserId, new { @class = "w-100" })
+                                @*@Html.EditorFor(model => model.ToUserId, "AutoComplete", additionalViewData: new { autoCompleteControlid = "ddlEditorAssginmentIndividualToUserId", hdnIdToSaveValue = "hdnEditorAssginmentIndividualToUserId", items = "", selectedId = Model != null ? Model.ToUserId.ToString() : null, matchAnywhere = true, hdnExtraParametersId = "", selectFirstIndex = false, validationGroup = "AssignmentIndividual", onChangeCallback = "DoCheckUser", sourceMethod = Url.Action("AutoComplete_SearchUsersByOrgUnit", "Inbound"), sourceParameters = "" })*@
+                                @Html.EditorFor(model => model.ToUserId, "AutoComplete", additionalViewData: new { autoCompleteControlid = "ddlEditorAssginmentIndividualToUserId", hdnIdToSaveValue = "hdnEditorAssginmentIndividualToUserId", items = "", selectedId = Model != null ? Model.ToUserId.ToString() : null, matchAnywhere = true, hdnExtraParametersId = "", selectFirstIndex = false, validationGroup = "AssignmentIndividual" })
+                                @Html.HiddenFor(model => model.ToUserName, new { id = "hdnAssignmentPaperUserName" })
+                            </div>
+                            <div class="form-group col-xs-12" id="divOrgUnit">
+                                <div class="TreeHeight" id="dvEditorTreeAssignment">
+                                    <div id="orgUnit_user">
+                                        <label>@Html.DisplayNameFor(model => model.ToOrgUnitId)<span class="stark">*</span></label>
+                                        @Html.EditorFor(model => model.ToOrgUnitId, "OrgHierarchyCaller", additionalViewData: new { treeId = "treeEditorAssignment", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Shared"), onClickfunction = "DoCheckOrgUnit", ValidationGroup = "AssignmentIndividual", ShowAddPartyButton = false, GetChildrenActionParameters = Newtonsoft.Json.JsonConvert.SerializeObject(new { UserId = "##ddlEditorAssginmentIndividualToUserId_hdnIdToSaveValue" }) })
+                                    </div>
+                                    <div id="orgUnit_Department">
+                                        @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.ToOrgUnitId, TreeMode.Single, "treeEditorAssignment", true, "GetDirectedToUsersByOrgUnitId", "AssignmentIndividual", "dvEditorTreeAssignment")
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+
+
+                            <div class="form-group col-xs-12 ">
+                                <label class="w-100">@DbRes.TResource("User.Transaction.Assignment.ActionId")<span class="stark">*</span> </label>
+                                @Html.AutoCompleteBuilder("ddlEditorAssginmentIndividualActionId", "hdnEditorAssginmentIndividualActionId", ViewData["AllActionsData"] != null ? ViewData["AllActionsData"].ToString() : null, Model != null ? Model.ActionId.ToString() : null, true, "form-control", "hdnEditorAssginmentIndividualActionTypeId")
+                                @Html.HiddenGroupFor(model => model.ActionId, new { @Value = Model.ActionId, id = "hdnEditorAssginmentIndividualActionId" }, "AssignmentIndividual")
+                                @Html.HiddenGroupFor(model => model.ActionName, new { id = "hdnEditorAssginmentIndividualActionName" }, "AssignmentIndividual")
+                                @Html.HiddenGroupFor(model => model.ActionTypeId, new { @Value = "", id = "hdnEditorAssginmentIndividualActionTypeId" }, "AssignmentIndividual")
+                            </div>
+
+                            <div class="form-group col-xs-12 hidden_">
+                                <label class="w-100">@DbRes.TResource("User.Transaction.Assignment.DeliveryMethod")  <span class="stark">*</span></label>
+                                @Html.AutoCompleteBuilder("ddlDeliveryMethod", "hdnDeliveryId", ViewData["DeliveryMethod"].ToString(),
+                               Model.DeliveryMethodId != 0 ? Model.DeliveryMethodId.ToString() : null, true, "form-control", onChangeCallback: "onChangePendingAssinmentDeliveryMethod")
+                                @Html.HiddenGroupFor(model => model.DeliveryMethod, new { @Value = "", id = "hdnDeliveryMethod" }, "AssignmentIndividual")
+                                @Html.HiddenGroupFor(model => model.DeliveryMethodId, new { @Value = "", id = "hdnDeliveryId" }, "AssignmentIndividual")
+                            </div>
+                            <div id="ReporterContent" class="hide">
+                                <div class="form-group col-xs-12 ">
+                                    <label class="w-100">@DbRes.TResource("User.Transaction.Outbound.Reporter") </label>
+                                    @Html.AutoCompleteBuilder("ddlBasicReporter", "hdnBasicReporter", ViewData["Reporters"].ToString(), Model != null ? Model.ReporterId.ToString() : null, true, "form-control")
+                                    @Html.HiddenGroupFor(model => model.ReporterId, new { @Value = "", id = "hdnBasicReporter" })
+                                </div>
+                                <div class="form-group col-xs-12 ">
+
+                                    <label class="w-100"></label>
+                                    @Html.ClientButton("<i class='glyphicon glyphicon-plus'></i>" + DbRes.TResource("User.Transaction.BasicInfo.AddNewReporter"), null, " btn btn-st5 ml-3", "AddReporter", UserClaims.Reporter.AddReporter)
+                                </div>
+                            </div>
+                            <div class="form-group col-xs-12 ">
+                                <label class="w-100">@DbRes.TResource("User.Transaction.Assignment.Remarks") </label>
+                                @Html.TextAreaGroupFor(model => model.Remarks, new { @class = "form-control", @rows = "3", maxlength = "500" }, "AssignmentIndividual")
+                            </div>
+                            @Html.StickyHidden("hdnIndexIndividual", null, new { id = "hdnIndexIndividual" })
+                        </div>
+                    </div>
+                </div>
+
+                @Html.StickyHidden("trayId", ViewData["TrayType"].ToString())
+                @Html.StickyHidden("page")
+                @Html.StickyHidden("gridColumn")
+                @Html.StickyHidden("fromDate")
+                @Html.StickyHidden("toDate")
+                @Html.StickyHidden("number")
+                @Html.StickyHidden("filter")
+                @Html.StickyHidden("dateType")
+                @Html.StickyHidden("dir")
+                @Html.StickyHidden("isConfirmed", "false")
+                @Html.StickyHidden("transIds", ViewData["selectedTransIds"].ToString(), new { id = "transIds" })
+
+            </div>
+            <div class="row">
+                @if ((int)ViewData["IsElcOutBound"] == (int)TrayType.ElcOutBound)
+                {
+                    <div class="col-sm-12  text-center">
+                        <input class="btn-site" id="GetUserDelegationsById" type="button" value="@DbRes.TResource("User.Transaction.Assignment.Send")">
+                        @Html.ActionButton(DbRes.TResource("User.Transaction.Assignment.Send"), Url.Action("CancelElcOutboundWithAssignments", controller), "", null, "", "SendEditorAssignmentSuceeded", "", "Post",
+                                   null, "btnEditorAssignments", "frmEditorAssignment", "btn btn-st1 btn-lg mx-1 mb-2 hidden_")
+                    </div>
+
+                }
+                else
+                {
+                    <div class="col-sm-12  text-center">
+                        <input class="btn-site" id="GetUserDelegationsById" type="button" value="@DbRes.TResource("User.Transaction.Assignment.Send")">
+                        @Html.ActionButton(DbRes.TResource("User.Transaction.Assignment.Send"), Url.Action("SendAssignmentsByEditor", controller), "", null, "", "SendEditorAssignmentSuceeded", "", "Post",
+                                   null, "btnEditorAssignments", "frmEditorAssignment", "btn btn-st1 btn-lg mx-1 mb-2 hidden_")
+                    </div>
+
+                }
+
+
+                <div class="col-sm-12  text-center" style="display:none">
+                    @Html.ConfirmAction(OperationType.Save, "btnSendEditorAssignments", DbRes.TResource("User.Transaction.Assignment.Send"), Url.Action("SendAssignmentsByEditor", controller), null, null, null, "SendEditorAssignmentSuceeded", null, "الادارة المحالة اليها ليس بها موظفين ,هل انت متأكد ؟", "post", "frmEditorAssignment", "AssignmentIndividual", " btn-site", "CheckAssignment", UserClaims.Assignments.Assign, null)
+
+                    @Html.ConfirmAction(OperationType.Save, "btnsSendEditorAssignments", DbRes.TResource("User.Transaction.Assignment.Send"), Url.Action("CheckOrgUser", controller), null, null, null, "CheckOrgUserSuceeded", null, DbRes.TResource("User.Transaction.Assignment.SendMessage"), "get", "frmEditorAssignment", "AssignmentIndividual", " btn-site d-none", "CheckAssignment", UserClaims.Assignments.Assign, null)
+                </div>
+
+            </div>
+        </div>
+    }
+</div>
+
+
+<div class="modal fade" id="UserDelegationsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">تفويضات الموظف </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="col-lg-12">
+                    <ul id="UserDelegationsList" style="list-style: disc;"></ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnsConfirmSendEditorAssignments" class="btn-site">استمرار</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+     function ChecktAllowedUserAssignment() {
+        var UserId = $("#ddlEditorAssginmentIndividualToUserId_hdnIdToSaveValue").val();
+        if (!UserId) {
+            $("#btnsSendEditorAssignments").click();
+            return;
+        }
+        $.ajax({
+            type: 'get',
+            data: { FromUserId: UserId },
+            url: '@Url.Action("GetAllowedUserAssignment", "File")',
+            success: function (data) {
+                if (data.selectedUserAllowedAssignmentCount == 0) {
+                    $("#btnsSendEditorAssignments").click();
+                }
+                else {
+                    if (data.isUserAllowAssignment) {
+                        $("#btnsSendEditorAssignments").click();
+                    }
+                    else {
+                        ShowInformationMessage(data.MessageText);
+                    }
+                }
+            }
+        });
+    }
+
+    function CheckUserHasPermission()
+    {
+        debugger;
+        var form = $("#frmEditorAssignment").serialize();
+         $.ajax({
+                type: 'post',
+                url: '@Url.Action("CheckUserHasPermission", "File")',
+               data: form,
+               success:
+                   function (data)
+                   {
+                       switch (data.MessageType)
+                       {
+                           case 0:
+                               return true;
+                           case 1:
+                               return ShowConfirmMessage(data.MessageText,"ContinueAssigneTransaction");
+                               break;
+                           case 1:
+                               // code block
+                               ShowErrorMessage(data.MessageText);
+                               return false;
+                           default:
+                               ShowErrorMessage(data.MessageText);
+                               return false;
+                       }
+
+               }
+            });
+    }
+
+
+
+    $(document).ready(function () {
+        $("#GetUserDelegationsById").click(function () {
+
+            if (EditorAssignmentPaper_rbSearchByUser.checked) {
+                document.getElementsByName('ToOrgUnitId')[1].value = document.getElementsByName('ToOrgUnitId')[0].value;
+            } else {
+                document.getElementsByName('ToOrgUnitId')[0].value = document.getElementsByName('ToOrgUnitId')[1].value;
+            }
+
+            if ($("#frmEditorAssignment").valid()) {
+                var AssginmentIndividualToUserId = $("#ddlEditorAssginmentIndividualToUserId_hdnIdToSaveValue").val();
+                var del = "{0} مفوض بالعمل عن {1} من تاريخ {2} الى تاريخ {3}."
+                var DelegationsList = '';
+                $("ul#UserDelegationsList").html('');
+                $.ajax({
+                    url: "@Url.Action("GetUserDelegationsById", "Editor")",
+                    type: 'GET',
+                    data: { UserId: AssginmentIndividualToUserId },
+                    success: function (data) {
+                        if (data.result != null) {
+                            if (data.result.length > 0) {
+
+                                data.result.forEach(element => {
+                                    var Msg = del;
+                                    Msg = Msg.replace('{1}', $("#ddlEditorAssginmentIndividualToUserId").val());
+                                    Msg = Msg.replace('{0}', element.UserPreferenceName);
+                                    Msg = Msg.replace('{2}', new Date(parseInt(element.FromDate.replace('/Date(', '').replace(')/', ''))).toLocaleDateString());
+                                    Msg = Msg.replace('{3}', new Date(parseInt(element.ToDate.replace('/Date(', '').replace(')/', ''))).toLocaleDateString());
+
+                                    DelegationsList = DelegationsList + '<li>' + Msg + '</li>'
+                                });
+
+                                $("ul#UserDelegationsList").append(DelegationsList);
+                                $("#UserDelegationsModal").modal();
+                            }
+                            else {
+                                $("#UserDelegationsList").hide();
+                                $("#UserDelegationsModal").modal('hide');
+                                ChecktAllowedUserAssignment();
+                            }
+                        } else {
+                            $("#UserDelegationsModal").modal('hide');
+                            ChecktAllowedUserAssignment();
+                        }
+                    },
+                    error: function (a) {
+                    }
+                });
+            }
+        });
+
+
+
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#btnsConfirmSendEditorAssignments").click(function () {
+
+            $("#UserDelegationsModal").modal('hide');
+            $("#btnsSendEditorAssignments").click();
+        });
+
+        onChangePendingAssinmentDeliveryMethod();
+        setTimeout(function () {
+            $('#EditorAssignmentPaper_rbSearchByOrgUnit').click();
+        }, 500);
+    });
+
+    function GetDirectedToUsersByOrgUnitId() {
+        //$("#ddlEditorAssginmentIndividualToUserId_hdnIdToSaveValue").val('')
+        var token = $("#frmEditorAssignment").find("input[name='__RequestVerificationToken']").val();
+        if ($("#ToOrgUnitId").val() != "") {
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("GetUsersByOrgUnitId")',
+                data: { id: $("#ToOrgUnitId").val(), __RequestVerificationToken: token, addSelectOption: true },
+                success:
+               function (data) {
+
+                   //$("#ddlEditorAssginmentIndividualToUserId").val("");
+                   AutoCompleteChangeList("ddlEditorAssginmentIndividualToUserId", data);
+                   $("#ddlEditorAssginmentIndividualToUserId").val("استقبال الادارة");
+                   $("#ddlEditorAssginmentIndividualToUserId_hdnIdToSaveValue").val("-1");
+                   $("#ddlEditorAssginmentIndividualToUserId").prop('disabled', false);
+               }
+            });
+            return false;
+        }
+        else {
+            $("#ddlEditorAssginmentIndividualToUserId").prop('disabled', true);
+            $("#ddlEditorAssginmentIndividualToUserId").val("");
+            AutoCompleteChangeList("ddlEditorAssginmentIndividualToUserId", "[]");
+        }
+    }
+
+     function AddReporter() {
+        __dialog = $.confirm({
+            title: false,
+            content: function ($obj) {
+                return $.ajax({
+                    url: '@Url.Action("AddReporter", "Shared")',
+                    type: 'GET',
+                    cache: false,
+                    success: function (data) {
+                        $obj.setContent(data.Html);
+                        jQuery.validator.unobtrusive.parse('#frmAddReporter');
+                    }
+                });
+            },
+            onOpen: function () {
+                jQuery(function () {
+                    jQuery('.jconfirm-box').draggable({
+                        revert: false,
+                    });
+                });
+                $("#Loader").hide();
+            },
+            onClose: function () {
+                GetAllReporter();
+            },
+            confirmButton: false,
+            icon: 'fa fa-info',
+            animation: 'scale',
+            columnClass: "dialogbox col-md-8 col-md-offset-2 col-xs-8 col-xs-offset-2",
+            backgroundDismiss: false,
+            closeIcon: true,
+            cancelButton: false
+        });
+    }
+     function GetAllReporter() {
+        $.ajax({
+            cache: false,
+            type: 'get',
+            url: '@Url.Action("GetReporters")',
+            success: function (data) {
+                AutoCompleteChangeList("ddlBasicReporter", data);
+                AutoCompleteChangeList("ddlBasicReporterAssinment", data);
+                AutoCompleteChangeList("ddlAssignmentPaperReporter", data);
+                var newItems = $.parseJSON(data);
+                var lastItem = newItems.slice(-1)[0].value;
+                $('#hdnBasicReporter').val(lastItem);
+                $('#hdnBasicReporter').trigger('change')
+            }
+        });
+    }
+    function OnAddReporterSuccess(data) {
+        if (data.MessageType != 2) {
+            ShowSuccesMessage(data.MessageText)
+            ClearInputs('frmAddReporter');
+            __dialog.close();
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+    function onChangePendingAssinmentDeliveryMethod() {
+        var value = $('#hdnDeliveryId').val();
+        switch (parseInt(value)) {
+            case DeliveryMethodType.Paper:
+                ShowHidePendingAssinmentReporterContent(true);
+                break;
+            case DeliveryMethodType.Electronic:
+                ShowHidePendingAssinmentReporterContent(false);
+                break;
+            case DeliveryMethodType.ElectronicPaper:
+                ShowHidePendingAssinmentReporterContent(true);
+                break;
+            default:
+        }
+    }
+
+    function ShowHidePendingAssinmentReporterContent(isShow) {
+        if (isShow) {
+            $('#ReporterContent').removeClass('hide');
+            $('#hdnDeliveryMethod').prop('disabled', false);
+        } else {
+            $('#ReporterContent').addClass('hide');
+            $('#hdnDeliveryMethod').prop('disabled', 'disabled');
+        }
+    }
+
+    $(document).on("click", "span[data-node-id]", function () {
+        var elemnt = $(this);
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('InternalLoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetOrgUnitsNodes")',
+                data: { parentId: $(this).data("node-id"), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+                success:
+                    function (data) {
+                        $(elemnt).closest('li').children('ul').last().empty()
+                        $(elemnt).closest('li').children('ul').last().append(data);
+                        $(elemnt).removeClass("InternalLoadedData");
+                    }
+            });
+        }
+    });
+
+    function CheckAssignment() {
+        if ($('#dvEditorAssignmentContainer .txtDepartmentName').val() == "") {
+            $('#dvEditorAssignmentContainer .txtDepartmentName, #dvEditorAssignmentContainer .txtDepartmentNumber').addClass("RedBorder");
+        }
+        else {
+            $('#dvEditorAssignmentContainer .txtDepartmentName, #dvEditorAssignmentContainer .txtDepartmentNumber').removeClass("RedBorder");
+        }
+        return true;
+    }
+
+    function ValidateUser() {
+        if ($("#hdnEditorAssginmentIndividualToUserId").val() == "") {
+            return false;
+        }
+        return true;
+    }
+
+    @if (!Convert.ToBoolean(ViewData["IsAllowedToCreateGroup"]))
+    {
+            <text>
+            $("#dvEditorAssignmentGroupInputs :input").each(function () {
+                $(this).attr("disabled", true);
+            });
+            </text>
+     }
+
+    $('._openDia').click(function () {
+        ShowDialog('@Url.Action("EditorAssignmentGroupAdd")');
+    });
+
+    $(document).on('click', '#btnPrintDeliveryReportDialog', function () {
+        var transactionId = $('#dvEditorAssignmentContainer #hdnAssignmentsTransactionId').val();
+        ShowDialog('@Url.Action("OpenDeliveryReport", controller)' + '?transactionId=' + transactionId);
+    });
+
+    $(document).on("change", "#ddlEditorAssginmentIndividualToUserId", function () {
+        $("#hdnToEditorAssginmentIndividualUserName").val($(this).val());
+    });
+
+    $(document).on("change", "#ddlEditorAssginmentIndividualActionId", function () {
+        $("#hdnEditorAssginmentIndividualActionName").val($(this).val());
+
+    });
+
+    $(document).on("change", "#ddlDeliveryMethod", function () {
+        $("#hdnDeliveryMethod").val($(this).val());
+    });
+
+    $(document).on("change", "#ddlEditorAssignmentGroupId", function () {
+        $("#hdnEditorGroupName").val($(this).val());
+    });
+
+    $(document).on("change", "#ddlEditorActionForAllId", function () {
+        $("#hdnEditorActionNameForAll").val($(this).val());
+    });
+
+    $(document).on('click', '#btnPrintDeliveryReport', function () {
+        var transactionId = $('#dvEditorAssignmentContainer #hdnAssignmentsTransactionId').val();
+        ShowDialog('@Url.Action("OpenDeliveryReport", controller)' + '?transactionId=' + transactionId);
+    });
+
+    function DoCheckUser() {
+
+        var rbSearchByUser = $("#EditorAssignmentPaper_rbSearchByUser");
+
+        if (rbSearchByUser.is(':checked')) {
+            ClearInputs('divOrgUnit')
+        }
+    }
+    function DoCheckOrgUnit() {
+        var rbSearchByOrgUnit = $("#EditorAssignmentPaper_rbSearchByOrgUnit");
+
+        if (rbSearchByOrgUnit.is(':checked')) {
+            ClearInputs('divUser')
+        }
+    }
+    function GetAllUsersEditorAssignment() {
+        @*var token = $("#frmEditorAssignment").find("input[name='__RequestVerificationToken']").val();
+        if ($("#divForm__treeEditorAssignment").find(".hdnDepartmentId").val() != "") {
+
+            $.ajax({
+                type: 'post',
+                cache: false,
+                url: '@Url.Action("GetUsersByOrgUnitId", controller)',
+                data: { id: $("#divForm__treeEditorAssignment").find(".hdnDepartmentId").val(), __RequestVerificationToken: token},
+                success:
+                    function (data) {
+                        AutoCompleteChangeList("ddlEditorAssginmentIndividualToUserId", data);
+                    }
+            });
+        }
+        else {
+            $("#ddlEditorAssginmentIndividualToUserId").val("");
+            $("#hdnEditorAssginmentIndividualToUserId").val("");
+            AutoCompleteChangeList("ddlEditorAssginmentIndividualToUserId", "[]");
+        }
+
+        $("#hdnAssignmentToOrgUnitName").val($("#divForm__treeEditorAssignment").find(".txtDepartmentName").val());*@
+    }
+
+    function DeliveryReport() {
+        var url = '@Url.Action("InboundCertificate", controller)' + '?transactionId=' + transactionId;
+        ShowDialog(url);
+    }
+
+    function EditorCancelIndividual() {
+        ClearInputs('dvEditorAssignmentIndividualBody');
+        $("#btnEditEditorIndividual").hide();
+        $("#btnAddEditorIndividual").show();
+        $("#aCancelEditorIndividual").hide();
+    }
+
+    function EditorIndividualOnSuccess(data, div) {
+        if (data.MessageType != 2) {
+            $("#" + div).html("");
+            $("#" + div).html(data.Html);
+            ClearInputs('dvEditorAssignmentIndividualBody');
+            $("#dvEditorAssignmentContainer #hdnAssignmentIndividualData").val(data.hdnValue);
+            ClearInputs('dvEditorAssignmentIndividualBody');
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function EditorIndividualOnEditSuccess(data, div) {
+        if (data.MessageType != 2) {
+            $("#btnEditEditorIndividual").hide();
+            $("#btnAddEditorIndividual").show();
+            $("#aCancelEditorIndividual").hide();
+            $("#" + div).html("");
+            $("#" + div).html(data.Html);
+            $("#dvEditorAssignmentContainer #hdnAssignmentIndividualData").val(data.hdnValue);
+            ClearInputs('dvEditorAssignmentIndividualBody');
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function OnDeleteEditorIndividualSuccess(data, div) {
+        $("#dvEditorAssignmentContainer #hdnAssignmentIndividualData").val(data.hdnValue);
+    }
+
+    function OnGetEditorIndividualSuccess(data, div) {
+        $("#btnEditEditorIndividual").show();
+        $("#aCancelEditorIndividual").show();
+        $("#btnAddEditorIndividual").hide();
+        $("#" + div).html("");
+        $("#" + div).html(data.Html);
+        $("#dvEditorAssignmentContainer #hdnIndexIndividual").val(data.Index);
+        jQuery.validator.unobtrusive.parse('#' + div);
+    }
+
+    function EditorGroupOnSuccess(data, div) {
+        if (data.MessageType != 2) {
+            $("#" + div).html("");
+            $("#" + div).html(data.Html);
+            ClearInputs('dvEditorAssignmentGroupBody');
+            $("#dvEditorAssignmentContainer #hdnAssignmentGroupData").val(data.hdnValue);
+            $("#dvEditorAssignmentContainer #hdnDetailAssignmentGroupData").val(data.hdnDetailData);
+            ClearInputs('dvEditorAssignmentGroupBody');
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function OnDeleteEditorAssignmentGroupSuccess(data, div) {
+        $("#dvEditorAssignmentContainer #hdnAssignmentGroupData").val(data.hdnValue);
+        $("#dvEditorAssignmentContainer #hdnDetailAssignmentGroupData").val(data.hdnDetailData);
+    }
+
+    function CheckIfHasEditorAssignments() {
+        if ($("#dvEditorAssignmentContainer #hdnAssignmentIndividualData").val() != "[]") {
+            var check = true;
+            if ($("#dvEditorAssignmentContainer #hdnAssignmentIndividualData").val() != "[]") {
+                var data = jQuery.parseJSON($("#dvEditorAssignmentContainer #hdnAssignmentIndividualData").val());
+                $.each(data, function (i, item) {
+                    if (item.ActionId == -1 || item.ActionId == "") {
+                        check = false;
+                    }
+                })
+            }
+            if (check) {
+                return true;
+            }
+            else {
+                ShowErrorMessage('@Html.Raw(DbRes.TValidation("User.Transaction.Assignment.ActionsRequired"))');
+                return false;
+            }
+        }
+        else {
+            ShowErrorMessage('@Html.Raw(DbRes.TValidation("User.Transaction.Assignment.AssignmentRequired"))');
+            return false;
+        }
+    }
+
+    var _url = null;
+    var urlDeliveryReport;
+
+
+
+    function SendEditorAssignmentSuceeded(data)
+    {
+
+        switch (data.MessageType)
+        {
+            case 0:
+                break;
+            case 1:
+               return ShowConfirmMessage(data.MessageText, "ContinueAssigneTransaction");
+                break;
+
+            default:
+             return   ShowErrorMessage(data.MessageText);
+
+        }
+
+
+        var token = $("#frmEditorAssignment").find("input[name='__RequestVerificationToken']").val();
+        if (data.MessageType != 2) {
+
+            if (parseInt($('#hdnDeliveryId').val()) == DeliveryMethodType.ElectronicPaper) {
+                $.ajax({
+                    type: 'post',
+                    url: '@Url.Action("GetDeliveryReportByTransactionIds", "Inbound")',
+                    data: { transactionIds: $('#transIds').val(), __RequestVerificationToken: token },
+                    success: function (data) {
+                        if (data.MessageType != 2) {
+                            PrintPendingTransactionsDeliveryReport(data.TransactionDeliveryReports);
+                        }
+                        else {
+                            ShowErrorMessage(data.MessageText);
+                        }
+                    }
+                });
+            }
+            else {
+                RedirectToHomePage();
+            }
+            @*UpdateMenuFileInformation('@Url.Action("GetMenuFile", "Shared")');*@
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+
+
+
+    }
+
+    function ContinueAssigneTransaction()
+    {
+        $("#isConfirmed").val(true);
+        $("#btnEditorAssignments").click();
+
+    }
+    function CheckOrgUserSuceeded(data) {
+
+          var token = $("#frmEditorAssignment").find("input[name='__RequestVerificationToken']").val();
+        if (data.MessageType == 3) {
+            $("#btnSendEditorAssignments").click();
+
+        } else {
+            $("#btnEditorAssignments").click();
+        }
+
+    }
+
+    function PrintPendingTransactionsDeliveryReport(data) {
+        var reporterName = $('#ddlBasicReporter').val();
+        var deliveryReportArray = [];
+        for (var i = 0; i < data.length; i++) {
+            var tranDeliveryReport = data[i];
+            deliveryReportArray.push({ TransactionId: tranDeliveryReport.TransactionId, ReportsIds: [] });
+            deliveryReportArray[i].ReportsIds.push(tranDeliveryReport.Id);
+        }
+        var reportType = @((int)DeliveryReportType.DeliveryReport);
+        var parameters = '?transactionReportInfo=' + JSON.stringify(deliveryReportArray) + '&isPerTransaction=true&IsNew=true&group=false&reportType=' + reportType + '&reporterName=' + reporterName;
+        urlDeliveryReport = '@Url.Action("PrintDeliveryReportsByIds", "Reports")' + parameters
+        PrintReport(urlDeliveryReport, '', RedirectToHomePage);
+    }
+
+    function RedirectToHomePage() {
+        setTimeout(function () {
+            window.location.href = '@Url.Action(((TrayType)Convert.ToInt32(ViewData["type"])).ToString(), "File")';
+        }, 3000);
+    }
+
+
+    function toggleSearchMethod() {
+
+        //ddlEditorAssginmentIndividualToUserId.value = ''
+        //document.getElementsByClassName('txtDepartmentName')[0].value = ''
+        //document.getElementsByClassName('txtDepartmentNumber')[0].value = ''
+        var rbSearchByUser = $("#EditorAssignmentPaper_rbSearchByUser");
+        var rbSearchByOrgUnit = $("#EditorAssignmentPaper_rbSearchByOrgUnit");
+        var divUser = $("#divUser");
+        var divOrgUnit = $("#divOrgUnit");
+
+        if (rbSearchByUser.is(':checked')) {
+            $('#orgUnit_Department').hide();
+            $('#orgUnit_user').show();
+            divOrgUnit.insertAfter(divUser);
+             AutoCompleteChangeSourceParameters("ddlEditorAssginmentIndividualToUserId", '@Url.Action("AutoComplete_SearchUsersByOrgUnit", "Inbound")', "");
+            TreeChangeGetChildrenParameters("treeEditorAssignment", { UserId: "##ddlEditorAssginmentIndividualToUserId_hdnIdToSaveValue" });
+            //ResetAutoComplete("ddlEditorAssginmentIndividualToUserId");
+            //ResetTree("treeEditorAssignment");
+        }
+        else {
+            $('#orgUnit_user').hide();
+            $('#orgUnit_Department').show();
+            divUser.insertAfter(divOrgUnit);
+            AutoCompleteChangeSourceParameters("ddlEditorAssginmentIndividualToUserId", '@Url.Action("AutoComplete_SearchUsersByOrgUnit", "Inbound")', { orgUnitId: "#input[name ='ToOrgUnitId']" });
+            TreeChangeGetChildrenParameters("treeEditorAssignment", "");
+            //ResetAutoComplete("ddlEditorAssginmentIndividualToUserId");
+            //ResetTree("treeEditorAssignment");
+        }
+    }
+    function TreeChangeGetChildrenParameters(treeId, newParameters) {
+    $("#" + treeId + "_hrefShowDialog").data('getchildrenparameters', newParameters);
+}
+
+</script>
+<script>
+    $(document).on("click", ".editorgroup_content", function () {
+            var id = $(this).data("groupid");
+            var text = $(this).html();
+            var groupData = $("#dvEditorAssignmentGroupBody #hdnDetailAssignmentGroupData").val();
+
+            ShowDialogAjax('@Url.Action("EditorAssignmentGroupDetailsEdit", controller)', { groupId: $(this).data("groupid"), groupName: $(this).html(), groupData: $("#dvEditorAssignmentContainer #hdnDetailAssignmentGroupData").val() }, 'OpenEditorGroupDetailsDialog');
+        })
+
+
+    function OpenEditorGroupDetailsDialog(data, $obj) {
+        $obj.setContent(data.View);
+        }
+</script>
+<script>
+    $(document).ready(function ()
+    {
+        //$("#dvEditorAssignmentContainer #trayId").val($("#hdnTrayId").val());
+        $("#dvEditorAssignmentContainer #page").val($("#hdnCurrentPage").val());
+        $("#dvEditorAssignmentContainer #gridColumn").val($("#hdnOrderBy").val());
+        $("#dvEditorAssignmentContainer #dir").val($("#hdnDirection").val());
+        $("#dvEditorAssignmentContainer #filter").val($("#hdnFilter").val());
+        $("#dvEditorAssignmentContainer #fromDate").val($("#hdnFromDateValue").val());
+        $("#dvEditorAssignmentContainer #toDate").val($("#hdnToDateValue").val());
+        $("#dvEditorAssignmentContainer #number").val($("#hdnSearchTransactionNumberValue").val());
+        $("#dvEditorAssignmentContainer #dateType").val($("#hdnFilterDateType").val());
+        $("#dvEditorAssignmentContainer #pageSize").val($("#ddlPaging").val());
+        setTimeout(function ()
+        {
+            GetDirectedToUsersByOrgUnitId();
+        }, 500);
+    })
+
+
+
+</script>
+<style>
+    .RedBorder {
+        border: 1px solid #fe0000 !important
+    }
+</style>

@@ -1,0 +1,68 @@
+﻿@using MCS.Common
+@using MCS.Framework.Localization
+@model MCS.UI.Areas.User.Models.Search.SearchCriteriaByBarcodeVM
+
+
+<div class="panel-body panel_dark">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label class="w-100">@DbRes.TResource("User.BarcodeSearch.Barcode") <span class="stark">*</span></label>
+                <div>
+                    @Html.NumericTextBoxFor(model => model.Barcode, new { @id = "Barcode", @Value = "", @class = "form-control" }, "Search")
+                </div>
+            </div>
+        </div>
+        @*<div class="panel-body">
+            <div class="col-md-2 col-xs-3">
+                <div class="radio">
+                    <label>
+                        @Html.CustomRadioButtonFor(model => model.TypeId, (int)SearchType.SearchByInboundNumber, new { @class = "iradio", id = "chkInbound", Checked = "checked" })
+                        @DbRes.TResource("User.SubjectSearch.Inbound")
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-2 col-xs-3">
+                <div class="radio">
+                    <label>
+                        @Html.CustomRadioButtonFor(model => model.TypeId, (int)SearchType.SearchByOutboundNumber, new { @class = "iradio", id = "chkOutbound" })
+
+                        @DbRes.TResource("User.SubjectSearch.Outbound")
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-2 col-xs-3">
+                <div class="radio">
+                    <label>
+                        @Html.CustomRadioButtonFor(model => model.TypeId, (int)SearchType.SearchByOutboundInternalNumber, new { @class = "iradio", id = "chkOutboundInternal" })
+                        @DbRes.TResource("User.Editor.InternalOutbound")
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-2 col-xs-3">
+                <div class="radio">
+                    <label>
+                        @Html.CustomRadioButtonFor(model => model.TypeId, (int)SearchType.SearchByOutboundDraftNumber, new { @class = "iradio", id = "chkOutboundDraft" })
+                        @DbRes.TResource("User.OutboundDraft.OutboundDraft")
+                    </label>
+                </div>
+            </div>
+        </div>*@
+    </div>
+</div>
+@*<div class="col-md-4">
+    <div class="form-group">
+        <div class="col-md-8">
+            @Html.HiddenFor(model => model.TypeId, new { id = "hdnTypeID" })
+        </div>
+    </div>
+</div>*@
+
+<script>
+    $(document).ready(function () {
+
+        $('#btnSearch').removeClass('hidden_');
+        $("#Barcode").focus();
+    });
+
+</script>

@@ -1,0 +1,150 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.Lookups;
+@using MCS.GridMvc.Ajax.GridExtensions
+@model SpecificLevelViewModel
+@{
+    ViewBag.Title = DbRes.TResource("Admin.Lookups.PrivecyLevel.Title");
+    Layout = "~/Areas/Admin/Views/Shared/_LookupsLayout.cshtml";
+}
+<script src="~/Scripts/gridmvc.customwidgetscheckbox.js"></script>
+<script>
+    $(function () {
+        pageGrids.SpecificLevel.addFilterWidget(new CustomCheckBoxFilterWidget('@Newtonsoft.Json.JsonConvert.SerializeObject(Model.AddSpecificLevel.TransactionCategories)'));
+    });
+</script>
+
+
+<div class="mx-3 mx-md-5 header-container d-flex flex-row align-items-center">
+    <div class="d-flex flex-column flex-md-row align-items-md-center flex-grow-1">
+        <h3 class="site-color mb-4">@DbRes.TResource("Admin.Lookups.PrivecyLevel.Title")</h3>
+    </div>
+</div>
+<div class="white-container mx-3 mx-md-5">
+    <div id="dvAdd">
+        @*@Html.Partial("~/Areas/Admin/Views/Lookups/_SpecificLevelAddPartial.cshtml", Model.AddSpecificLevel)*@
+    </div>
+    <div id="dvEdit" style="display:none;">
+        @*@Html.Partial("~/Areas/Admin/Views/Lookups/_SpecificLevelEditPartial.cshtml", Model.EditSpecificLevel)*@
+    </div>
+    <div id="dvPrivecyLevelGrid">
+        <div class="w-100 d-flex align-items-center mt-2 mb-2">
+            <h3 class="white-c-title">@DbRes.TResource("Admin.Lookups.PrivecyLevel.Grid")</h3>
+            <span class="roundedred ml-3">@(((AjaxGrid<SpecificLevelVM>)ViewData["GridData"]).ItemsCount)</span>
+            <span class="pl-2 gray4">@DbRes.TResource("Admin.Grid.Records")</span>
+        </div>
+        @Html.Partial("~/Areas/Admin/Views/Lookups/_SpecificLevelGridPartial.cshtml", ViewData["GridData"])
+    </div>
+</div>
+
+<script>
+    function ShowEditDiv() {
+        $("#dvEdit").css("display", "block");
+        $("#dvAdd").css("display", "none");
+    }
+
+    function HideEditDiv() {
+        $("#dvEdit").css("display", "none");
+        $("#dvAdd").css("display", "block");
+    }
+
+    function OnEditSuccess(data, div) {
+        if (data.MessageType != 2) {
+            $("#dvEdit").css("display", "none");
+            $("#dvAdd").css("display", "block");
+            $("#dvPrivecyLevelGrid").html("");
+            $("#dvPrivecyLevelGrid").html(data.Html);
+            jQuery.validator.unobtrusive.parse('#dvPrivecyLevelGrid');
+            ClearInputs('EditSpecificLevelContent');
+            ShowSuccesMessage(data.MessageText);
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function OnAddSuccess(data, div) {
+        if (data.MessageType != 2) {
+            $("#dvPrivecyLevelGrid").html("");
+            $("#dvPrivecyLevelGrid").html(data.Html);
+            jQuery.validator.unobtrusive.parse('#dvPrivecyLevelGrid');
+            ShowSuccesMessage(data.MessageText);
+            ClearInputs('AddSpecificLevelContent');
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function OnDeleteSuccess(data, divUpdatData, deletedList) {
+        if (data.MessageType != 2) {
+            $("#dvPrivecyLevelGrid").html("");
+            $("#dvPrivecyLevelGrid").html(data.Html);
+            jQuery.validator.unobtrusive.parse('#dvPrivecyLevelGrid');
+        }
+        if (data.SpecificLevelsUsedList.length == 0) {
+
+            ShowSuccesMessage(data.MessageText);
+        }
+        else {
+
+            var msg = '';
+
+            for (var i = 0; i < data.SpecificLevelsUsedList.length; i++) {
+
+                if (msg == '')
+                    msg = data.SpecificLevelsUsedList[i];
+                else
+                    msg = msg + '</br>' + data.SpecificLevelsUsedList[i];
+            }
+
+            msg = '@DbRes.TResource("Admin.SpecificLevel.DeleteSpecificLevelsErrorMsg")' + '</br>' + msg;
+
+            ShowErrorMessage(msg);
+        }
+
+        var deletedArray = deletedList.split(',');
+
+        for (var i = 0; i < deletedArray.length; i++) {
+
+            var deleted = true;
+
+            for (var y = 0; y < data.SpecificLevelsUsedList.length; y++) {
+
+                if (deletedArray[i] == data.SpecificLevelsUsedList[y]) {
+
+                    deleted = false;
+                }
+            }
+
+            if (deleted)
+                if (deletedArray[i] == $('#hdnEditId').val())
+                    HideEditDiv();
+        }
+    }
+    $(".ckSourceAdd").find("#TransactionSources_2__IsSelected").change(function () {
+        if (this.checked) {
+            if (!$(".ckSourceAdd").find("#TransactionSources_0__IsSelected").is(':checked') && !$(".ckSourceAdd").find("#TransactionSources_1__IsSelected").is(':checked'))
+                $("#dvPopularization").show();
+        } else
+            $("#dvPopularization").hide();
+        $(".ckIsPopAdd").attr('checked', false);
+    });
+    $(".ckSourceAdd").find("#TransactionSources_0__IsSelected").change(function () {
+        if (this.checked) {
+            $("#dvPopularization").hide();
+            $(".ckIsPopAdd").attr('checked', false);
+        }
+        else
+            if (!$(".ckSourceAdd").find("#TransactionSources_1__IsSelected").is(':checked') && $(".ckSourceAdd").find("#TransactionSources_2__IsSelected").is(':checked'))
+                $("#dvPopularization").show();
+    });
+    $(".ckSourceAdd").find("#TransactionSources_1__IsSelected").change(function () {
+        if (this.checked) {
+            $("#dvPopularization").hide();
+            $(".ckIsPopAdd").attr('checked', false);
+        }
+        else
+            if (!$(".ckSourceAdd").find("#TransactionSources_0__IsSelected").is(':checked') && $(".ckSourceAdd").find("#TransactionSources_2__IsSelected").is(':checked'))
+                $("#dvPopularization").show();
+    });
+</script>

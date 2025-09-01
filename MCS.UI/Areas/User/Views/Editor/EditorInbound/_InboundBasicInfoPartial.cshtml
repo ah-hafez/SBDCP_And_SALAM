@@ -1,0 +1,243 @@
+﻿@model MCS.UI.Areas.User.Models.Transaction.TransactionBasicInfoVM
+@using MCS.UI.Helpers
+@using MCS.Framework.Localization
+@{
+    bool isVipUser = (bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser);
+}
+<div class="row ">
+    <div class="animated zoomIn">
+
+
+
+        @if (isVipUser)
+        {
+            <div class="d-flex">
+                <div class="d-flex flex-column pt-2 pr-3 pl-5 pb-0 top-details">
+                    <div class="d-flex" style="margin-right:-45px; margin-bottom:16px;">
+                        <div class="pl-sm-5 Editor-div">
+                            <div class="gray3"> @DbRes.TResource("User.Editor.BasicInfo.Inbound.DocumentNumber")  :</div>
+                            <div class="transaction-number Editor-lable">@Model.Number</div>
+                            @Html.Hidden("hdnNumber", @Model.Number)
+                        </div>
+                        <div class="pl-5 Editor-div">
+                            <div class="gray3">@DbRes.TResource("User.Editor.BasicInfo.Inbound.Date") </div>
+                            <div class="date-value Editor-lable">
+                                @DateHelper.GetDate(Model.DateH)
+                            </div>
+                        </div>
+
+                        @if (Model.TransactionCategoryId == TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName))
+                        {
+
+
+                            <div class="pl-5 Editor-div">
+                                <div class="gray3">@DbRes.TResource("User.Transaction.Assignment.ToOrgUnit") </div>
+                                <div class="date-value Editor-lable">
+                                    @if (Model.ToEntityName.Length > 20)
+                                    {
+                                        <div title="@Model.ToEntityName">@Model.ToEntityName.Substring(0, 20)...</div>
+                                    }
+                                    else
+                                    {
+                                        @Model.ToEntityName
+                                    }
+
+                                </div>
+                            </div>
+
+
+
+                        }
+                        else
+                        {
+
+                            <div class="pl-5 Editor-div">
+                                <div class="gray3">@DbRes.TResource("User.Editor.BasicInfo.Inbound.Destination") </div>
+                                <div class="date-value Editor-lable">
+                                    @if (Model.ExternalPartyName.Length > 20)
+                                    {
+                                        <div title="@Model.ExternalPartyName">@Model.ExternalPartyName.Substring(0, 20)...</div>
+                                    }
+                                    else
+                                    {
+                                        @Model.ExternalPartyName
+                                    }
+                                </div>
+                            </div>
+
+
+                        }
+
+
+                        <div class="pl-5 Editor-div">
+                            <div class="gray3">@DbRes.TResource("User.Transaction.ConfidentialityLevel") </div>
+                            <div class="date-value Editor-lable">
+                                @Model.ConfidentialityName
+                            </div>
+                        </div>
+                        <div class="pl-sm-5">
+                            <div class="gray3">@DbRes.TResource("User.Transaction.Subject")</div>
+                            <div class="transaction-number Editor-lable" style="word-break:break-all">@Model.Subject</div>
+                            @Html.Hidden(Model.Subject)
+                        </div>
+                    </div>
+                </div>
+                <a href="@Url.Action("Copies", "File", new { area = "user" })">
+                    <i class="fa fa-arrow-left" style="position: absolute; left: 10px; top: 0px;"></i>
+                </a>
+            </div>
+        }
+        else
+        {
+
+
+
+            <div class="panel-body">
+                <div class="col-sm-2 labelShow">
+                    <span class="light-text">
+                        @DbRes.TResource("User.Editor.BasicInfo.Inbound.DocumentNumber") :
+                    </span>
+                    <div class="BoldText">  @Html.DisplayFor(model => model.Number) </div>
+                </div>
+                <div class="col-sm-2 labelShow">
+                    <span class="light-text">
+                        @DbRes.TResource("User.Editor.BasicInfo.Inbound.Date") :
+
+                    </span>
+                    <div class="BoldText">
+                        @DateHelper.GetDate(Model.DateH)
+                    </div>
+                </div>
+                <div class="col-sm-2 labelShow">
+                    <span class="light-text">
+                        @DbRes.TResource("User.Editor.BasicInfo.Inbound.Confidentiality") :
+                    </span>
+                    <div class="BoldText">  @Html.DisplayFor(model => model.ConfidentialityName) </div>
+                </div>
+                @if (Model.TransactionCategoryId == TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName))
+                {
+                    <div class="col-md-2 labelShow">
+                        <span class="light-text">
+                            @DbRes.TResource("User.Transaction.Assignment.ToOrgUnit") :
+                        </span>
+                        <div class="BoldText">
+                            @Html.DisplayFor(model => model.ToEntityName)
+                        </div>
+                    </div>
+                    <div class="col-sm-2 labelShow">
+                        <span class="light-text">
+                            @DbRes.TResource("User.Editor.BasicInfo.Inbound.SignedBy") :
+                        </span>
+                        <div class="BoldText">  @Html.DisplayFor(model => model.ToUserName) </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-md-2 labelShow">
+                        <span class="light-text">
+                            @DbRes.TResource("User.Editor.BasicInfo.Inbound.Destination") :
+                        </span>
+                        <div class="BoldText">
+                            @Html.DisplayFor(model => model.ExternalPartyName)
+                        </div>
+                    </div>
+                    @*<div class="col-sm-2 labelShow">
+                            <span class="light-text">
+                                @DbRes.TResource("User.Editor.BasicInfo.Inbound.SignedBy") :
+                            </span>
+                            <div class="BoldText">  @Html.DisplayFor(model => model.ExternalPartyManagerName) </div>
+                        </div>*@
+                }
+
+                <div class="col-sm-2 labelShow">
+                    <span class="light-text">
+                        @DbRes.TResource("User.Editor.BasicInfo.Inbound.LetterType") :
+                    </span>
+                    <div class="BoldText">  @Html.DisplayFor(model => model.TransactionTypeName) </div>
+                </div>
+
+                <div class="col-sm-2 labelShow">
+                    <span class="light-text">
+                        @DbRes.TResource("User.Editor.BasicInfo.Inbound.Priority") :
+                    </span>
+                    <div class="BoldText">  @Html.DisplayFor(model => model.PriorityName) </div>
+                </div>
+                <div class="col-sm-2 labelShow">
+                    <span class="light-text">
+                        @DbRes.TResource("User.Transaction.BasicInfo.SubjectClassifications") :
+                    </span>
+                    <div class="BoldText">  @Html.DisplayFor(model => model.LetterTypeName) </div>
+                </div>
+                <div class="col-sm-2 labelShow">
+                    <span class="light-text">
+                        @DbRes.TResource("User.Editor.BasicInfo.Inbound.ToUser")
+                    </span>
+                    <div class="BoldText">  @Html.DisplayFor(model => model.ToUserName) </div>
+                </div>
+                @*<div class="col-sm-12 labelShow">
+                        <span class="light-text">
+                            @DbRes.TResource("User.Editor.BasicInfo.Inbound.Subject"):
+
+                        </span>
+                        <div class="BoldText" style="word-break:break-all">  @Html.DisplayFor(model => model.Subject) </div>
+                    </div>
+                    <div class="col-sm-6 labelShow">
+                        <span class="light-text" >
+                            @DbRes.TResource("User.Editor.BasicInfo.Inbound.Remarks") :
+                        </span>
+                        <div class="BoldText" style="word-break:break-all">  @Html.DisplayFor(model => model.Remarks) </div>
+                    </div>*@
+            </div>
+        }
+    </div>
+</div>
+
+
+<style>
+    .labelShow {
+        display: flex;
+        gap: 3px;
+    }
+
+    .BoldText {
+        color: green;
+    }
+</style>
+
+
+<script>
+
+    
+    function NavigateToCopy(Id, IsNext) {
+        debugger;
+        var copyType = @((int)TrayType.Copies);
+
+         @*if (@Model.TransactionCategoryId == @(TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName))) {
+            copyType = @((int)TrayType.Copies);
+        }
+        else if ((@Model.TransactionCategoryId == @(TransactionCategory.ExternalOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName)))) {
+            copyType = @((int)TrayType.CopiesOutbound);
+         }
+         else if ((@Model.TransactionCategoryId == @(TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName)))) {
+            copyType = @((int)TrayType.Copies);
+         }*@
+    debugger;
+    $.ajax({
+
+        type: 'get',
+        url: '@Url.Action("CopiesNavigateTransactions","Inbound")',
+        data: { CurrentId: Id, IsNext: IsNext,TransactionCategoryId :@Model.TransactionCategoryId },
+        success:
+            function (data) {
+                debugger;
+                if (data.MessageType != 2) {
+                    window.location.href = '@Url.Action("Index", "Editor", new { area="User"} )' + "?transactionId=" + EncryptionKey(data.Id) + "&transactionCategoryId=" + @Model.TransactionCategoryId + "&trayId=" + copyType + "&IsVip=false";
+
+}
+                    else {
+    ShowErrorMessage(data.Message);
+}
+                }
+        });
+        }
+</script>

@@ -1,0 +1,307 @@
+﻿@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<AuditVM>
+@using MCS.Framework.Controls.Mvc
+@using MCS.Framework.Controls
+@using MCS.Framework.Localization
+
+@{
+    ViewBag.Title = "_AuditGridPartial";
+}
+
+
+
+<div class="row m-0 my-2">
+    <div class="w-100 text-left">
+        <label class="cursor-pointer dark-color mx-2 filter-target">
+            <i class="sort-icons icon-filter mx-1"></i>@DbRes.TResource("User.Search.FilterBy")
+        </label>
+        <label class="cursor-pointer dark-color mx-2 sort-target">
+            <i class="sort-icons icon-sort mx-1"></i>@DbRes.TResource("User.Search.SortBy")
+        </label>
+    </div>
+    <div class="filter-box filter" style="display: none;">
+        <form id="frmAudit">
+            @Html.AntiForgeryToken()
+            <div class="form-row">
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                    @Html.Label(DbRes.TResource("User.TransactionCertificate.PropertyName"))
+                    @Html.AutoCompleteBuilder("PropName", "hdnPropName", ViewData["PropNames"].ToString(), null, true, "form-control")
+                    @Html.Hidden("hdnPropName", "", new { @Value = "", id = "hdnPropName" })
+                </div>
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                    @Html.Label(DbRes.TResource("User.Audit.TransactionLog.AuditType"))
+                    @Html.AutoCompleteBuilder("AuditType", "hdnAuditType", ViewData["AuditType"].ToString(), null, true, "form-control")
+                    @Html.Hidden("hdnAuditType", "", new { @Value = "", id = "hdnAuditType" })
+                </div>
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                    @Html.Label(DbRes.TResource("User.Audit.TransactionLog.AuditDatePeriod"))
+                    <div class="form-group input-group">
+                        @Html.Calendar("AuditDateFrom", "hdnAuditDateFromGreg", "hdnAuditDateFromUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), "", "calenderInput form-control")
+                        @Html.StickyHidden("hdnAuditDateFromGreg", "", null)
+                        @Html.StickyHidden("hdnAuditDateFromUm", "", null)
+                        <span class="input-group-addon add-on">_</span>
+                        @Html.Calendar("AuditDateTo", "hdnAuditDateToGreg", "hdnAuditDateToUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), "", "calenderInput form-control")
+                        @Html.StickyHidden("hdnAuditDateToGreg", "", null)
+                        @Html.StickyHidden("hdnAuditDateToUm", "", null)
+                    </div>
+                </div>
+                @*<div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                    @Html.Label(DbRes.TResource("User.TransactionCertificate.ModifiedBy"))
+                    @Html.AutoCompleteBuilder("EditedByUserName", "hdnEditedByUserName", ViewData["AllUsers"].ToString(), null, true, "form-control")
+                    @Html.Hidden("hdnEditedByUserName", "", new { @Value = "", id = "hdnEditedByUserName" })
+                </div>*@
+                <div class="col-xs-12 panel-body row text-right">
+                    <input type="button" value="@DbRes.TResource("User.Layout.Search")" class="btn-site" onclick="FilterBy()" />
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="filter-box sort" style="display: none;">
+        <form>
+            <div class="form-row">
+                <div class="form-group col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                    @Html.Label(DbRes.TResource("User.TransactionCertificate.ModifiedDate"))
+                    @Html.AutoCompleteBuilder("CreatedOn", "hdnCreatedOn", ViewData["SortByDate"].ToString(), null, true, "form-control", onChangeCallback: "doSort")
+                    @Html.Hidden("hdnCreatedOn", "", new { @Value = "", id = "hdnCreatedOn" })
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="AuditingTable" style="padding-right:20px; padding-left:20px;">
+    @Html.Partial("~/Areas/User/Views/Shared/TransactionCertificate/_AuditingTablePartial.cshtml", Model)
+</div>
+<div>
+    <button class="btn btn-dark-blue pull-right mb-2" style="margin-left:30px;" onclick="PrintTransactionAudit()">@DbRes.TResource("User.Search.PrintTheAudit")</button>
+</div>
+@Html.Hidden("hdnFilter")
+@Html.Hidden("transactionId", ViewData["TransactionId"])
+@Html.Hidden("auditFor", ViewData["auditFor"])
+@Html.Hidden("EntityName", ViewData["EntityName"])
+
+<script>
+    function GetEntityAuditing(auditId, auditFor, obj) {
+        var FilterByPropName = $("#hdnPropName").val();
+        if ($("#row_" + auditId).length == 0) {
+            var url = '@Url.Action("GetEntityAuditing", "TransactionLog")';
+            var data = { auditId: auditId, auditFor: auditFor, propName: FilterByPropName};
+            $.ajax({
+                type: 'get',
+                cache: false,
+                url: url,
+                data: data,
+                success: function (data) {
+                    var result = data;
+                    $(obj).parents('tr').after('<tr class="grid-row  row datarow grid-row-selected" id="row_' + auditId + '">' + result + '</tr>');
+                    $("#i_" + auditId).switchClass("fa-plus", "fa-minus");
+                }
+            });
+        }
+        else {
+            if ($("#row_" + auditId).hasClass("hidden_")) {
+                $("#row_" + auditId).removeClass("hidden_");
+                $("#i_" + auditId).switchClass("fa-plus", "fa-minus");
+            }
+            else {
+                $("#row_" + auditId).addClass("hidden_");
+                $("#i_" + auditId).switchClass("fa-minus", "fa-plus");
+            }
+        }
+    }
+
+
+    $(document).ready(function () {
+        $('.filter-target').click(function () {
+            $(this).parent().parent().find('.filter-box.filter').toggle();
+            $('.sort-target').removeClass("active");
+            $(this).toggleClass("active");
+            $('.filter-box.sort').hide();
+        });
+        $('.sort-target').click(function () {
+            $(this).parent().parent().find('.filter-box.sort').toggle();
+            $('.filter-target').removeClass("active");
+            $(this).toggleClass("active");
+            $('.filter-box.filter').hide();
+        });
+
+        $(".calenderInput").attr('autocomplete', 'off');
+    });
+
+    function doSort(obj) {
+        var token = $("#frmAudit").find("input[name='__RequestVerificationToken']").val();
+        var dir = "";
+        var SortByData = $('#hdn' + obj.id).val();
+        if (obj.id == "CreatedOn" || obj.id == "SortByUpdateDate") {
+            dir = SortByData;
+        }
+
+        var transId = $("#transactionId").val();
+        var auditFor = $("#auditFor").val();
+        var EntityName = $("#EntityName").val();
+        var sortDataResult = { transactionId: transId, auditFor: auditFor, EntityName: EntityName, sortType: obj.id, dir: dir, searchData: SortByData, page: 1, __RequestVerificationToken: token };
+
+        $.ajax({
+            url: '@Url.Action("UpdateTransactionAuditingGrid", "TransactionLog")',
+            type: 'POST',
+            cache: false,
+            data: sortDataResult,
+            success: function (data) {
+                $('#AuditingTable').html("");
+                $('#AuditingTable').html(data.Html);
+                $('#dvPagination').html("");
+                $('#dvPagination').html(data.PaginationData);
+                currentPage = 1;
+            }
+        });
+    }
+
+    function FilterBy() {
+        var token = $("#frmAudit").find("input[name='__RequestVerificationToken']").val();
+        var filter = "";
+        if ($("#hdnPropName").val() != "" && $("#hdnPropName").val() != null) {
+
+            filter += "PropName__1__" + $("#hdnPropName").val();
+        }
+        if ($("#hdnAuditType").val() != "" && $("#hdnAuditType").val() != null) {
+
+            if (filter.length > 0) {
+                filter += "&";
+            }
+            filter += "AuditType__1__" + $("#hdnAuditType").val();
+        }
+        if ($("#hdnAuditDateFromGreg").val() != "" && $("#hdnAuditDateFromGreg").val() != null) {
+
+            if (filter.length > 0) {
+                filter += "&";
+            }
+            filter += "AuditDateFrom__1__" + $("#hdnAuditDateFromGreg").val();
+        }
+        if ($("#hdnAuditDateToGreg").val() != "" && $("#hdnAuditDateToGreg").val() != null) {
+
+            if (filter.length > 0) {
+                filter += "&";
+            }
+            filter += "AuditDateTo__1__" + $("#hdnAuditDateToGreg").val();
+        }
+        if ($("#hdnEditedByUserName").val() != "" && $("#hdnEditedByUserName").val() != null) {
+
+            if (filter.length > 0) {
+                filter += "&";
+            }
+            filter += "EditedByUserName__1__" + $("#hdnEditedByUserName").val();
+        }
+
+        $("#hdnFilter").val(filter);
+        var transId = $("#transactionId").val();
+        var auditFor = $("#auditFor").val();
+        var EntityName = $("#EntityName").val();
+        var filterData = { transactionId: transId, auditFor: auditFor, EntityName: EntityName, filter: filter, page: 1, __RequestVerificationToken: token};
+
+        $.ajax({
+            url: '@Url.Action("UpdateTransactionAuditingGrid", "TransactionLog")',
+            type: 'POST',
+            data: filterData,
+            success: function (data) {
+                $('#AuditingTable').html("");
+                $('#AuditingTable').html(data.Html);
+                $('#dvPagination').html("");
+                $('#dvPagination').html(data.PaginationData);
+                currentPage = 1;
+            }
+        });
+    }
+
+    var currentPage = 1;
+    function GetPageNo(pageNo) {
+        var token = $("#frmAudit").find("input[name='__RequestVerificationToken']").val();
+        var dir = "";
+        var SortByData = $('#hdnCreatedOn').val();
+        var sortType = null;
+        if (SortByData != null && SortByData != "") {
+            dir = SortByData;
+            sortType = $('#CreatedOn').attr("id");
+        }
+
+        var filter = $("#hdnFilter").val();
+        var transactionId = $("#transactionId").val();
+        var auditFor = $("#auditFor").val();
+        var EntityName = $("#EntityName").val();
+        var filterData = { page: pageNo, filter: filter, transactionId: transactionId, auditFor: auditFor, EntityName: EntityName, sortType: sortType, dir: dir, searchData: SortByData, __RequestVerificationToken: token };
+        $.ajax({
+            url: '@Url.Action("UpdateTransactionAuditingGrid", "TransactionLog")',
+            type: 'POST',
+            data: filterData,
+            success: function (data) {
+                $('#AuditingTable').html("");
+                $('#AuditingTable').html(data.Html);
+                $('#dvPagination').html("");
+                $('#dvPagination').html(data.PaginationData);
+                currentPage = pageNo;
+            }
+        });
+    }
+    function GoToNextPage() {
+        GetPageNo(currentPage + 1);
+    }
+    function GoToPreviousPage() {
+        GetPageNo(currentPage - 1);
+    }
+
+
+    function PrintTransactionAudit() {
+        debugger;
+        var token = $("#frmAudit").find("input[name='__RequestVerificationToken']").val();
+        var filter = $("#hdnFilter").val();
+        var transactionId = $("#transactionId").val();
+        var auditFor = $("#auditFor").val();
+        var EntityName = $("#EntityName").val();
+        var filterData = { page: currentPage, filter: filter, transactionId: transactionId, auditFor: auditFor, EntityName: EntityName, __RequestVerificationToken: token };
+
+
+
+        $.ajax({
+            type: "POST",
+            url:  '@Url.Action("PrintTransactionAuditingGrid", "TransactionLog")',
+            data: filterData,
+            cache: false,
+            success:
+                function (data, textStatus, request) {
+                    ShowDialog(data, 'dialogbox col-md-12 ');
+
+                    //if (typeof data.errorOccurred != "undefined") {
+                    //    if (data.errorOccurred == true && data.url != null) {
+                    //        window.location.href = data.url;
+                    //        return;
+                    //    }
+                    //}
+
+                    if (data.MessageType != 2) {
+
+
+                        //var PrintAuditWindow = window.open('', '_blank', 'width=900,height=500');
+
+                        //PrintAuditWindow.document.write(data.Html);
+                        //PrintAuditWindow.document.close();
+                        //PrintAuditWindow.focus();
+
+
+
+                        //setTimeout(function () {
+                        //    PrintAuditWindow.print();
+                        //    PrintAuditWindow.close();
+                        //}, 2000);
+                    }
+                    else {
+                        ShowErrorMessage(data.MessageText);
+                    }
+
+                },
+            error: function (data) {
+
+            }
+
+        });
+
+    }
+
+</script>

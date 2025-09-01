@@ -1,0 +1,25 @@
+﻿
+@{
+    Layout = null;
+}
+
+@model MCS.Common.TreeViewModel
+
+
+@{
+    string containerName = "dvDestinationTree";
+
+    if (ViewData["containerName"] != null)
+    {
+        containerName = ViewData["containerName"].ToString();
+    }
+
+    string onClickFunc = "GetUsersByPartyId";
+
+    if (ViewData["onClickFunc"] != null)
+    {
+        onClickFunc = ViewData["onClickFunc"].ToString();
+    }
+}
+
+@Html.DepartmentsTreeNodeOnDemand(Model.RootNode, "DestinationId", MCS.Common.TreeMode.Single, containerName, onClickFunc)

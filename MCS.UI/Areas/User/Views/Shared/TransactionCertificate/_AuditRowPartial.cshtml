@@ -1,0 +1,15 @@
+﻿@model MCS.UI.AuditVM
+
+
+<div class="col-md-12">
+    <table class="table table-striped">
+        <tr>
+            <td><span onclick="GetEntityAuditing(@Model.Id , @((int)Model.AuditFor))"><i class="fa fa-plus" id="i_@Model.Id"></i></span></td>
+            <td>@Model.Date</td>
+            <td>@DbRes.TResource("User.Audit.TransactionLog." + Model.OperationType)</td>
+            <td>@Model.UserName</td>
+        </tr>
+    </table>
+</div>
+<div id="row_@Model.Id" class="col-md-12 hidden_" data-state="0"></div>
+

@@ -1,0 +1,15 @@
+﻿
+@using MCS.UI.Helpers
+
+@model AjaxGrid<MCS.UI.Areas.User.Models.Transaction.ExplanationVM>
+@using MCS.UI.Areas.User.Models.Transaction;
+
+
+@Html.Grid(Model).Named("grdExplanations").Columns(columns =>
+{
+    columns.Add(model => model.FromUser).Titled(DbRes.TResource("User.Explanation.FromUser"));
+    columns.Add(model => model.ConfidentialityName).Titled(DbRes.TResource("User.Explanation.ConfidentialityName"));    
+}).Sortable(false)
+
+
+

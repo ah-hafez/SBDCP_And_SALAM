@@ -1,0 +1,22 @@
+﻿window.GridMvc = window.GridMvc || {};
+window.GridMvc.lang = window.GridMvc.lang || {};
+GridMvc.lang.ar = {
+    filterTypeLabel: "النوع: ",
+    filterValueLabel: "القيمة:",
+    filterValueRequired: "أدخل القيمة",
+    applyFilterButtonText: "بحث",
+    filterSelectTypes: {
+        Equals: "يساوي",
+        StartsWith: "يبدأ ب",
+        Contains: "يحتوي",
+        EndsWith: "ينتهي ب",
+        GreaterThan: "أكبر من",
+        LessThan: "أقل من",
+        GreaterThanOrEquals: "أكبر من أو يساوي",
+        LessThanOrEquals: "أقل من أو يساوي"
+    },
+    code: 'ar',
+    boolTrueLabel: "نعم",
+    boolFalseLabel: "لا",
+    clearFilterLabel: "إلغاء البحث"
+};

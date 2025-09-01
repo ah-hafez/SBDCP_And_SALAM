@@ -1,0 +1,47 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Transaction
+
+@{
+    Layout = "~/Views/Shared/_DialogLayout.cshtml";
+}
+
+@model TransactionEditVM
+
+<div class="content-rtl panel panel-default dialogbox_panel">
+    <div class="panel-heading">
+        <h3 class="title2">@DbRes.TResource("User.Transaction.SaudiPostDeliveryNumber")</h3>
+    </div>
+    @Html.Hidden("DeliveryTransactionId")
+    <div class="modal-body">
+        <div class="panel-body">
+            @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmDeliveryNumber", @class = "form-horizontal" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(model => model.Id)
+                @Html.HiddenFor(model => model.TransactionCategory, new { id= "transactionCategoryId" })
+            <div class="panel-body" id="DeliveryNumberContent">
+                <div class="row">
+                    <div class="col-md-8 text-left">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.DeliveryNumber, new { @class = "control-label" })<span class="stark">*</span>
+                                <div>
+                                    @Html.NumericTextBoxFor(model => model.DeliveryNumber, new { @class = "form-control empty", @maxlength = "30" }, "DeliveryNumberForm")
+                                </div>
+                            </div>
+                    </div>
+                </div>   
+                <div class="form-group">
+                    <div class="mt-2 text-danger pull-left">
+                        <div class="stark">@DbRes.TResource("Admin.User.MustFill") * </div>
+                    </div>
+                </div>
+            </div>
+                <div class="panel-footer middle panel-body">
+                    @Html.ActionButton(DbRes.TResource("Admin.UserCategory.Save"), Url.Action("SaveDeliveryNumber").ToString(), "dvGrid", null, null,
+                    "OnAddDeliveryNumberSuccess", null, "post", "DeliveryNumberForm", "btnAddDeliveryNumber", "frmDeliveryNumber", "btn btn-site pull-right")
+                    @Html.ResetButton("ClearInputs('DeliveryNumberContent')")
+                </div>
+            }
+        </div>
+    </div>
+</div>

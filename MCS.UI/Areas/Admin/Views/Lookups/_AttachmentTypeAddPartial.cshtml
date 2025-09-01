@@ -1,0 +1,136 @@
+﻿@model MCS.UI.Areas.Admin.Models.Lookups.AttachmentTypeAddVM
+@using MCS.Framework.Localization;
+@using MCS.UI.Areas.User.Models.Lookups
+@using MCS.UI
+@{
+    ViewBag.Title = "_AttachmentTypeAddPartial";
+    Layout = null;
+}
+
+
+
+<div class="d-flex flex-column flex-md-row align-items-md-center flex-grow-1">
+    <h3 class="site-color mb-4">@DbRes.TResource("Admin.AttachmentType.Add")</h3>
+</div>
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmAddAttachmentType" }))
+{
+    @Html.AntiForgeryToken()
+    <div id="AddAttachmentTypeContent" class="form-row">
+        @{List<CultureVM> cultureVMs = ViewData["Culture"] as List<CultureVM>;}
+        @if (cultureVMs != null)
+        {
+            for (int m = 0; m < cultureVMs.Count; m++)
+            {
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                    @Html.CustomLabelFor(model => model.Description[m].CultureName, new { @class = "" }, DbRes.TResource(string.Format("Admin.Lookups.AttachmentType.Name.{0}", cultureVMs[m].ShortName)))<span class="stark">*</span>
+                    @Html.StickyHiddenFor(model => model.Description[m].CultureId, new { Value = cultureVMs[m].Id })
+                    @Html.TextBoxGroupFor(model => model.Description[m].Text, "", new { @class = "form-control" }, DbRes.TValidation("Admin.AttachmentType.NameRequired." + cultureVMs[m].ShortName))
+                </div>
+            }
+        }
+        <div class="form-group col-lg-6 col-md-4 col-sm-6 col-xs-12">
+            <label class="w-100" for="TransactionCategories">@DbRes.TResource("Admin.Lookups.AttachmentType.Classification")</label>
+            <div class="form-check form-check-inline w-100 ">
+                @Html.CheckBoxFor(model => Model.Archivable, new { @class = "form-check-input" })
+                @Html.LabelFor(model => Model.Archivable, new { @style = "form-check-label" })
+            </div>
+        </div>
+    </div>
+    for (int i = 0; i < Model.TransactionCategories.Count(); i++)
+    {
+        @Html.StickyHiddenFor(model => model.TransactionCategories[i].Id)
+        @Html.StickyHiddenFor(model => model.TransactionCategories[i].IsSelected, new { @Value = true })
+    }
+    @Html.StickyHiddenFor(model => model.PrintBarcode, new { @Value = false })
+    <div class="mx-3 mx-md-5 mb-4 d-flex">
+        <div class="ml-auto">
+            @Html.ActionButton(DbRes.TResource("Admin.AttachmentType.Save"), "AddAttachmentType", "dvGrid", null, null, "OnAddSuccess", null, "post", null, "btnAdd", "frmAddAttachmentType", "btn btn-lg btn-st3 mx-1")
+            @Html.ResetButton("ClearInputs('AddAttachmentTypeContent')")
+        </div>
+    </div>
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+@*@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmAddAttachmentType", @class = "form-horizontal form-row" }))
+    {
+        @Html.AntiForgeryToken()
+        <div id="AddAttachmentTypeContent" class="panel-body">
+            <p>@DbRes.TResource("Global.Forms.MandatoryFields")</p>
+            <div class="row">
+                <div class="col-md-6">
+
+                    @{List<CultureVM> cultureVMs = ViewData["Culture"] as List<CultureVM>;}
+
+                    @if (cultureVMs != null)
+                    {
+                        for (int m = 0; m < cultureVMs.Count; m++)
+                        {
+                            <div class="form-group">
+                                @Html.CustomLabelFor(model => model.Description[m].CultureName, new { @class = "col-md-2 control-label" }, DbRes.TResource(string.Format("Admin.AttachmentType.Description.{0}", cultureVMs[m].ShortName)))
+                                @Html.StickyHiddenFor(model => model.Description[m].CultureId, new { Value = cultureVMs[m].Id })
+                                <div class="col-md-9">
+                                    <div class="">
+                                        @Html.TextBoxGroupFor(model => model.Description[m].Text, "", new { @class = "form-control" }, DbRes.TValidation("Admin.AttachmentType.DescriptionRequired." + cultureVMs[m].ShortName))
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.CustomLabelFor(model => Model.TransactionCategories, new { @class = "col-md-3 control-label" }, DbRes.TResource("Admin.LetterType.TransactionCategories"))
+                        <div class="col-md-9">
+                            @Html.Partial("~/Areas/Admin/Views/Lookups/_TransactionSourcePartial.cshtml", Model.TransactionCategories, new ViewDataDictionary { TemplateInfo = new TemplateInfo { HtmlFieldPrefix = Html.NameFor(model => model.TransactionCategories).ToString() } })
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="form-group">
+                        @Html.Label("", DbRes.TResource("Admin.AttachmentType.PrintBarcode"), new { @class = "col-md-4 control-label" })
+                        <div class="col-md-8">
+                            <div class="col-md-4">
+                                <div class="radio">
+                                    <label>
+                                        @Html.RadioButtonFor(model => model.PrintBarcode, true, new { })@DbRes.TResource("Admin.AttachmentType.Yes")
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="radio">
+                                    <label>
+                                        @Html.RadioButtonFor(model => model.PrintBarcode, false, new { })@DbRes.TResource("Admin.AttachmentType.No")
+                                    </label>
+                                </div>
+                            </div>
+                            <div style="clear:both;"></div>
+                            <div class="col-md-5">
+                                <div class="checkbox">
+                                    <label>
+                                        @Html.CheckBoxFor(model => Model.Archivable)
+                                        @Html.LabelFor(model => Model.Archivable, new { @style = "padding-right:0" })
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="panel-footer middle">
+            @Html.ActionButton(DbRes.TResource("Admin.AttachmentType.Save"), "AddAttachmentType", "dvGrid", null, null, "OnAddSuccess", null, "post", null, "btnAdd", "frmAddAttachmentType", "btn btn-save pull-right")
+            @Html.ResetButton("ClearInputs('AddAttachmentTypeContent')")
+        </div>
+    }*@

@@ -1,0 +1,6 @@
+﻿@model List<MCS.DTO.OrgUnitDTO>
+
+@foreach (MCS.DTO.OrgUnitDTO orgUnit in Model)
+{
+    Html.RenderPartial("_UserManagementOtherDepartmentsItem", orgUnit);
+}

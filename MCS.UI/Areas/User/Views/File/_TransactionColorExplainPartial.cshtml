@@ -1,0 +1,13 @@
+﻿
+<div class="d-flex justify-content-between">
+    <div class="ml-5 d-flex" style="gap:8px;">
+        <div class="Explain-badge-green mt-1"></div>
+        <a>@DbRes.TResource("User.Transaction.InternalOutbound")</a>
+        <div class="Explain-badge-gold mt-1"></div>
+        <a>@DbRes.TResource("User.Transaction.Inbound")</a>
+    </div>
+    @if (!(bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser))
+    {
+        @Html.Partial("~/Areas/User/Views/File/_CreateTransactionButtonsPartial.cshtml", null)
+    }
+</div>

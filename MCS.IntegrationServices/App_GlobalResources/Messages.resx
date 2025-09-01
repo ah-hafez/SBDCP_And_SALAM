@@ -1,0 +1,355 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="CorrespondenceGetSuccessful_AR" xml:space="preserve">
+    <value>تم استرجاع المعاملة بشكل صحيح</value>
+  </data>
+  <data name="CorrespondenceGetSuccessful_EN" xml:space="preserve">
+    <value>Transaction was retrieved correctly</value>
+  </data>
+  <data name="CorrespondenceGetUnsuccessful_AR" xml:space="preserve">
+    <value>لم يتم استرجاع المعاملة بشكل صحيح</value>
+  </data>
+  <data name="CorrespondenceGetUnsuccessful_EN" xml:space="preserve">
+    <value>Transaction was not retrieved correctly</value>
+  </data>
+  <data name="CorrespondenceIdNotValid_AR" xml:space="preserve">
+    <value>رقم المعاملة غير صحيح</value>
+  </data>
+  <data name="CorrespondenceIdNotValid_EN" xml:space="preserve">
+    <value>Transaction number is not valid</value>
+  </data>
+  <data name="CorrespondencesReturnedSuccessfully_AR" xml:space="preserve">
+    <value>تم استرجاع قائمة المعاملات بنجاح</value>
+  </data>
+  <data name="CorrespondencesReturnedSuccessfully_EN" xml:space="preserve">
+    <value>The list of transcations are retrieved successfully</value>
+  </data>
+  <data name="CorrespondenceUpdatedSuccessfully_AR" xml:space="preserve">
+    <value>تم تعديل بيانات المعاملة بنجاح</value>
+  </data>
+  <data name="CorrespondenceUpdatedSuccessfully_EN" xml:space="preserve">
+    <value>Transaction was updated successfully</value>
+  </data>
+  <data name="CorrespondenceUpdatedUnsuccessfully_AR" xml:space="preserve">
+    <value>An error occurred in saving the transaction</value>
+  </data>
+  <data name="CorrespondenceUpdatedUnsuccessfully_EN" xml:space="preserve">
+    <value>حصل خطأ في حفظ المعاملة</value>
+  </data>
+  <data name="DataNotReturned_AR" xml:space="preserve">
+    <value>حدث خطأ في العملية</value>
+  </data>
+  <data name="DataNotReturned_EN" xml:space="preserve">
+    <value>Operation not done successfully</value>
+  </data>
+  <data name="DataReturnedSuccessfully_AR" xml:space="preserve">
+    <value>تمت العملية بنجاح</value>
+  </data>
+  <data name="DataReturnedSuccessfully_EN" xml:space="preserve">
+    <value>Operation done successfully</value>
+  </data>
+  <data name="DocumentDataInvalid_AR" xml:space="preserve">
+    <value>بيانات الوثيقة غير صحيحة</value>
+  </data>
+  <data name="DocumentDataInvalid_EN" xml:space="preserve">
+    <value>Document data is invalid</value>
+  </data>
+  <data name="InvalidUserName_AR" xml:space="preserve">
+    <value>اسم الدخول غير صحيح</value>
+  </data>
+  <data name="InvalidUserName_EN" xml:space="preserve">
+    <value>Invalid user name</value>
+  </data>
+  <data name="LoginSuccessfully_AR" xml:space="preserve">
+    <value>تمت عملية الدخول بنجاح</value>
+  </data>
+  <data name="LoginSuccessfully_EN" xml:space="preserve">
+    <value>Login successfully</value>
+  </data>
+  <data name="LogoutSuccessfully_AR" xml:space="preserve">
+    <value>تم الخروج بنجاح</value>
+  </data>
+  <data name="LogoutSuccessfully_EN" xml:space="preserve">
+    <value>Logout was unsuccessful</value>
+  </data>
+  <data name="LogoutUnsuccessfully_AR" xml:space="preserve">
+    <value>لم يتم الخروج بنجاح</value>
+  </data>
+  <data name="LogoutUnsuccessfully_EN" xml:space="preserve">
+    <value>Logout was successful</value>
+  </data>
+  <data name="SessionTokenTimedOut_AR" xml:space="preserve">
+    <value>Session token timed out. Please log in once again</value>
+  </data>
+  <data name="SessionTokenTimedOut_EN" xml:space="preserve">
+    <value>Session token timed out. Please log in once again</value>
+  </data>
+  <data name="UnauthenticatedUserOniPad_AR" xml:space="preserve">
+    <value>لا يمكنك استخدام النظام من خلال التطبيق</value>
+  </data>
+  <data name="UnauthenticatedUserOniPad_EN" xml:space="preserve">
+    <value>You cannot use the system via this app</value>
+  </data>
+  <data name="UnauthenticatedUser_AR" xml:space="preserve">
+    <value>الاسم/كلمة السر غير صحيحة</value>
+  </data>
+  <data name="UnauthenticatedUser_EN" xml:space="preserve">
+    <value>User name/password is incorrect</value>
+  </data>
+  <data name="UserConnectedToAnotheriPad_AR" xml:space="preserve">
+    <value>هذا المستخدم مربوط بجهاز آي باد آخر</value>
+  </data>
+  <data name="UserConnectedToAnotheriPad_EN" xml:space="preserve">
+    <value>This user is already linked to another iPad</value>
+  </data>
+  <data name="YouAreNotLoggedIn_AR" xml:space="preserve">
+    <value>انت لم تسجل عملية الدخول الى الخدمة</value>
+  </data>
+  <data name="YouAreNotLoggedIn_EN" xml:space="preserve">
+    <value>You are not logged in to the service</value>
+  </data>
+  <data name="CopiesDashboardLabel_AR" xml:space="preserve">
+    <value>الصور</value>
+  </data>
+  <data name="CopiesDashboardLabel_EN" xml:space="preserve">
+    <value>Copies</value>
+  </data>
+  <data name="DelayedTransactionsDashboardLabel_AR" xml:space="preserve">
+    <value>المتأخرة</value>
+  </data>
+  <data name="DelayedTransactionsDashboardLabel_EN" xml:space="preserve">
+    <value>Delayed</value>
+  </data>
+  <data name="MyTransactionsDashboardLabel_AR" xml:space="preserve">
+    <value>معاملاتي</value>
+  </data>
+  <data name="MyTransactionsDashboardLabel_EN" xml:space="preserve">
+    <value>My Transactions</value>
+  </data>
+  <data name="WithAppointmentTransactionsDashboardLabel_AR" xml:space="preserve">
+    <value>فيها موعد</value>
+  </data>
+  <data name="WithAppointmentTransactionsDashboardLabel_EN" xml:space="preserve">
+    <value>With Appointment</value>
+  </data>
+  <data name="ContactUs_AR" xml:space="preserve">
+    <value>إذا كان لديك أي أسئلة حول هذه الشروط والأحكام، يمكنك الاتصال بنا:
+● من خلال زيارة هذه الصفحة على موقعنا على الويب: [[https://leaderssoft.com]
+● بإرسال بريد إلكتروني إلينا: [Info@leaderssoft.com]</value>
+  </data>
+  <data name="ContactUs_EN" xml:space="preserve">
+    <value>If you have any questions about these Terms and Conditions, you can contact us:
+●	By visiting this page on our website: [https://leaderssoft.com]
+●	By sending us an email: [Info@leaderssoft.com]</value>
+  </data>
+  <data name="AboutMorasalat_AR" xml:space="preserve">
+    <value>تطبيق Trasul هو تطبيق تفاعلي للأجهزة الذكية لمتابعة المعاملات، حيث يمكن أصحاب الصلاحية ومتخذي القرار من متابعة أعمالهم في أي وقت ومكان. الأول من نوعه - حيث يوفر قراءات لجميع المعاملات الواردة والصادرة والداخلية للمؤسسة وإتاحتها لجميع مستخدمي التطبيق وفقًا لأدوارهم. توفر Trasul الوسائل الإلكترونية لتلقي المعاملات وتوجيهها داخل المؤسسة للمراجعة والموافقة ويهدف التطبيق ضمان زيادة الإنتاجية وصمم لإتمام عمليات تداول المعاملات بين الإدارات والموظفين في بيئة عمل خالية من الورق وبيئة تضمن سرية وخصوصية المعلومات مع تجربة سهلة الاستخدام، سريعة، دقيقة، وتفاعلية.</value>
+  </data>
+  <data name="AboutMorasalat_EN" xml:space="preserve">
+    <value>The Trasul application is an interactive application for smart devices to follow up on transactions, enabling authorized persons and decision makers to follow up on their business at any time and place. The first of its kind - providing readouts of all incoming, outgoing and internal transactions of an organization and making them available to all app users according to their roles. Trasul provides electronic means to receive transactions and direct them within the organization for review and approval. The application aims to ensure increased productivity and was designed to complete transactional transactions between departments and employees in a paperless work environment and an environment that guarantees confidentiality and privacy of information with an easy-to-use, fast, accurate, and interactive experience.</value>
+  </data>
+  <data name="TermsAndConditions_AR" xml:space="preserve">
+    <value>يرجى قراءة هذه الشروط والاحكام بعناية قبل استخدام تطبيق Trasul للهاتف المحمول الذي تديره شركة أنظمة الخدمات الآمنة لتقنية المعلومات. ان وصولك إلى الخدمة واستخدامها مشروط بقبولك لهذه الشروط والامتثال لها، حيث تنطبق هذه الشروط على جميع الزوار والمستخدمين وغيرهم ممن يصلون إلى الخدمة أو يستخدمونها.
+من خلال الوصول إلى الخدمة أو استخدامها، فإنك توافق على الالتزام بهذه الشروط. نحن نحتفظ بالحق في تعديل هذه الشروط والأحكام في أي وقت. إذا كنت لا توافق على أي جزء من الشروط، فلا يحق لك الوصول إلى الخدمة.
+شروط عامة 
+وفقا لإصدار التطبيق الذي قمت بتنزيله، تشتمل شروط هذا التطبيق على بنود وشروط وسياسة الخصوصية الخاصة بكل من أبل وجوجل اندرويد. وفي حال وجود أي تعارض بين شروط هذا التطبيق وشروط المنصتان المذكورتان، تسود شروط هذا التطبيق.
+قد نقوم من وقت لآخر بتغيير شروط هذا التطبيق. يرجى مراجعة شروط التطبيق بانتظام للتأكد من أنك على دراية بأي اختلافات نقوم بها. إذا تابعت استخدام هذا التطبيق، فسيتم قبولك لهذه الاختلافات. إذا كنت لا توافق على هذه الاختلافات، يجب عليك عدم استخدام التطبيق وابلاغ مشرف النظام في مؤسستك.
+استخدام التطبيق
+يجب أن تكون موظفا في مؤسسة تستخدم نظام مراسلات ومرخص لك بالدخول الى النظام من قبل مشرف النظام في مؤسستك لاستخدام التطبيق
+أنت مسؤول عن حماية كلمة المرور التي تستخدمها للوصول إلى الخدمة وعن أي أنشطة أو إجراءات بموجب كلمة المرور الخاصة بك، سواء كانت كلمة المرور الخاصة بك مع خدمتنا أو خدمة تابعة لجهة خارجية.
+أنت توافق على عدم الكشف عن كلمة مرورك لأي طرف ثالث. يجب عليك إبلاغ مشرف النظام في مؤسستك فور علمك بأي خرق للأمان أو الاستخدام غير المصرح به لحسابك.
+أنت تقر بأن اتفاقك مع مزود شبكة المحمول الخاص بك ينطبق على استخدامك للتطبيق. أنت تقر بأنه قد يتم فرض رسوم عليك من قِبل موفر خدمة الهاتف المحمول مقابل خدمات البيانات أثناء استخدام ميزات معينة من التطبيق أو أي رسوم قد تنشأ من قِبل طرف ثالث وتقبل المسؤولية عن هذه الرسوم. إذا لم تكن دافع الفاتورة للجهاز المستخدم للوصول إلى التطبيق، فسيتم افتراض أنك قد حصلت على إذن من دافع الفاتورة لاستخدام التطبيق.
+روابط لمواقع أخرى
+قد يحتوي التطبيق على روابط خدمات لطرف خارجي غير مملوكة من قبل تطبيق Trasul.
+ليس لدى Trasul أي سيطرة على المحتوى أو سياسات الخصوصية أو الممارسات الخاصة بأي من خدمات الطرف الخارجي ولا يتحمل التطبيق أية مسؤولية عنها. أنت تقر وتوافق كذلك على أن شركة أنظمة الخدمات الآمنة لتقنية المعلومات لن تكون مسؤولة – بشكل مباشر أو غير مباشر – عن أي ضرر أو خسارة حدثت أو زعم أنها ناتجة عن أو فيما يتعلق باستخدام أو الاعتماد على أي من هذه المحتويات أو الخدمات المتاحة على أو من خلال أي هذه الخدمات الخارجية.
+إلى أقصى حد يسمح به القانون المعمول به ، لن تتحمل الشركة أو مورديها بأي حال من الأحوال المسؤولية عن أي أضرار خاصة أو عرضية أو غير مباشرة أو تبعية من أي نوع (بما في ذلك ، على سبيل المثال لا الحصر ، الأضرار الناجمة عن خسارة الأرباح أو فقدان البيانات أو معلومات أخرى ، لتوقف العمل ، للإصابة الشخصية ، وفقدان الخصوصية الناشئ عن أو بأي شكل من الأشكال المتعلقة باستخدام أو عدم القدرة على استخدام الخدمة ، وبرامج الطرف الثالث و / أو أجهزة الطرف الثالث المستخدمة مع الخدمة ، أو بخلاف ذلك فيما يتعلق بأي حكم من أحكام هذه الشروط) ، حتى لو تم إخطار الشركة أو أي مورد بإمكانية حدوث مثل هذه الأضرار وحتى إذا فشل العلاج في تحقيق غرضه الأساسي.
+ننصحك بشدة بقراءة الشروط والأحكام وسياسات الخصوصية لأي جهة خارجية أو خدمات تزورها من خلال التطبيق.
+انهاء الخدمة
+يجوز لشركة أنظمة الخدمات الآمنة لتقنية المعلومات إنهاء أو تعليق الوصول إلى خدمتنا على الفور، دون إشعار مسبق أو مسؤولية، لأي سبب من الأسباب، بما في ذلك على سبيل المثال لا الحصر إذا قمت بخرق الشروط.
+جميع أحكام الشروط التي يجب أن تظل بطبيعتها سارية المفعول، بما في ذلك، على سبيل المثال لا الحصر، أحكام الملكية وإخلاء المسؤولية عن الضمان والتعويض وحدود المسؤولية.
+يتمكن مشرف النظام في مؤسستك أيضًا بالحق في إنهاء أو تعليق وصولك إلى خدماتنا، وذلك بسبب احتياجات العمل والقواعد الخاصة بمؤسستك.
+عند الإنهاء، سيتوقف حقك في استخدام التطبيق على الفور. إذا كنت ترغب في إنهاء حسابك، يمكنك ببساطة التواصل مع مشرف النظام في مؤسستك.
+الحوكمة والتقاضي
+تخضع هذه الشروط وتفسر وفقًا لقوانين المملكة العربية السعودية، بغض النظر عن تعارضها مع أحكام القانون.
+عدم القدرة في إنفاذ أي حق أو حكم من هذه الشروط لا يعتبر تنازلاً عن هذه الحقوق. إذا تم اعتبار أي بند من هذه الشروط غير صالح أو غير قابل للتنفيذ من قبل المحكمة، فستظل الأحكام المتبقية من هذه الشروط سارية. تشكل هذه الشروط كامل الاتفاقية بين شركة أنظمة الخدمات الآمنة لتقنية المعلومات ومؤسستك فيما يتعلق بالتطبيق.
+التغييرات
+تحتفظ شركة أنظمة الخدمات الآمنة لتقنية المعلومات بالحق بتعديل أو استبدال هذه الشروط في أي وقت. إذا كان التغيير جوهري، فسوف نحاول تقديم إشعار لمدة 15 يومًا على الأقل قبل سريان مفعول أي شروط جديدة. إن ما يشكل تغييراً مادياً سيتم تحديده وفقًا لتقديرنا الوحيد.
+من خلال الاستمرار في الوصول إلى خدمتنا أو استخدامها بعد أن تصبح هذه التغييرات فعالة، فإنك توافق على الالتزام بالشروط الجديدة. إذا كنت لا توافق على الشروط الجديدة، فيرجى الاتصال بمشرف النظام بمؤسستك والرجاء التوقف عن استخدام الخدمة.
+إخلاء المسؤولية "كما هي" و "كما هو متاح"
+الخدمة مقدمة لك "كما هي" و "كما هي متوفرة" وبكافة العيوب والعيوب دون ضمان من أي نوع. إلى أقصى حد يسمح به القانون المعمول به، تتنصل الشركة، بالأصالة عن نفسها وبالنيابة عن الشركات التابعة لها ومرخصيها ومقدمي الخدمات المعنيين، صراحةً من جميع الضمانات، سواء كانت صريحة، أو ضمنية، أو قانونية، أو غير ذلك، فيما يتعلق الخدمة، بما في ذلك جميع الضمانات الضمنية الخاصة بالتسويق، والملاءمة لغرض معين، والملكية وعدم الانتهاك، والضمانات التي قد تنشأ عن سياق التعامل، أو مسار الأداء، أو الاستخدام، أو الممارسة التجارية. على سبيل المثال لا الحصر، لا تقدم الشركة أي ضمان أو تعهد، ولا تقدم أي تعهد من أي نوع بأن الخدمة سوف تلبي متطلباتك، أو تحقق أي نتائج مقصودة، أو تكون متوافقة أو تعمل مع أي برامج، أو تطبيقات، أو أنظمة، أو خدمات أخرى، أو تعمل دون انقطاع أو تلبية أي معايير أداء أو موثوقية أو أن تكون خالية من الأخطاء أو أن أي أخطاء أو عيوب يمكن أو سيتم تصحيحها.
+دون تقييد ما سبق، لا تقدم الشركة ولا أي من مزودي الشركة أي تمثيل أو ضمان من أي نوع، صريحًا أو ضمنيًا: (1) فيما يتعلق بتشغيل أو توفر الخدمة، أو المعلومات، والمحتوى، والمواد أو المنتجات المدرجة فيه. (2) أن الخدمة ستكون دون انقطاع أو خالية من الأخطاء؛ (3) فيما يتعلق بدقة، أو موثوقية، أو حداثة أي معلومات، أو محتوى مقدم من خلال الخدمة؛ أو (4) أن الخدمة، أو خوادمها، أو المحتوى، أو رسائل البريد الإلكتروني المرسلة من الشركة أو بالنيابة عنها خالية من الفيروسات، أو البرامج النصية، أو أحصنة طروادة، أو الفيروسات المتنقلة، أو البرامج الضارة، أو القنابل الزمنية، أو غيرها من المكونات الضارة.
+
+حل النزاعات
+إذا كان لديك أي قلق أو نزاع حول الخدمة، فإنك توافق على محاولة حل النزاع أولاً بشكل غير رسمي عن طريق الاتصال بالشركة.</value>
+  </data>
+  <data name="TermsAndConditions_EN" xml:space="preserve">
+    <value>Please read these Terms and Conditions carefully before using the Trasul mobile application operated by the IT Secure Services Systems Company. Your access to and use of the Service is conditioned on your acceptance of and compliance with these Terms. These Terms apply to all visitors, users and others who access or use the Service.
+By accessing or using the Service, you agree to be bound by these Terms. We reserve the right to modify these terms and conditions at any time. IF YOU DO NOT AGREE WITH ANY PART OF THE TERMS, YOU MAY NOT ACCESS THE SERVICE.
+General Terms
+Depending on the version of the application you have downloaded, the terms of this application include the Apple and Google Android terms and conditions and privacy policies. In the event of any conflict between the terms of this application and the terms of the two mentioned platforms, the terms of this application shall prevail.
+We may from time to time change the terms of this application. Please review the Application Terms regularly to ensure that you are aware of any differences we make. If you continue to use this application, you will accept these differences. If you do not agree with these differences, you should not use the Application and inform your organization's system administrator.
+Application Usage
+You must be an employee of an organization that uses a morasalat system and authorized to access the system by your organization's system administrator to use the application.
+You are responsible for safeguarding the password that you use to access the Service and for any activities or actions under your password, whether your password is with our Service or a third-party service.
+You agree not to disclose your password to any third party. You must notify your organization's system administrator immediately upon becoming aware of any breach of security or unauthorized use of your account.
+You acknowledge that your agreement with your mobile network provider applies to your use of the Application. You acknowledge that you may be charged by your mobile service provider for data services while using certain features of the App or any third-party charges that may arise and accept responsibility for such charges. If you are not the bill payer for the device used to access the Application, you will be assumed to have obtained permission from the bill payer to use the Application.
+Links to other sites
+The Application may contain links to third party services that are not owned by Trasul Application , Trasul has no control over, and assumes no responsibility for, the content, privacy policies, or practices of any Third-Party Services. You further acknowledge and agree that LEADERSSOFT shall not be responsible, directly, or indirectly, for any damage or loss incurred or alleged to be caused by or in connection with use of or reliance on any such content or services available on or through any such external services.
+To the maximum extent permitted by applicable law, in no event shall the Company or its suppliers be liable for any special, incidental, indirect, or consequential damages whatsoever (including, but not limited to, damages for loss of profits, loss of data or other information, for business interruption, for personal injury, loss of privacy arising out of or in any way related to the use of or inability to use the Service, third-party software and/or third-party hardware used with the Service, or otherwise in connection with any provision of this Terms), even if the Company or any supplier has been advised of the possibility of such damages and even if the remedy fails of its essential purpose.
+We strongly advise you to read the terms and conditions and privacy policies of any third party or services that you visit through the Application.
+
+Takedown
+LEADERSSOFT may terminate or suspend access to our Service immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms.
+All provisions of the Terms that by their nature should survive termination, including, without limitation, ownership provisions, warranty disclaimers, indemnity, and limitations of liability.
+Your organization's system administrator also has the right to terminate or suspend your access to our Services, due to your organization's business needs and rules.
+Upon termination, your right to use the Application will cease immediately. If you wish to terminate your account, you can simply contact your organization's system administrator.
+Governance and litigation
+These Terms shall be governed and construed in accordance with the laws of the Kingdom of Saudi Arabia, without regard to its conflict of law provisions.
+The inability to enforce any right or provision of these Terms shall not be deemed a waiver of those rights. If any provision of these Terms is held to be invalid or unenforceable by a court, the remaining provisions of these Terms will remain in effect. These Terms constitute the entire agreement between LEADERSSOFTIT and your organization with respect to the Application.
+Changes
+LeadersSoft Technology reserves the right to amend or replace these terms at any time. If the change is material, we will try to provide at least 15 days' notice before any new terms become effective. What constitutes a material change will be determined at our sole discretion.
+By continuing to access or use our Service after those changes become effective, you agree to be bound by the new terms. If you do not agree to the new terms, please contact your organization's system administrator, and please stop using the Service.
+AS IS" and "AS AVAILABLE" Disclaimer
+The Service is provided to You "AS IS" and "AS AVAILABLE" and with all faults and defects without warranty of any kind. To the maximum extent permitted under applicable law, the Company, on its own behalf and on behalf of its Affiliates and its and their respective licensors and service providers, expressly disclaims all warranties, whether express, implied, statutory or otherwise, with respect to the Service, including all implied warranties of merchantability, fitness for a particular purpose, title and non-infringement, and warranties that may arise out of course of dealing, course of performance, usage or trade practice. Without limitation to the foregoing, the Company provides no warranty or undertaking, and makes no representation of any kind that the Service will meet Your requirements, achieve any intended results, be compatible or work with any other software, applications, systems or services, operate without interruption, meet any performance or reliability standards or be error free or that any errors or defects can or will be corrected.
+Without limiting the foregoing, neither the Company nor any of the company's provider makes any representation or warranty of any kind, express or implied: (i) as to the operation or availability of the Service, or the information, content, and materials or products included thereon; (ii) that the Service will be uninterrupted or error-free; (iii) as to the accuracy, reliability, or currency of any information or content provided through the Service; or (iv) that the Service, its servers, the content, or e-mails sent from or on behalf of the Company are free of viruses, scripts, trojan horses, worms, malware, timebombs or other harmful components.
+
+
+Disputes Resolution
+If You have any concern or dispute about the Service, you agree to first try to resolve the dispute informally by contacting the Company.</value>
+  </data>
+  <data name="IncorrectSignaturePassword_AR" xml:space="preserve">
+    <value>كلمة المرور غير صحيحة</value>
+  </data>
+  <data name="IncorrectSignaturePassword_EN" xml:space="preserve">
+    <value>Incorrect password</value>
+  </data>
+  <data name="NoSignaturePasswordExist_AR" xml:space="preserve">
+    <value>لا يوجد كلمة مرور على التوقيع</value>
+  </data>
+  <data name="NoSignaturePasswordExist_EN" xml:space="preserve">
+    <value>No signature passoword exist</value>
+  </data>
+  <data name="HijriSymbol_AR" xml:space="preserve">
+    <value>هـ</value>
+  </data>
+  <data name="HijriSymbol_EN" xml:space="preserve">
+    <value>م</value>
+  </data>
+</root>

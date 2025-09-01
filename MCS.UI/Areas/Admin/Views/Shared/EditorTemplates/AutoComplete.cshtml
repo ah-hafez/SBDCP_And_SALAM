@@ -1,0 +1,16 @@
+﻿@model int?
+<script>
+    $(function () {
+        AutoComplete('@ViewBag.autoCompleteControlid', '@(ViewBag.autoCompleteControlid + "_hdnIdToSaveValue")', '@ViewBag.items'.replace(/&quot;/g, '"'), '@ViewBag.selectedId', '@ViewBag.matchAnywhere', '@ViewBag.hdnExtraParametersId', '@ViewBag.selectFirstIndex', '@ViewBag.validationGroup', '@ViewBag.onChangeCallback', '@ViewBag.sourceMethod', '@ViewBag.sourceParameters');
+    });
+</script>
+
+<div class="AutPosition">
+    <input id="@ViewBag.autoCompleteControlid" type="text" maxlength="50" class="form-control" placeholder="" data-val-required="" data-val-required-validationgroup="@ViewBag.validationGroup" data-val="@(ViewBag.validationGroup != "")">
+    <span class="ArrowCustom select2 - selection__arrow" role="presentation">
+        <b role="presentation" style="display: none; "></b>
+        <i class="uicon icon_arrow_down"></i>
+    </span>
+</div>
+
+@Html.HiddenGroupFor(model => model, new { @id = ViewBag.autoCompleteControlid + "_hdnIdToSaveValue" }, validationGroup: (string)ViewBag.validationGroup)

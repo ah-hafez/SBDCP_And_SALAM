@@ -1,0 +1,25 @@
+﻿@using MCS.UI.Areas.User.Models.Shared
+
+@model HelpInfoVM
+@{
+    /**/
+
+    /**/
+
+    Layout = "~/Views/Shared/_DialogLayout.cshtml";
+}
+<link href="~/Content/User/lib/plugins/scrollbar/trackpad-scroll-emulator.css" rel="stylesheet" />
+<link href="~/Content/User/lib/css/splitpanelscss.css" rel="stylesheet" />
+<div class="content_container content_container--header extra-padding">
+    <div class="row">
+        <div class="panel-body">
+            <h3 class="title2 title2-padding">@Model.Title:</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div>
+            <h5>@Html.Raw(Model.Body) </h5>
+        </div>
+
+    </div>
+</div>

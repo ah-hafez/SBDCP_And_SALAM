@@ -1,0 +1,87 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Search
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<SearchCriteriaByElcEmployeeResultVM>
+
+<div style="margin-bottom:50px;">
+
+    @Html.Grid(Model, "_CardGrid").Named("ELcEmployeeSearch").CollectionName("ELcEmployeeSearchResult").Columns(columns =>
+    {
+        columns.Add(true).Titled("").RenderValueAs(mvcgridcolumn => Html.Partial("ListItems/_ELcEmployeeSearch_Item", mvcgridcolumn))
+        .Sanitized(false).Encoded(false);
+    }).WithPaging(UIHelper.PageSize)
+</div>
+
+
+
+<script>
+    var myELcEmployeeSearchGridEventHandler = '@Url.Action("SearchPaging", "Search")';
+    function prepareELcEmployeeSearchGrid()
+    {
+        pageGrids.ELcEmployeeSearch = undefined;
+        var filterData = $("#frmSearch").serializeArray();
+
+        if (!pageGrids.ELcEmployeeSearch)
+        {
+            $("div[data-gridname='ELcEmployeeSearch']").gridmvc();
+        }
+        //if (!pageGrids.ELcEmployeeSearch) {
+        //    $(".grid-mvc").gridmvc();
+        //}
+        pageGrids.ELcEmployeeSearch.ajaxify({ getPagedData: myELcEmployeeSearchGridEventHandler, requestType: "POST", getData: myELcEmployeeSearchGridEventHandler, optionalData: filterData });
+
+    }
+    $(document).ready(function () {
+        prepareELcEmployeeSearchGrid();
+    });
+
+
+
+
+    function ShowPrintDialog(id) {
+        var params = { transactionId: id };
+        ShowDialogAjaxPrintingBarcodes('@Url.Action("PrinttingBarcodes","Shared")' + "?" + $.param(params), {}, 'OpenPrintDialogSuccess', 'dialogbox col-md-12 ');
+    }
+    function OpenPrintDialogSuccess(data, $obj) {
+        if (data.MessageType != 2) {
+            $obj.setContent(data.Html);
+        }
+        else {
+            __dialog.close();
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function ShowVisitTickect(id) {
+        var actionUrl = '@Url.Action("PrintTicket", "Shared")' + "?transactionId=" + id;
+
+        PrintButton(actionUrl);
+
+    }
+
+
+
+
+    function Open(Id, type) {
+        var url = "";
+         var isFromDraft = $('#EncryptedTrue').val();
+        var isHubEditable = $('#EncryptedFalse').val();
+
+          switch (type) {
+            case @(TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName)):
+                url = '@Url.Action("Edit", "Inbound")' + '?id=-1';
+                break;
+            case @(TransactionCategory.DraftOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName)):
+                url = '@Url.Action("Edit", "OutboundExternal")' + "?id=-1&" + 'IsFromDraft=' + isFromDraft + '&isHubEditable=' + isHubEditable;
+                break;
+            case @(TransactionCategory.ExternalOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName)):
+                isFromDraft = $('#EncryptedFalse').val();
+                url = '@Url.Action("Edit", "OutboundExternal")' + "?id=-1&" + 'IsFromDraft=' + isFromDraft + '&isHubEditable=' + isHubEditable;
+                break;
+            case @(TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName)):
+                url = '@Url.Action("Edit", "OutboundInternal")' + '?id=-1';
+                break;
+        }
+        url = url.replace("-1", EncryptionKey(Id));
+        window.location.href = url;
+    }
+</script>

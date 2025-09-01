@@ -1,0 +1,190 @@
+﻿@using MCS.UI.Areas.User.Models;
+@using MCS.Framework.Localization;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.UI.Areas.User.Models.Assignment;
+@using MCS.UI.Areas.User.Models.Transaction;
+@using MCS.UI.Areas.User.Models.Shared;
+@using MCS.Common
+@model EditorViewModel
+@{
+    ViewBag.Title = "Index";
+    bool isVIP = (bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser);
+    if (!isVIP)
+    {
+        Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Areas/User/Views/Shared/_VIPLayout.cshtml";
+    }
+    bool isEditMode = false;
+    Session["IsEditMode"] = isEditMode;
+}
+<script>
+    var archiveMode = '@isEditMode';
+</script>
+@Html.RenderGridViewResources()
+@Html.Hidden("hdnCurrentTransactionId", ViewData["TransactionId"], new { @id = "hdnTransactionId" })
+@Html.Hidden("hdnTransEditorId", ViewData["TransactionId"])
+@Html.Hidden("hdnOutboundDraftId", Model.TransactionBasicInfoVM.OutboundDraftId)
+@Html.Hidden("hdnEditorTransactionTypeId", Model.TransactionBasicInfoVM.TransactionTypeId)
+<div class="stage_transact">
+    <div class="form-horizontal form-row">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="buts_editor">
+                    @Html.ClientAnchor("<div class='buts_icon'><div class='center'><i><img src=" + Url.Content("~/Content/User/lib/img/morasalat/editor/icon_01.svg") + " alt=''></i></div></div><div class='clear'></div><div class='buts_title'>" + DbRes.TResource("User.Editor.BasicInfo") + "</div>", "btnBasicInfo", "tab_editor select_but")
+                    @Html.ClientAnchor("<div class='buts_icon'><div class='center'><i><img src=" + Url.Content("~/Content/User/lib/img/morasalat/editor/icon_04.svg") + " alt=''></i></div></div><div class='clear'></div><div class='buts_title'>" + DbRes.TResource("User.Editor.Explanations") + "</div>", "btnExplanation", "tab_editor", null, UserClaims.Editor.Explanations)
+                    @Html.ClientAnchor("<div class='buts_icon'><div class='center'><i><img src=" + Url.Content("~/Content/User/lib/img/morasalat/editor/icon_05.svg") + " alt=''></i></div></div><div class='clear'></div><div class='buts_title'>" + DbRes.TResource("User.Editor.InternalOutbound") + "</div>", "btnOutboundInternal", "tab_editor dialog_print")
+                    @Html.ClientAnchor("<div class='buts_icon'><div class='center'><i><img src=" + Url.Content("~/Content/User/lib/img/morasalat/editor/icon_02.svg") + " alt=''></i></div></div><div class='clear'></div><div class='buts_title'>" + DbRes.TResource("User.Editor.Assignments") + "</div>", "btnAssignments", "tab_editor", null, UserClaims.Editor.Assignments)
+                    @Html.ClientAnchor("<div class='buts_icon'><div class='center'><i><img src=" + Url.Content("~/Content/User/lib/img/morasalat/editor/icon_06.svg") + " alt=''></i></div></div><div class='clear'></div><div class='buts_title'>" + DbRes.TResource("User.Editor.AddTasks") + "</div>", "btnAddTask", "tab_editor dialog_print")
+                    @Html.ClientAnchor("<div class='buts_icon'><div class='center'><i><img src=" + Url.Content("~/Content/User/lib/img/morasalat/editor/icon_07.svg") + " alt=''></i></div></div><div class='clear'></div><div class='buts_title'>" + DbRes.TResource("User.Editor.AssignmentPaper") + "</div>", "btnAssignmentPaper", "tab_editor", null, UserClaims.Editor.AssignmentPaper)
+                    @Html.ClientAnchor("<div class='buts_icon'><div class='center'><i><img src=" + Url.Content("~/Content/User/lib/img/morasalat/editor/icon_08.svg") + " alt=''></i></div></div><div class='clear'></div><div class='buts_title'>" + DbRes.TResource("User.Editor.Links") + "</div>", "btnLinks", "tab_editor", null, UserClaims.Editor.Link)
+                </div>
+            </div>
+            <div id="dvEditorBasicInfo" class="_views">
+                @Html.Partial("~/Areas/User/Views/Editor/EditorOutboundInternal/_OutboundInternalBasicInfoPartial.cshtml", Model.TransactionBasicInfoVM)
+                <div class="panel panel-default panel-results">
+                    @if (Model.EditorType == EditorType.Scanning)
+                    {
+                        ViewData.TemplateInfo.HtmlFieldPrefix = null;
+                        @Html.Partial("~/Areas/User/Views/Editor/Archiving/_ArchivingReadWritePartial.cshtml", Model.DocumentVM != null ? Model.DocumentVM : new DocumentVM())
+                    }
+                    else if (Model.EditorType == EditorType.TextEditor)
+                    {
+                        @Html.Partial("~/Areas/User/Views/Transaction/_EditorPartial.cshtml", ViewData["EditorViewModel"], Html.ViewData)
+                    }
+                </div>
+            </div>
+            <div id="dvEditorExplanation" class="panel-body editor hidden_ _views">
+                @{ViewData.TemplateInfo.HtmlFieldPrefix = "EditorExplanations";}
+                @Html.Partial("~/Areas/User/Views/Editor/Explanations/_ExplanationReadWritePartial.cshtml", new ExplanationVM())
+            </div>
+            <div id="dvEditorLinks" class="_views hidden_">
+                <div id="dvLinks" class="panel-body editor">
+                    @{ViewData.TemplateInfo.HtmlFieldPrefix = "EditorLinks";}
+                    @Html.Partial("~/Areas/User/Views/Editor/Links/_LinksPartial.cshtml", new TransactionLinkVM())
+                </div>
+            </div>
+            <div id="dvEditorAssignmentPaper" class="hidden_ _views">
+                @{ViewData.TemplateInfo.HtmlFieldPrefix = "EditorAssignmentPaper";}
+                @if (SessionInfo.CurrentUser.DefaultAssignmentPaper == false)
+                {
+                    @Html.Partial("~/Areas/User/Views/Editor/AssignmentPaper/_AssignmentPaperPartial.cshtml", new TransactionAssignmentVM())
+                }
+                else
+                {
+                    @Html.Partial("~/Areas/User/Views/Editor/AssignmentPaper/_AssignmentPaperPartialNewCopis.cshtml", new TransactionAssignmentVM { ToOrgUnitId = SessionInfo.OrgUnitId }, Html.ViewData)
+                }
+            </div>
+            <div id="dvEditorAssignments" class="hidden_ _views">
+                @{ViewData.TemplateInfo.HtmlFieldPrefix = "EditorAssignment";}
+                @Html.Partial("~/Areas/User/Views/Editor/Assignments/_AssignmentsPartial.cshtml", new TransactionAssignmentVM())
+            </div>
+            <div id="dvEditorTaskContainer" class="hidden_ _views">
+                @{ViewData.TemplateInfo.HtmlFieldPrefix = "taskAddDTO";}
+                @Html.Partial("~/Areas/User/Views/Editor/TaskManagement/_TaskPartial.cshtml", new TaskAddVM())
+                @{ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+            </div>
+            <div id="dvEditorInternalOutboundContainer" class="hidden_ _views">
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+    $('.tab_editor').click(function () {
+
+        var url;
+        var data = new Array();
+        var id = $(this)[0].id
+
+        $('.tab_editor').removeClass('select_but');
+        $(this).addClass('select_but');
+
+        $("._views").hide();
+
+        switch ($(this)[0].id) {
+
+            case "btnBasicInfo":
+                $("#dvEditorBasicInfo").show();
+                break;
+
+            case "btnAssignments":
+                $("#dvEditorAssignments").show();
+                break;
+
+            case "btnLinks":
+                $("#dvEditorLinks").show();
+                break;
+
+            case "btnExplanation":
+                $("#dvEditorExplanation").show();
+                break;
+
+            case "btnAddTask":
+                $("#dvEditorTaskContainer").show();
+                break;
+
+            case "btnAssignmentPaper":
+                $("#dvEditorAssignmentPaper").show();
+                break;
+
+            case "btnOutboundInternal":
+
+                $.ajax({
+                    url: '@Url.Action("EditInternal", "Editor")',
+                    type: 'Get',
+                    data: { id: $("#hdnTransEditorId").val() },
+                    cache: false,
+                    success: function (data) {
+                        if (data.MessageType != 2) {
+                            // $obj.setContent(data.Html);
+                            $("#dvEditorInternalOutboundContainer").html(data.Html);
+                            $("#dvEditorInternalOutboundContainer").show();
+
+                            jQuery.validator.unobtrusive.parse('#frmEditOutboundInternal');
+                        }
+                        else {
+                            ShowErrorMessage(data.MessageText);
+                        }
+                    },
+                    error: function (a) {
+
+                    }
+                });
+                break;
+        }
+        return false;
+    });
+
+    function OnSaveLinksSuccess(data, div) {
+        if (data.MessageType != 2) {
+            ShowSuccesMessage(data.MessageText)
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function OpenDialog(url) {
+        $.confirm({
+            title: false,
+            content: 'url:' + url,
+            icon: 'fa fa-info',
+            animation: 'scale',
+            columnClass: 'dialogbox col-md-12',
+            backgroundDismiss: false,
+            cancelButton: false,
+            confirmButton: false,
+            closeIcon: true,
+            onOpen: function () {
+                //TODO:Revisit this code
+                $("#Loader").hide();
+            },
+        });
+    }
+
+</script>

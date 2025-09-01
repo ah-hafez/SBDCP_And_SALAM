@@ -1,0 +1,31 @@
+﻿@using MCS.Common
+@model List<TreeNode>
+@using MCS.Framework.Localization;
+<ul class="list-group">
+    @foreach (TreeNode child in Model)
+    {
+        if (child.HasChilds)
+        {
+            <li class="list-group-item has-sub">
+                @{Html.RenderPartial("~/Areas/Admin/Views/ExternalParties/_ExternalPartiesChildsTreeViewPartial.cshtml", child);}
+            </li>
+        }
+        else
+        {
+            <li class="list-group-item">
+                <div class="collection-label">
+                    <label class="order-2 order-md-1">
+                        <span class="department-name">@child.Name</span>
+                    </label>
+                    <div class="table-icon d-flex align-items-center ml-md-auto order-1 order-md-2 mb-2 mb-md-0">
+                        <a onclick="javascript: window.location.href='@(Url.Action("AddExternalPartyInfo" , "ExternalParties")+ "?ParentId=" + child.ParentId)'" class="color-orange"><i class="icon-tables-sitemap-sub" title="@DbRes.TResource("User.ExternalParty.AddUnit")"></i></a>
+                        <a onclick="javascript: window.location.href='@(Url.Action("AddExternalPartyInfo" , "ExternalParties")+ "?ParentId=" + child.Id)'" class="color-blue"><i class="icon-tables-sitemap" title="@DbRes.TResource("User.ExternalParty.AddSubUnit")"></i></a>
+                        <a onclick="javascript: window.location.href='@(Url.Action("GetPartyById", "ExternalParties") + "?id=" + child.Id)'" class="color-purple"><i class="icon-tables-edit" title="@DbRes.TResource("User.ExternalParty.Edit")"></i></a>
+                        <a onclick="DeleteNode(@child.Id)" class="color-burgundy" data-toggle="modal" data-target="#Modal1"><i class="icon-tables-delete" title="@DbRes.TResource("User.ExternalParty.Delete")"></i></a>
+                    </div>
+                </div>
+            </li>
+        }
+
+    }
+</ul>

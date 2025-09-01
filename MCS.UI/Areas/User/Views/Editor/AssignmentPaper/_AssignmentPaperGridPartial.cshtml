@@ -1,0 +1,21 @@
+﻿@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<MCS.UI.Areas.User.Models.Assignment.TransactionAssignmentVM>
+
+@{int index = 0;}
+@Html.Grid(Model).Named("grdAssignmentPaper").Columns(columns =>
+    {
+        columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").Titled("", "<input type='checkbox' id='chkall'></input>")
+                                          .RenderValueAs(o =>
+                                            @<div class="chkCol" id="spanCheckBox">
+                                                <input id="AssigneeSelectorcheckbox" type="checkbox" />
+                                            </div>);
+
+                columns.Add(true).RenderValueAs(m => (index++).ToString());
+                columns.Add(model => model.ToOrgUnitName).Titled(DbRes.TResource("User.Transaction.Assignment.ToOrgUnitId"));
+                columns.Add(model => model.ToUserName).Titled(DbRes.TResource("User.Transaction.Assignment.ToUserId"));
+                columns.Add(model => model.ActionName).Titled(DbRes.TResource("User.Transaction.Assignment.ActionId"));
+
+                columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => Html.GridImageButton(Url.Action("GetAssignmentPaper", "Editor"), "grdAssignmentPaper", 1, OperationType.Update, "dvAssignmentPaperBody", "dvAssignmentPaper :input", null, "OnGetAssignmentPaperSuccess", "", "post")).Titled(DbRes.TResource("Grid.Edit"));
+                columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => Html.ConfirmImageButton(Url.Action("DeleteAssignmentPapers", "Editor"), "grdAssignmentPaper", 1, "dvAssignmentPaperGrid", "dvAssignmentPaper :input", null, "OnDeleteAssignmentPaperSuccess", null, "post", DbRes.TResource("Grid.DeleteMassage"))).Titled(DbRes.TResource("Grid.Delete"));
+            }).WithPaging(10).Sortable().Filterable().WithMultipleFilters().UpdateActionUrl(Url.Action("UpdateGridAssignmentPaper", "Editor")).RenderDeleteButton(Url.Action("DeleteAssignmentPapers", "Editor"), 1, "dvAssignmentPaper :input", "dvAssignmentPaperGrid", "OnDeleteAssignmentPaperSuccess")
+
+

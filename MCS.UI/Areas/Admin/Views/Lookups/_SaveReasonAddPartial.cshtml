@@ -1,0 +1,54 @@
+﻿@model MCS.UI.Areas.User.Models.Lookups.LookupVM
+@using MCS.Framework.Localization;
+@using MCS.UI.Areas.User.Models.Lookups
+@using MCS.UI
+@{
+    ViewBag.Title = "_SaveReason";
+    Layout = null;
+}
+
+
+
+<div class="d-flex flex-column flex-md-row align-items-md-center flex-grow-1">
+    <h3 class="site-color mb-4">@DbRes.TResource("Admin.SaveReason.Add")</h3>
+</div>
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmAddSaveReason" }))
+{
+    @Html.AntiForgeryToken()
+    <div id="AddSaveReasonContent" class="form-row">
+        @{List<CultureVM> cultureVMs = ViewData["Culture"] as List<CultureVM>;}
+        @if (cultureVMs != null)
+        {
+            for (int m = 0; m < cultureVMs.Count; m++)
+            {
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                    @Html.CustomLabelFor(model => model.Localizations[m].CultureName, new { @class = "" }, DbRes.TResource(string.Format("Admin.Lookups.AttachmentType.Name.{0}", cultureVMs[m].ShortName)))<span class="stark">*</span>
+                    @Html.StickyHiddenFor(model => model.Localizations[m].CultureId, new { Value = cultureVMs[m].Id })
+                    @Html.TextBoxGroupFor(model => model.Localizations[m].Text, "", new { @class = "form-control" }, DbRes.TValidation("Admin.AttachmentType.NameRequired." + cultureVMs[m].ShortName))
+                </div>
+            }
+        }
+      
+    </div>
+
+    @Html.StickyHiddenFor(model => model.CategoryId, new { @Value = false })
+    <div class="mx-3 mx-md-5 mb-4 d-flex">
+        <div class="ml-auto">
+            @Html.ActionButton(DbRes.TResource("Admin.AttachmentType.Save"), "AddSaveReason", "dvGrid", null, null, "OnAddSuccess", null, "post", null, "btnAdd", "frmAddSaveReason", "btn btn-lg btn-st3 mx-1")
+            @Html.ResetButton("ClearInputs('AddSaveReasonContent')")
+        </div>
+    </div>
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

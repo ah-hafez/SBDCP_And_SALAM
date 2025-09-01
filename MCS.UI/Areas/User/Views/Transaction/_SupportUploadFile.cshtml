@@ -1,0 +1,31 @@
+﻿<div class="col-sm-12 ">
+    <div class="col-sm-4" id="dvOneUploadFiles">
+        <fieldset>
+            <div class="form-group">
+                <input type="file" name="Files" onchange="SaveAttachements(this)" id="Files" class="hidden">
+                <a class="btn-site btn-upload" href="#" onclick="choosefile(this)">
+                    <i class="uicon icon_attachment_plus"></i>
+                    @DbRes.TResource("User.Transaction.Copy.Attachment")
+                </a>
+            </div>
+        </fieldset>
+    </div>
+    <div class="col-sm-8 col-uploadeed-files">
+        <fieldset>
+            <div class="form-group">
+                <label class="control-label">@DbRes.TResource("User.Transaction.AddedAttachment")</label>
+                <div class="uploaded-files">
+                </div>
+            </div>
+        </fieldset>
+    </div>
+</div>
+<script>
+    function choosefile(obj)
+    {
+        $(obj).closest('form').find('#Files').click();
+        return false;
+
+    }
+</script>
+

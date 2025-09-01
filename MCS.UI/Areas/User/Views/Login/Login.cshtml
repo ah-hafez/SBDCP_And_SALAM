@@ -1,0 +1,229 @@
+﻿@model MCS.UI.Areas.User.Models.Shared.LoginInfoVM
+@using MCS.Framework.Localization
+
+@{
+    ViewBag.Title = DbRes.TResource("User.Login.Title");
+    Layout = "~/Views/Shared/_EmptyLayout.cshtml";
+}
+
+<style>
+    .systemImg {
+        background: white;
+        border-radius: 10px;
+        min-width: 110px;
+        min-height: 100px;
+        /*        border: 1px solid #cdab4d;
+    */
+    }
+
+    .systemBlock {
+        position: absolute;
+        top: 65%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        display: flex;
+        gap: 10px;
+    }
+
+    .centeredText {
+        position: absolute;
+        top: 45%;
+        right: 42%;
+        text-align: center;
+        color: #0E8270;
+        display: flex;
+        gap: 8px;
+    }
+
+        .centeredText h1 {
+            font-size: 60px;
+            font-weight: 700;
+        }
+
+    .systemImg img {
+        width: 100px;
+    }
+
+    .modal-dialog {
+        width: 880px;
+    }
+</style>
+<div>
+    <div class="split right">
+
+    </div>
+
+    <center class="centeredLoginForm">
+
+
+        <div class="d-flex flex-column flex-root">
+            <div class="login login-1 login-signin-on d-flex flex-column flex-lg-row flex-column-flui" id="kt_login">
+
+
+                <div class="login-content flex-row-fluid d-flex flex-column justify-content-center position-relative overflow-hidden p-7 mx-auto">
+                    <div class="mt-5">
+                        <img src="~/Content/User/lib/images/GAMI_Logo_White-01.svg" class="" width="300" />
+                    </div>
+                    <div class="d-flex flex-column-fluid flex-center">
+                        <div class="login-form login-signin">
+                            @using (Html.BeginForm("Login", "Login", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { id = "frmLogin" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                @Html.Hidden("returnUrl", Request.QueryString["returnUrl"]);
+                                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                <div class="login-form" style="max-width: 350px; margin: 30px auto;">
+                                    <h3 class="text-center pb-3 mt-3 login-title">تسجيل الدخول</h3>
+
+                                    <div class="form-group">
+                                        @Html.TextBoxFor(model => model.UserName, "Login", new { placeholder = DbRes.TResource("User.Login.UserName"), @class = "form-control form-control-lg valid ", autofocus = "autofocus" })
+                                        @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.PasswordFor(model => model.Password, new { placeholder = DbRes.TResource("User.Login.Password"), @class = "form-control form-control-lg valid", @Value = Model.Password, @autocomplete = "off" })
+                                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div id="loginType" class="form-group" style="display:none">
+                                        @Html.RadioButtonFor(model => model.IsWindowsLogin, "false", new { @checked = "checked" })   مستخدم داخلي
+                                        <div class="svl"></div>
+                                        @Html.RadioButtonFor(model => model.IsWindowsLogin, "true")    مستخدم خارجي
+                                    </div>
+
+                                    <div class="form-group">
+                                        <button type="submit" id="btnSubmit" hidden></button>
+                                        <button type="button" class="btn btn-block" style="padding:15px;" onclick="CheckUserProfile()">تسجيل الدخول</button>
+
+                                    </div>
+
+
+
+                                </div>
+                                <div style="clear: both;"></div>
+                            }
+
+                        </div>
+
+
+                    </div>
+                    <div class="mt-2 mb-5">
+                        <p style="color:#fff; font-size:18px;"> تعهد الالتزام بالاستخدام المقبول والخصوصية  </p>
+                        <a class="" style="color:#fff;" onclick="showLoginPopup()">
+                            المزيد
+                        </a>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </center>
+
+
+</div>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">تعهدات الموظف</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <ol>
+                    <li>يتعهد الموظف بعدم مشاركة أي معلومات مملوكة للهيئة بأي شكل من الأشكال مع أي طرف ثالث إلا بموافقة كتابية من الهيئة.</li>
+                    <li>يتعهد الموظف بعدم محاولة الوصول لأي معلومات مملوكة للهيئة وتقع خارج نطاق عمله وبإعلام الهيئة في حال تحقق ذلك.</li>
+                    <li>يلتزم الموظف بإعلام واخطار الهيئة عن أي حالة تسرب لمعلومات مملوكة لها لدى طرف ثالث.</li>
+                    <li>يتعهد الموظف عند انتهاء العلاقة بإعادة جميع المعلومات الرقمية وغير الرقمية للهيئة وإتلاف جميع المعلومات الأخرى التي لا يمكن إعادتها.</li>
+                    <li>يلتزم الموظف بتوخي السرية التامة عند التعامل مع أي معلومة سرية تتعلق بالهيئة، وألا يفشي سرًا اطلع عليه بحكم عمله ؛ ولو بعد انقطاعه عن العمل.</li>
+                    <li>يلتزم الموظف بألا يخرج أي وثيقة أو مطبوعة رسمية أو الكترونية أو نسخ منها خارج مقر الهيئة إلا بموافقتها.</li>
+                    <li>يلتزم الموظف بألا يدلي بأي تصريح لوسائل الإعلام والتواصل الاجتماعي أو غيرها عن أمور تتعلق بأعمال الهيئة إلا بتفويض منها.</li>
+                    <li>يلتزم الموظف بألا يقوم بتصوير أو تسجيل أي مقطع مرئي أو مسموع داخل مقر العمل وألا يقوم بتداول أو نشر مقاطع الفيديو أو الصور الخاصة بالعمل على مواقع التواصل الاجتماعي بدون إذن أو تصريح مسبق من الهيئة.</li>
+                    <li>للهيئة الحق باتخاذ الإجراءات النظامية بحق الموظف ومقاضاته أمام الجهات القضائية المختصة المحلية أو الدولية في حال قيامه بإفشاء أو تسريب أو إخراج أي معلومة أو وثيقة تخص الهيئة دون مبرر وبخلاف مقتضى العمل.</li>
+                    <li>يلتزم الموظف باحترام ومراعاة سياسات وتنظيمات الهيئة المتعلقة بالأمن السيبراني طوال مدة عمله مع الهيئة وبكل ما يلحق بها من تعديلات أو تغييرات والعمل بها طبقا لنصوصها وأحكامها، ويبذل أقصى الجهد في أداء مهام الوظيفة الموكلة إليه والقيام بها بكل إخلاص، ويلتزم بالحفاظ على سرية ما يتلقاه أو يطلع عليه من معلومات عن الهيئة أثناء عمله أو بسببه وعدم إفشائها أو تسريبها لأي طرف ثالث داخل أو خارج الهيئة طيلة مدة سريان العقد وبعد انتهائه لأي سبب من الاسباب.</li>
+                    <li>يلتزم الموظف بالاعتناء بالأجهزة والآلات والأدوات الملوكة للهيئة الموضوعة تحت تصرفه و التي تكون في عهدته واستخدامها في أداء أعمال وظيفته وأن يتحمل نفقاتها حال إتلافها نتيجة إهماله أو سوء استخدامه لها، وعند إنهاء أو انتهاء عمله أن يعيد للهيئة المواد غير المستهلكة وما بحوزته من أجهزة وآلات ومستندات وبيانات تتعلق بنشاط الهيئة.</li>
+                </ol>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+
+    function showLoginPopup() {
+
+        ShowLoginPopup('<ol style="font-size:12px;"><li>يتعهد الموظف بعدم مشاركة أي معلومات مملوكة للهيئة بأي شكل من الأشكال مع أي طرف ثالث إلا بموافقة كتابية من الهيئة.</li><li>يتعهد الموظف بعدم محاولة الوصول لأي معلومات مملوكة للهيئة وتقع خارج نطاق عمله وبإعلام الهيئة في حال تحقق ذلك.</li><li>يلتزم الموظف بإعلام واخطار الهيئة عن أي حالة تسرب لمعلومات مملوكة لها لدى طرف ثالث.</li> <li>يتعهد الموظف عند انتهاء العلاقة بإعادة جميع المعلومات الرقمية وغير الرقمية للهيئة وإتلاف جميع المعلومات الأخرى التي لا يمكن إعادتها.</li> <li>يلتزم الموظف بتوخي السرية التامة عند التعامل مع أي معلومة سرية تتعلق بالهيئة، وألا يفشي سرًا اطلع عليه بحكم عمله ؛ ولو بعد انقطاعه عن العمل.</li><li>يلتزم الموظف بألا يخرج أي وثيقة أو مطبوعة رسمية أو الكترونية أو نسخ منها خارج مقر الهيئة إلا بموافقتها.</li><li>يلتزم الموظف بألا يدلي بأي تصريح لوسائل الإعلام والتواصل الاجتماعي أو غيرها عن أمور تتعلق بأعمال الهيئة إلا بتفويض منها.</li> <li>يلتزم الموظف بألا يقوم بتصوير أو تسجيل أي مقطع مرئي أو مسموع داخل مقر العمل وألا يقوم بتداول أو نشر مقاطع الفيديو أو الصور الخاصة بالعمل على مواقع التواصل الاجتماعي بدون إذن أو تصريح مسبق من الهيئة.</li> <li>للهيئة الحق باتخاذ الإجراءات النظامية بحق الموظف ومقاضاته أمام الجهات القضائية المختصة المحلية أو الدولية في حال قيامه بإفشاء أو تسريب أو إخراج أي معلومة أو وثيقة تخص الهيئة دون مبرر وبخلاف مقتضى العمل.</li><li>يلتزم الموظف باحترام ومراعاة سياسات وتنظيمات الهيئة المتعلقة بالأمن السيبراني طوال مدة عمله مع الهيئة وبكل ما يلحق بها من تعديلات أو تغييرات والعمل بها طبقا لنصوصها وأحكامها، ويبذل أقصى الجهد في أداء مهام الوظيفة الموكلة إليه والقيام بها بكل إخلاص، ويلتزم بالحفاظ على سرية ما يتلقاه أو يطلع عليه من معلومات عن الهيئة أثناء عمله أو بسببه وعدم إفشائها أو تسريبها لأي طرف ثالث داخل أو خارج الهيئة طيلة مدة سريان العقد وبعد انتهائه لأي سبب من الاسباب.</li><li>يلتزم الموظف بالاعتناء بالأجهزة والآلات والأدوات الملوكة للهيئة الموضوعة تحت تصرفه و التي تكون في عهدته واستخدامها في أداء أعمال وظيفته وأن يتحمل نفقاتها حال إتلافها نتيجة إهماله أو سوء استخدامه لها، وعند إنهاء أو انتهاء عمله أن يعيد للهيئة المواد غير المستهلكة وما بحوزته من أجهزة وآلات ومستندات وبيانات تتعلق بنشاط الهيئة.</li></ol>', '');
+    }
+    $(document).keydown(function (keyEvent)
+    {
+
+
+        if (keyEvent.which === 90 && keyEvent.ctrlKey && keyEvent.shiftKey)
+        {
+            $('#loginType').toggle(true);
+        }
+
+        if (keyEvent.keyCode == 13)
+        {
+            debugger;
+            return CheckUserProfile();
+        }
+
+
+    });
+
+    function GoToUpdateProfile()
+    {
+        debugger;
+        var url = '@Url.Action("UpdateUserProfile", "UserProfile")';
+
+        ShowDialog(url, 'dialogbox col-md-12');
+        }
+
+
+
+    function CheckUserProfile()
+    {
+         var token = $("input[name='__RequestVerificationToken']").val();
+        var data = { __RequestVerificationToken: token, UserName: $("#UserName").val(), Password: $("#Password").val(), IsWindowsLogin: $("#IsWindowsLogin:checked").val() };
+        event.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("CheckUserProfile", "Login")',
+            data: data,
+            cache: false,
+            success:
+
+                function (data)
+                {
+                    debugger;
+                    if (data.MessageType == 1)
+                    {
+
+                        GoToUpdateProfile();
+                        return false;
+                    }
+                    else if (data.MessageType == 0)
+                    {
+                        $("#btnSubmit").click();
+
+                    } else
+                    {
+                        alert(data.Message);
+                    }
+                }
+        });
+    }
+    $(document).keyup(function (keyEvent)
+    {
+        if (keyEvent.which === 90 && keyEvent.ctrlKey && keyEvent.shiftKey)
+        {
+            $('#loginType').toggle(false);
+        }
+    });
+</script>

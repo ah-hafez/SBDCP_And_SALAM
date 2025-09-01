@@ -1,0 +1,292 @@
+﻿@using MCS.UI.Areas.User.Models;
+@using MCS.Framework.Localization;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.Common
+@using MCS.UI.Areas.User.Models.Transaction;
+@using MCS.UI.Areas.User.Models.Assignment;
+@using MCS.UI.Areas.User.Models.Shared;
+@using MCS.UI.Common;
+
+@model EditorViewModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
+    var archivesVm = new TransactionArchiveVM { Archives = (MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<TransactionArchiveVM>)new MCS.GridMvc.Ajax.GridExtensions.AjaxGridFactory().CreateAjaxGrid(Model.Archives, 1, Model.Archives.Count, false) };
+    var linksVm = new TransactionLinkVM { Links = (MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<TransactionLinkVM>)new MCS.GridMvc.Ajax.GridExtensions.AjaxGridFactory().CreateAjaxGrid(Model.TransactionBasicInfoVM.Links, 1, Model.TransactionBasicInfoVM.Links.Count, false) };
+    var doconutIframeUrl = UIConfigurations.GetFullURl() + string.Format("{0}?sIncludedItemDoc=true&hidecontrols=true&hideAllcontrols=true&showwatermark={1}", SystemConfigurations.DoconutIframeUrl, "true");
+    bool isEditMode = false;
+    Session["IsEditMode"] = isEditMode;
+}
+<script>
+    var archiveMode = '@isEditMode';
+</script>
+
+@Html.Hidden("hdnCurrentTransactionId", ViewData["TransactionId"],new {@id= "hdnTransactionId" })
+@Html.Hidden("hdnTransEditorId", ViewData["TransactionId"])
+@Html.Hidden("hdnOutboundDraftId", Model.TransactionBasicInfoVM.OutboundDraftId)
+@Html.Hidden("hdnEditorTransactionTypeId", Model.TransactionBasicInfoVM.TransactionTypeId)
+<div class="row">
+    <div class="col-md-8 col-sm-7 expanded-container">
+        <div class="content_container content_container--body transparent-bg">
+            <div class="options-list">
+                <a class="close-box close-box--sticky" href="~/File/MyTransactions"><i class="uicon icon_close"></i></a>
+                <div class="multi-function-slider">
+                    <div class=" col-sm-2 text-center">
+                        <a href="#" class="boardered-circle-transparent active" id="lnkbasic">
+                            <i class="uicon icon_folder1 tab_editor select_but" id="btnBasicInfo"></i>
+                        </a>
+                        <a href="#">@DbRes.TResource("User.Editor.BasicInfo")</a>
+                    </div>
+                    <div class="col-sm-2 text-center">
+                        <a href="#" class="boardered-circle-transparent"><i class="uicon icon_paths"></i></a>
+                        <a href="#"> المسارات المعرفة</a>
+                    </div>
+
+                    <div class="col-sm-2 text-center">
+                        <a href="#" class="boardered-circle-transparent" id="lnkExplain"><i class="uicon icon_attachment_plus tab_editor" id="btnExplanation"></i></a>
+                        <a href="#"> @DbRes.TResource("User.Editor.Explanations")</a>
+                    </div>
+                    <div class="col-sm-2 text-center">
+                        <a href="#" class="boardered-circle-transparent " id="lnkAssign"><i class="demo-icon icon-assignment tab_editor " id="btnAssignments"></i></a>
+                        <a href="#"> @DbRes.TResource("User.Editor.Assignments")</a>
+                    </div>
+                    <div class=" col-sm-2 text-center">
+                        <a href="#" class="boardered-circle-transparent"><i class="demo-icon icon-transfertoclosed"></i></a>
+                        <a href="#"> @DbRes.TResource("User.Transaction.Done")</a>
+                    </div>
+
+                    <div class="col-sm-2 text-center">
+                        <a href="#" class="boardered-circle-transparent" id="lnkTask"><i class="uicon icon_folder15 tab_editor" id="btnAddTask"></i></a>
+                        <a href="#">
+                            @DbRes.TResource("User.Editor.AddTasks")
+                        </a>
+                    </div>
+                    <div class="col-sm-2 text-center">
+                        <a href="#" class="boardered-circle-transparent"><i class="uicon icon_folder2 tab_editor"></i></a>
+                        <a href="#">@DbRes.TResource("User.Editor.Names")</a>
+                    </div>
+                    <div class=" col-sm-2 text-center">
+                        <a href="#" class="boardered-circle-transparent"><i class="uicon icon_folder13 tab_editor"></i></a>
+                        <a href="#"> @DbRes.TResource("User.Editor.Followup")</a>
+                    </div>
+
+                    <div class="col-sm-2 text-center">
+                        <a href="#" class="boardered-circle-transparent" id="lnkLink"><i class="uicon icon_folder5 tab_editor" id="btnLinks"></i></a>
+                        <a href="#">
+                            @DbRes.TResource("User.Editor.Links")
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content_container  ">
+            <div id="dvEditorBasicInfo" class="_views">
+                @Html.Partial("~/Areas/User/Views/Editor/EditorInbound/_InboundBasicInfoPartial.cshtml", Model.TransactionBasicInfoVM)
+                <div class="panel panel-default panel-results">
+                    @if (Model.EditorType == EditorType.Scanning)
+                    {
+                        ViewData.TemplateInfo.HtmlFieldPrefix = null;
+                        @Html.Partial("~/Areas/User/Views/Editor/Archiving/_ArchivingReadWritePartial.cshtml", Model.DocumentVM != null ? Model.DocumentVM : new DocumentVM())
+                    }
+                    else if (Model.EditorType == EditorType.TextEditor)
+                    {
+                        @Html.Partial("~/Areas/User/Views/Transaction/_EditorPartial.cshtml", ViewData["EditorViewModel"], Html.ViewData)
+                    }
+                    <div id="dvScanningArchiving" style="display:none">
+                        <div id="dvDocumentViewerEditorContainerArchiving" class="">
+
+                            <iframe src="@doconutIframeUrl" class="col-md-12" style="height:500px" id="frameViewerAttachmentForArchiving"></iframe>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="dvEditorExplanation" class="panel-body editor hidden_ _views">
+                @{ViewData.TemplateInfo.HtmlFieldPrefix = "EditorExplanations";}
+                @Html.Partial("~/Areas/User/Views/Editor/Explanations/_ExplanationReadWritePartial.cshtml", new ExplanationVM())
+            </div>
+            <div id="dvEditorLinks" class="_views hidden_">
+                <div id="dvLinks" class="panel-body editor">
+                    @{ViewData.TemplateInfo.HtmlFieldPrefix = "EditorLinks";}
+                    @Html.Partial("~/Areas/User/Views/Editor/Links/_LinksPartial.cshtml", new TransactionLinkVM())
+                </div>
+            </div>
+            <div id="dvEditorAssignmentPaper" class="hidden_ _views">
+                @{ViewData.TemplateInfo.HtmlFieldPrefix = "EditorAssignmentPaper";}
+
+                @if (SessionInfo.CurrentUser.DefaultAssignmentPaper == false)
+                {
+                    @Html.Partial("~/Areas/User/Views/Editor/AssignmentPaper/_AssignmentPaperPartial.cshtml", new TransactionAssignmentVM())
+                }
+                else
+                {
+                    @Html.Partial("~/Areas/User/Views/Editor/AssignmentPaper/_AssignmentPaperPartialNewCopis.cshtml", new TransactionAssignmentVM { ToOrgUnitId = SessionInfo.OrgUnitId }, Html.ViewData)
+                }
+
+            </div>
+            <div id="dvEditorAssignments" class="hidden_ _views">
+                @{ViewData.TemplateInfo.HtmlFieldPrefix = "EditorAssignment";}
+                @Html.Partial("~/Areas/User/Views/Editor/Assignments/_AssignmentsPartial.cshtml", new TransactionAssignmentVM())
+            </div>
+            <div id="dvEditorTaskContainer" class="hidden_ _views">
+                @{ViewData.TemplateInfo.HtmlFieldPrefix = "taskAddVM";}
+                @Html.Partial("~/Areas/User/Views/Editor/TaskManagement/_TaskPartial.cshtml", new TaskAddVM())
+                @{ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+            </div>
+            <div id="dvEditorReject" class="hidden_ _views">
+
+                @Html.Partial("~/Areas/User/Views/Transaction/_RejectTransactionPartial.cshtml", new TransactionRejectAssignmentVM())
+
+            </div>
+
+
+            <div id="dvEditorOutboundDraftContainer" class="hidden_ _views">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="dvArchivingGrid" hidden>
+    @Html.Partial("~/Areas/User/Views/Transaction/_ArchivingGridPartial.cshtml", archivesVm.Archives)
+</div>
+<div id="dvLinksGrid" hidden>
+    @Html.Partial("~/Areas/User/Views/Shared/_LinksGridPartial.cshtml", linksVm.Links)
+</div>
+
+<script>
+    $(document).ready(function () {
+        debugger;
+        AppendArchives();
+    });
+    $('.tab_editor').click(function () {
+        var url;
+        var data = new Array();
+
+        $('.tab_editor').removeClass('select_but');
+        $(this).addClass('select_but');
+
+        $("._views").hide();
+
+        switch ($(this)[0].id) {
+
+            case "btnBasicInfo":
+                $("#dvEditorBasicInfo").show();
+                $('.boardered-circle-transparent').removeClass('active');
+                $("#lnkbasic").addClass('active');
+                break;
+
+            case "btnAssignments":
+                $("#dvEditorAssignments").show();
+                $('.boardered-circle-transparent').removeClass('active');
+                $("#lnkAssign").addClass('active');
+                break;
+
+            case "btnLinks":
+                $("#dvEditorLinks").show();
+                $('.boardered-circle-transparent').removeClass('active');
+                $("#lnkLink").addClass('active');
+                break;
+
+            case "btnExplanation":
+                $("#dvEditorExplanation").show();
+                $('.boardered-circle-transparent').removeClass('active');
+                $("#lnkExplain").addClass('active');
+                break;
+
+            case "btnAddTask":
+                $("#dvEditorTaskContainer").show();
+                $('.boardered-circle-transparent').removeClass('active');
+                $("#lnkTask").addClass('active');
+                break;
+
+            case "btnAssignmentPaper":
+                $("#dvEditorAssignmentPaper").show();
+                $('.boardered-circle-transparent').removeClass('active');
+                $("#lnkPaper").addClass('active');
+                break;
+
+            case "btnOutboundDraft":
+
+                $('.boardered-circle-transparent').removeClass('active');
+                $("#lnkDraft").addClass('active');
+                if ($("#hdnOutboundDraftId").val() != "") {
+                    $.ajax({
+                        url: '@Url.Action("EditDraft","Editor")',
+                        type: 'POST',
+                        data: { id: $("#hdnOutboundDraftId").val(), transactionTypeId: $("#hdnEditorTransactionTypeId").val() },
+                        cache: false,
+                        success: function (data) {
+                            if (data.MessageType != 2) {
+                            $("#dvEditorOutboundDraftContainer").html(data.Html);
+                            $("#dvEditorOutboundDraftContainer").show();
+                            $.validator.unobtrusive.parse('#frmAddOutboundDraft');
+                            }
+                            else {
+                                ShowErrorMessage(data.MessageText);
+                            }
+                        },
+                        error: function (a) {
+
+                        }
+                    });
+                }
+                else {
+                    $.ajax({
+                        url: '@Url.Action("AddDraft", "Editor")',
+                        type: 'Get',
+                        data: data,
+                        cache: false,
+                        success: function (data) {
+                            if (data.MessageType != 2) {
+                                $("#dvEditorOutboundDraftContainer").html(data.Html);
+                            $("#dvEditorOutboundDraftContainer").show();
+                            $.validator.unobtrusive.parse('#frmAddOutboundDraft');
+                        }
+                            else {
+                                ShowErrorMessage(data.MessageText);
+                            }
+                        },
+                        error: function (a) {
+
+                        }
+                    });
+                }
+                break;
+
+            case "btnReject":
+                $("#dvEditorReject").show();
+                break;
+        }
+        return false;
+    });
+
+
+    function OnSaveLinksSuccess(data, div) {
+        if (data.MessageType != 2) {
+            ShowSuccesMessage(data.MessageText)
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function OpenDialog(url) {
+        $.confirm({
+            title: false,
+            content: 'url:' + url,
+            icon: 'fa fa-info',
+            animation: 'scale',
+            columnClass: 'dialogbox col-md-12',
+            backgroundDismiss: false,
+            cancelButton: false,
+            confirmButton: false,
+            closeIcon: true,
+            onOpen: function () {
+                //TODO:Revisit this code
+                $(".spinner").hide();
+            },
+        });
+    }
+
+</script>

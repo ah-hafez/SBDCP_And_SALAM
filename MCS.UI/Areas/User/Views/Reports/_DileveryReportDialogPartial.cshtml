@@ -1,0 +1,39 @@
+﻿@using MCS.Common
+@using MCS.Framework.Localization
+@using MCS.Framework.Controls.Mvc
+
+@{
+    Layout = "~/Views/Shared/_DialogLayout.cshtml";
+}
+<div class="content-rtl panel panel-default dialogbox_panel">
+    <div class="panel-heading">
+        <h3 class="panel-title">@DbRes.TResource("User.Transaction.Assignment.PrintDeliveryReport")</h3>
+    </div>
+    <div class="modal-body">
+        <div class="panel-body">
+            <div class="form-group">
+                <div class="col-md-6">
+                    <div class="col-md-12">
+                        <div class="radio">
+                            <label>
+                                @Html.RadioButton("DeliveryReport", true, new { onchange = "ChangeDeliveryReportMode(\"" + true + "\")", @checked = "checked" })@DbRes.TResource("User.Transaction.DeliveryReportPerTransaction")
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="col-md-12">
+                        <div class="radio">
+                            <label>
+                                @Html.RadioButton("DeliveryReport", false, new { onchange = "ChangeDeliveryReportMode(\"" + false + "\")" })@DbRes.TResource("User.Transaction.DeliveryReportPerAssignment")
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        @Html.PrintButton(DbRes.TResource("User.Transaction.Assignment.PrintDeliveryReport"), "urlPrintDeliveryReport", "btn btn-save pull-right", "", "","OnSuccessPrint")
+    </div>
+</div>

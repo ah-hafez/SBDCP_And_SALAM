@@ -1,0 +1,165 @@
+﻿
+@{
+    ViewBag.Title = "ادوار المستخدمين";
+}
+<br />
+<br />
+
+@using MCS.UI.Areas.User.Models.Report;
+@using MCS.Framework.Localization;
+@using MCS.Framework.Controls;
+@using MCS.UI.Common;
+@using MCS.UI.Helpers;
+@using System.Reflection;
+@using MCS.UI.Areas.Admin.Models
+@using System.Globalization;
+@model TransactionReportResult
+@{
+    Layout = null;
+}
+
+<DOCTYPE style="width: 100%; background-color: #ffffff" html>
+    <html style=" background-color: #ffffff" lang="ar">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" id="theme" href="@UIConfigurations.GetFullURl()/Content/User/lib/css/theme_@(SessionInfo.CultureShortName).css" />
+        @if (SessionInfo.CultureShortName == "ar")
+        {
+            <link rel="stylesheet" type="text/css" id="theme" href="@UIConfigurations.GetFullURl()/Content/User/lib/css/rtl.css" />
+        }
+        <link type="image/x-icon" rel="shortcut icon" href="@UIConfigurations.GetFullURl()/Content/User/lib/favicon.png">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <meta name="theme-color" content="#0c7c5a">
+        <title>@ViewBag.Title</title>
+        <!-- New -->
+        <link href="@UIConfigurations.GetFullURl()/Content/User/lib/css/new.css" rel="stylesheet" />
+        <!-- Select2 CSS -->
+        <link href="@UIConfigurations.GetFullURl()/Content/User/lib/plugins/select2/select2.min.css" rel="stylesheet" />
+        <link href="@UIConfigurations.GetFullURl()/Content/User/lib/css/dawood-style.css" rel="stylesheet" />
+        <script src="@UIConfigurations.GetFullURl()/Scripts/jquery.min.js"></script>
+        <style>
+            .pagebreak {
+                page-break-after: always;
+            }
+
+            table.rprt {
+                width: 80%;
+            }
+
+                table.rprt td {
+                    padding: 5px;
+                    text-align: center;
+                }
+
+            table.rprtGrid {
+                width: 100%;
+                border: 1px solid #000000;
+            }
+
+                table.rprtGrid td {
+                    padding: 5px;
+                    border-bottom: 1px dashed #ffffff;
+                }
+        </style>
+    </head>
+    <body style="width:90%;background-color:#ffffff;margin-left:8%">
+
+        <table style="width: 100%; background-color: #ffffff" class="rprt">
+
+            <tr style=" background-color: #ffffff">
+                <td>
+                    <table style=" background-color: #ffffff" class="rprt">
+                        <tr>
+                            <td>
+                                <p>
+                                    المملكة العربية السعودية
+                                </p>
+
+                                <p>
+                                    جامعة الإمام عبدالرحمن بن فيصل
+                                </p>
+                            </td>
+                            <td>
+
+                                @if (ViewData["LogoFile"] != null)
+                                {
+                                    <img class="circle-img d-inline-block" width="45" height="45" src="@("data:image/png;base64, " + ViewData["LogoFile"])" alt="Logo">
+                                }
+                                @if (File.Exists(@"C:\inetpub\wwwroot\MCS.UI\Content\User\lib\images\Logo-1.svg"))
+                                {
+                                    <img class="main_logo img center" src="@("data:image/png;base64, " + Convert.ToBase64String(File.ReadAllBytes(@"C:\inetpub\wwwroot\MCS.UI\Content\User\lib\images\Logo-1.svg")))" />
+                                }
+
+                                <br>
+
+
+                                <b>تقرير المستخدمين </b>
+                                <br />
+                                @* @Model.TransactionBasicResultVM.ExternalParty*@
+                            </td>
+                        </tr>
+                    </table>
+
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div class="row">
+                        <table class="rprtGrid">
+
+                            <tr>
+                                <td><b>اسم المستخدم</b></td>
+                                <td><b>الادارة</b></td>
+                                <td><b>وقت الدخول</b></td>
+                                <td><b>وقت الخروج</b></td>
+
+                            </tr>
+
+                            @{ var results = ((AjaxGrid<UserProfileVM>)Model.UsersDTOtGridResultVMs).GridItems.ToList(); }
+                            @if (results != null && results.Count > 0)
+                            {
+                                foreach (var m in results)
+                                {
+                                    <tr>
+                                        <td>@m.UserName</td>
+                                        <td>@m.MainOrgUnitName</td>
+                                        <td>@m.LoginTime</td>
+                                        <td>@m.LastLogout</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="2">لا يوجد بيانات للعرض</td>
+                                </tr>
+                            }
+                        </table>
+
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
+
+<style>
+    .center {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        /*width: 50%;*/
+        max-height: 43px;
+        max-width: 214px;
+    }
+
+    .rprtGrid td {
+        border-left: 1px #000000 solid;
+        border-bottom: 1px #000000 solid !important;
+    }
+</style>

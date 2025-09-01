@@ -1,0 +1,8 @@
+﻿@using MCS.UI.Areas.User.Models.Notifications
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<NotificationVM>
+
+@Html.Grid(Model).Named("NotificationGrid").Columns(columns =>
+{
+    columns.Add().Titled("").RenderValueAs(mvcgridcolumn => Html.Partial("ListItems/_Notification_Item", mvcgridcolumn, Html.ViewData))
+    .Sanitized(false).Encoded(false);
+}).WithPaging(UIHelper.PageSize)

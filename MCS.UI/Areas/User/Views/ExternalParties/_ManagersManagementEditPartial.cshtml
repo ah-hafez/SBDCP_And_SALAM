@@ -1,0 +1,39 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Lookups
+@model MCS.UI.Areas.User.Models.ExternalParties.ManagerEditVM
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmEditManager", @class = "form-horizontal " }))
+{
+    @Html.AntiForgeryToken()
+    <div class="col-xs-12">
+        <p class="stark">@DbRes.TResource("Admin.User.MustFill") * </p>
+    </div>
+    <div class="row">
+        @{List<CultureVM> Culture = (List<CultureVM>)ViewData["Culture"];}
+        @for (int i = 0; i < Culture.Count; i++)
+        {
+            <div class="col-md-6">
+                <fieldset>
+                    <div class="form-group">
+                        @Html.CustomLabelFor(model => model.Name[i].CultureName, new { @class = " control-label" }, DbRes.TResource("User.ExternalParty.Name." + Culture[i].ShortName))<span class="stark">*</span>
+                        @Html.StickyHiddenFor(model => model.Name[i].CultureId, new { Value = Culture[i].Id })
+                        @Html.HiddenFor(model => model.Name[i].Id)
+                        <div class="">
+                            @Html.TextBoxGroupFor(model => model.Name[i].Text, null, new { @class = "form-control" }, DbRes.TValidation(string.Format("User.ExternalParty.NameRequired.{0}", Culture[i].ShortName)))
+                        </div>
+                        <span class="help-block"></span>
+                    </div>
+                </fieldset>
+            </div>
+        }
+        @Html.HiddenFor(model => model.Id, new { id = "hdnEditManagerId" })
+        @Html.StickyHiddenFor(model => model.PartyId)
+    </div>
+    <div class="row">
+        <div class="col-xs-12 text-right">
+            @Html.ActionButton(DbRes.TResource("User.ExternalParty.Edit"), "EditManager", "GridDiv", null, null, "OnEditManagerSuccess", null, "post", null, "btnEditManager", "frmEditManager", "btn-site")
+            <a class="btn-site" id="btnCancel" onclick="HideEditDiv()">@DbRes.TResource("User.ExternalParty.Close")</a>
+        </div>
+    </div>
+    <hr />
+}

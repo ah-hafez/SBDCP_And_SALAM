@@ -1,0 +1,93 @@
+﻿@using MCS.Framework.Localization
+@*@using MCS.Framework.Controls.Mvc*@
+@using MCS.UI.Areas.User.Models.Search
+@*@model IList<SubjectSearchResultVM>*@
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<SubjectSearchResultVM>
+
+<div style="margin-bottom:50px;">
+
+    @Html.Grid(Model, "_CardGrid").Named("SubjectSearch").CollectionName("SubjectSearchResult").Columns(columns =>
+    {
+        columns.Add(true).Titled("").RenderValueAs(mvcgridcolumn => Html.Partial("ListItems/_SubjectSearch_Item", mvcgridcolumn))
+        .Sanitized(false).Encoded(false);
+    }).WithPaging(UIHelper.PageSize)
+</div>
+
+
+
+<script>
+      var mySubjectSearchGridEventHandler = "@Url.Action("SearchPaging", "Search")";
+    function prepareSubjectSearchGrid() {
+        pageGrids.SubjectSearch = undefined;
+        var filterData = $("#frmSearch").serializeArray();
+
+        if (!pageGrids.SubjectSearch) {
+            $("div[data-gridname='SubjectSearch']").gridmvc();
+        }
+        if (!pageGrids.SubjectSearch) {
+            $(".grid-mvc").gridmvc();
+        }
+        pageGrids.SubjectSearch.ajaxify({ getPagedData: mySubjectSearchGridEventHandler, requestType: "POST", getData: mySubjectSearchGridEventHandler, optionalData: filterData });
+
+    }
+
+
+
+    $(document).ready(function () {
+        prepareSubjectSearchGrid();
+        goCardsView();
+        sessionStorage.setItem('CurrentTypeView', 'Card');
+    });
+
+
+
+
+    function ShowPrintDialog(id) {
+        var params = { transactionId: id };
+        ShowDialogAjaxPrintingBarcodes('@Url.Action("PrinttingBarcodes","Shared")' + "?" + $.param(params), {}, 'OpenPrintDialogSuccess', 'dialogbox col-md-12 ');
+        event.stopPropagation();
+    }
+    function OpenPrintDialogSuccess(data, $obj) {
+        if (data.MessageType != 2) {
+            $obj.setContent(data.Html);
+        }
+        else {
+            __dialog.close();
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function ShowVisitTickect(id) {
+        var actionUrl = '@Url.Action("PrintTicket", "Shared")' + "?transactionId=" + id;
+
+        PrintButton(actionUrl);
+
+    }
+
+
+
+
+    function Open(Id, type) {
+        var url = "";
+        var isFromDraft = $('#EncryptedFalse').val();
+        var isHubEditable = $('#EncryptedFalse').val();
+        switch (type) {
+            case @(TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName)):
+                url = '@Url.Action("Edit", "Inbound")' + "?id=-1";
+                break;
+            case @(TransactionCategory.ExternalOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName)):
+                url = '@Url.Action("Edit", "OutboundExternal")' + "?id=-1&" + 'IsFromDraft=' + isFromDraft + '&isHubEditable=' + isHubEditable;
+
+                break;
+            case @(TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName)):
+                url = '@Url.Action("Edit", "OutboundInternal")' + "?id=-1";
+                break;
+            case @(TransactionCategory.DraftOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName)):
+                isFromDraft = $('#EncryptedTrue').val();
+                url = '@Url.Action("Edit", "OutboundExternal")' + "?id=-1&" + 'IsFromDraft=' + isFromDraft + '&isHubEditable=' + isHubEditable;
+                break;
+        }
+        url = url.replace("-1", EncryptionKey(Id));
+        window.location.href = url;
+    }
+</script>

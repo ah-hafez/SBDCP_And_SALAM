@@ -1,0 +1,50 @@
+﻿
+@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.Framework.Localization
+@model MCS.UI.Areas.User.Models.Transaction.SubTaskAddVM
+@using MCS.Common;
+
+<div id="dvTasksBody">
+    <div class="panel-body editor">
+        <p class="subtitle">@DbRes.TResource("User.Task.SubTaskAdd.SubTask")</p>
+        <div class="row">
+            <div class="panel-group accordion accordion-dc">
+                <div class="col-md-6">
+                    @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.ToOrgUnitId, TreeMode.Single, "treeToOrgUnit", true, "GetUsersByOrgUnitId", "AddSubTask")
+                    @Html.HiddenGroupFor(model => model.ToOrgUnitName, new { id = "hdnTaskToOrgUnitName" }, "AddSubTask")
+                    <div class="form-group top_space">
+                        @Html.LabelFor(model => model.TaskDescription, new { @class = "col-md-4 control-label" })
+                        <div class="col-md-8">
+                            <div class="">
+                                @Html.TextAreaGroupFor(model => model.TaskDescription, new { @class = "form-control", @rows = "3" }, "AddSubTask")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ToUserId, new { @class = "col-md-4 control-label" })
+                        <div class="col-md-8">
+                            @Html.AutoCompleteBuilder("ddlToUser", "hdnToUser", null, null, true, "form-control")
+                            @Html.HiddenGroupFor(model => model.ToUserId, new { @Value = "", id = "hdnToUser" }, "AddSubTask")
+                            @Html.HiddenGroupFor(model => model.ToUserName, new { @Value = "", id = "hdnTaskToUserName" }, "AddSubTask")
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.DeliveryDate, new { @class = "col-md-4 control-label" })
+                        <div class="col-md-8">
+                            @Html.Calendar("toDateCal", "hdnToDateGreg", "hdnToDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+                            @Html.HiddenGroupFor(model => model.DeliveryDate, new { id = "hdnToDateGreg" })
+                            @Html.HiddenGroupFor(model => model.DeliveryDateH, new { id = "hdnToDateUm" }, "AddSubTask")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @Html.Hidden("hdnTaskArray", "[]", new { @id = "hdnTaskArray" })
+</div>
+
+
+

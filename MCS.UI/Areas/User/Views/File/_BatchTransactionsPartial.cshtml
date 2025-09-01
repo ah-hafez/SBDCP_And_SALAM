@@ -1,0 +1,160 @@
+﻿@model TransactionsBatchVM
+@using MCS.Common
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.File
+
+@{
+    Layout = null;
+}
+
+
+<div class="row">
+    <div class="col-md-12">
+
+        <div class="form-horizontal form-row">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"> حزم المعاملات </h3>
+
+                </div>
+                <div id="dvNamesBody">
+                    <div class="panel-body">
+                        <p>@DbRes.TResource("Global.Forms.MandatoryFields")</p>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.BatchName, new { @class = "col-md-4 control-label" })
+                                    <div class="col-md-8">
+                                        <div class="">
+                                            @Html.TextBoxGroupFor(model => model.BatchName, "Names", new { @class = "form-control" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="checkbox">
+                                        <label>
+                                            @Html.CheckBoxFor(model => model.IsLinked, new { id = "ckIsLinked" })
+                                            @Html.LabelFor(model => model.IsLinked, new { @class = "none" })
+                                        </label>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="">
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="row" id="LinkedTrans" style="display:none">
+
+
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+
+
+                                    <table class="table table-bordered" id="tblPlanLst">
+                                
+
+                                        <tbody>
+
+
+
+                                            @foreach (int id in Model.TransIds)
+                                            {
+
+                                                <tr>
+                                                    <td> <input type="checkbox" /> @id.ToString() </td>
+
+
+                                                </tr>
+                                            }
+
+                                        </tbody>
+                                    </table>
+
+
+                                    <div class="col-md-8">
+                                        <div class="">
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+                <div class="panel-footer">
+
+                    <button type="button" class="btn btn-default" onclick="__dialog.close(); return false;">حفظ</button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+<script>
+
+
+    $(document).on('click', '#ckIsLinked', function () {
+
+
+        if ($(this).is(":checked")) {
+
+            $("#LinkedTrans").show();
+            return;
+        }
+
+        $("#LinkedTrans").hide();
+
+    });
+
+
+    $(".checkall").click(function () {
+        $('.check_trans').prop('checked', this.checked);
+
+
+    });
+
+
+
+
+
+
+    $(document).on("change", ".check_trans", function () {
+
+        var allCheck = true;
+        var someCheck = $('.check_trans:checked').length > 0;
+        $('.check_trans').each(function () {
+
+            if (!$(this).prop('checked')) {
+                allCheck = false;
+            }
+        })
+
+    });
+
+
+</script>

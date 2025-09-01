@@ -1,0 +1,144 @@
+﻿@model MCS.UI.Areas.User.Models.Transaction.TransactionAttachmentVM
+@using MCS.Framework.Localization
+@using MCS.Common
+
+@{
+    ViewBag.Title = "Attachments";
+    string controller = TempData.Peek("ControllerName") != null ? TempData.Peek("ControllerName").ToString() : ViewContext.RouteData.Values["controller"].ToString();
+    ViewData.TemplateInfo.HtmlFieldPrefix = "TransactionAttachment";
+}
+<div id="dvViewAttachment">
+    <div class="single-wrapper" id="dvAttachmentsBody">
+        <div class="form-horizontal form-row" id="dvAttachmentsForm">
+            <div class="col-md-4">
+                <fieldset>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TypeId, new { @class = "control-label" })<span class="stark"> *</span>
+                        <div>
+                            @Html.AutoCompleteBuilder("ddlAttachmentType", "hdnAttachmentType", ViewData["AttachmentsTypeData"].ToString(), null, true, "form-control", "hdnArchivable")
+                            @Html.HiddenGroupFor(model => model.TypeId, new { @Value = "", id = "hdnAttachmentType" }, "Attachments")
+                            @Html.HiddenGroupFor(model => model.TypeName, new { @Value = "", id = "hdnAttachmentTypeName" }, "Attachments")
+                            @Html.StickyHiddenFor(model => model.Archivable, new { @Value = "", id = "hdnArchivable" })
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="col-md-4">
+                <fieldset>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Number, new { @class = "control-label" })<span class="stark"> *</span>
+                        <div>
+                            @Html.NumericTextBoxFor(model => model.Number, new { @class = "form-control", Value = "", maxlength = 3 }, "Attachments")
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="col-md-4">
+                <fieldset>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.AttachmentName, new { @class = "control-label" })
+                        <div class="">
+                            @Html.TextAreaGroupFor(model => model.AttachmentName, new { @class = "form-control long-textarea2" }, "Attachments")
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+          @*  @Html.StickyHidden("ArchiveAttachmentsData", ViewData["ArchivingAttachmentsData"].ToString())*@
+        </div>
+        <div class="col-sm-12">
+            <p class="stark">@DbRes.TResource("Admin.User.MustFill") * </p>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 text-right">
+                @Html.ClientActionButton( DbRes.TResource("User.Transaction.Attachment.Add"), Url.Action("AddAttachment", controller), "dvAttachmentsGrid", "AttachmentOnSuccess",
+               null, "Attachments", "btnAttachment", "dvAttachmentsBody", "btn-site", null, null,"", "<i class='glyphicon glyphicon-plus'></i>")
+                @Html.ResetButton("ClearInputs('dvAttachmentsForm')")
+            </div>
+        </div>
+        <hr />
+        <div class="panel-body">
+            <div id="dvAttachmentsGrid">
+                @Html.Partial("~/Areas/User/Views/Transaction/_AttachmentsGridPartial.cshtml", Model.Attachments, new ViewDataDictionary { { "IsEnableAction", Model.IsEnableAction } })
+            </div>
+        </div>
+        <i id="IconMessage1" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+        <span id="msg" style="color:red"></span>
+    </div>
+</div>
+<script>
+    function AttachmentOnSuccess(data) {
+    
+        if (data.MessageType != 2) {
+            $("#grid-table-grdAttachments > tbody > .grid-empty-text").remove();
+            $("#grid-table-grdAttachments > tbody:last").append(data.Html);
+            //$("#ArchiveAttachmentsData").val(data.hdnArchive);
+            AutoCompleteChangeList("ddlArcivingType", data.hdnArchive);
+            //$("#btnAddArchive").show();
+            ClearInputs('dvAttachmentsForm');
+            $("#IconMessage1").hide();
+            $("#msg").html('');
+        }
+        else {
+            $("#IconMessage1").removeClass("hidden_");
+            $("#IconMessage1").show();
+            $("#msg").html('@Html.Raw(DbRes.TValidation("User.Transaction.Attachment.AttachmentAlreadyAdded"))');
+        }
+    }
+
+    function OnDeleteAttachmentSuccess(data, div) {
+        $("#hdnAttachments").val(data.hdnValue);
+        //$("#hdnAttachmentsData").val(data.hdnValue);
+        AutoCompleteChangeList("ddlArcivingType", data.hdnArchive);
+        $("#ddlArcivingType").trigger('change');
+        $("#hdnArcivingType").trigger('change');
+
+        //$("#ArchiveAttachmentsData").val(data.hdnArchive);
+        $("#hdnArchiveData").val(data.hdnArchiveData);
+    /*    $("#hdnArchivigdata").val(data.hdnArchiveData);*/
+        $("#dvArchivingGrid").html("");
+        $("#dvArchivingGrid").html(data.HtmlArchive);
+        $('#hdnArcivingType').trigger('change');
+    }
+    function DeleteAttachmentSuccess(typeId) {
+        DeleteAutocompleteItem('ddlArcivingType', typeId);
+        $("#ddlArcivingType").val("");
+        $("#ddlArcivingType").trigger('change')
+        $("#grid-table-grdArchiving").find("tr > td").find("#AttachmentTypeId_" + typeId).closest('tr').remove();
+        var gridTd = $("#grid-table-grdArchiving").find("tr > td");
+        if (gridTd.length === 0) {
+            $("#grid-table-grdArchiving > tbody:last").append("<tr class='grid-empty-text'><td colspan = '18'>لا يوجد بيانات للعرض</td></tr>");
+        }
+    }
+
+    function GetAttachmentByTypeId(columnIndex) {
+        var input = parseInt($(event.target).parents('tr:first').find("td").eq(columnIndex).html());
+        var json = $.parseJSON($("#hdnAttachments").val());
+        $.each(json, function (key, data) {
+            if (data.TypeId == input) {
+                $.each(data, function (name, value) {
+                    $("#" + name).val(value);
+                });
+                return;
+            }
+        });
+    }
+
+    $(document).on("change", "#ddlAttachmentType", function () {
+        $("#hdnAttachmentTypeName").val($("#ddlAttachmentType").val());
+        var isArchivable = $("#hdnAttachmentTypeName").siblings('input')[1].value;
+    if (isArchivable == "true")
+    {
+        //$('#scanningContainer').show();
+        //$('#uploadContainer').show();
+        $('#UploadOptionsContainer').show();
+    }
+    else
+    {
+        $('#uploadContainer').hide();
+        $('#scanningContainer').hide();
+        $('#UploadOptionsContainer').hide();
+    }
+    });
+
+    
+</script>

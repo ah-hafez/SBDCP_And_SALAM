@@ -1,0 +1,17 @@
+﻿@using MCS.Framework.Localization
+
+@model List<AuditDetailVM>
+
+@{
+    ViewBag.Title = "_EntityAuditGridPartial";
+}
+
+
+<td class="grid-cell" colspan="4">
+    @Html.Grid(Model, "_GridNew").Named("grdAudit").CollectionName("TransactionAuditing").Columns(columns =>
+    {
+    columns.Add(model => model.PropertyName).Titled(DbRes.TResource("User.TransactionCertificate.PropertyName"));
+    columns.Add(model =>  model.PropertyOldValue).Titled(DbRes.TResource("User.TransactionCertificate.PropertyOldValue"));
+    columns.Add(model => model.PropertyNewValue).Titled(DbRes.TResource("User.TransactionCertificate.PropertyNewValue"));
+    })
+</td>

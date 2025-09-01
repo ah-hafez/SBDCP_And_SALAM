@@ -1,0 +1,284 @@
+﻿@using MCS.UI.Areas.User.Models
+@using MCS.UI.Areas.User.Models.Transaction
+@using MCS.Framework.Localization
+@using MCS.Framework.Controls
+@using MCS.Common
+@using MCS.Framework.Controls.Mvc
+@using MCS.UI.Areas.User.Models.OrgUnit
+@model TransactionReservationVM
+
+@{
+    string controller = "Reservation";
+    ViewBag.Title = DbRes.TResource("User.Transaction.TransactionReservationLog");
+    Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
+}
+<script src=@Url.Content("~/Views/Shared/Scripts/Tree.js")></script>
+<div class="mx-5 mx-xs-3 header-container2 d-flex align-items-center">
+    <h3 class="site-color mt-xs-4">@DbRes.TResource("User.Transaction.TransactionReservationLog")</h3>
+    <div class="ml-auto">
+        <div class="close-icon mt-0" data-bs-toggle="tooltip" data-placement="bottom" title="">
+            <a class="circle-icon color-white" href="@Url.Action("Reservation","File")"><i class="la la-close"></i></a>
+        </div>
+    </div>
+</div>
+<div class="filter-link mx-5 pull-right mb-2">
+    <a class="dashed-circle" href="javascript:toggleFilterBox()">
+        <i class="icon-filter"></i>
+        @DbRes.TResource("User.File.Filter")
+    </a>
+</div>
+
+<div class="filter-box filter white-container mx-3 mx-sm-5 mt-2 pb-2">
+    <form id="formReservationFilter">
+        @Html.AntiForgeryToken()
+        <div class="form-row">
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                @Html.LabelFor(model => model.TransactionCategoryId, new { @class = "" })
+                @Html.AutoCompleteBuilder("TransactionType", "hdnTransactionType", ViewData["TransactionCategory"].ToString(), Model != null ? Model.TransactionCategoryId.ToString() : null, true, "form-control")
+                @Html.StickyHidden("hdnTransactionType", "", new { @Value = "", id = "hdnTransactionType" })
+            </div>
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <div id="dvDepartmentsTree">
+                    @Html.DepartmentsTree(new TreeViewModel(), model => model.EntityId, TreeMode.Single, "treeDirectedToOrgUnit", true, "GetDirectedToUsersByOrgUnitId", "BasicInformation", "dvDepartmentsTree")
+
+
+                    @*<label>@Html.DisplayNameFor(model => model.EntityId)</label>
+
+                    @Html.EditorFor(model => model.EntityId, "OrgHierarchyCaller", additionalViewData: new { treeId = "treeDirectedToOrgUnit", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Shared"), GetNodeInfoByIdActionURL = @Url.Action("GetInternalPartyInfoById", "Shared"), GetNodeInfoByNumActionURL = @Url.Action("GetInternalPartyInfoByNumber", "Shared"), onClickfunction = "GetDirectedToUsersByOrgUnitId", ValidationGroup = "BasicInformation", ShowAddPartyButton = false })*@
+
+
+
+
+                </div>
+            </div>
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12" id="dvUserContainer">
+                <label class="">@DbRes.TResource("User.Transaction.Reservation.UserName")</label>
+                @Html.AutoCompleteBuilderWithKeyup("UserId", "hdnUserId", "", Model != null ? Model.UserId.ToString() : null, false, "form-control", hdnExtraParametersId: "hdnUserExtraParameters", onKeyUpCallback: "getUsersBySubName()")
+                @Html.StickyHidden("hdnUserId", "", new { @Value = "", id = "hdnUserId" })
+                @Html.StickyHidden("hdnUserExtraParameters", "", new { @Value = "", id = "hdnUserExtraParameters" })
+            </div>
+            <div class="col-xs-12 panel-body row text-right">
+                <input type="button" value="@DbRes.TResource("User.Layout.Search")" class="btn btn-st2" onclick="FilterBy()" />
+            </div>
+        </div>
+    </form>
+</div>
+@Html.StickyHidden("trayId", ((int)TrayType.Reservation).ToString(), "")
+@Html.StickyHidden("hdnFilter", "", "")
+<div class="content_container">
+    <div class="white-container mx-5 mx-xs-3">
+        <div id="ReservationContainer">
+            @Html.Partial("~/Areas/User/Views/Transaction/_TransactionReservationGridPartial.cshtml", Model.Reservations, ViewData)
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade in" id="reservedModal" role="dialog">
+    <div class="modal-dialog large-dialog">
+        <!-- Modal content-->
+        <div class="modal-content modal-height">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <div class="d-sm-flex d-block align-self-center">
+                    <div class="">
+                        <span class="site-color main-title2">@DbRes.TResource("User.Transaction.ReservedTransaction")</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body" id="reserveModalPartial">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+function getUsersBySubName() {
+
+    var txtvalue = $("#UserId").val();
+    var EntityId = $("#treeDirectedToOrgUnit_hdnDepartmentId").val();
+        var options = {
+            type: "GET",
+            url: '@Url.Action("GetAllUsers", "Reservation")',
+            data: { searchQuery: txtvalue, entityId: EntityId }
+        };
+
+        if (jqXHR != null)
+            jqXHR.abort();
+
+        jqXHR = $.ajax(options).done(function (data) {
+            if (data.Count > 0) {
+                $("#divUserAutoComplateMenu").remove();
+                $("#dvUserContainer").after("<div id='divUserAutoComplateMenu' class='panel-popup' style='height: 400px; overflow-y: scroll;'></div>");
+                var ul = "";
+                $(data.USERS).each(function (index, item) {
+                    ul += "<div onclick=\"selectUserViaAutoComplete(" + item.Id + ")\" style=\"cursor:pointer\">" + item.LocalName + "</div>"
+                });
+
+                $("#divUserAutoComplateMenu").html(ul);
+            }
+            else {
+                $("#divUserAutoComplateMenu").html('');
+            }
+        }).fail(function (jqXHR, textStatus, error) {
+        });
+    }
+
+    function selectUserViaAutoComplete(id) {
+        $('#dvUserContainer #hdnUserId').val(id);
+        $('#dvUserContainer #hdnUserId').trigger("change");
+        $("#divUserAutoComplateMenu").remove();
+    }
+
+
+    $(document).on("click", "span[data-node-id]", function () {
+        var elemnt = $(this);
+
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('InternalLoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetOrgUnitsNodes")',
+                data: { parentId: $(this).data("node-id"), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+                success:
+                    function (data) {
+
+                        $(elemnt).closest('li').children('ul').last().empty()
+
+                        $(elemnt).closest('li').children('ul').last().append(data);
+
+                        $(elemnt).removeClass("InternalLoadedData");
+                    }
+            });
+        }
+    });
+
+     function GetDirectedToUsersByOrgUnitId() {
+         if ($("#treeDirectedToOrgUnit_hdnDepartmentId").val() != "") {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetUsersByOrgUnitId")',
+                data: { id: $("#treeDirectedToOrgUnit_hdnDepartmentId").val() },
+                success:
+               function (data) {
+                   $("#UserId").val("");
+                   $("#hdnUserId").val("");
+                   AutoCompleteChangeList("UserId", data);
+                   $("#UserId").prop('disabled', false);
+               }
+            });
+            return false;
+        }
+        else {
+             $("#UserId").prop('disabled', true);
+             $("#UserId").val("");
+             $("#hdnUserId").val("");
+             AutoCompleteChangeList("UserId", "[]");
+        }
+    }
+
+    function DisplayReservedTransactions(id, name) {
+        $.ajax({
+            url: '@Url.Action("GetReservedTransactions", controller)',
+            type: 'GET',
+            cache: false,
+            contentType: "application/json",
+            data: { reservationId: id},
+            success: function (data) {
+                if (data != undefined && data.Html != undefined) {
+                    $('#reserveModalPartial').html(data.Html);
+                    $('#reservedModal').modal('show');
+                }
+            },
+            error: function (a, b, c, d) {
+                ShowErrorMessage('حدث خطأ');
+            }
+        });
+    }
+
+    function OpenReservedTransaction(data, $obj) {
+        $obj.setContent(data.Html);
+    }
+
+
+    function fillHidden(obj) {
+        $('#hdn' + obj.id).val("");
+        $('#hdn' + obj.id).val(obj.value);
+    }
+
+    function FilterBy() {
+         
+        var trayid = parseInt($('#trayId').val());
+        var filter = "";
+
+        if ($("#treeDirectedToOrgUnit_hdnDepartmentId").val() != "" && $("#treeDirectedToOrgUnit_hdnDepartmentId").val() != null) {
+            if ($("#treeDirectedToOrgUnit_hdnDepartmentId").val() != 0) {
+                filter += "EntityId__1__" + $("#treeDirectedToOrgUnit_hdnDepartmentId").val();
+            }
+        }
+        if ($("#hdnUserId").val() != "" && $("#hdnUserId").val() != null) {
+
+            if (filter.length > 0) {
+                filter += "&";
+            }
+            filter += "UserId__1__" + $("#hdnUserId").val();
+        }
+        if ($("#hdnTransactionType").val() != "" && $("#hdnTransactionType").val() != null) {
+
+            if (filter.length > 0) {
+                filter += "&";
+            }
+            filter += "TransactionType__1__" + $("#hdnTransactionType").val();
+        }
+        $("#hdnFilter").val(filter);
+        var token = $('#formReservationFilter').find("input[name='__RequestVerificationToken']").val();
+        var filterData = {
+            trayId: trayid,
+            filter: filter,
+            isFromSearch: true,
+            __RequestVerificationToken: token
+        };
+
+        $.ajax({
+            url: '@Url.Action("ReservationFilter", "Reservation")',
+            type: 'post',
+            data: filterData,
+            success: function (data) {
+                $('#ReservationContainer').html("");
+                $('#ReservationContainer').html(data.Html);
+            }
+        });
+    }
+
+    $(document).ready(function () {
+         $.ajax({
+                url: '@Url.Action("GetAllUsers", "Reservation")',
+                type: 'get',
+                success: function (data) {
+                    AutoCompleteChangeList("UserId", data.USERS);
+                    $("#UserId").prop('disabled', false);
+                }
+        });
+
+        $(".txtDepartmentNumber")[0].addEventListener("keyup", event => {
+        if (event.isComposing || event.keyCode === 229) {
+            return;
+        }
+            $("#divUserAutoComplateMenu").html('');
+            $("#divUserAutoComplateMenu").remove();
+        if ($(".txtDepartmentNumber").val() == "") {
+            $("#UserId").prop('disabled', true);
+            $.ajax({
+                url: '@Url.Action("GetAllUsers", "Reservation")',
+                type: 'get',
+                success: function (data) {
+                    AutoCompleteChangeList("UserId", data.USERS);
+                    $("#UserId").prop('disabled', false);
+                }
+            });
+        }
+    });
+    });
+
+</script>

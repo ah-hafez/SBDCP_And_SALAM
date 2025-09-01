@@ -1,0 +1,45 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Lookups
+@using MCS.UI.Areas.User.Models.ExternalParties
+@model ManagerEditVM
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmEditManager", @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div>
+        @{List<CultureVM> Culture = (List<CultureVM>)ViewData["Culture"];}
+        @for (int i = 0; i < Culture.Count; i++)
+        {
+
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                @Html.CustomLabelFor(model => model.Name[i].CultureName, new { @class = "" }, DbRes.TResource("Admin.ExternalParty.Name." + Culture[i].ShortName))
+                @Html.StickyHiddenFor(model => model.Name[i].CultureId, new { Value = Culture[i].Id })
+                @Html.StickyHiddenFor(model => model.Name[i].CultureName, new { Value = Culture[i].ShortName })
+                @Html.HiddenFor(model => model.Name[i].Id)
+                @Html.TextBoxGroupFor(model => model.Name[i].Text, null, new { @class = "form-control" }, DbRes.TValidation(string.Format("Admin.ExternalParty.NameRequired.{0}", Culture[i].ShortName)))
+
+            </div>
+
+        }
+
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            @Html.CustomLabelFor(model => model.EmailAddress, new { @class = "" }, DbRes.TResource("البريد الالكتروني"))
+            @Html.TextBoxGroupFor(model => model.EmailAddress, null, new { @class = "form-control" }, DbRes.TValidation("الحقل مطلوب"))
+        </div>
+
+        @Html.HiddenFor(model => model.Id, new { id = "hdnEditManagerId" })
+        @Html.StickyHiddenFor(model => model.PartyId)
+    </div>
+    <div class="form-group col-lg-12 col-md-12 col-xs-12 col-sm-12 d-flex hidden_">
+        <small class="text-danger ml-auto">
+            @DbRes.TResource("Global.Forms.MandatoryFields")
+        </small>
+    </div>
+    <div class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12 align-self-end mang-button d-flex">
+
+        @Html.ActionButton(DbRes.TResource("Admin.ExternalParty.Edit"), "EditManager", "GridDiv", null, null, "OnEditManagerSuccess", null, "post", null, "btnEditManager", "frmEditManager", "btn btn-st1 btn-lg w-xs-100 ml-auto")
+        <a class="btn btn-lg btn-st3 mx-1" id="btnCancel" onclick="HideEditDiv()">@DbRes.TResource("Admin.User.Cancel")</a>
+    </div>
+
+}

@@ -1,0 +1,21 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Report;
+@model EmployeeVM
+@{
+    Html.ViewData.TemplateInfo.HtmlFieldPrefix = "EmployeeVM";
+}
+<div id="hidden_fields_two" class="" style="display: none;">
+    <h3 class="site-color sub-title ml-3">@DbRes.TResource("User.File.Employees")</h3>
+    <div class="row">
+        <div class="col-sm-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.EmployeeId, new { @class = "control-label" })
+                    <div>
+                        @Html.AutoCompleteBuilder("ddlEmployeeId", "EmployeeVM_EmployeeId", ViewData["OrgUnitsUsersData"].ToString(), null, false, "form-control")
+                        @Html.StickyHiddenFor(model => model.EmployeeId)
+                    </div>
+                </div>
+        </div>
+    </div>    
+</div>
+<hr />

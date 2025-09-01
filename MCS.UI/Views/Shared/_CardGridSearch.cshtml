@@ -1,0 +1,77 @@
+﻿@using MCS.GridMvc.Columns
+@using MCS.UI.Helpers
+@using MCS.Common
+@using MCS.Framework.Localization
+@model MCS.GridMvc.IGrid
+
+
+@if (Model == null) { return; }
+@if (Model.RenderOptions.RenderRowsOnly)
+{
+    @RenderGridBody();
+}
+else
+{
+    <div class="boxes px-md-2 grid-mvc table-view" data-lang="@Model.Language" data-gridname="@Model.RenderOptions.GridName" data-selectable="@Model.RenderOptions.Selectable.ToString().ToLower()" data-multiplefilters="@Model.RenderOptions.AllowMultipleFilters.ToString().ToLower()">
+        <div class="tbody">
+            @RenderGridBody()
+        </div>
+        @RenderGridPager()
+    </div>
+}
+@helper RenderGridBody()
+{
+    if (!Model.ItemsToDisplay.Any())
+    {
+        <div class="grid-empty-text text-center">
+            <span><img src="~/Content/User/lib/images/explaniation.svg" /></span>
+            <h3>@Model.EmptyGridText</h3>
+        </div>
+    }
+    else
+    {
+
+
+        <div id="TransactionCards" class="d-flex flex-wrap mx-auto mx-md-4">
+            @foreach (object item in Model.ItemsToDisplay)
+            {
+                using (Html.BeginCollectionItem(Model.CollectionName))
+                {
+                    foreach (IGridColumn column in Model.Columns)
+                    {
+                        @column.CellRenderer.Render(column, column.GetCell(item), item)
+                    }
+                }
+
+            }
+        </div>
+    }
+}
+@helper RenderGridHeader()
+{
+}
+@helper RenderGridPager()
+{
+    if (Model.EnablePaging && Model.Pager != null)
+    {
+        <div class="row">
+            @Html.Partial(Model.Pager.TemplateName, Model.Pager)
+        </div>
+    }
+}
+
+@{
+    string actionName = ViewContext.RouteData.Values["action"].ToString();
+
+    if (actionName.Contains("Search"))
+    {
+        <script>
+            //$('#TransactionCards').attr('style', 'display: flex !important');
+            //$('#TransactionTable').attr('style', 'display: none !important');
+            //$(document).ready(function () {
+            //    $('#TransactionCards').attr('style', 'display: flex !important');
+            //    $('#TransactionTable').attr('style', 'display: none !important');
+            //});
+        </script>
+    }
+}

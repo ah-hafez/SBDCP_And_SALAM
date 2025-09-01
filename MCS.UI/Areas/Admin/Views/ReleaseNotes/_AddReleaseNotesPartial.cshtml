@@ -1,0 +1,60 @@
+﻿@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+@model MCS.UI.Areas.Admin.Models.ReleaseNotes.ReleaseNotesVM
+@{
+    ViewBag.Title = "_ReleaseNotesAddPartial";
+    Layout = null;
+}
+
+@using (Html.BeginForm(null, "ReleaseNotes", FormMethod.Post, new { id = "frmAddReleaseNotes", @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+    @*<div class="panel-heading">
+        <h3 class="panel-title">@DbRes.TResource("Admin.ReleaseNotes.Add.Title")</h3>
+    </div>*@
+    <div class="panel-body">
+        <lable style="color: #B1B1B1">@DbRes.TResource("Global.Forms.MandatoryFields")</lable>
+
+        <div class="row">
+
+            <div class="col-md-5">
+                <div class="form-group">
+                    @Html.CustomLabelFor(model => model.ReleaseDate, new { @class = "control-label" }, @DbRes.TResource("Admin.ReleaseNotes.ReleaseDate"))<br />
+                    @Html.HiddenFor(model => model.DateHj, new { id = "hdnDateHj" })
+                    @Html.HiddenGroupFor(model => model.ReleaseDate, new { id = "hdnReleaseDate" })
+                    @Html.Calendar("HasDateCal", "hdnReleaseDate", "hdnDateHj", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), Model.DateHj, "form-control")
+
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <div class="form-group">
+                    @Html.CustomLabelFor(model => model.ReleaseNumber, new { @class = "control-label" }, @DbRes.TResource("Admin.ReleaseNotes.ReleaseNumber"))<br />
+                    @Html.TextBoxGroupFor(model => model.ReleaseNumber, null, new { @class = "form-control", maxlength = "25" },
+                   DbRes.TValidation(string.Format("Admin.Actions.DescriptionRequired.{0}", @DbRes.TResource("Admin.ReleaseNotes.ReleaseNumber"))))
+                </div>
+            </div>
+
+            <div class="col-md-2 d-flex" style="margin-top: 2.250rem">
+                @Html.CheckBoxFor(model => Model.IsActive)
+                @Html.CustomLabelFor(model => Model.IsActive, new { @style = "", @class="ml-2 mt-2" }, "فعال")<br />
+
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    @Html.CustomLabelFor(model => model.Description, new { @class = "control-label" }, @DbRes.TResource("Admin.ReleaseNotes.Description"))<br />
+                    @Html.TextAreaFor(m => m.Description, new { @class = "form-control", @rows = 10, autofocus = "autofocus" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mx-3 mx-md-5 mb-4 d-flex">
+        <div class="ml-auto">
+            @Html.ActionButton(DbRes.TResource("Admin.Actions.Save"), @Url.Action("AddReleaseNotes", "ReleaseNotes"), "divGrid", null, null, "OnAddSuccess", null, "post", null, "btnAddAReleaseNotes", "frmAddReleaseNotes", "btn btn-lg btn-st3 mx-1")
+        </div>
+    </div>
+}

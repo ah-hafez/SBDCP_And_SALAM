@@ -1,0 +1,81 @@
+﻿@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.Framework.Localization;
+@using MCS.UI.Areas.User.Models.Report;
+@model AdditionalFieldsInboundVM
+@{
+    Html.ViewData.TemplateInfo.HtmlFieldPrefix = "AdditionalFieldsInboundVM";
+}
+<div id="hidden_fields_four" class="" style="display: none;">
+    <h3 class="site-color sub-title ml-3">@DbRes.TResource("User.Transaction.Search.AdditionalFieldsInbound")</h3>
+    <div class="row">
+        <div class="col-sm-4">
+            <fieldset>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.EntitiesTypeId, new { @class = " control-label" })
+                    <div>
+                        @Html.AutoCompleteBuilder("ddlEntitiesTypeId", "hdnEntitiesTypeId", ViewData["EntitiesType"].ToString(),
+                       Model != null ? Model.EntitiesTypeId.ToString() : null, true, "form-control",selectFirstIndex:true,onChangeCallback: "onChangeEntities")
+                        @Html.HiddenFor(model => model.EntitiesTypeId, new { id = "hdnEntitiesTypeId" })
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+    <div id="Entities" class="row">
+        <div class="col-sm-4">
+            <fieldset>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.InboundDocumentNumber, new { @class = "control-label" })
+                    <div>
+                        @Html.TextBoxGroupFor(model => model.InboundDocumentNumber, "BasicInformation", new { @class = "form-control", maxlength = "12" })
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <div class="col-sm-4">
+            <fieldset>
+                <div class="form-group">
+                    <label class="control-label">@DbRes.TResource("User.Inbound.BasicInfo.date")</label>
+                    <div class="with-icon" >
+                        @Html.Calendar("HasInboundDateCal", "hdnHasInboundDateGreg", "hdnHasDateInboundUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), Model != null ? Model.InboundDateH : null, "form-control")
+                        <a href="javascript:void(0)" class="date-icon date-icon1"><img src="~/Content/User/lib/images/SystemIcon/main bar-08.svg" width="30" /></a>
+                        @Html.StickyHidden("hdnHasInboundDateGreg", null, new { id = "hdnHasInboundDateGreg" })
+                        <i id="InboundDateHIcon" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                        <span id="InboundDateHMessage" style="color:red"></span>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <div class="col-sm-4">
+            <fieldset>
+                <div id="divContainerExternalParties">
+                    @Html.Partial("~/Areas/User/Views/Inbound/_ExternalPartiesPartial.cshtml", new ViewDataDictionary { { "ExternalPartiesData", ViewData["ExternalPartiesData"] } })
+                </div>
+                @Html.HiddenFor(model => model.ExternalPartiesId, new { id = "hdnExternalPartiesId" })
+            </fieldset>
+        </div>
+    </div>
+</div>
+<hr />
+<script>
+    $(document).ready(function () {
+        $('#ddlEntitiesTypeId').trigger('change');
+        $('#HasInboundDateCal').attr('autocomplete', 'off');
+    });
+
+    function onChangeEntities() {
+        
+        var value = parseInt($('#hdnEntitiesTypeId').val());
+        if (value == EntitiesType.Entities) {
+            $('#Entities').show();
+        }
+        else {
+            $('#Entities').hide();
+        }
+    }
+    function GetDestinationUsersByOrgUnitId() {
+        
+        $('#AdditionalFieldsInboundVM_ExternalPartiesId').val(parseInt($('#DestinationId').val()));
+    }
+</script>

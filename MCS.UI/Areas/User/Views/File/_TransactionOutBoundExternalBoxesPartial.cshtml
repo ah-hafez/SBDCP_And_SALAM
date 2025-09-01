@@ -1,0 +1,97 @@
+﻿@using MCS.Common
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.File
+@model IList<TransactionTrayInfoVM>
+
+@{
+    bool isVIP = (bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser);
+    DefaultDisplay defaultDisplay = (DefaultDisplay)SessionInfo.GetObjectFromSession(Constants.DefaultDisplay);
+    Session["viewType"] = "OutBoundExternal";
+}
+<script>
+    $(document).ready(function () {
+          var isVIPUser = '@SessionInfo.GetObjectFromSession(Constants.IsVIPUser)';
+
+
+
+        if ($('#selectAll').is(":checked")) {
+            $('#selectAll').click();
+        }
+
+        if (isVIPUser.toLowerCase() == 'true') {
+            goTableView();
+        }
+        else {
+            goCardsView();
+        }
+    });
+</script>
+
+@if (defaultDisplay == DefaultDisplay.Cards@*&& !isVIP*@)
+{
+<div class="col-xs-12">
+    <div class="boxes">
+        <div class="row">
+            @{
+                Session["renderType"] = "cardItem";
+                Html.RenderPartial("~/Areas/User/Views/File/_FileGrid.cshtml",
+                Model,
+                new ViewDataDictionary {
+                { "ListItemName", "_ElcOutbound_Item" },
+                { "GridName", "ElcOutboundGrid" },
+                { "renderType", "cardItem" }
+    });
+            }
+        </div>
+    </div>
+</div>
+}
+else
+{
+Session["renderType"] = "tableItem";
+Html.RenderPartial("~/Areas/User/Views/File/_FileGrid.cshtml",
+            Model,
+            new ViewDataDictionary {
+                //{ "ListItemName", "_DraftOutbound_TableItem" },
+                { "GridName", "ElcOutboundGrid" },
+                                //{ "renderType", "tableItem" }
+                                                        });
+}
+<script>
+    var OutBoundExternalGridEventHandler = "@Url.Action("ElcOutBound", "File")";
+    function prepareOutBoundExternalGrid() {
+        if (!pageGrids.ElcOutboundGrid) {
+            $(".grid-mvc").gridmvc();
+        }
+        debugger;
+        pageGrids.ElcOutboundGrid.ajaxify({
+            getPagedData: OutBoundExternalGridEventHandler,
+            getData: OutBoundExternalGridEventHandler,
+            callbackClientFunctionAfter: ["goToViewAfterPaging", "reRegisterSendInqueryButton"]
+        });
+    }
+
+    $(document).ready(function () {
+        $('.clsResend').off().on("click", ResendHub.bind(this));
+        debugger;
+        $('.clsSendInquery').click((e) => {
+            var transactionId = $(e.currentTarget).data('transactionid');
+            $.ajax({
+                url: '@Url.Action("SendStatusInquiry", "Hub")',
+                data: { transactionId: transactionId },
+            }).success((data) => {
+                if (data == 'faild') {
+                    var message = "حدث خطأ رقم (" + data + ") الرجاء المحاولة لاحقاً";
+                    ShowInformationMessage(message);
+                    return;
+                }
+                ShowInformationMessage(data);
+            }).error((a, b, c, d) => {
+                ShowErrorMessage('حدث خطأ');
+            });
+            e.stopImmediatePropagation();
+
+        });
+        prepareOutBoundExternalGrid();
+    });
+</script>

@@ -1,0 +1,13 @@
+﻿@using MCS.UI.Areas.User.Models.Transaction
+@model AjaxGrid<SubTaskAddVM>
+
+@{int index = 0;}
+@Html.Grid(Model).Named("grdSubTasks").Columns(columns =>
+    {
+        columns.Add(true).RenderValueAs(m => (index++).ToString());
+        columns.Add(model => model.ToOrgUnitName).Titled(DbRes.TResource("User.Task.SubTaskAdd.ToOrgUnit"));
+        columns.Add(model => model.ToUserName).Titled(DbRes.TResource("User.Task.SubTaskAdd.ToUser"));
+        columns.Add(model => model.TaskDescription).Titled(DbRes.TResource("User.Task.SubTaskAdd.TaskDescription"));
+        columns.Add(model => model.DeliveryDateH).Titled(DbRes.TResource("User.Task.SubTaskAdd.DeliveryDate"));
+        columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => @Html.GridImageButton("DeleteSubTask", "grdSubTasks", 0, OperationType.Delete, "dvGridContainer", "dvTasksBody :input", null, "OnDeleteTasksSuccess")).Titled(DbRes.TResource("Grid.Delete"));
+    }).WithPaging(GridHelper.PageSize).Sortable().Filterable().WithMultipleFilters().UpdateActionUrl("UpdateGridTasks").RenderDeleteButton("DeleteSubTask", 1, "dvGridContainer :input", "dvGridContainer", "OnDeleteTasksSuccess")

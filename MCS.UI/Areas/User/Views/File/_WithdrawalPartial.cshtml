@@ -1,0 +1,143 @@
+﻿@using MCS.Common
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.File
+@using MCS.UI.Areas.User.Models.Transaction
+@*@model MCS.UI.Areas.User.Models.File.WithdrawalVM*@
+@*@model IList<TransactionTrayInfoVM>*@
+
+<div class="mx-3 mx-md-5 header-container d-flex flex-row align-items-center">
+    <div class="d-flex flex-column flex-lg-row align-items-lg-center flex-grow-1 mb-3 mb-lg-0 mt-md-5 mt-auto">
+        <h3 class="site-color mb-3 mb-lg-4">@DbRes.TResource("User.File.Withdrawal")</h3>
+    </div>
+</div>
+
+<div class="col-md-12">
+    <div class="white-container mx-5 mx-xs-3">
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <label class="">@DbRes.TResource("User.Transaction.Link.TransactionNumber")</label>
+            <input class="form-control trans-input" id="TransId" onkeypress="return IsNumeric(event);">
+        </div>
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <label class="">@DbRes.TResource("User.File.TransactionType")</label>
+       
+            @Html.AutoCompleteBuilder("TransactionType", "hdnTransactionTypeId", ViewData["TransactionTypesForFilters"].ToString(), "hdnTransactionTypeId", true, "form-control", "", "", "", true, "")
+            @Html.StickyHidden("hdnTransactionTypeId", "", new { @Value = "", id = "hdnTransactionTypeId" })
+        </div>
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <label class="">@DbRes.TResource("User.InboundSearch.Year")</label>
+            @Html.AutoCompleteBuilder("ddlYear", "hdnYear", LookupCategory.Year, DateTimeUtility.GetHijriYear(DateTime.Now).ToString(), true, "form-control", null, null, false)
+            @Html.StickyHidden("hdnYear", "", new { @Value = "", id = "hdnYear" })
+        </div>
+
+        <div class="col-xs-12 panel-body row text-right">
+            <input type="button" value="@DbRes.TResource("User.Search.SubmitSearch")" class="btn btn-st2" onclick="Search()" />
+        </div>
+    </div>
+
+    <div class="content_container" id="TransactionsBoxes">
+        @*@Html.Partial("~/Areas/User/Views/File/_WithdrawalBoxesPartial.cshtml", Model)*@
+        @Html.AntiForgeryToken()
+    </div>
+</div>
+
+<script>
+    function Search() {
+
+        var transId = $("#TransId").val();
+        var transactionTypeId = $("#hdnTransactionTypeId").val();
+        var year = $("#ddlYear").val();
+        var token = $('#frmOrgUnitsList').find("input[name='__RequestVerificationToken']").val();
+
+
+        var filterData = { transId: transId, transactionTypeId: transactionTypeId, year: year, __RequestVerificationToken: token };
+
+        $.ajax({
+            url: '@Url.Action("GetWithdrawalData", "File")',
+            type: 'POST',
+            data: filterData,
+            success: function (data) {
+                $('#TransactionsBoxes').html("");
+                data.Html = data.Html.replaceAll('goTableView', 'goCardsView')
+                $('#TransactionsBoxes').html(data.Html);
+                prepareTransactions(filterData);
+            }
+        });
+    }
+    function chechSourseTypeId() {
+        debugger;
+        if ($('#hdnTransactionTypeId').val() != -1 && $('#hdnTransactionTypeId').val() != "") {
+            getSourceTypeByTransactionTypeId($('#hdnTransactionTypeId').val());
+            $('#SourceTypeId').attr('disabled', false);
+        } else {
+            $('#SourceTypeId').val("");
+            $('#hdnSourceTypeId').val("");
+            $('#SourceTypeId').attr('disabled', true);
+        }
+    }
+    function prepareTransactions(optionalData) {
+        $(".grid-mvc").gridmvc();
+        pageGrids.WithdrawalGrid.ajaxify(
+            {
+                getPagedData: withdrawalGridEventHandler,
+                getData: withdrawalGridEventHandler,
+                requestType: "POST",
+                callbackClientFunctionAfter: ["goToViewAfterPaging"],
+                optionalData: optionalData
+            });
+    }
+
+
+</script>
+
+
+<script>
+    var withdrawalGridEventHandler = "@Html.Raw(Url.Action("GetWithdrawalData", "File"))"; //,new { transId = "transactionIdToReplace",  transactionTypeId= "transactionTypeIdToReplace", year ="yearToReplace" }))";
+
+    var urlActionPage = "";
+    function Open(Id, encryptedId) {
+
+        var token = $('#frmOrgUnitsList').find("input[name='__RequestVerificationToken']").val();
+            var type = $('#hdnTransactionType_' + Id).val();
+        var transactionType = $('#hdnType_' + Id).val();
+        var filterData = { TransactionId: Id, __RequestVerificationToken: token };
+         $.ajax({
+                url: '@Url.Action("WithdrawalAssignment", "File")',
+                type: 'POST',
+                data: filterData,
+                success: function (data) {
+               switch (type) {
+                case 'Inbound':
+                    controllerName = 'Inbound';
+                       urlActionPage = '@Url.Action("Edit", "Inbound")?id=-1';
+                    break;
+                case 'ExternalOutbound':
+                    controllerName = 'OutboundExternal';
+                       urlActionPage = '@Url.Action("Edit","OutboundExternal")?id=' + "-1" + '&IsFromDraft=False&isHubEditable=True';
+                    break;
+                case 'InternalOutbound':
+                    controllerName = 'OutboundInternal';
+                       urlActionPage = '@Url.Action("Edit", "OutboundInternal")?id=-1';
+                    break;
+                case 'DraftOutbound':
+                    controllerName = 'OutboundDraft';
+                       urlActionPage = '@Url.Action("Edit","OutboundExternal")?id=' + "-1" + '&IsFromDraft=True&isHubEditable=False';
+                    break;
+            }
+
+                    urlActionPage = urlActionPage.replace("-1", EncryptionKey(encryptedId));
+
+                ExecuteTargetFunction();
+                }
+                });
+
+
+
+        }
+
+        function ExecuteTargetFunction() {
+            window.location.href = urlActionPage;
+        }
+
+</script>
+
+

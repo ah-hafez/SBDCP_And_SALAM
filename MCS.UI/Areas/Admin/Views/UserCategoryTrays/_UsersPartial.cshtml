@@ -1,0 +1,61 @@
+﻿@using MCS.UI.Areas.Admin.Models
+@model List<UserProfileVM>
+<div class="row all_types_title">
+    المستخدمين
+</div>
+<script>
+    $(document).ready(function () {
+        @*@{ var val = Json.Encode(Model);}
+        var check = @Html.Raw(val);
+        var c =JSON.stringify(check);*@
+        $("#txtUser").keyup(function () {
+            @*var check = @Html.Raw(val);*@
+            @*// var json = '@Newtonsoft.Json.JsonConvert.SerializeObject(Model).ToString()';*@
+            var filter = $("#txtUser").val();
+            var list = $("#hdnusers").val();
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url: '@Url.Action("SortUsers", "UserCategoryTrays")',
+                data: { "filter": filter, "myList": list },//JSON.stringify(check)
+                contentType: 'application/json; charset=utf-8',
+
+                success: function (response) {
+                    $('#divUsers').html('');
+                    $('#divUsers').html(response.UsersHtml);
+                }
+            });
+        });
+    });
+</script>
+@*<div class="row row_input">
+        <input id="txtUser" type="text" class="form-control">
+        <input type="hidden" value="@Model.ToList()" id="hdnval"/>
+        @Html.Hidden("Users", Newtonsoft.Json.JsonConvert.SerializeObject(Model).ToString(), new { id = "hdnusers" })
+    </div>*@
+<div class="scroll maxheight_types">
+    @{
+        foreach (var item in Model)
+        {
+            if (item.IsSelected == true)
+            {
+                <div id="user_@item.Id" class="row all_types select" data-type="@UsersAndTraysReportType.User" data-id="@item.Id" onclick="getData(@item.Id);">
+                    <span>@item.LocalName</span>
+                </div>
+            }
+            else
+            {
+                <div id="user_@item.Id" class="row all_types" data-type="@UsersAndTraysReportType.User" data-id="@item.Id" onclick="getData(@item.Id);">
+                    <span>@item.LocalName</span>
+                </div>
+            }
+        }
+    }
+</div>
+<script>
+    $(document).ready(function () {
+        if ($(".scroll").length > 0) {
+            $(".scroll").mCustomScrollbar({ axis: "y", autoHideScrollbar: true, scrollInertia: 20, advanced: { autoScrollOnFocus: false } });
+        }
+    });
+</script>

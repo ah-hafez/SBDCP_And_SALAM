@@ -1,0 +1,18 @@
+﻿@using MCS.UI.Helpers
+@model AjaxGrid<MCS.UI.Areas.User.Models.Transaction.TransactionCopyVM>
+@Html.Grid(Model).Named("grdCopies").Columns(columns =>
+{
+    columns.Add(false).RenderValueAs(model => @DateHelper.GetDate(model.DateH)).Titled(DbRes.TResource("User.TransactionCertificate.Copies.DateH"));
+    columns.Add(model => model.OrgUnitName).Titled(DbRes.TResource("User.TransactionCertificate.Copies.OrgUnitName"));
+    columns.Add(model => model.UserName).Titled(DbRes.TResource("User.TransactionCertificate.Copies.UserName"));
+    columns.Add(model => model.ActionName).Titled(DbRes.TResource("User.TransactionCertificate.Copies.ActionName"));
+    columns.Add(model => model.SpecialExplanation).Titled(DbRes.TResource("User.Transaction.Copies.SpecialExplanation"));
+    columns.Add(model => model.GeneralExplanation).Titled(DbRes.TResource("User.Transaction.Copies.GeneralExplanation"));
+    columns.Add(model => LookupsHelper.GetLookupItem(model.Status, SessionInfo.CultureShortName).Result.Text).Titled(DbRes.TResource("User.Transaction.Copy.Status"));
+})
+
+<style>
+    .PrivateCopyCs {
+        background-color: #e91e1e61 !important;
+    }
+</style>

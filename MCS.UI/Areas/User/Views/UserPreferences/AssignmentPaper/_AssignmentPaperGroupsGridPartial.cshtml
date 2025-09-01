@@ -1,0 +1,98 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Common;
+@using MCS.UI.Areas.User.Models.OrgUnit
+@model AjaxGrid<AssignmentPaperGroupVM>
+
+
+@{
+    Layout = null;
+}
+
+@{string controller = "UserPreferences";}
+
+
+@Html.Grid(Model).CollectionName("AssignmentPaperBeneficiaryVMs").Named("grdAssignmentPaperGroup").Columns(columns =>
+{
+    columns.Add(model => model.Id).Titled(DbRes.TResource("Admin.AssignmentPaperGroup.Id")).Css("hidden_");
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.OrderNo, new { id = "Order_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+     columns.Add().Encoded(false).Sanitized(false).Titled(DbRes.TResource("اسم المجموعة"))
+    .RenderValueAs(o => @<div class="row">
+    <span class="col-md-2"></span>
+    @o.Name
+
+    <span class="col-md-1">
+        <a id="ch_@o.Key.ToString()" onclick="MoveGroup('@o.Id','true')" class="la la-long-arrow-down"></a>
+    </span>
+    <span class="col-md-1">
+        <a id="ch_@o.Key.ToString()" onclick="MoveGroup('@o.Id','false')" class="la la-long-arrow-up"></a>
+    </span>
+
+
+</div>);
+
+columns.Add(model => model.DefaultActionName).Titled(DbRes.TResource("الاجراء"));
+columns.Add().Encoded(false).Sanitized(false).Css("").RenderValueAs(model =>
+MvcHtmlString.Create(
+"<div class='table-icon d-flex align-items-center'>" +
+@Html.GridImageButton("GetAssignmentPaperGroup", "AssignmentPaperGroup", 0, OperationType.Update, "dvEdit", null, null, "ShowEditDiv", "", "get") +
+"<a alt='حذف' class='color-burgundy' id='" + @model.Id + "' onclick='confirmDeleteGroup()' title='حذف'><i class='icon-tables-delete'></i></a>") +
+"</div>");
+
+})
+
+<script>
+
+    var groupId;
+    function confirmDeleteGroup() {
+        debugger
+        groupId = $(event.currentTarget).attr('id');
+        ShowConfirmMessage("سيتم حذف ارتباطات المجموعة بالادارات ايضا, متابعة؟", 'executeDeleteGroup');
+    }
+
+    function executeDeleteGroup() {
+        var token = $(frmBeneficiary).children('[name="__RequestVerificationToken"]').val();
+        var requestData = 'id=' + groupId + '&__RequestVerificationToken=' + token;
+        $.ajax({
+            type: "post",
+            url: '@Url.Action("DeleteAssignmentPaperGroup", "UserPreferences")',
+            data: requestData,
+            success:
+                function (data) {
+                    if (data.MessageType != 2) {
+                        window.location.href = window.location.href;
+                    }
+                    else {
+                        ShowErrorMessage(data.MessageType);
+                    }
+                },
+            error: function (data) {
+            }
+        });
+    }
+
+
+    function MoveGroup(id,isMoveUp)
+    {
+        var token = $(frmBeneficiary).children('[name="__RequestVerificationToken"]').val();
+        var requestData = 'id=' + id + '&isMoveUp=' + isMoveUp + '&__RequestVerificationToken=' + token;
+         $.ajax({
+                url: '@Url.Action("ChangeGroupOrder", "UserPreferences")',
+                type: 'POST',
+               data: requestData,
+                cache: false,
+                success: function (data) {
+                    if (data.MessageType != 2)
+                    {
+                        window.location.href = window.location.href;
+                    }
+                    else
+                    {
+                        ShowErrorMessage(data.MessageType);
+                    }
+                },
+                error: function (a) {
+
+                }
+            });
+    }
+</script>

@@ -1,0 +1,125 @@
+﻿<div class="tab-content">
+    <div class="tab-pane active">
+        <div class="boxes px-md-2 grid-mvc table-view">
+            <div class="tbody">
+                <div id="ClaasificationCards" class="d-flex flex-wrap mx-auto mx-md-4">
+                    <div class="box-grid">
+                        <div class="box animated zoomIn buttons-action">
+                            <div class="header">
+                                <div class="left">
+                                    <label class="TransactionNum">1</label>
+                                    -
+                                    <label class="DateY">2023</label>
+                                </div>
+                                <div class="right">
+                                    <label class="Type">داخلي</label>
+                                </div>
+                            </div>
+                            <label class="Discription">الوصف الوصف الوصف الوصف</label>
+                            <div class="correspondence-icon d-flex" style="gap:3px">
+                                <hr style="border:1px solid green" />
+
+                                <div>
+                                    <a  title="" onclick="ReturnClassification()">
+                                        <img src="~/Content/User/lib/images/SystemIcon/main bar-36.svg" width="25" />
+                                    </a>
+                                </div>
+
+                                <div>
+                                    <a id="OpenEditor" title="المحرر" onclick="Editor()">
+                                        <img src="~/Content/User/lib/images/SystemIcon/main bar-22.svg" width="30" />
+                                    </a>
+                                </div>
+                                <div>
+                                    <a id="barcode"  title="رمز التشفير" onclick="ShowPrintDialog()">
+                                        <img src="~/Content/User/lib/images/SystemIcon/barcode-scanner.svg" width="35" />
+
+                                    </a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    .box {
+        background: #f6f6f6;
+        border: 3px solid white;
+        text-align: center;
+    }
+
+    .header {
+        display: flex;
+        place-content: space-between;
+    }
+
+    .left {
+        display: flex;
+        gap: 5px;
+        padding-right: 10px;
+    }
+
+    .right {
+        margin-left: 8px;
+    }
+
+    .DateY, .Type {
+        font-size: 16px;
+        font-weight: bold;
+    }
+    .Type {
+        color: #0E8270;
+    }
+
+    .TransactionNum {
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .Discription {
+        color: black;
+        font-size: 16px;
+        font-weight: bold;
+        margin:16px 0px 16px 0px;
+    }
+
+    .correspondence-icon {
+        padding: 1px 10px;
+    }
+
+    label {
+        color: #a9a9a9;
+    }
+    .jconfirm-box{
+        width:60%;
+        right:25%;
+    }
+</style>
+
+<script>
+    function ReturnClassification() {
+
+        url = '@Url.Action("ReturnClassification", "File")'
+        ShowDialog(url,'dialogbox col-md-12 ');
+    }
+
+     function ShowPrintDialog() {
+        var params = { transactionId: $("").val() };
+        ShowDialogAjaxPrintingBarcodes('@Url.Action("PrinttingBarcodes","Shared")' + "?" + $.param(params), {}, 'OpenPrintDialogSuccess', 'dialogbox col-md-12 ');
+    }
+
+    function Editor() {
+
+        url = '@Url.Action("ClassificationEditor", "File")'
+        ShowDialog(url,'dialogbox col-md-12 ');
+    }
+
+</script>

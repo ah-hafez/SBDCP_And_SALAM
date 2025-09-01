@@ -1,0 +1,197 @@
+﻿@using MCS.UI.Helpers
+@using MCS.Common
+@using MCS.UI.Areas.User.Models.File
+@model TransactionTrayInfoVM
+
+@{
+    string transType = string.Empty;
+    bool isPermition = false;
+    string Confidentiality = "ConfidentialityNormal";
+    string ConfidentialityBac = "ConfidentialityNormalBackg";
+    switch (Model.TransactionDetailsInfoVM.ConfidentialityId)
+    {
+        case (int)Confedentiality.HandDelivered:
+            {
+                Confidentiality = "ConfidentialityVeryRed";
+                ConfidentialityBac = "ConfidentialityVeryRedBackg";
+
+                if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.ConfidentialityOfTransactions.HandDelivered))
+                {
+                    isPermition = true;
+                }
+
+                break;
+            }
+        case (int)Confedentiality.HighConfidential:
+            {
+                Confidentiality = "ConfidentialityMidRed";
+                ConfidentialityBac = "ConfidentialityMidRedBackg";
+
+                if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.ConfidentialityOfTransactions.HandDelivered) || SessionInfo.CurrentUser.Claims.Contains(UserClaims.ConfidentialityOfTransactions.ExtremlyConfidential))
+                {
+                    isPermition = true;
+                }
+
+                break;
+            }
+        case (int)Confedentiality.Secret:
+            {
+                Confidentiality = "ConfidentialityRed";
+                ConfidentialityBac = "ConfidentialityRedBackg";
+
+                if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.ConfidentialityOfTransactions.HandDelivered) || SessionInfo.CurrentUser.Claims.Contains(UserClaims.ConfidentialityOfTransactions.ExtremlyConfidential) || SessionInfo.CurrentUser.Claims.Contains(UserClaims.ConfidentialityOfTransactions.Secret))
+                {
+                    isPermition = true;
+                }
+
+                break;
+            }
+        case (int)Confedentiality.Normal:
+            {
+                isPermition = true;
+                break;
+            }
+    }
+    if (Model.TransactionDetailsInfoVM.TransactionCategoryId == (int)TransactionCategorieColor.InternalOutbound)
+    {
+
+        transType = "InternalOutboundLineTable";
+
+    }
+    else if (Model.TransactionDetailsInfoVM.TransactionCategoryId == (int)TransactionCategorieColor.Inbound)
+    {
+
+        transType = "InboundLineTable";
+
+
+    }
+    else
+    {
+        transType = "OutboundExternalTable";
+    }
+}
+<style>
+    .ConfidentialityRed {
+        border-right: 4px solid #c41c0e;
+    }
+
+    .ConfidentialityMidRed {
+        border-right: 4px solid #c41c0e;
+    }
+
+    .ConfidentialityVeryRed {
+        border-right: 4px solid #c41c0e;
+    }
+    
+</style>
+<tr class="bg-white @Confidentiality @transType" style="cursor: pointer; " data-id="@Model.TransactionDetailsInfoVM.Id">
+    <td>
+        <div class="checkbox">
+            @if (Model.TransactionDetailsInfoVM.HasPermission)
+            {
+                <label>
+                    <input type="checkbox" value="" onchange="holdDataFromBox(this)" id="ch_@Model.TransactionDetailsInfoVM.Id" data-id="@Model.TransactionDetailsInfoVM.Id" data-encryptedid="@Model.TransactionDetailsInfoVM.EncryptedId" class="FillIds">
+                    <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                </label>
+            }
+        </div>
+    </td>
+    <td>
+        <div class="pr-1" id="Number_@Model.TransactionDetailsInfoVM.Id">@Model.TransactionDetailsInfoVM.Number</div>
+    </td>
+    @*<td>
+            @Model.TransactionDetailsInfoVM.TransactionCategory
+        </td>
+        <td class="title" id="entityName_5306">
+            <div class="title" id="entityName_@Model.TransactionDetailsInfoVM.Id"> @Model.TransactionDetailsInfoVM.EntityName </div>
+        </td>*@
+
+
+    <td class="subject-td">
+        @if (Model.TransactionDetailsInfoVM.HasPermission)
+        {
+            <div class="Tabledescription">
+                @Model.TransactionDetailsInfoVM.Subject
+            </div>
+        }
+        else
+        {
+            <div class="Tabledescription">***</div>
+        }
+    </td>
+    <td>
+        <div class="" style="text-align: right;">
+            @DateHelper.GetDate(@Model.TransactionDetailsInfoVM.DateH)
+            @Model.TransactionDetailsInfoVM.Date.ToShortTimeString()
+        </div>
+    </td>
+    <td>@Model.TransactionAssignmentInfoVMs[0].ToUser</td>
+    <td>
+        <div class="">
+            @if (Model.TransactionDetailsInfoVM.PriorityName != null && Model.TransactionDetailsInfoVM.PriorityName.Length > 15)
+            {
+                <div class="" data-bs-toggle="tooltip" data-placement="bottom" title="@Model.TransactionDetailsInfoVM.PriorityName">
+                    @Model.TransactionDetailsInfoVM.PriorityName
+                </div>
+            }
+            else
+            {
+                <div class="">
+                    @Model.TransactionDetailsInfoVM.PriorityName
+                </div>
+            }
+        </div>
+    </td>
+    <td>
+        @if (Model.TransactionDetailsInfoVM.ConfidentialityName != null && Model.TransactionDetailsInfoVM.ConfidentialityName.Length > 15)
+
+        {
+            <div class="@ViewData["className"]" data-bs-toggle="tooltip" data-placement="bottom" title="@Model.TransactionDetailsInfoVM.ConfidentialityName">
+                @Model.TransactionDetailsInfoVM.ConfidentialityName.Substring(0, 15)
+            </div>
+        }
+        else
+        {
+            <div class="@ViewData["className"]">
+                @Model.TransactionDetailsInfoVM.ConfidentialityName
+            </div>
+        }
+    </td>
+
+    <td>
+        @if (Model.TransactionAssignmentInfoVMs.FirstOrDefault().Date != null && Model.TransactionAssignmentInfoVMs.FirstOrDefault().Action != null)
+        {
+            <div class="" data-bs-toggle="tooltip" data-placement="bottom" title="@Model.TransactionAssignmentInfoVMs.FirstOrDefault().Date">
+                @if (Model.TransactionAssignmentInfoVMs.FirstOrDefault().Date.ToString().Length > 10)
+                {
+                    @Model.TransactionAssignmentInfoVMs.FirstOrDefault().Date.ToString().Substring(0, 10)
+                }
+                else
+                {
+                    @Model.TransactionAssignmentInfoVMs.FirstOrDefault().Date.ToString()
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="">
+                ---
+            </div>
+        }
+    </td>
+
+    <td>
+        <div class="">
+            @if (@Model.TransactionDetailsInfoVM.Status != null && @Model.TransactionDetailsInfoVM.Status.Length > 9)
+            {
+                @Model.TransactionDetailsInfoVM.Status
+            }
+            else
+            {
+                @Model.TransactionDetailsInfoVM.Status
+
+            }
+        </div>
+    </td>
+</tr>

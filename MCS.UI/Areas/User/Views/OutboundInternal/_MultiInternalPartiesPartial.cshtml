@@ -1,0 +1,292 @@
+﻿@model MCS.UI.Areas.User.Models.Transaction.MultiInternalOutboundVM
+@using MCS.Common;
+@using MCS.Framework.Localization
+
+ @{ 
+     ViewData.TemplateInfo.HtmlFieldPrefix = "MultiInternalOutbound";
+ }
+
+<div id="dvMultiInternalBody">
+
+    @Html.HiddenFor(model => model.OrgUnitName, new { id = "hdnMultiInternalOrgUnitName" })
+    <div id="dvmultiInternalForm" class="form-horizontal form-row">
+        <div class="form-group col-lg-10 col-md-10 col-sm-12 col-xs-12 mb-3">
+            <div id="dvMultiInternalDepartmentsTree"  style="margin-right:40px;">
+                 
+                        @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.OrgUnitId, TreeMode.MultiCheckbox, "dvMultiInternalDepartmentsTree", true, "", "MultiInternalValidation", "dvMultiInternalDepartmentsTree", "MultiInternalCheckboxChange", "MultiInternal")
+
+ 
+                        @Html.HiddenFor(model => model.OrgUnitName, new { id = "hdnMultiInternalOrgUnitName" })
+                        @Html.HiddenFor(model => model.InternalOrgSelectedList, new { id = "MultiInternalOrgSelectedList" })
+                  
+
+            </div>
+        </div>
+        <div class="form-group" style="display:flex; gap:5px; margin-top:4px;">
+            <div>
+                @Html.ClientActionButton(DbRes.TResource("User.Transaction.Copies.Add"), Url.Action("AddMultiInternal", "OutboundInternal"), "dvMultiInternalGrid", "MultiInternalOnSuccess", null, "MultiInternalValidation", "btnMultiInternal", "dvMultiInternalBody", "btn-site btn-upload", null, "CheckMultiDepartment",null, "<i class='glyphicon glyphicon-plus'style=\"\r\n    margin-top: -10px;\r\n    font-size: small;\"></i>")
+            </div>
+        </div>
+    </div>
+
+    <div class="panel-body" style="padding-left:70px; padding-right:45px;">
+        <div class="row">
+            <div id="dvMultiInternalGrid">
+                @Html.Partial("~/Areas/User/Views/OutboundInternal/_MultiInternalGridPartial.cshtml", Model.MultipleInternalOutbound, Html.ViewData)
+            </div>
+        </div>
+    </div>
+</div>
+@Html.StickyHidden("hdnMultiInternal", ViewData["hdnInternalArray"].ToString())
+@Html.StickyHiddenFor(model => model.Id, new { id = "hdnMultiExEditId" })
+@Html.StickyHiddenFor(model => model.Key, new { id = "hdnMultiExEditKey" })
+<script> 
+
+    function CheckMultiDepartment()
+    {
+        debugger;
+        if ($("#dvMultiInternalBody .txtDepartmentName").val() == "") {
+
+            $("#dvMultiInternalBody .txtDepartmentName ,#dvMultiInternalBody .txtDepartmentNumber").addClass("RedBorder");
+            return true;
+        }
+        else {
+            $("#dvMultiInternalBody .txtDepartmentName ,#dvMultiInternalBody .txtDepartmentNumber").removeClass("RedBorder");
+            
+            return true;
+        }
+    }
+
+
+    function MultiInternalCheckboxChange(orgSelected, id, number, name) {
+        debugger;
+        var orgListString = $("#MultiInternalOrgSelectedList").val();
+        var initialValue = [];
+        if (orgListString != "") {
+            initialValue = orgListString.split(',');
+        }
+
+
+        if (orgSelected.checked) {
+            initialValue.push(id);
+            $("#rightdvMultiInternalDepartmentsTree").val(number);
+            $("#leftdvMultiInternalDepartmentsTree").val(name);
+            $("#hdnMultiInternalOrgUnitName").val(name);
+            $("#MultiInternalOutbound_OrgUnitId").val(id);
+
+
+        } else {
+
+            initialValue.splice($.inArray(id, initialValue), 1);
+        }
+        
+
+        $("#MultiInternalOrgSelectedList").val(initialValue.toString());
+
+    }
+
+  
+
+    $("#ddlInternalCopyOrgUnitUsers").prop('disabled', true);
+
+    $(document).on('change', '#ddlInternalCopyOrgUnitUsers', function () {
+        $('#hdnInternalCopyOrgUnitUserName').val($('#ddlInternalCopyOrgUnitUsers').val());
+    });
+
+    $(document).on("change", "#ddlInternalCopyActionId", function () {
+        $("#hdnInternalCopyActionName").val($(this).val());
+    })
+ 
+    function MultiInternalOnSuccess(data) {
+        if (data.MessageType != 2) {
+
+            $("#grid-table-grdMultiInternal > tbody > .grid-empty-text").remove();
+            $("#grid-table-grdMultiInternal > tbody:last").append(data.Html);
+            $("#divContainer__dvMultiInternalDepartmentsTree").find('input[type=checkbox]').each(function () {
+                // some staff
+                this.checked = false;
+            });
+            //$("#MultiInternalOrgSelectedList").val('');
+            $('#divContainer__dvMultiInternalDepartmentsTree').css("display", 'none');
+            $("#rightdvMultiInternalDepartmentsTree").val('');
+            $("#leftdvMultiInternalDepartmentsTree").val('');
+            $("#OrgSelectedList").val('');
+
+         /*   ClearInputs('dvmultiInternalForm');*/
+          //  $("#dvFilesUploader").addClass("hidden_");
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+    function OnDeleteInternalCopiesSuccess(data) {
+        $("#hdnMultiInternal").val(data.hdnValue);
+        $("#hdnMultiInternalGrid").val(data.hdnValue);
+    }
+    $(document).on("change", "#Key", function () {
+        debugger;
+        if ($(this).val().length == 10) {
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("GetCopies","OutboundInternal")',
+                cache: false,
+                data: { "key": $(this).val() },
+                success:
+                    function (data) {
+                        var hasData = false;
+                        $.each(data, function (name, value) {
+                            $("#dvmultiInternalForm #" + name).val(value);
+                            hasData = true;
+                        });
+                        if (hasData) {
+                            $("#dvmultiInternalForm #key").trigger("change");
+                        }
+                        else {
+                            if ($("#btnMultiInternal").css("display") == "block") {
+                                $("#dvmultiInternalForm #Id").val("");
+                            }
+                        }
+                        return;
+                    }
+            });
+        }
+    });
+
+    
+
+    function CancelMultiInternalEdit()
+    {
+        $("#btnMultiInternal").show();
+        $("#btnResetInternalCopy").show();
+        $("#btnInternalEditCopies").hide();
+        $("#aCancelMultiInternal").hide();
+        $('.uploaded-files').html("");
+        $('#grid-table-grdMultiInternal').find('#Key_' + $("#hdnMultiExEditKey").val()).closest('tr').removeClass("grid-row-selected");
+        ClearInputs('dvmultiInternalForm');
+       // $("#dvFilesUploader").addClass("hidden_");
+    }
+ 
+ 
+    $(document).on('keyup', '#dvMultiInternalBody .txtDepartmentNumber', function () {
+        if ($("#dvMultiInternalBody .txtDepartmentName").val() != null && $("#dvMultiInternalBody .txtDepartmentName").val() != "") {
+          //  $("#dvFilesUploader").removeClass("hidden_");
+        } else {
+          //  $("#dvFilesUploader").addClass("hidden_");
+        }
+    });
+    function GetInternalCopyById(key, orgUnitId) {
+
+        var transId = $('#hdnTransactionID').val();
+        //SetTreeDefaultInfo("dvMultiInternalDepartmentsTree");
+        //$("#dvMultiInternalDepartmentsTree_hdnDepartmentId").val($("#dvMultiInternalDepartmentsTree_" + key).val());
+      /*  SetTreeDefaultInfo("dvMultiInternalDepartmentsTree",orgUnitId);*/
+        $('.uploaded-files').html("");
+        $('#hdnMultiExEditKey').val(key);
+        //$("#divForm__dvMultiInternalDepartmentsTree").find(".hdnDepartmentId").val($("#ExOrgUnitId_" + key).val());
+        $("#dvMultiInternalBody .txtDepartmentName").val($("#ExOrgUnitName_" + key).val());
+        $("#dvMultiInternalBody .txtDepartmentNumber").val($("#ExOrgUnitId_" + key).val());
+        FillDepartmentTreeControlsById('dvMultiInternalDepartmentsTree', $("#ExOrgUnitId_" + key).val());
+        //GetUsersByInternalPartyId();
+
+        $("#hdnSendEmail").val($("#SendEmail_" + key).val().toLowerCase());
+        if ($("#SendEmail_" + key).val().toLowerCase() == "true") {
+
+            $('#MultiInternalOutbound_SendEmail').prop('checked', $("#SendEmail_" + key).val().toLowerCase());
+        }
+
+
+        $('#hdnMultiInternalOrgUnitName').val($('#dvMultiInternalBody .txtDepartmentName').val());
+        $("#ddlInternalCopyOrgUnitUsers").val($("#ExUserName_" + key).val());
+        $("#hdnInternalCopyOrgUnitUserName").val($("#ExUserName_" + key).val());
+        $("#hdnInternalCopyOrgUnitUsers").val($("#ExUserId_" + key).val());
+        $("#ddlInternalCopyActionId").val($("#ExActionName_" + key).val());
+        $("#hdnInternalCopyActionId").val($("#ExActionId_" + key).val());
+        $("#hdnInternalCopyActionName").val($("#ExActionName_" + key).val());
+        $("#hdnExAttachments").val($("#ExAttachments_" + key).val());
+        $("#hdnInternalCopiesAttachmentsCount").val($("#ExAttachment_" + key).val());
+        $("#hdnInternalCopiesAttachmentsCount").removeAttr("disabled");
+        $("#hdnMultiExEditId").val($("#ExEditId_" + key).val());
+        $("#hdnAttachmentNames").val($("#ExAttachmentsNames_" + key).val());
+        var attachmentsNames = $("#ExAttachmentsNames_" + key).val();
+        if (attachmentsNames != '') {
+            var attachmentsNamesArr = JSON.parse(attachmentsNames);
+            for (i = 0; i < attachmentsNamesArr.length; i++) {
+                if (attachmentsNamesArr[i].IsDeleted != true) {
+                    $('.uploaded-files').append('<div class="file"><i class="uicon icon_attachments"></i><span class="attachment_name">' + attachmentsNamesArr[i].Name + '</span><a href="javascript:removeAttachemntPhysically(' + key + ',' + attachmentsNamesArr[i].Id + ')" class="color-danger remove-mini"><i class="uicon icon_recycle"></i></a></div>');
+                }
+            }
+            $('.col-uploadeed-files').fadeIn(200);
+        } else {
+            $.ajax({
+                type: 'Get',
+                url: '@Url.Action("RetriveInternalCopiesAttechment", "OutboundInternal")',
+                data: { "OrgUnitId": orgUnitId, "id": transId },
+
+                success: function (data) {
+                    var files = data.filesNames.split(',');
+                    if (data.filesNames == "")
+                        $('.uploaded-files').html("");
+                    else {
+                        for (i = 0; i < files.length; i++) {
+                            $('.uploaded-files').append('<div class="file"><i class="uicon icon_attachments"></i><span class="attachment_name">' + files[i] + '</span><a href="javascript:removeAttachemntPhysically(' + key +')" class="color-danger remove-mini"><i class="uicon icon_recycle"></i></a></div>');
+                        }
+                        $('.col-uploadeed-files').fadeIn(200);
+                    }
+
+                }
+            });
+        }
+        $("#hdnCopyIndex").val(key);
+         $("#btnMultiInternal").hide();
+        $("#btnResetInternalCopy").hide();
+        $("#btnInternalEditCopies").removeClass("hidden_");
+        $("#btnInternalEditCopies").show();
+        $("#aCancelMultiInternal").show();
+        //$("#dvFilesUploader").removeClass("hidden_");
+        $.ajax({
+            type: 'get',
+            url: '@Url.Action("GetManagersByPartyId", "OutboundInternal")',
+            data: { id: $("#ExOrgUnitId_" + key).val() },
+            success:
+                function (data) {
+                    AutoCompleteChangeList("ddlInternalCopyOrgUnitUsers", data);
+                    $("#ddlInternalCopyOrgUnitUsers").trigger('change');
+                    $("#hdnInternalCopyOrgUnitUsers").trigger('change');
+                    $("#ddlInternalCopyOrgUnitUsers").prop('disabled', false);
+                    //$("#dvFilesUploader").removeClass("hidden_");
+                }
+        });
+        $("#MultiInternalOutbound_Email").val($("#dvMultiInternalDepartmentsTree_txtDepartmentEmail").val());
+        return false;
+    } 
+</script>
+
+<style>
+    .clsHidden {
+        display: none;
+    }
+
+    .CopyesTitle {
+        font-size: 16px;
+        font-weight: bold;
+        margin: 35px;
+    }
+
+    .btn-site {
+        margin-bottom: 20px;
+    }
+
+    .btn-act {
+        margin-right: 25px;
+    }
+
+    .aactive {
+        color: green !important;
+        font-weight: bold;
+    }
+
+    .test .active a h1 {
+        color: green !important;
+        font-weight: bold;
+    }
+</style>

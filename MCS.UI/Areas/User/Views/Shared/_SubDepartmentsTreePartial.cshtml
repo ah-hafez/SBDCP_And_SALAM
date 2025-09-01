@@ -1,0 +1,20 @@
+﻿@{
+    Layout = null;
+}
+@model MCS.Common.TreeViewModel
+
+@{
+    string containerName = "treeDirectedToOrgUnit";
+    if (ViewData["containerName"] != null)
+    {
+        containerName = ViewData["containerName"].ToString();
+    }
+
+    string onClickFunc = "GetDirectedToUsersByOrgUnitId";
+    if (ViewData["onClickFunc"] != null)
+    {
+        onClickFunc = ViewData["onClickFunc"].ToString();
+    }
+}
+
+@Html.DepartmentsTreeNode(Model.RootNode, "DirectedToOrgUnitId", Model.Mode, containerName, onClickFunc)

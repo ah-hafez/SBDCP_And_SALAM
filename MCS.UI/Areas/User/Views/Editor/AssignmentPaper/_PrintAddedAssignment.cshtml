@@ -1,0 +1,876 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Common;
+@using MCS.UI.Areas.User.Models.Assignment
+@using MCS.UI.Areas.User.Models.Transaction;
+@using MCS.Framework.Controls
+@using MCS.UI.Areas.User.Models.Actions;
+@using MCS.UI.Areas.User.Models.Permission;
+@model TransactionAssignmentPrintVM
+
+@{
+    //Model.DeliveryMethodId = DeliveryMethodType.Electronic.LookupIdentity(LookupCategory.DeliveryMethod, SessionInfo.CultureShortName);
+    int i = 1;
+    Layout = "~/Views/Shared/_PrintBaseLayout.cshtml";
+
+    var actions = ViewData["AllActionsData"] as List<ActionVM>;
+    var confidentiality = ViewData["ExplanationConfidentiality"] as List<PermissionVM>;
+
+
+}
+<style>
+    .f-flex-container {
+        display: flex;
+        flex-wrap: nowrap;
+        border-bottom: 1px solid #C7A32D;
+    }
+
+        .f-flex-container > div {
+            width: 150px;
+            margin: 10px;
+            text-align: center;
+        }
+</style>
+
+
+<style>
+
+
+    .TransactionAssignment {
+        padding: 10px;
+    }
+
+    .divRadio {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .inline-radio {
+        display: flex;
+        align-items: center;
+    }
+
+    .radio, .checkbox {
+        display: inline-block;
+        margin-right: 10px;
+    }
+</style>
+
+
+<style>
+    * {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 16px;
+        color: #0c4a4d;
+        box-sizing: border-box;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+/*        margin-bottom: 8px;
+*/    }
+
+    table, th, td {
+        border: 1px solid black;
+    }
+
+    th, td {
+        padding: 2px;
+        text-align: center;
+    }
+
+    /* th {
+                background-color: #f2f2f2;
+            } */
+
+    table table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        table table th, table table td {
+            border: 1px solid black;
+            padding: 6px;
+            text-align: right;
+        }
+
+    /* table table th {
+                background-color: #d3d3d3;
+            } */
+    .parent-table-body tr {
+        padding: 0 10px 0 200px;
+    }
+
+    .sub-table th {
+        text-align: center;
+        color: #0c4a4d;
+    }
+
+ 
+    .checkbox {
+        padding: 5px 0;
+    }
+
+    hr {
+        height: 2px;
+        background-color: #000;
+    }
+
+    .title {
+        color: #0c4a4d;
+        font-weight: bolder;
+        background-color: #D9D9D9;
+    }
+
+    .title2 {
+        color: #0c4a4d;
+        font-weight: bolder;
+    }
+
+    .title3 {
+        color: #0c4a4d;
+    }
+
+    .c-width {
+        width: 120px;
+    }
+
+
+    .notes {
+        background-image: -webkit-linear-gradient(left, white 10px, transparent 10px), -webkit-linear-gradient(right, white 10px, transparent 10px), -webkit-linear-gradient(white 30px, #ccc 30px, #ccc 31px, white 31px);
+        background-image: -moz-linear-gradient(left, white 10px, transparent 10px), -moz-linear-gradient(right, white 10px, transparent 10px), -moz-linear-gradient(white 30px, #ccc 30px, #ccc 31px, white 31px);
+        background-image: -ms-linear-gradient(left, white 10px, transparent 10px), -ms-linear-gradient(right, white 10px, transparent 10px), -ms-linear-gradient(white 30px, #ccc 30px, #ccc 31px, white 31px);
+        background-image: -o-linear-gradient(left, white 10px, transparent 10px), -o-linear-gradient(right, white 10px, transparent 10px), -o-linear-gradient(white 30px, #ccc 30px, #ccc 31px, white 31px);
+        background-image: linear-gradient(left, white 10px, transparent 10px), linear-gradient(right, white 10px, transparent 10px), linear-gradient(white 30px, #ccc 30px, #ccc 31px, white 31px);
+        background-size: 100% 100%, 100% 100%, 100% 31px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+        line-height: 31px;
+        font-family: Arial, Helvetica, Sans-serif;
+        padding: 8px;
+/*        height: 150px;
+*/    }
+
+        .notes:focus {
+            outline: none;
+        }
+</style>
+<form>
+    <div class="form-horizontal">
+        <div id="AddedEntities">
+            @{
+                //var list = ViewData["AssignmentPaperData"] as List<TransactionAssignmentVM> ?? new List<TransactionAssignmentVM>();
+                //var list = Model.ToList();
+            }
+            @{
+                var _item = ViewData["AssignmentPaperData"] as TransactionAssignmentPrintVM ?? new TransactionAssignmentPrintVM();
+                var _list = _item.TransactionAssignmentVM;
+                var _items = ViewData["BasicTransactionAssignmentData"] as BasicTransactionAssignmentNewVM ?? new BasicTransactionAssignmentNewVM();
+
+            }
+
+
+
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="" style="width: 32%; text-align: center;">
+                    <h4 class="title2" style="font-size:16px">
+                        المملكة العربيه السعودية
+                        <br />
+                        @_item.ParentOrgUnit
+
+                        <br />
+                        @_item.FromOrgUnit
+
+                    </h4>
+                </div>
+                <div class="" style="width: 32%; text-align: center;">
+                    <!--<img src="" alt="logo" style="height: 100px;">-->
+                    @if (ViewData["LogoFile"] != null)
+                    {
+                        <img width="200" src="@(ViewData["LogoFile"])" alt="">
+                    }
+                    else
+                    {
+                        <img width="300" src="@(ViewData["LogoFiles"])" alt="">
+
+
+                    }
+                    <br>
+                    مذكرة إحالة داخلية
+                    <br />
+                    @_item.DateTimeNowH
+
+                </div>
+                <div class="" style="width: 32%; text-align: center;">
+                    GAMI- Public عام
+                </div>
+            </div>
+            <hr>
+
+
+            <table>
+                <thead>
+                </thead>
+
+                <tbody class="parent-table-body">
+                    <tr>
+                        <td colspan="5">
+                            <table class="">
+                                <tbody>
+                                    <tr>
+                                        <td class="title c-width">درجة الاطلاع :  </td>
+                                        <td colspan="4">
+                                            <div class="checkbox" style="display: flex; justify-content: center;">
+                                                <label lass="col-lg-2">
+                                                    @if (_item.ConfedentialityId == 27)
+                                                    {
+
+                                                        <input type="checkbox" checked>
+                                                    }
+                                                    else
+                                                    {
+
+                                                        <input type="checkbox">
+                                                    }
+                                                    <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                                    <text style="color:black">عادي</text>
+                                                </label>
+
+
+                                                <label lass="col-lg-2">
+                                                    @if (_item.ConfedentialityId == 28)
+                                                    {
+
+                                                        <input type="checkbox" checked>
+                                                    }
+                                                    else
+                                                    {
+
+                                                        <input type="checkbox">
+                                                    }
+
+                                                    <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                                    <text style="color:black">سري</text>
+                                                </label>
+
+                                                <label lass="col-lg-2">
+                                                    @if (_item.ConfedentialityId == 29)
+                                                    {
+
+                                                        <input type="checkbox" checked>
+                                                    }
+                                                    else
+                                                    {
+
+                                                        <input type="checkbox">
+                                                    }
+
+                                                    <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                                    <text style="color:black">سري للغاية</text>
+                                                </label>
+
+                                                <label lass="col-lg-2">
+
+                                                    @if (_item.ConfedentialityId == 121)
+                                                    {
+
+                                                        <input type="checkbox" checked>
+                                                    }
+                                                    else
+                                                    {
+
+                                                        <input type="checkbox">
+                                                    }
+                                                    <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                                    <text style="color:black">غير قابل للتداول</text>
+                                                </label>
+                                                <label class="col-lg-2">
+                                                    @if (_item.ConfedentialityId == 1353)
+                                                    {
+
+                                                        <input type="checkbox" checked disabled>
+                                                    }
+                                                    else
+                                                    {
+
+                                                        <input type="checkbox" disabled>
+                                                    }
+                                                    <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                                    <text style="color:black"> محدود التداول </text>
+                                                </label>
+
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="5">
+                            <table class="">
+                                <tbody>
+                                    <tr>
+                                        <td class="title c-width">درجة الأسبقية :  </td>
+                                        <td colspan="4">
+                                            <div class="checkbox" style="display: flex; justify-content: center;">
+                                                <label class="col-lg-2">
+                                                    @if (_item.PriorityLevelId == (int)PriorityType.Normal)
+                                                    {
+
+                                                        <input type="checkbox" checked>
+                                                    }
+                                                    else
+                                                    {
+
+                                                        <input type="checkbox">
+                                                    }
+
+                                                    <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                                    <text style="color:black">عادي</text>
+                                                </label>
+                                                <label class="col-lg-2">
+                                                    @if (_item.PriorityLevelId == (int)PriorityType.Urgent)
+                                                    {
+
+                                                        <input type="checkbox" checked>
+                                                    }
+                                                    else
+                                                    {
+
+                                                        <input type="checkbox">
+                                                    }
+                                                    <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                                    <text style="color:black">عاجل</text>
+                                                </label>
+
+                                                <label class="col-lg-2">
+                                                    @if (_item.PriorityLevelId == (int)PriorityType.VeryUrgent)
+                                                    {
+
+                                                        <input type="checkbox" checked>
+                                                    }
+                                                    else
+                                                    {
+
+                                                        <input type="checkbox">
+                                                    }
+
+                                                    <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                                    <text style="color:black">عاجل جداً</text>
+                                                </label>
+
+                                                <label class="col-lg-2">
+                                                    @if (_item.PriorityLevelId == (int)PriorityType.Immediately)
+                                                    {
+
+                                                        <input type="checkbox" checked>
+                                                    }
+                                                    else
+                                                    {
+
+                                                        <input type="checkbox">
+                                                    }
+
+                                                    <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                                    <text style="color:black">حالاً</text>
+                                                </label>
+
+                                                <label class="col-lg-2">
+
+                                                    @if (_item.PriorityLevelId == (int)PriorityType.Now)
+                                                    {
+
+                                                        <input type="checkbox" checked>
+                                                    }
+                                                    else
+                                                    {
+
+                                                        <input type="checkbox">
+                                                    }
+                                                    <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                                    <text style="color:black">فوري</text>
+                                                </label>
+
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+
+
+
+
+
+
+
+
+                    <tr>
+                        <td colspan="5">
+                            <table class="">
+                                <tbody>
+                                    <tr>
+                                        <td class="title c-width">الجهة :  </td>
+                                        <td style="width: 35%;">
+                                            @_item.ToOrgUnit
+                                        </td>
+                                        <td class="title c-width">الموضوع :  </td>
+                                        <td style="width: 35%;">
+                                            @_item.Subject
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="5">
+                            <table class="">
+                                <tbody>
+                                    <tr>
+                                        <td class="title c-width">
+                                            رقم المعاملة:
+                                        </td>
+                                        <td style="width:90px;">
+                                            @_item.Number
+                                        </td>
+                                        <td class="title c-width">
+                                            التاريخ:
+                                        </td>
+                                        <td style="width:100px;">
+                                            @_item.TransactionDateH
+                                        </td>
+                                        @*<td class="title c-width">
+                                            رقم الجهة
+                                        </td>
+                                        <td style="width:100px;">
+                                            @_item.InboundNumber
+                                        </td>
+                                        <td class="title c-width">
+                                            التاريخ:
+                                        </td>
+                                        <td style="width:100px;">
+                                            @_item.InboundDateH
+
+                                        </td>*@
+                                        <td style="width:150px;">
+                                            <label>
+                                                <input type="checkbox" id="Generalizationid">
+                                                <text style="color:black">تعميم</text>
+                                            </label>
+                                            <label>
+                                                @if (_items.LetterTypeId == 58)
+                                                {
+                                                    <input type="checkbox" checked>
+
+                                                }
+                                                else
+                                                {
+                                                    <input type="checkbox">
+                                                }
+                                                <text style="color:black">الأوامر</text>
+                                            </label>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+
+
+                   
+
+
+                    <tr style="background-color: #d8d8d8; ">
+                        <td colspan="5" style="width: 100%; display: flex; flex-wrap: wrap; justify-content: space-between;">
+                            <!-- each group -->
+                            @foreach (var firstgroup in _list.OrderBy(x => x.GroupOrderNo).GroupBy(a => new { a.GroupName }).ToList())
+                            {
+
+                                var group = _list.Where(a => a.GroupName == firstgroup.Key.GroupName).ToList();
+
+
+                                <table class="" style="width: 46%;background-color: #fff;border:0 !important; margin: 5px;">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <table class="sub-table" style="background-color: #fff;">
+                                                    <thead style="border:0 !important;">
+                                                        <tr>
+                                                            <th style="text-align: center;border:0 !important;">أصل</th>
+                                                            <th style="text-align: center;border:0 !important;"> أصل فرعي</th>
+                                                            <th style="text-align: center;border:0 !important;">الاحالة الى</th>
+                                                            <th style="text-align: center;border:0 !important;">نسخة</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var item in group.OrderBy(x => x.OrderNo).ToList())
+                                                        {
+                                                            <tr>
+                                                                <td style="border-left: 0 !important; border-right: 0 !important; border-bottom: 1px solid !important;">
+                                                                    <div class="radio">
+                                                                        <label>
+
+                                                                            @if (item.IsAssigned)
+                                                                            {
+                                                                                <input type="checkbox" checked>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <input type="checkbox">
+                                                                            }
+                                                                            <span class="cr"><i class="cr-icon"></i></span>
+                                                                        </label>
+                                                                    </div>
+                                                                </td>
+                                                                <td style="border-left: 0 !important; border-right: 0 !important; border-bottom: 1px solid !important;">
+                                                                    <div class="checkbox">
+                                                                        <label>
+                                                                            @if (item.IsCopy)
+                                                                            {
+                                                                                <input type="checkbox" checked>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <input type="checkbox">
+                                                                            }
+                                                                            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                                                        </label>
+                                                                    </div>
+                                                                </td>
+
+                                                                <td style="border-left: 0 !important; border-right: 0 !important; border-bottom: 1px solid !important;">
+                                                                    @item.ToOrgUnitName
+                                                                </td>
+                                                                <td style="border-left: 0 !important; border-right: 0 !important; border-bottom: 1px solid !important;">
+                                                                    <div class="checkbox">
+                                                                        <label>
+                                                                            @if (item.IsCopy)
+                                                                            {
+                                                                                <input type="checkbox" checked>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <input type="checkbox">
+                                                                            }
+                                                                            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                                                        </label>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                            }
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+                        <td colspan="5">
+                            <table class="">
+                                <thead>
+                                    <tr>
+                                        <th class="" style="text-align: center;" colspan="7">
+                                            التوجيه
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <tr>
+                                        @foreach (var action in actions.Take(6))
+                                        {
+                                            <td class="">
+                                                <label>
+
+                                                    @if (action.Id == _item.ActionId)
+                                                    {
+
+                                                        <input type="checkbox" checked>
+                                                    }
+                                                    else
+                                                    {
+
+                                                        <input type="checkbox">
+                                                    }
+                                                    @*<span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>*@
+                                                    <text style="color:black">@action.LocalName</text>
+                                                </label>
+                                            </td>
+                                        }
+
+                                    </tr>
+                                    <tr>
+                                        @foreach (var action in actions.Skip(6).Take(6))
+                                        {
+                                            <td class="">
+                                                <label>
+
+                                                    @if (action.Id == _item.ActionId)
+                                                    {
+
+                                                        <input type="checkbox" checked>
+                                                    }
+                                                    else
+                                                    {
+
+                                                        <input type="checkbox">
+                                                    }
+                                                    @*<span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>*@
+                                                    <text style="color:black">@action.LocalName</text>
+                                                </label>
+                                            </td>
+                                        }
+
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+
+
+
+                    <tr>
+                        <td colspan="5">
+                            <table class="">
+                                <thead>
+                                    <tr>
+                                        <th class="" style="text-align: center;" colspan="6">
+                                            الشرح
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody style="background-color: #D9D9D9;">
+                                    <tr>
+                                        <td class="title " style="width:150px">
+                                            درجة سرية الشرح:
+                                        </td>
+                                        @*@Html.Hidden("hdnExplanationConfedentialityForAssignmentPaper", "", new { id = "hdnExplanationConfedentialityForAssignmentPaper" })*@
+                                            <td class="">
+                                                <label class="col-lg-2">
+                                                    @if (_item.ConfedentialityId == 27)
+                                                    {
+
+                                                        <input type="checkbox" checked >
+                                                    }
+                                                    else
+                                                    {
+
+                                                        <input type="checkbox" disabled>
+                                                    }
+                                                    <text style="color:black">عادي</text>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label class="col-lg-2">
+                                                    @if (_item.ConfedentialityId == 28)
+                                                    {
+
+                                                        <input type="checkbox" checked >
+                                                    }
+                                                    else
+                                                    {
+
+                                                        <input type="checkbox" >
+                                                    }
+
+                                                    <text style="color:black">سري</text>
+                                                </label>
+
+                                            </td>
+                                            <td>
+                                                <label class="col-lg-2">
+                                                    @if (_item.ConfedentialityId == 29)
+                                                    {
+
+                                                        <input type="checkbox" checked >
+                                                    }
+                                                    else
+                                                    {
+
+                                                        <input type="checkbox" >
+                                                    }
+
+                                                    <text style="color:black">سري للغاية</text>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label class="col-lg-2">
+
+                                                    @if (_item.ConfedentialityId == 121)
+                                                    {
+
+                                                        <input type="checkbox" checked >
+                                                    }
+                                                    else
+                                                    {
+
+                                                        <input type="checkbox" >
+                                                    }
+                                                    <text style="color:black">غير قابل للتداول</text>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label class="col-lg-2">
+                                                    @if (_item.ConfedentialityId == 1353)
+                                                    {
+
+                                                        <input type="checkbox" checked >
+                                                    }
+                                                    else
+                                                    {
+
+                                                        <input type="checkbox" >
+                                                    }
+                                                    <text style="color:black"> محدود التداول </text>
+                                                </label>
+                                            </td>
+
+]                                    </tr>
+                                    <tr>
+                                        
+                                        <td class="title " style="width:150px">
+                                            درجة أسبقية الشرح:
+                                        </td>
+                                        <td class="">
+                                            <label class="col-lg-2">
+                                                @if (_item.ExplanationPriority == (int)PriorityType.Urgent)
+                                                {
+
+                                                    <input type="checkbox" checked >
+                                                }
+                                                else
+                                                {
+
+                                                    <input type="checkbox" >
+                                                }
+                                                <text style="color:black">عاجل</text>
+                                            </label>
+                                        </td>
+                                        <td class="">
+                                            <label class="col-lg-2">
+                                                @if (_item.ExplanationPriority == (int)PriorityType.VeryUrgent)
+                                                {
+
+                                                    <input type="checkbox" checked >
+                                                }
+                                                else
+                                                {
+
+                                                    <input type="checkbox" >
+                                                }
+
+                                                <text style="color:black">عاجل جداً</text>
+                                            </label>
+                                        </td>
+                                        <td class="">
+                                            <label class="col-lg-2">
+
+                                                @if (_item.ExplanationPriority == (int)PriorityType.Now)
+                                                {
+
+                                                    <input type="checkbox" checked >
+                                                }
+                                                else
+                                                {
+
+                                                    <input type="checkbox" >
+                                                }
+                                                <text style="color:black">فوري</text>
+                                            </label>
+                                        </td>
+                                        <td class="">
+                                            <label class="col-lg-2">
+                                                @if (_item.ExplanationPriority == (int)PriorityType.Immediately)
+                                                {
+
+                                                    <input type="checkbox" checked >
+                                                }
+                                                else
+                                                {
+
+                                                    <input type="checkbox" >
+                                                }
+
+                                                <text style="color:black">حالاً</text>
+                                            </label>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="5">
+                            <textarea onkeyup="textAreaAdjust(this)" style="width: 100%; overflow:hidden" class="notes" name="" id="" cols="100" rows="2"> @_item.Explanation</textarea>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="5">
+                            <table class="">
+                                <thead>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>التوقيع:</td>
+                                        <td>التاريخ:</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+
+
+
+                </tbody>
+            </table>
+
+
+
+
+        </div>
+    </div>
+</form>
+
+<script>
+    function textAreaAdjust(element) {
+        element.style.height = "1px";
+        element.style.height = (25 + element.scrollHeight) + "px";
+    }
+</script>
+
+
+<style>
+    .RedBorder {
+        border: 1px solid #fe0000 !important
+    }
+
+    #CurrentDate {
+        direction: ltr;
+    }
+
+    .explanationDiv {
+        min-height: 70px;
+        height: auto;
+    }
+
+    .modal-lg {
+        min-width: 65vw !important;
+    }
+
+  
+</style>

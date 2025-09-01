@@ -1,0 +1,59 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Common
+@using MCS.UI.Areas.User.Models.Assignment;
+@using MCS.Framework.Controls.Mvc
+@model TransactionAssignmentVM
+
+@*<div class="form-group">
+    @Html.LabelFor(model => model.GroupId, new { @class = "col-md-4 control-label" })
+    <div class="col-md-8">
+        <div class="">
+            @Html.AutoCompleteBuilder("ddlGroupId", "hdnGroupId", ViewData["AssignmentGroupData"].ToString(), null, true, "form-control")
+            @Html.HiddenGroupFor(model => model.GroupId, new { @Value = "", id = "hdnGroupId" }, "AssignmentGroup")
+            @Html.HiddenGroupFor(model => model.GroupName, new { @Value = "", id = "hdnGroupName" }, "AssignmentGroup")
+            @Html.StickyHidden("hdnGroupData", ViewData["AssignmentGroupData"].ToString())
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="col-md-4">
+    </div>
+    <div class="col-md-8">
+        <div class="panel-title">
+            @{if (Convert.ToBoolean(ViewData["IsAllowedToCreateGroup"]))
+                {
+                    @Html.ClientLinkTag(DbRes.TResource("User.Transaction.Assignment.CreateGroup"), null, "btn btn-primary btn-block btn-rounded create_group opnDialog", null, null, null, UserClaims.AssignmentPaper.CreateGroup)
+                }
+                else
+                {
+                    @Html.ClientLinkTag(DbRes.TResource("User.Transaction.Assignment.CreateGroup"), null, "btn btn-primary btn-block btn-rounded create_group disable", " pointer-events: none;cursor: default;", null, null, UserClaims.AssignmentPaper.CreateGroup)
+                }
+            }
+
+        </div>
+
+    </div>
+</div>
+
+<div class="form-group">
+    @Html.LabelFor(model => model.ActionForAllId, new { @class = "col-md-4 control-label" })
+    <div class="col-md-8">
+        <div class="">
+            @Html.AutoCompleteBuilder("ddlActionForAllId", "hdnActionForAllId", ViewData["ActionData"].ToString(), null, true, "form-control", "hdnActionTypeForAllId")
+            @Html.HiddenGroupFor(model => model.ActionForAllId, new { @Value = "", id = "hdnActionForAllId" }, "AssignmentGroup")
+            @Html.HiddenGroupFor(model => model.ActionNameForAll, new { @Value = "", id = "hdnActionNameForAll" }, "AssignmentGroup")
+            @Html.HiddenGroupFor(model => model.ActionTypeForAllId, new { @Value = "", id = "hdnActionTypeForAllId" }, "AssignmentGroup")
+        </div>
+    </div>
+</div>
+
+<div class="form-group">
+    @Html.LabelFor(model => model.DeliveryMethod, new { @class = "col-md-4 control-label" })
+    <div class="col-md-8">
+        <div class="">
+            @Html.AutoCompleteBuilder("ddlDeliveryMethod", "DeliveryMethod", LookupCategory.DeliveryMethod, null, true, "form-control")
+            @Html.HiddenGroupFor(model => model.DeliveryMethod, new { @Value = "" }, "AssignmentGroup")
+        </div>
+    </div>
+
+</div>*@

@@ -1,0 +1,64 @@
+﻿@using MCS.UI.Areas.User.Models
+@using MCS.Framework.Localization
+@model MCS.UI.Areas.User.Models.ExternalParties.ManagersManagementViewModel
+
+<fieldset class="attachments">
+    <legend>اضافة مدير</legend>
+    <div class="panel-body" id="AddDiv">
+        @Html.Partial("~/Areas/User/Views/ExternalParties/_ManagersManagementAddPartial.cshtml", Model.AddManager)
+    </div>
+    <div class="panel-body" id="EditDiv" style="display:none;">
+        @Html.Partial("~/Areas/User/Views/ExternalParties/_ManagersManagementEditPartial.cshtml", Model.EditManager)
+    </div>
+    <div class="panel-body" id="GridDiv">
+        @Html.Partial("~/Areas/User/Views/ExternalParties/_ManagersManagementGridPartial.cshtml", ViewData["GridData"])
+    </div>
+</fieldset>
+
+<script>
+    function ShowEditDiv(data, div) {
+        $("#EditDiv").css("display", "block");
+        $("#AddDiv").css("display", "none");
+    }
+
+    function HideEditDiv() {
+        $("#EditDiv").css("display", "none");
+        $("#AddDiv").css("display", "block");
+    }
+    function ClearInput(containerId) {
+        $('#' + containerId).find(':input').not('input:submit').not('input:button').not('input:radio').not('input:checkbox').not('input:hidden').each(function () {
+            $(this).val('');
+        })
+    }
+    function OnSuccessManager(data, div) {
+        if (data.MessageType != 2) {
+            $("#" + div).html("");
+            $("#" + div).html(data.Html);
+            jQuery.validator.unobtrusive.parse('#' + div);
+            var nodeId = $("#jstree_default").find("a.jstree-clicked").closest('li').attr('node');
+            SelectTreeNode(treeName, nodeId);
+            $("#DestinationId").val(nodeId);
+            ShowSuccesMessage(data.MessageText);
+            ClearInputs('Managers');
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function OnEditManagerSuccess(data, div) {      
+        if (data.MessageType != 2) {
+            $("#" + div).html("");
+            $("#" + div).html(data.Html);
+            jQuery.validator.unobtrusive.parse('#' + div);
+            var nodeId = $("#jstree_default").find("a.jstree-clicked").closest('li').attr('node');
+            SelectTreeNode(treeName, nodeId);
+            $("#DestinationId").val(nodeId);
+            ShowSuccesMessage(data.MessageText);
+            HideEditDiv();
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+</script>

@@ -1,0 +1,84 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.File
+@using MCS.Common
+@using MCS.UI.Areas.User.Models.Shared;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.UI.Common;
+@{UserVM userVM = SessionInfo.CurrentUser;}
+@{
+    var controllerName = HttpContext.Current.Request.RequestContext.RouteData.Values["controller"].ToString();
+    var actionName = ViewContext.RouteData.GetRequiredString("action").ToString();
+}
+<div class="align-self-start main_sidebar ">
+    <div class="d-none d-md-block mr-auto">
+
+        <a id="aMenuTrigger" class="nav-link nav-menu-main menu-toggle hidden-xs is-active" href="#" onclick="setMenuState()">
+            <img src="~/Content/User/lib/images/SystemIcon/align-left.svg" style="width:40px">
+        </a>
+    </div>
+    <div class=" main-menu menu-fixed menu-light menu-accordion menu-icon-left" data-scroll-to-active="true" style="direction:ltr;">
+        <div class="main-menu-content">
+
+            <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
+
+                @{
+
+
+                    <li class="@(controllerName == "IC" && actionName == "ICSubjectIndex" ? "nav-item active" : "nav-item")" title="الدليل">
+                        <a href="@Url.Action("ICSubjectIndex", "IC", new { area = "user" })" class="d-flex">
+                            <i>
+                                <img src="~/Content/User/lib/images/SystemIcon/main bar-09.svg">
+                            </i>
+                            <span class="menu-title">الدليل</span>
+
+                            <span class="badget badge badge-primary badge-pill spnCount_@((int)TrayType.Archives)"></span>
+                        </a>
+                    </li>
+
+
+                    <li class="@(controllerName == "IC" && actionName == "SubjectClassificationIndex" ? "nav-item active" : "nav-item")" title="التصنيف">
+
+                        <a href="@Url.Action("SubjectClassificationIndex", "IC", new { area = "user" })" class="d-flex">
+                            <i>
+                                <img src="~/Content/User/lib/images/SystemIcon/main bar-28.svg">
+                            </i>
+                            <span class="menu-title">التصنيف</span>
+                            <span class="badget badge badge-primary badge-pill spnCount_@((int)TrayType.OutboundExternal)"></span>
+                        </a>
+                    </li>
+
+                }
+
+            </ul>
+        </div>
+    </div>
+</div>
+
+<style>
+    @@media (min-width:1200px) {
+        .main_sidebar {
+            height: 20%;
+        }
+    }
+
+    
+</style>
+<script>
+
+    $(document).ready(function ()
+    {
+        var actionUrl = window.location.pathname.split("/")[4];
+        switch (actionUrl)
+        {
+            case 'Index':
+                $("#selected").addClass("active");
+                break;
+            case 'Classification':
+                $("#selected2").addClass("active");
+                break;
+            default:
+                $("#selected").addClass("active");
+                break;
+        }
+    });
+</script>

@@ -1,0 +1,73 @@
+﻿@using MCS.Framework.Localization;
+@using MCS.UI.Areas.Admin.Models
+@using UserLookups = MCS.UI.Areas.User.Models.Lookups
+@using MCS.Common;
+
+@model ReporterVM
+@{
+    ViewBag.Title = "_CorrespondentAddPartial";
+    Layout = null;
+}
+
+<div class="d-flex flex-column flex-md-row align-items-md-center flex-grow-1">
+    <h3 class="site-color mb-4">@DbRes.TResource("Admin.Lookups.Correspondent.Add")</h3>
+</div>
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmAddCorrespondent" }))
+{
+    @Html.AntiForgeryToken()
+    <div id="AddCorrespondentContent" class="form-row">
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            @Html.Label(DbRes.TResource("Admin.Lookups.Correspondent.NameAr"))
+            @Html.TextBoxGroupFor(model => model.Names[0].Text, "", new { @class = "form-control" }, DbRes.TValidation("Admin.Lookups.Correspondent.NameRequired"))
+            @Html.StickyHiddenFor(model => model.Names[0].CultureId, new { @Value = (int)CultureType.Arabic })
+        </div>
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            @Html.Label(DbRes.TResource("Admin.Lookups.Correspondent.NameEn"))
+            @Html.TextBoxGroupFor(model => model.Names[1].Text, "", new { @class = "form-control" }, DbRes.TValidation("Admin.Lookups.Correspondent.NameRequired"))
+            @Html.StickyHiddenFor(model => model.Names[1].CultureId, new { @Value = (int)CultureType.English })
+        </div>
+        <div class="form-group col-lg-4 col-md-4 col-sm-6 col-xs-12">
+            @*@Html.DepartmentsTree(ViewData["OrgUnitData"] as TreeViewModel, model => model.OrgUnitId, TreeMode.Single, "frmAddCorrespondent", true, null, "CorrespondentAdd", "dvDepartmentsTree")*@
+            <div id="dvDepartmentsTree">
+                @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.OrgUnitId, TreeMode.Single, "frmAddCorrespondenttree", true, "GetDirectedToUsersByOrgUnitId", "CorrespondentAdd", "dvDepartmentsTree")
+
+            </div>
+
+            @*<label>@Html.DisplayNameFor(model => model.OrgUnitId)<span class="stark">*</span></label>*@
+
+           @* @Html.EditorFor(model => model.OrgUnitId, "OrgHierarchyCaller", additionalViewData: new { treeId = "frmAddCorrespondenttree", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Common"), GetNodeInfoByIdActionURL = @Url.Action("GetInternalPartyInfoById", "Common"), GetNodeInfoByNumActionURL = @Url.Action("GetInternalPartyInfoByNumber", "Common"), onClickfunction = "", ValidationGroup = "CorrespondentAdd", ShowAddPartyButton = false })*@
+
+
+
+
+            <label id="noOrgunitSelectedAdd" class="hidden_" style="color:red">@DbRes.TResource("Admin.Lookups.Correspondent.EntityValidation")</label>
+        </div>
+    </div>
+
+    <div class="mx-3 mx-md-5 mb-4 d-flex">
+        <div class="ml-auto">
+            @Html.ActionButton(DbRes.TResource("Admin.TransactionLink.Save"), "AddCorrespondent", "dvGrid", null, null, "OnAddSuccess",null, "post", "CorrespondentAdd", "btnAdd", "frmAddCorrespondent", "btn btn-lg btn-st3 mx-1" , "")
+            @Html.ResetButton("ClearInputs('AddCorrespondentContent')")
+        </div>
+    </div>
+}
+
+<script>
+
+     $(document).ready(function () {
+
+         $("#frmAddCorrespondenttree_hdnDepartmentId").val("");
+    })
+
+    function CheckInputsAdd() {
+        var orgunit = $("#frmAddCorrespondenttree_hdnDepartmentId").val();
+
+        if (orgunit == "") {
+            $("#noOrgunitSelectedAdd").removeClass("hidden_");
+            return false;
+        } else {
+            $("#noOrgunitSelectedAdd").addClass("hidden_");
+            return true;
+        }
+    }
+</script>

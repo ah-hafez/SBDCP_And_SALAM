@@ -1,0 +1,34 @@
+﻿@using MCS.UI.Areas.Admin.Models.Lookups
+@using MCS.Framework.Localization
+@model SuggestedTopicViewModel
+@{
+    ViewBag.Title = DbRes.TResource("Admin.SuggestedTopic.SuggestedTopic");
+    Layout = "~/Areas/Admin/Views/Shared/_LookupsLayout.cshtml";
+}
+<div class="page-title">
+    <h2><span class="fa fa-arrow-circle-o-left"></span>@DbRes.TResource("Admin.TransactionLink.Lookups")</h2>
+</div>
+<div class="page-content-wrap">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-horizontal form-row">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">@DbRes.TResource("Admin.SuggestedTopic.SuggestedTopic")</h3>
+                    </div>
+                    <div id="dvAdd">
+                        @Html.Partial("~/Areas/Admin/Views/Lookups/_SuggestedTopicAddPartial.cshtml", Model.SuggestedTopic)
+                    </div>
+                    <div id="dvEdit" style="display:none;">
+                        @Html.Partial("~/Areas/Admin/Views/Lookups/_SuggestedTopicEditPartial.cshtml", Model.SuggestedTopic)
+                    </div>
+                    <div id="dvSave">
+                        @Html.Partial("~/Areas/Admin/Views/Lookups/_SuggestedTopicTreePartial.cshtml", Model.SuggestedTopics)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

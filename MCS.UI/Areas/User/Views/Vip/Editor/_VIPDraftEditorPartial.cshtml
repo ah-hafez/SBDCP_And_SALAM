@@ -1,0 +1,186 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Common
+@using MCS.UI.Areas.User.Models
+@using TXTextControl.Web
+@using TXTextControl.Web.MVC
+
+@model VIPTextEditorViewModel
+@{string controller = TempData.Peek("ControllerName") != null ? TempData.Peek("ControllerName").ToString() : ViewContext.RouteData.Values["controller"].ToString();}
+@{string officeHostUrl = SystemConfigurations.officeOnlineHost;}
+@{string officeFileId = ViewData["OfficeOnlineFileGuid"] == null ? "" : ViewData["OfficeOnlineFileGuid"].ToString();}
+@{
+    Model.OfficeFileId = officeFileId;
+
+}
+@Html.HiddenGroupFor(model => model.OfficeFileId, new { id = "hdnOfficeFileId" })
+<div class="content_container content_container--body white-bg">
+    <div class="">
+
+        <div class="form-horizontal" dir="rtl">
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.Label(DbRes.TResource("User.OutboundDraft.Forms"), new { @class = " control-label" })
+                    <div>
+                        <div class="">
+                            @Html.AutoCompleteBuilder("ddlOrgUnitFormDocumentWord", "hdnOrgUnitFormDocumentId", ViewData["FormDocumentList"].ToString(), null, true, "form-control")
+                            @Html.Hidden("hdnOrgUnitFormDocument", null, new { id = "hdnOrgUnitFormDocumentId" })
+                            <i id="formTypeValidationIcon" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                            <span id="formTypeValidationText" style="color:red" class="hidden_">@Html.Raw(DbRes.TValidation("User.Transaction.SelectTemplete"))</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                </div>
+            </div>
+
+            <div id="dvSelectEditorType" dir="rtl">
+                <div class="form-group">
+                    @Html.HiddenGroupFor(model => model.Content, new { id = "hdnContent" })
+                    @{
+                        <div id="" class="row enter_through">
+
+                            @Html.HiddenFor(model => model.OldDocumentBase64String, new { id = "hdnBinaryDocument" })
+                            @Html.HiddenFor(model => model.OldDocumentId, new { id = "hdnPDFDocumentId" })
+
+                            <div style="display:flex; margin-top:10px; gap:6px; padding-right:5px;">
+
+
+                            </div>
+                        </div>
+                        <div id="" class="row enter_through d-flex mt-1"></div>
+                    }
+                </div>
+            </div>
+
+            <div class="form-group">
+
+
+                <div style="margin-right:5px">
+                    <a onclick="openWordAddIn();" class="btn btn-st1 btn-sm pull-left" style="margin-right:5px">
+                        فتح باستخدام الاوفس
+                    </a>
+                </div>
+
+                <div style="margin-right:5px" id="UpdateWordBtn" hidden>
+                    <a onclick="CheckWordAddInData();" class="btn btn-st1 btn-sm pull-left" style="margin-right:5px">
+                        تحديث النص
+                    </a>
+                </div>
+            </div>
+
+
+            <div id="dvScanning" class="dvScanningDataForArchivingSection">
+                <div id="dvDocumentViewerEditorContainer" class="">
+                </div>
+            </div>
+
+
+
+            @Html.HiddenFor(model => model.EditorType, new { id = "hdnEditorType" })
+            @Html.HiddenFor(model => model.IsSigned, new { id = "hdnIsSigned" })
+
+
+
+
+            <a id="openWordDoc" style="display:none">Edit</a>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var StorageLinkWordAddin = '@System.Configuration.ConfigurationManager.AppSettings["StorageLinkWordAddin"]';
+
+
+      function CallUpdatedWordAddIn() {
+
+                 $.ajax({
+                type: 'get',
+                l: '@Url.Action("GetDocumentSessionData", controller)',
+                data: {transactionId: 0},
+                     success: function (data) {
+
+
+                 if (data.WordAddinDocumentDTO != 'null') {
+                     var mylink2 = document.getElementById("WordForEditeHdn");
+
+                     var obj = JSON.parse(data.WordAddinDocumentDTO);
+                     mylink2.setAttribute("href", "ms-word:ofe|u|" + StorageLinkWordAddin + obj.FileName );
+                     $("#WordForEdite").show();
+                     $("#ApprovalWord").show();
+
+                     mylink2.click();
+
+                 }
+                }
+                 });
+
+            return false;
+
+
+        }
+
+
+
+    function openWordAddIn()
+    {
+        debugger;
+        var token = $("input[name='__RequestVerificationToken']").val();
+        var content = $("#hdnBinaryDocument").val();
+        if (($("#hdnOrgUnitFormDocumentId").val() != "" && $("#hdnOrgUnitFormDocumentId").val()!='-1') || content!='') {
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("GetByFormIdForWordAddIn", controller)',
+                data: { __RequestVerificationToken: token, documentId: $("#hdnOrgUnitFormDocumentId").val(), content: content },
+                success: function (data)
+                {
+                    debugger;
+                   var mylink = document.getElementById("openWordDoc");
+                    mylink.setAttribute("href", "ms-word:ofe|u|" + StorageLinkWordAddin + data );
+                    $("#UpdateWordBtn").show();
+                    mylink.click();
+
+
+
+                }
+            });
+            return false;
+        }
+     }
+
+    function CheckWordAddInData() {
+
+         $.ajax({
+                type: 'get',
+                 url: '@Url.Action("GetTempWord", "WordAddIn")',
+                data: {transactionId: '0'},
+             success: function (data) {
+                 debugger;
+                 if (data.WordAddinDocumentDTO != 'null' && data.WordAddinDocumentDTO != undefined) {
+
+                     $("#hdnBinaryDocument").val(data.WordAddinDocumentDTO);
+                     $("#hdnOrgUnitFormDocumentId").val(-1);
+                     document.getElementById('frameViewer').contentWindow.location.reload();
+                 }
+                }
+            });
+
+    }
+
+
+
+
+
+
+
+</script>
+<style>
+    .textbox {
+        width: 65vh;
+    }
+
+    .lableFortextbox {
+        width: 15vh;
+    }
+</style>

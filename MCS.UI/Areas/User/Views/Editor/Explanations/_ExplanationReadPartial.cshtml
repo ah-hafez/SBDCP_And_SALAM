@@ -1,0 +1,110 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Framework.Controls.DocumentViewer
+@using MCS.UI.Areas.User.Models.Transaction;
+@model MCS.UI.Areas.User.Models.Transaction.ExplanationVM
+
+<p class="subtitle">@DbRes.TResource("User.Editor.Explanations")</p>
+
+<div class="row enter_old">
+    <div class="enter_list-tags d-flex flex-wrap">
+        @if (ViewData["ExplanationsData"] != null)
+        {
+            List<ExplanationVM> explanations = ViewData["ExplanationsData"] as List<ExplanationVM>;
+
+            foreach (ExplanationVM explanationVM in explanations)
+            {
+                <span class="tag">
+                    <a class=" " data-editable="@explanationVM.CanBeDeleted" data-id="@explanationVM.Id">
+                        <span class="align-self-center">
+                            @explanationVM.FromUser
+                        </span>
+                    </a>
+                </span>
+            }
+        }
+
+    </div>
+</div>
+
+<div id="dvEditorScanning" style="display:none;">
+    <div class="panel-body">
+        <div class="row">
+            <div class="panel-body panel-style panel-body-open">
+                @{
+                    string sessionKey = ViewData["ExplanationDocumentSessionKey"] != null ? ViewData["ExplanationDocumentSessionKey"].ToString() : null;
+                }
+                @Html.DocumentViewer("ExplanationframeViewer", AnnotationsMode.ReadOnly, sessionKey)
+            </div>
+        </div>
+    </div>
+</div>
+<div id="dvText" style="display:none;">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="col-md-12">
+                        @Html.TextAreaFor(model => model.Description, new { id = "txtDescription", @class = "form-control", @rows = "30", style = "background: #FFFA9E;height:120px;", maxlength = "500" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="dvEditorTextEditor" style="display:none;">
+    <div class="panel-body">
+        <div class="row">
+            <div class="panel-group accordion accordion-dc">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <div class="col-md-8">
+                            <div class="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" id="dvExplanationTextEditor">
+                        @Html.Partial("~/Areas/User/Views/Editor/Explanations/_TextEditorPartial.cshtml")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@Html.Hidden("hdnExplanationDocumentSessionKey", ViewData["ExplanationDocumentSessionKey"], new { id = "hdnExplanationDocumentSessionKey" })
+
+<script>
+    $(document).on('click', ".aExplanation", function () {
+
+        var id = $(this).data("id");
+        var sessionKey = $("#hdnExplanationDocumentSessionKey").val();
+
+        $.ajax({
+            type: 'get',
+            url: '@Url.Action("GetExplanationById")',
+            data: { id: id, hdnExplanationDocumentSessionKey: sessionKey },
+            success: function (data) {
+
+                if (data.Type == 1) {
+                    $("#dvExplanationTextEditor").html("");
+                    $("#dvExplanationTextEditor").html(data.Html);
+                    $('#dvEditorTextEditor').show();
+                    $('#dvEditorScanning').hide();
+                    $('#dvText').hide();
+                }
+                if (data.Type == 2) {
+                    document.getElementById('ExplanationframeViewer').contentWindow.location.reload();
+                    $('#dvEditorTextEditor').hide();
+                    $('#dvText').hide();
+                    $('#dvEditorScanning').show();
+                }
+                if (data.Type == 3) {
+                    $("#txtDescription").val(data.Content);
+                    $('#dvText').show();
+                    $('#dvEditorTextEditor').hide();
+                    $('#dvEditorScanning').hide();
+                }
+            }
+        });
+    });
+
+</script>

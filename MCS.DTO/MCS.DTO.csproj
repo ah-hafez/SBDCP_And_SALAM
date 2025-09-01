@@ -1,0 +1,471 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{DC0986F3-608B-43C7-A722-136283073F66}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MCS.DTO</RootNamespace>
+    <AssemblyName>MCS.DTO</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.13.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web.Http">
+      <HintPath>..\Binaries\Common\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Actions\ChangeEntityNameDTO.cs" />
+    <Compile Include="Actions\CheckUsersClearanceDTO.cs" />
+    <Compile Include="Actions\MergeDepartmentsDTO.cs" />
+    <Compile Include="AdminAudit\AdminAuditDetailsDTO.cs" />
+    <Compile Include="AdminAudit\AuditLogDTO.cs" />
+    <Compile Include="Assignment\AssignmentGroupDTO.cs" />
+    <Compile Include="Assignment\SaveAssignmentPaperDTO.cs" />
+    <Compile Include="Audit\ApiAuditLogDto.cs" />
+    <Compile Include="Audit\AuditDetailDTO.cs" />
+    <Compile Include="Audit\AuditDTO.cs" />
+    <Compile Include="Chat\ChatClientDTO.cs" />
+    <Compile Include="Chat\ChatMessageDTO.cs" />
+    <Compile Include="Chat\ChatRoomAllowedUserDTO.cs" />
+    <Compile Include="Chat\ChatRoomDTO.cs" />
+    <Compile Include="Chat\ChatRoomOwnerDTO.cs" />
+    <Compile Include="Chat\ChatRoomUserDTO.cs" />
+    <Compile Include="Chat\ChatUserPreferencesDTO.cs" />
+    <Compile Include="Chat\ConversationDTO.cs" />
+    <Compile Include="Chat\MessagesStatusDTO.cs" />
+    <Compile Include="Chat\Result\MessageResultDTO.cs" />
+    <Compile Include="Chat\Result\MessageStatusResultDTO.cs" />
+    <Compile Include="Chat\Result\RoomInfoResultDTO.cs" />
+    <Compile Include="Documents\DocumentAttributeDTO.cs" />
+    <Compile Include="Escalation\EscalationDTO.cs" />
+    <Compile Include="ExternalParties\ExternalPartyAttachmentDTO.cs" />
+    <Compile Include="AllowedAssignmentDTO.cs" />
+    <Compile Include="Groups\RoleDTO.cs" />
+    <Compile Include="HubTransaction\HubAttachmentDTO.cs" />
+    <Compile Include="HubTransaction\HubRelatedPersonDTO.cs" />
+    <Compile Include="HubTransaction\HubTransactionDTO.cs" />
+    <Compile Include="HubTransaction\DocumentInfoDTO.cs" />
+    <Compile Include="IC\ClassificationDto.cs" />
+    <Compile Include="IC\IC_SUBJECTTransactionDTO.cs" />
+    <Compile Include="IC\IC_SUBJECTDTO.cs" />
+    <Compile Include="Integration\SectionSapDto.cs" />
+    <Compile Include="Integration\OrgunitSapDto.cs" />
+    <Compile Include="Lookups\AttachmentExtensionDTO.cs" />
+    <Compile Include="Lookups\ConfidentialityAcknowledgmentsAddDTO.cs" />
+    <Compile Include="Lookups\ConfidentialityAcknowledgmentsDTO.cs" />
+    <Compile Include="Lookups\ConfidentialityAcknowledgmentsEditDTO.cs" />
+    <Compile Include="Lookups\CityDTO.cs" />
+    <Compile Include="Lookups\ConfidentialityLevelDTO.cs" />
+    <Compile Include="Lookups\FollowUpLookUpAddDTO.cs" />
+    <Compile Include="Lookups\FollowUpLookUpDTO.cs" />
+    <Compile Include="Lookups\FollowUpLookUpEditDTO.cs" />
+    <Compile Include="Lookups\SpecificLevelAddDTO.cs" />
+    <Compile Include="Lookups\SpecificLevelEditDTO.cs" />
+    <Compile Include="Lookups\SpecificLevelListDTO.cs" />
+    <Compile Include="Lookups\SpecificLevelDTO.cs" />
+    <Compile Include="Lookups\SystemDefaultValuesDTO.cs" />
+    <Compile Include="Lookups\PriorityExceptionDTO.cs" />
+    <Compile Include="Lookups\ThemeDTO.cs" />
+    <Compile Include="MobileApi\ArchiveRecord.cs" />
+    <Compile Include="MobileApi\DocumentResult.cs" />
+    <Compile Include="MobileApi\EntityAccomplishmentReportInfo.cs" />
+    <Compile Include="MobileApi\FilterCriteria.cs" />
+    <Compile Include="MobileApi\IncludedItem.cs" />
+    <Compile Include="MobileApi\Lookups\ArchivingType.cs" />
+    <Compile Include="MobileApi\Lookups\AttachConfidentiality.cs" />
+    <Compile Include="MobileApi\Lookups\AttachmentMethod.cs" />
+    <Compile Include="MobileApi\Lookups\AttachmentType.cs" />
+    <Compile Include="MobileApi\Lookups\Confidentiality.cs" />
+    <Compile Include="MobileApi\Lookups\IncludedItemType.cs" />
+    <Compile Include="MobileApi\Lookups\Lookup.cs" />
+    <Compile Include="MobileApi\Lookups\Permission.cs" />
+    <Compile Include="MobileApi\Lookups\PermissionName.cs" />
+    <Compile Include="MobileApi\Lookups\Priority.cs" />
+    <Compile Include="MobileApi\Lookups\RowStatus.cs" />
+    <Compile Include="MobileApi\Lookups\TransactionCategory.cs" />
+    <Compile Include="MobileApi\Lookups\TransactionPartyDirection.cs" />
+    <Compile Include="MobileApi\Lookups\TransactionProcess.cs" />
+    <Compile Include="MobileApi\Lookups\TransactionSource.cs" />
+    <Compile Include="MobileApi\Lookups\TransactionType.cs" />
+    <Compile Include="MobileApi\Lookups\UserEntity.cs" />
+    <Compile Include="MobileApi\PredefinedAssignee.cs" />
+    <Compile Include="MobileApi\SearchCriteria.cs" />
+    <Compile Include="MobileApi\SearchTransactionDTO.cs" />
+    <Compile Include="MobileApi\Setting.cs" />
+    <Compile Include="MobileApi\SignatureData.cs" />
+    <Compile Include="MobileApi\Transaction.cs" />
+    <Compile Include="MobileApi\TransAssign.cs" />
+    <Compile Include="MobileApi\TransAssignBack.cs" />
+    <Compile Include="MobileApi\TransAssignPaper.cs" />
+    <Compile Include="MobileApi\TransAssignTrack.cs" />
+    <Compile Include="MobileApi\TransAssignTrackResult.cs" />
+    <Compile Include="MobileApi\TransData.cs" />
+    <Compile Include="MobileApi\TransLink.cs" />
+    <Compile Include="MobileApi\TransParties.cs" />
+    <Compile Include="MobileApi\TransResult.cs" />
+    <Compile Include="MobileApi\TransStatus.cs" />
+    <Compile Include="MobileApi\Tray.cs" />
+    <Compile Include="MobileApi\UserAccomplishmentReportInfo.cs" />
+    <Compile Include="MobileApi\UserAuthorization.cs" />
+    <Compile Include="MobileApi\UserData.cs" />
+    <Compile Include="MobileApi\UserMobile.cs" />
+    <Compile Include="MobileApi\UserMobileExternalPartyDTO.cs" />
+    <Compile Include="MobileApi\UserMobileOrgUnitDTO.cs" />
+    <Compile Include="MobileApi\UserMobileOrgUnitUsersDTO.cs" />
+    <Compile Include="Notifications\NotifcationDetailsDTO.cs" />
+    <Compile Include="Notifications\NotificationAttachmentDTO.cs" />
+    <Compile Include="OrgUnit\AssignmentPaperGroupDTO.cs" />
+    <Compile Include="OrgUnit\AssignmentPaperProcessDTO.cs" />
+    <Compile Include="Actions\AddActionDTO.cs" />
+    <Compile Include="Actions\ActionDTO.cs" />
+    <Compile Include="Actions\EditActionDTO.cs" />
+    <Compile Include="Assignment\AssignmentGroupDetailDTO.cs" />
+    <Compile Include="Assignment\TransactionAssignmentDTO.cs" />
+    <Compile Include="Assignment\VIPTransactionAssignmentDTO.cs" />
+    <Compile Include="Assignment\UserTransactionsTrayDTO.cs" />
+    <Compile Include="BarcodeDesigner\BarcodeDesignerDTO.cs" />
+    <Compile Include="Collaboration\ChatNotificationsInfoDTO.cs" />
+    <Compile Include="Collaboration\CollaborationUserInfoDTO.cs" />
+    <Compile Include="Collaboration\ConversationDTO.cs" />
+    <Compile Include="ExternalParties\AddressDTO.cs" />
+    <Compile Include="ExternalParties\ExternalPartyAddDTO.cs" />
+    <Compile Include="ExternalParties\ExternalPartyDTO.cs" />
+    <Compile Include="ExternalParties\ExternalPartyEditDTO.cs" />
+    <Compile Include="ExternalParties\ExternalPartyListTypeDTO.cs" />
+    <Compile Include="ExternalParties\ManagerAddDTO.cs" />
+    <Compile Include="ExternalParties\ManagerDTO.cs" />
+    <Compile Include="ExternalParties\ManagerEditDTO.cs" />
+    <Compile Include="File\TransactionAssignmentInfoDTO.cs" />
+    <Compile Include="File\TransactionDetailsInfoDTO.cs" />
+    <Compile Include="File\TransactionsBatchDTO.cs" />
+    <Compile Include="File\TransactionTrayInfoDTO.cs" />
+    <Compile Include="File\TrayDetailsDTO.cs" />
+    <Compile Include="Groups\AddGroupDTO.cs" />
+    <Compile Include="Groups\GroupDTO.cs" />
+    <Compile Include="Groups\EditGroupDTO.cs" />
+    <Compile Include="Lookups\AttachmentTypeAddDTO.cs" />
+    <Compile Include="Lookups\AttachmentTypeDTO.cs" />
+    <Compile Include="Lookups\AttachmentTypeEditDTO.cs" />
+    <Compile Include="Lookups\CultureDTO.cs" />
+    <Compile Include="Lookups\DeletedItemsDTO.cs" />
+    <Compile Include="Lookups\FormAddDTO.cs" />
+    <Compile Include="Lookups\FormDTO.cs" />
+    <Compile Include="Lookups\FormEditDTO.cs" />
+    <Compile Include="Lookups\LetterTypeAddDTO.cs" />
+    <Compile Include="Lookups\LetterTypeDTO.cs" />
+    <Compile Include="Lookups\LetterTypeEditDTO.cs" />
+    <Compile Include="Lookups\LetterTypeListDTO.cs" />
+    <Compile Include="Lookups\LinkAddDTO.cs" />
+    <Compile Include="Lookups\LinkDTO.cs" />
+    <Compile Include="Lookups\LinkEditDTO.cs" />
+    <Compile Include="Lookups\LocalizationDTO.cs" />
+    <Compile Include="Lookups\LocalizationIdentifierDTO.cs" />
+    <Compile Include="Lookups\LookupCategoryDTO.cs" />
+    <Compile Include="Lookups\LookupDTO.cs" />
+    <Compile Include="Lookups\LookupLocalizationDTO.cs" />
+    <Compile Include="Lookups\PriorityAddDTO.cs" />
+    <Compile Include="Lookups\PriorityDTO.cs" />
+    <Compile Include="Lookups\PriorityEditDTO.cs" />
+    <Compile Include="Lookups\SubjectClassificationDTO.cs" />
+    <Compile Include="Lookups\SuggestedTopicDTO.cs" />
+    <Compile Include="Lookups\TransactionFormDTO.cs" />
+    <Compile Include="Lookups\TransactionCategoryDTO.cs" />
+    <Compile Include="Lookups\TransactionTypeAddDTO.cs" />
+    <Compile Include="Lookups\TransactionTypeDTO.cs" />
+    <Compile Include="Lookups\TransactionTypeEditDTO.cs" />
+    <Compile Include="Notifications\NotificationDTO.cs" />
+    <Compile Include="OrgUnit\AssignmentPaperBeneficiaryDTO.cs" />
+    <Compile Include="OrgUnit\AssignmentPaperDTO.cs" />
+    <Compile Include="OrgUnit\CounterAddDTO.cs" />
+    <Compile Include="OrgUnit\CounterDetailDTO.cs" />
+    <Compile Include="OrgUnit\CounterDTO.cs" />
+    <Compile Include="OrgUnit\CounterEditDTO.cs" />
+    <Compile Include="OrgUnit\OrgStructureInfoAddDTO.cs" />
+    <Compile Include="OrgUnit\OrgStructureInfoDTO.cs" />
+    <Compile Include="OrgUnit\OrgStructureInfoEditDTO.cs" />
+    <Compile Include="OrgUnit\OrgUnitDTO.cs" />
+    <Compile Include="OrgUnit\OrgUnitLinkDTO.cs" />
+    <Compile Include="OrgUnit\OrgUnitStructureDesignDTO.cs" />
+    <Compile Include="OrgUnit\OrgUnitUserDTO.cs" />
+    <Compile Include="OrgUnit\TransactionsCountDTO.cs" />
+    <Compile Include="Permission\PermissionDTO.cs" />
+    <Compile Include="Permission\PermissionEditDTO.cs" />
+    <Compile Include="Permission\PermissionGroupDTO.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReleaseNotes\ReleaseNotesDTO.cs" />
+    <Compile Include="Report\BaseReport.cs" />
+    <Compile Include="Report\DashboardDTO.cs" />
+    <Compile Include="Report\DeliveryReportInfoDTO.cs" />
+    <Compile Include="Report\DeliveryReportTransactionInfoDTO.cs" />
+    <Compile Include="Report\PerformanceMeasurementReportResultDTO.cs" />
+    <Compile Include="Report\SearchCriteriaPerformanceMeasurementDTO.cs" />
+    <Compile Include="Report\SearchCriteriaTransactionReportDTO.cs" />
+    <Compile Include="Report\SignedDeliveryReportDTO.cs" />
+    <Compile Include="Report\TransactionDeliveryReportDTO.cs" />
+    <Compile Include="Report\TransactionReportInfoDTO.cs" />
+    <Compile Include="Report\SentTransactionReportResultDTO.cs" />
+    <Compile Include="Report\TaskReportResultDTO.cs" />
+    <Compile Include="Report\FollowupReportResultDTO.cs" />
+    <Compile Include="Report\TransactionReportResultDTO.cs" />
+    <Compile Include="Report\TransactionsDeliveryReportDTO.cs" />
+    <Compile Include="Search\AdvanceSearch\BaseAdvancedSearchDTO.cs" />
+    <Compile Include="Search\AdvanceSearch\OutboundInternalAdvancedDTO.cs" />
+    <Compile Include="Search\AdvanceSearch\InboundAdvancedDTO.cs" />
+    <Compile Include="Search\AdvanceSearch\BarcodeAdvancedDTO.cs" />
+    <Compile Include="Search\AdvanceSearch\OutboundDraftAdvancedDTO.cs" />
+    <Compile Include="Search\AdvanceSearch\SubjectAdvancedDTO.cs" />
+    <Compile Include="Search\AdvanceSearch\OutboundAdvancedDTO.cs" />
+    <Compile Include="Search\SearchCriteria\BaseSearchCriteriaDTO.cs" />
+    <Compile Include="Search\SearchCriteria\SearchCriteriaByAssignTransactionDTO.cs" />
+    <Compile Include="Search\SearchCriteria\SearchCriteriaByAssignmentNoteDTO.cs" />
+    <Compile Include="Search\SearchCriteria\SearchCriteriaByCopyAssignemntDTO.cs" />
+    <Compile Include="Search\SearchCriteria\SearchCriteriaByExternalPartyCopiesDTO.cs" />
+    <Compile Include="Search\SearchCriteria\SearchCriteriaByICDTO.cs" />
+    <Compile Include="Search\SearchCriteria\SearchCriteriaByTransactionNumberDTO.cs" />
+    <Compile Include="Search\SearchCriteria\SearchCriteriaByTransactionNotsDTO.cs" />
+    <Compile Include="Search\SearchCriteria\SearchCriteriaByDailyDTO.cs" />
+    <Compile Include="Search\SearchCriteria\SearchCriteriaByElcEmployeeDTO.cs" />
+    <Compile Include="Search\SearchCriteria\SearchCriteriaByExternalOutBoundOrManifestNumberDTO.cs" />
+    <Compile Include="Search\SearchCriteria\SearchCriteriaByManifestNumberDTO.cs" />
+    <Compile Include="Search\SearchCriteria\SearchCriteriaByMilitaryNumberOrIdentityDTO.cs" />
+    <Compile Include="Search\SearchCriteria\SearchCriteriaByNamesDTO.cs" />
+    <Compile Include="Search\SearchCriteria\SearchCriteriaBySubjectLetterDTO.cs" />
+    <Compile Include="Search\SearchCriteria\SearchCriteriaByCreatorDTO.cs" />
+    <Compile Include="Search\SearchCriteria\SearchCriteriaByRecordNumberDTO.cs" />
+    <Compile Include="Search\SearchCriteria\SearchCriteriaByDocumentNumberDTO.cs" />
+    <Compile Include="Search\SearchCriteria\SearchCriteriaByEntityNameDTO.cs" />
+    <Compile Include="Search\SearchCriteria\SearchCriteriaByOutboundDraftDTO.cs" />
+    <Compile Include="Search\SearchCriteria\SearchCriteriaByOutboundInternalDTO.cs" />
+    <Compile Include="Search\SearchCriteria\SearchCriteriaByInboundDTO.cs" />
+    <Compile Include="Search\SearchCriteria\SearchCriteriaByBarcodeDTO.cs" />
+    <Compile Include="Search\SearchCriteria\SearchCriteriaByOutboundDTO.cs" />
+    <Compile Include="Search\SearchCriteria\SearchCriteriaBySubjectDTO.cs" />
+    <Compile Include="Search\SearchCriteria\SearchCriteriaGeneralDTO.cs" />
+    <Compile Include="Search\SearchResult\ExternalPartyCopiesSearchResultDTO.cs" />
+    <Compile Include="Search\SearchResult\ICSearchResultDTO.cs" />
+    <Compile Include="Search\SearchResult\TransactionNumberSearchResultDTO.cs" />
+    <Compile Include="Search\SearchResult\NamesSearchResultDTO.cs" />
+    <Compile Include="Search\SearchResult\DailySearchResultDTO.cs" />
+    <Compile Include="Search\SearchResult\AssignmentNoteSearchResultDTO.cs" />
+    <Compile Include="Search\SearchResult\ManifestNumberSearchResultDTO.cs" />
+    <Compile Include="Search\SearchResult\MilitaryNumberOrIdentitySearchResultDTO.cs" />
+    <Compile Include="Search\SearchResult\TransactionNotsSearchResultDTO.cs" />
+    <Compile Include="Search\SearchResult\ELcEmployeeSearchResultDTO.cs" />
+    <Compile Include="Search\SearchResult\ExternalOutBoundOrManifestNumberSearchResultDTO.cs" />
+    <Compile Include="Search\SearchResult\CopyAssignemntSearchResultDTO.cs" />
+    <Compile Include="Search\SearchResult\SubjectLetterSearchResultDTO.cs" />
+    <Compile Include="Search\SearchResult\BarcodeSearchResultDTO.cs" />
+    <Compile Include="Search\SearchResult\BaseSearchResultDTO.cs" />
+    <Compile Include="Search\SearchResult\AssignTransactionSearchResultDTO.cs" />
+    <Compile Include="Search\SearchResult\CreatorSearchResultDTO.cs" />
+    <Compile Include="Search\SearchResult\EntitySearchResultDTO.cs" />
+    <Compile Include="Search\SearchResult\InquirySearchResultDTO.cs" />
+    <Compile Include="Search\SearchResult\OutboundInternalSearchResultDTO.cs" />
+    <Compile Include="Search\SearchResult\InboundSearchResultDTO.cs" />
+    <Compile Include="Search\SearchResult\OutboundDraftSearchResultDTO.cs" />
+    <Compile Include="Search\SearchResult\OutboundSearchResultDTO.cs" />
+    <Compile Include="Search\SearchResult\SubjectSearchResultDTO.cs" />
+    <Compile Include="Search\TransactionCertificate\InboundCertificateDTO.cs" />
+    <Compile Include="Search\TransactionCertificate\OutboundCertificateDTO.cs" />
+    <Compile Include="Search\TransactionCertificate\TransactionCertificateDTO.cs" />
+    <Compile Include="Search\TransactionCertificate\TransactionCertificateHistoryDetailsDTO.cs" />
+    <Compile Include="Search\TransactionCertificate\TransactionCertificateHistoryDTO.cs" />
+    <Compile Include="Search\TransactionCertificate\TransactionLinkDTO.cs" />
+    <Compile Include="Shared\ArchivesLibraryDTO.cs" />
+    <Compile Include="Shared\BasicUserDto.cs" />
+    <Compile Include="Shared\DashboardFilterCriteria.cs" />
+    <Compile Include="Shared\DashboardHomeDTO.cs" />
+    <Compile Include="Shared\DashboardHomeReportDTO.cs" />
+    <Compile Include="Shared\DashboardReportBottomDTO.cs" />
+    <Compile Include="Shared\DocumentDTO.cs" />
+    <Compile Include="Shared\ExternalLoginInfoDTO.cs" />
+    <Compile Include="Shared\LoginInfoDTO.cs" />
+    <Compile Include="Shared\OnlineUserDTO.cs" />
+    <Compile Include="Shared\ResetPasswordDTO.cs" />
+    <Compile Include="Shared\SettingDTO.cs" />
+    <Compile Include="Shared\SupportDTO.cs" />
+    <Compile Include="Shared\UserDTO.cs" />
+    <Compile Include="Shared\UserOrgUnitDTO.cs" />
+    <Compile Include="Survey\SurveyAnswerDTO.cs" />
+    <Compile Include="Survey\SurveyNoteDTO.cs" />
+    <Compile Include="Survey\SurveyQuestionDTO.cs" />
+    <Compile Include="Tenants\AddTenantDTO.cs" />
+    <Compile Include="Tenants\ApplicationUserDTO.cs" />
+    <Compile Include="Tenants\AttachmentDTO.cs" />
+    <Compile Include="Tenants\BaseDTO.cs" />
+    <Compile Include="Tenants\TenantCultureDTO.cs" />
+    <Compile Include="Tenants\TenantDTO.cs" />
+    <Compile Include="Tenants\EditTenantDTO.cs" />
+    <Compile Include="Tenants\TenantLocalizationDTO.cs" />
+    <Compile Include="Tenants\TenantLocalizationIdentifierDTO.cs" />
+    <Compile Include="Tenants\TenantLookupDTO.cs" />
+    <Compile Include="Tenants\TenantLookupLocalizationDTO.cs" />
+    <Compile Include="Tenants\TenantNotifcationDetailsDto.cs" />
+    <Compile Include="Tenants\TenantNotificationAttachmentDTO.cs" />
+    <Compile Include="Tenants\TenantNotificationDetailDTO.cs" />
+    <Compile Include="Tenants\TenantNotificationDTO.cs" />
+    <Compile Include="Tenants\TenantNotificationTemplateDTO.cs" />
+    <Compile Include="Tenants\UserTenantDTO.cs" />
+    <Compile Include="Transaction\AttachmentBarcodeDTO.cs" />
+    <Compile Include="Transaction\BarcodeDTO.cs" />
+    <Compile Include="Transaction\BasicInfoBaseDTO.cs" />
+    <Compile Include="Transaction\BasicTransactionDto.cs" />
+    <Compile Include="Transaction\DeliveryReportDTO.cs" />
+    <Compile Include="Transaction\DeliveryReportTransactionDTO.cs" />
+    <Compile Include="Transaction\EditSubjectTransactionDTO.cs" />
+    <Compile Include="Transaction\ExplanationDTO.cs" />
+    <Compile Include="Transaction\FollowUpDetailsDTO.cs" />
+    <Compile Include="Transaction\Inbound\AddInboundDTO.cs" />
+    <Compile Include="Transaction\Inbound\AddInboundBasicInfoDTO.cs" />
+    <Compile Include="Transaction\Inbound\EditInboundBasicInfoDTO.cs" />
+    <Compile Include="Transaction\Inbound\EditInboundDTO.cs" />
+    <Compile Include="Transaction\Inbound\OpenInboundDTO.cs" />
+    <Compile Include="Transaction\Inbound\VipInboundUpdateDto.cs" />
+    <Compile Include="Transaction\OpenOutboundDTO.cs" />
+    <Compile Include="Transaction\Outbound\Draft\AddDraftBasicInfoDTO.cs" />
+    <Compile Include="Transaction\Outbound\Draft\EditDraftBasicInfoDTO.cs" />
+    <Compile Include="Transaction\Outbound\Draft\AddOutboundDraftDTO.cs" />
+    <Compile Include="Transaction\Outbound\Draft\EditOutboundDraftDTO.cs" />
+    <Compile Include="Transaction\Outbound\Draft\VipOutboundDraftDto.cs" />
+    <Compile Include="Transaction\Outbound\External\AddOutboundExternalDTO.cs" />
+    <Compile Include="Transaction\Outbound\External\AddOutboundExternalBasicInfoDTO.cs" />
+    <Compile Include="Transaction\Outbound\External\EditOutboundExternalBasicInfoDTO.cs" />
+    <Compile Include="Transaction\Outbound\External\EditOutboundExternalDTO.cs" />
+    <Compile Include="Transaction\Outbound\Internal\AddOutboundInternalDTO.cs" />
+    <Compile Include="Transaction\Outbound\Internal\AddOutboundInternalBasicInfoDTO.cs" />
+    <Compile Include="Transaction\Outbound\Internal\EditOutboundInternalBasicInfoDTO.cs" />
+    <Compile Include="Transaction\Outbound\Internal\EditOutboundInternalDTO.cs" />
+    <Compile Include="Transaction\Outbound\Internal\VipOutboundInternalDto.cs" />
+    <Compile Include="Transaction\PrintDTO.cs" />
+    <Compile Include="Transaction\ReceivedTaskDTO.cs" />
+    <Compile Include="Transaction\ReporterDTO.cs" />
+    <Compile Include="Transaction\SentTaskDTO.cs" />
+    <Compile Include="Transaction\SubTaskAddDTO.cs" />
+    <Compile Include="Transaction\TaskAttachmentsDTO.cs" />
+    <Compile Include="Transaction\TaskLightDTO.cs" />
+    <Compile Include="Transaction\TaskProcessDTO.cs" />
+    <Compile Include="Transaction\TaskAddDTO.cs" />
+    <Compile Include="Transaction\TaskReminderDTO.cs" />
+    <Compile Include="Transaction\TaskStatusDTO.cs" />
+    <Compile Include="Transaction\TaskWorkflowDTO.cs" />
+    <Compile Include="Transaction\TransactionAddressDTO.cs" />
+    <Compile Include="Transaction\TransactionArchiveDTO.cs" />
+    <Compile Include="Transaction\TransactionAttachmentDTO.cs" />
+    <Compile Include="Transaction\TransactionBarcodeInfoDTO.cs" />
+    <Compile Include="Transaction\TransactionBarcodesDTO.cs" />
+    <Compile Include="Transaction\TransactionBasicinfoDTO.cs" />
+    <Compile Include="Transaction\TransactionCopyDTO.cs" />
+    <Compile Include="Transaction\TransactionDetailsDTO.cs" />
+    <Compile Include="Transaction\FollowUpAuditTrailDTO.cs" />
+    <Compile Include="Transaction\TransactionElcOutBoundDTO.cs" />
+    <Compile Include="Transaction\TransactionEncryptionCodeDTO.cs" />
+    <Compile Include="Transaction\TransactionPrintDTO.cs" />
+    <Compile Include="Transaction\TransactionDTO.cs" />
+    <Compile Include="Transaction\TransactionDtoBinder.cs" />
+    <Compile Include="Transaction\TransactionEditDTO.cs" />
+    <Compile Include="Transaction\TransactionExternalCopyDTO.cs" />
+    <Compile Include="Transaction\TransactionFollowUpDTO.cs" />
+    <Compile Include="Transaction\TransactionHistoryDTO.cs" />
+    <Compile Include="Transaction\TransactionLightDTO.cs" />
+    <Compile Include="Transaction\TransactionLinkDTO.cs" />
+    <Compile Include="Transaction\TransactionLogDetailInfoDTO.cs" />
+    <Compile Include="Transaction\TransactionLogInfoDTO.cs" />
+    <Compile Include="Transaction\TransactionNameDTO.cs" />
+    <Compile Include="Transaction\TransactionPathDetailsDTO.cs" />
+    <Compile Include="Transaction\TransactionPathDTO.cs" />
+    <Compile Include="Transaction\TransactionReservationDTO.cs" />
+    <Compile Include="Transaction\TransactionSubTaskDTO.cs" />
+    <Compile Include="Transaction\TransactionTaskDTO.cs" />
+    <Compile Include="Transaction\TransactionTicketDTO.cs" />
+    <Compile Include="Transaction\TransactionTicketInfoDTO.cs" />
+    <Compile Include="Transaction\TransactionVisitTicketDTO.cs" />
+    <Compile Include="Transaction\VIP\Assignment\VIPTransactionAssignmentDto.cs" />
+    <Compile Include="Transaction\VIP\VipBasicTransactionInfoDto.cs" />
+    <Compile Include="Transaction\VIP\Followup\BaseFollowupDto.cs" />
+    <Compile Include="Transaction\VIP\Followup\PrivateFollowupDto.cs" />
+    <Compile Include="Transaction\VIP\Followup\PublicFollowupDto.cs" />
+    <Compile Include="Tray\TrayDTO.cs" />
+    <Compile Include="Tray\EditTrayDTO.cs" />
+    <Compile Include="UserCategories\AddUserCategoryDTO.cs" />
+    <Compile Include="UserCategories\UserCategoryDTO.cs" />
+    <Compile Include="UserCategories\EditUserCategoryDTO.cs" />
+    <Compile Include="UserCategories\UserCategoryTrayDTO.cs" />
+    <Compile Include="UserCategories\EditUserCategoryTrayDTO.cs" />
+    <Compile Include="UserManagement\AddUserProfileDTO.cs" />
+    <Compile Include="UserManagement\UserGroupDTO.cs" />
+    <Compile Include="UserManagement\UserProfileDTO.cs" />
+    <Compile Include="UserManagement\EditUserProfileDTO.cs" />
+    <Compile Include="UserPreferences\CredentialDTO.cs" />
+    <Compile Include="UserPreferences\DistributionListDetailsDTO.cs" />
+    <Compile Include="UserPreferences\DistributionListDTO.cs" />
+    <Compile Include="UserPreferences\NotificationSubscriptionDTO.cs" />
+    <Compile Include="UserPreferences\UserDelegation\AddUserDelegationDTO.cs" />
+    <Compile Include="UserPreferences\UserDelegation\EditUserDelegationDTO.cs" />
+    <Compile Include="UserPreferences\UserDelegation\UserDelegationtDTO.cs" />
+    <Compile Include="UserPreferences\UserPreferenceDTO.cs" />
+    <Compile Include="UserPreferences\UserSignContentDto.cs" />
+    <Compile Include="UserPreferences\UserTrayPreferencesDTO.cs" />
+    <Compile Include="UserPendingGroup\UserPendingGroupDTO.cs" />
+    <Compile Include="UserProfile\ChangePasswordDTO.cs" />
+    <Compile Include="UserProfile\UpdateUserProfileDto.cs" />
+    <Compile Include="Word-Add-in\WordAddinDocumentDTO.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MCS.FRAMEWORK\MCS.Framework.csproj">
+      <Project>{5B5B0B7B-1A75-4A12-9CEA-5B527AF8B6E5}</Project>
+      <Name>MCS.Framework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MCS.Common\MCS.Common.csproj">
+      <Project>{dd463041-b635-4b24-b3e1-0a942ab358e0}</Project>
+      <Name>MCS.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

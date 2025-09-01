@@ -1,0 +1,82 @@
+﻿@model List<TransactionCertificateLinkVM>
+@using MCS.UI.Areas.User.Models.Search.TransactionCertificate
+@using MCS.UI.Helpers
+
+
+
+@{
+    string GUID = Guid.NewGuid().ToString();
+}
+
+
+<div id="dvCerLinks" class="tabscontent">
+    <ul class="nav nav-tabs custom-sub-nav-tabs mb-3" role="tablist">
+        @Html.StickyHidden("hdnGUID", GUID, new { @class = "hdnGUID" })
+        <li role="presentation" class="active ml-3">
+            <a href="@("#" + GUID + "_sub-tab-1")" aria-controls="@(GUID + "_sub-tab-1")" role="tab" data-toggle="tab">
+                @DbRes.TResource("User.Audit.TransactionLog.CurrentLinks")
+            </a>
+        </li>
+        <li role="presentation" class="hidden_">
+            <a href="@("#" + GUID + "_sub-tab-2")" aria-controls="@(GUID + "_sub-tab-2")" role="tab" data-toggle="tab">
+                @DbRes.TResource("User.Audit.TransactionLog.Edits")
+            </a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="@(GUID + "_sub-tab-1")">
+            <div class="row linking_transactions ml-5">
+
+                @helper DrawLinks(List<TransactionCertificateLinkVM> links)
+                {
+if (links == null || links.Count > 0)
+{
+    return;
+}
+for (int i = 0; i < links.Count; i++)
+{
+     
+
+                        <div class="group_linking margin-right fx_linking">
+                            <a href="" onclick="ShowTransactionCertificate(@links[i].Transaction.Id, '@links[i].Transaction.TransactionCategory'); return false;">
+                                <span class="fa fa-link"></span>
+                                <span class="">@links[i].Transaction.Number</span>
+                                <span class="">@links[i].Transaction.Source</span>
+                                <span class="">
+                                    @DateHelper.GetDate(links[i].Transaction.HijriDate)
+                                </span>
+
+                                <span class="">@links[i].Transaction.Date.ToShortTimeString()</span>
+                            </a>
+                            @DrawLinks(links[i].Transaction.Links)
+                        </div>
+                    }
+                }
+
+                @for (int i = 0; i < Model.Count; i++)
+                {
+
+                    <div class="group_linking fx_linking">
+                        <a href="" onclick="ShowTransactionCertificate(@Model[i].Transaction.Id, '@Model[i].Transaction.TransactionCategory'); return false;">
+                            <span class="fa fa-link"></span>
+                            <span class="">@Model[i].Transaction.Number</span>
+                            <span class="">@Model[i].Transaction.Source</span>
+                            <span class="">
+                                @DateHelper.GetDate(Model[i].Transaction.HijriDate)
+                            </span>
+                            <span class="">@Model[i].Transaction.Date.ToShortTimeString()</span>
+                        </a>
+
+                        @DrawLinks(Model[i].Transaction.Links)
+                    </div>
+                }
+            </div>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="@(GUID + "_sub-tab-2")">
+            <div id="Audits">
+                @Html.Partial("~/Areas/User/Views/Shared/TransactionCertificate/_TransationAuditPartial.cshtml", ViewData["TransactionAudits"])
+            </div>
+        </div>
+
+    </div>
+</div>

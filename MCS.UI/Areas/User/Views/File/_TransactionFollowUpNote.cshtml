@@ -1,0 +1,50 @@
+﻿@model List<FollowUpDetailsVM>
+@using MCS.Common
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Transaction
+
+@{
+    Layout = null;
+}
+
+<style>
+    .FollowUpDetailsContainer {
+        max-height: 300px;
+        overflow-x: hidden;
+        overflow-y: scroll;
+    }
+</style>
+<div class="row">
+    ملاحظات   @Model.FirstOrDefault().UserName 
+    <div class="col-md-12 FollowUpDetailsContainer">
+        <table class="table table-bordered table-striped mt-3">
+            <thead>
+                <tr>
+
+                    <th>
+                        تاريخ الملاحظة
+
+                    </th>
+                    <th>
+                        الملاحظة
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (FollowUpDetailsVM item in Model)
+                {
+                    <tr>
+
+                        <td> @item.CreatedOn </td>
+                        <td style=" word-break: break-word;"> @item.Notes </td>
+
+
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+
+</div>
+

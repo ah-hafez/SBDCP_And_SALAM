@@ -1,0 +1,54 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.Lookups
+@using MCS.GridMvc.Helpers;
+@using MCS.GridMvc.Html;
+@using MCS.Common;
+
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<PriorityExceptionVM>
+@{
+    ViewBag.Title = "_PriorityExceptionGridPartial";
+}
+
+
+@Html.Grid(Model).Named("PriorityException").Columns(columns =>
+{
+    columns.Add(model => model.Id).Titled(DbRes.TResource("Admin.Priority.Id")).Css("hidden_");
+    columns.Add(model => model.OrgUnitName, "OrgUnitName").Titled(DbRes.TResource("Admin.Lookups.PriorityExceptions.OrgUnit"));
+    columns.Add(model => model.UserName, "UserName").Titled(DbRes.TResource("Admin.Lookups.PriorityExceptions.UserName"));
+    columns.Add().Encoded(false).Sanitized(false).Css("").RenderValueAs(model =>
+   MvcHtmlString.Create(model.LateOnUsersAfter + "&nbsp;" + DbRes.TResource("Admin.Lookups.Priority.Days"))).Titled(DbRes.TResource("Admin.Lookups.PriorityExceptions.ConsideredAsLate")); ;
+    //columns.Add(model => model.LateOnUsersAfter, "LateOnUsersAfter").Titled(DbRes.TResource("Admin.PriorityException.LateAfter"));
+    columns.Add().Encoded(false).Sanitized(false).Css("").RenderValueAs(model =>
+     MvcHtmlString.Create(
+     "<div class='table-icon d-flex align-items-center'>" +
+         @Html.ClientLinkTag(text: "", cssClass: "color-green", title: DbRes.TResource("Grid.Edit"), clientFunctionToCall: "GetPriorityExceptionFromGrid(" + model.Key + "," + model.OrgUnitId + ")", innerHtml: "<i class='icon-tables-edit'></i></i>")  +
+         @Html.ClientLinkTag(text: "", cssClass: "color-burgundy", title: DbRes.TResource("Grid.Delete"), clientFunctionToCall: "ShowCustomConfirmationMessage('" + DbRes.TResource("Admin.Lookups.PriorityExceptions.ConfirmDelete") + "','DeletePriorityException','" + model.Id + "','" + model.PriorityId + "')", innerHtml: "<i class='icon-tables-delete'></i></i>")  +
+     "</div>"));
+
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Id, new { id = "Id_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.OrgUnitId, new { id = "OrgUnitId_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.UserId, new { id = "UserId_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.UserName, new { id = "UserName_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.LateOnUsersAfter, new { id = "LateOnUsersAfter_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+
+}).WithPaging(GridHelper.PageSize)
+
+<script>
+    var extraParams = { priorityId: $("#priorityIdForPriorityException").val() };
+    var token = $("#token input[name='__RequestVerificationToken']").val()
+    var myPriorityExceptionGridEventHandler = "@Url.Action("UpdatePriorityExceptionGrid", "Lookups")?__RequestVerificationToken=" + token;
+    function preparePriorityExceptionReportGrid() {
+            $(".grid-mvc").gridmvc();
+        pageGrids.PriorityException.ajaxify({
+            getPagedData: myPriorityExceptionGridEventHandler,
+            requestType: "get",
+            getData: myPriorityExceptionGridEventHandler,
+            optionalData: extraParams
+            });
+        }
+
+        $(document).ready(function () {
+            preparePriorityExceptionReportGrid();
+        });
+</script>
+

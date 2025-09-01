@@ -1,0 +1,30 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Framework.Controls.Mvc
+
+@model AjaxGrid<MCS.UI.Areas.Admin.Models.OrgUnit.OrgUnitUserVM>
+
+@{
+    Layout = null;
+    string url = Url.Action("UpdateGridOrgUnitUser", "OrgUnitStructure", new { orgUnitKey = ViewData["orgUnitKey"].ToString() });
+}
+
+@Html.Grid(Model, "_Grid").Named("grdOrgUnitUsers").Columns(columns =>
+    {
+        columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").Titled("", "<input type='checkbox' id='chkall'></input>")
+                                                  .RenderValueAs(o =>
+                                                    @<div class="chkCol" id="spanCheckBox">
+                                                        <input id="AssigneeSelectorcheckbox" type="checkbox" />
+                                                    </div>);
+
+            columns.Add(model => model.Id, true);
+            columns.Add(model => model.UserName).Titled(DbRes.TResource("Admin.UserSearch.UserName"));
+            columns.Add().Encoded(false).Sanitized(false).Css("hidden_").RenderValueAs(model => @Html.Hidden("departmentsStructureGrid", null, new { id = "hdnDepartmentsStructureGrid" }));
+            columns.Add().Encoded(false).Sanitized(false).Css("hidden_").RenderValueAs(model => @Html.Hidden("orgUnitKeyGrid", null, new { id = "hdnOrgUnitKeyGrid" }));
+            columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => @Html.ConfirmImageButton("DeleteOrgUnitUsers", "grdOrgUnitUsers", 1, "dvOrgUnitUsersGrid", "dvOrgUnitUsersGrid :input", null, "DeleteUser", "Post")).SetWidth("25%");
+            columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => @Html.ClientLinkTag("", "", "", "", DbRes.TResource("Grid.Edit"), "OpenEditUserProfile(" + model.Id + ")")).SetWidth("25%");
+        }).WithPaging(GridHelper.PageSize).Sortable().Filterable().WithMultipleFilters().UpdateActionUrl(url).RenderDeleteButton("DeleteOrgUnitUsers", 1, "dvOrgUnitUsersGrid :input", "dvOrgUnitUsersGrid", "DeleteUser")
+
+<script>
+    $('#hdnDepartmentsStructureGrid').val($('#hdnSaveDepartmentsData').val());
+    $('#hdnOrgUnitKeyGrid').val($('#hdnOrgUnitKey').val());
+</script>

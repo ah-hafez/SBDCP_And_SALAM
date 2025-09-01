@@ -1,0 +1,200 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.Lookups
+@using MCS.GridMvc.Ajax.GridExtensions
+@model PriorityEditVM
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = DbRes.TResource("Admin.Lookups.Priority.Edit");
+}
+<div class="app-content">
+    <div class="mx-3 mx-md-5 header-container d-flex flex-row align-items-center">
+        <div class="d-flex flex-column flex-lg-row align-items-lg-center flex-grow-1 mb-3 mb-lg-0">
+            <h3 class="site-color mb-2 mb-lg-4">@DbRes.TResource("Admin.Lookups.Priority.Edit")</h3>
+            <div class="ml-lg-auto d-flex flex-column flex-md-row">
+                <div></div>
+            </div>
+        </div>
+        <div class="close-icon pl-2 mt-0 ml-auto">
+            <a class="circle-icon color-white" href='@Url.Action("Priority" , "Lookups")' data-bs-toggle="tooltip" data-placement="bottom" title="إغلاق"><i class="la la-close"></i></a>
+        </div>
+    </div>
+
+    <div class="white-container mx-3 mx-md-5">
+
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmEditPriority" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="form-row">
+                <div class="form-group col-lg-4 col-md-6 col-sm-6 col-xs-12 ">
+                    @Html.Label(DbRes.TResource("Admin.Proirity.Name.ar"))
+                    <span class="d-block">@Model.Description[0].Text</span>
+                </div>
+                <div class="form-group col-lg-4 col-md-6 col-sm-6 col-xs-12 ">
+                    @Html.Label(DbRes.TResource("Admin.Proirity.Name.en"))
+                    <span class="d-block">@Model.Description[1].Text</span>
+                </div>
+                <div class="form-group col-lg-4 col-md-6 col-sm-6 col-xs-12">
+                    @Html.Label(DbRes.TResource("Admin.Lookups.Priority.PriorityOrder"))
+                    <span class="d-block">@Model.Sort</span>
+                </div>
+                <div class="clearfix w-100"></div>
+                <div class="form-group col-lg-4 col-md-6  col-sm-6 col-xs-12">
+                    @Html.Label(DbRes.TResource("Admin.Lookups.Priority.LateOnEntityAfter"))
+                    <div class="input-group">
+                        @Html.NumericTextBoxFor(model => model.LateForEntity, htmlAttributes: new { id = "LateForEntity", @class = "form-control number-field" })
+                        <div class="input-group-prepend bg-none">
+                            <div class="input-group-text">@DbRes.TResource("Admin.Lookups.Priority.Days")</div>
+                        </div>
+                    </div>
+                    <small class="form-text text-muted hidden_" id="lblLateForEntity" style="color:red">@DbRes.TValidation("Admin.Lookups.Priority.ProcessingPeriod")</small>
+                </div>
+
+                <div class="form-group col-lg-4 col-md-6  col-sm-6 col-xs-12">
+                    @Html.Label(DbRes.TResource("Admin.Lookups.Priority.LateOnUserAfter"))
+                    <div class="input-group">
+                        @Html.NumericTextBoxFor(model => model.LateForUser, htmlAttributes: new { id = "LateForUser", @class = "form-control number-field" })
+                        <div class="input-group-prepend bg-none">
+                            <div class="input-group-text">@DbRes.TResource("Admin.Lookups.Priority.Days")</div>
+                        </div>
+                    </div>
+                    <small class="form-text text-muted hidden_" id="lblLateForUser" style="color:red">@DbRes.TValidation("Admin.Lookups.Priority.ProcessingPeriod")</small>
+                </div>
+            <div class="form-group col-lg-4 col-md-6  col-sm-6 col-xs-12">
+                    @Html.Label(DbRes.TResource("Admin.Lookups.Priority.ProcessPeriod"))
+                    <div class="input-group">
+                        @Html.NumericTextBoxFor(model => model.ProcessPeriod, htmlAttributes: new { id = "ProcessPeriod", @class = "form-control number-field" })
+                        <div class="input-group-prepend bg-none">
+                            <div class="input-group-text">@DbRes.TResource("Admin.Lookups.Priority.Days")</div>
+                        </div>
+                    </div>
+                    @*<small class="form-text text-muted hidden_" id="lblLateForUser" style="color:red">@DbRes.TValidation("Admin.Lookups.Priority.ProcessingPeriod")</small>*@
+                </div>
+            </div>
+            @Html.StickyHiddenFor(model => model.Id, new { id = "priorityId" })
+        }
+        <hr>
+        @Html.Partial("~/Areas/Admin/Views/Lookups/_PriorityExceptionPartial.cshtml", new PriorityExceptionVM())
+        <hr class="mb-4">
+        <div id="dvPriorityExceptionGrid">
+            <div class="w-100 d-flex align-items-center mt-2 mb-2">
+                <h3 class="white-c-title">@DbRes.TResource("Admin.Lookup.Grid.PriorityException")</h3>
+                <span class="roundedred ml-3">@(((AjaxGrid<PriorityExceptionVM>)Model.PriorityExceptions).ItemsCount)</span>
+                <span class="pl-2 gray4">@DbRes.TResource("Admin.Grid.Records")</span>
+            </div>
+            @Html.Partial("~/Areas/Admin/Views/Lookups/_PriorityExceptionGridPartial.cshtml", Model.PriorityExceptions)
+        </div>
+    </div>
+    <div class="mx-5 mb-4 d-flex">
+        @Html.ActionButton(DbRes.TResource("Admin.Lookups.Priority.Save"),Url.Action("EditPriorityDetails", "Lookups"),"", null,"", "onSavePrioritySuccess", "","Post",
+           null, "btnSavePriority", "frmEditPriority", "btn btn-lg btn-st3 ml-auto", "CheckPeriodValidity")
+    </div>
+</div>
+
+<script>
+    function CheckPeriodValidity() {
+        var LateForEntity = $("#LateForEntity").val();
+        var LateForUser = $("#LateForUser").val();
+        var errorCount = 0;
+
+        if (LateForEntity == "" || LateForEntity > 500 || LateForEntity < 0) {
+            $("#lblLateForEntity").removeClass("hidden_");
+            errorCount++;
+        }
+        if (LateForUser == "" || LateForUser > 500 || LateForUser < 0) {
+            $("#lblLateForUser").removeClass("hidden_");
+            errorCount++;
+        }
+        if (errorCount != 0) {
+            return false;
+        }
+        $("#lblLateForEntity").addClass("hidden_");
+        $("#lblLateForUser").addClass("hidden_");
+        return true;
+    }
+
+    function onSavePrioritySuccess(data) {
+        if (data.MessageType != 2) {
+            ShowInformationMessage(data.MessageText);
+        } else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+    function GetPriorityExceptionFromGrid(key,OrgId) {
+        var priorityExceptionId = $("#Id_" + key).val();
+        var OrgUnitId = $("#OrgUnitId_" + key).val();
+        var UserId = $("#UserId_" + key).val();
+        var UserName = $("#UserName_" + key).val();
+        var LateOnUsersAfter = $("#LateOnUsersAfter_" + key).val();
+        //var priorityId = $("#priorityId").val();
+        SetTreeDefaultInfo("frmAddForm",OrgId);
+        //FillOrgUnitsTreeControls('frmAddForm', OrgUnitId);
+        //$(".txtDepartmentNumber").trigger("keyup");
+        $("#LateOnUsersAfter").val(LateOnUsersAfter);
+        $("#priorityExceptionId").val(priorityExceptionId);
+        $("#ddlUserId").val(UserName);
+        $("#hdnUserId").val(UserId);
+        $("#ddlUserId").prop('disabled', false);
+        var token = $('#frmPriorityException').find("input[name='__RequestVerificationToken']").val();
+        $.ajax({
+            type: 'post',
+            url: '@Url.Action("GetUsersByOrgUnitId","Actions")',
+            data: { id: OrgUnitId, __RequestVerificationToken: token },
+            success: function (data) {
+                AutoCompleteChangeList("ddlUserId", data);
+                $("#ddlUserId").trigger('change');
+                $("#hdnUserId").trigger('change');
+                $("#ddlUserId").prop('disabled', false);
+            },
+            error: function (jqXHR) {
+
+            }
+        });
+
+        $("#btnAddPriorityException").addClass("hidden_");
+        $("#btnEditPriorityException").removeClass("hidden_");
+        $("#aCancelPriorityException").removeClass("hidden_");
+    }
+
+    function DeletePriorityException(id, priorityId) {
+         var token = $('#frmPriorityException').find("input[name='__RequestVerificationToken']").val();
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("DeletePriorityException", "Lookups")',
+                data: { priorityExceptionId: id, priorityId: priorityId, __RequestVerificationToken: token },
+                success: function (data) {
+                    if (data.MessageType != 2) {
+                        $("#dvPriorityExceptionGrid").html("");
+                        $("#dvPriorityExceptionGrid").html(data.Html);
+                        ClearInputs("frmPriorityException");
+                        ShowInformationMessage(data.MessageText);
+                    } else {
+                        ShowErrorMessage(data.MessageText);
+                    }
+                },
+                error: function (jqXHR) {
+
+                }
+            });
+    }
+    function onAddPriorityExceptionSuccess(data) {
+        if (data.MessageType != 2) {
+            $("#dvPriorityExceptionGrid").html("");
+            $("#dvPriorityExceptionGrid").html(data.Html);
+            ClearInputs("frmPriorityException");
+            ShowInformationMessage(data.MessageText);
+        } else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+    function onEditPriorityExceptionSuccess(data) {
+        if (data.MessageType != 2) {
+            $("#dvPriorityExceptionGrid").html("");
+            $("#dvPriorityExceptionGrid").html(data.Html);
+            CancelPriorityExceptionEdit();
+            ShowInformationMessage(data.MessageText);
+        } else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+</script>

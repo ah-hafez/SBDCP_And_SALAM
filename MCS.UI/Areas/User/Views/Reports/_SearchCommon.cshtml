@@ -1,0 +1,122 @@
+﻿@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.Framework.Localization;
+@using MCS.UI.Areas.User.Models.Report;
+@model CommonVM
+@{
+    Html.ViewData.TemplateInfo.HtmlFieldPrefix = "CommonVM";
+}
+<style>
+    .border_top_input {
+        margin-top: -20px;
+    }
+</style>
+<div id="hidden_fields_one" style="display: none;">
+    <h3 class="site-color sub-title ml-3">@DbRes.TResource("User.Transaction.Search.Common")</h3>
+    <div>
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+            @Html.LabelFor(model => model.TransactionTypeId, new { @class = "w-100" })
+            @Html.AutoCompleteBuilder("ddlTransactionSourceType", "hdnTransactionSourceType", ViewData["TransactionTypesData"].ToString(), Model.TransactionTypeId.ToString(), true,
+           "form-control", "", "", "", false)
+            @Html.HiddenGroupFor(model => model.TransactionTypeId, new { id = "hdnTransactionSourceType" }, "BasicInformation")
+        </div>
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+            @Html.LabelFor(model => model.ConfidentialityLevelId, new { @class = "w-100" })
+            @Html.AutoCompleteBuilder("ddlConfedentiality", "hdnConfedentiality", ViewData["ConfidentialityData"].ToString(), Model != null ? Model.ConfidentialityLevelId.ToString() : null, true, "form-control select2 trans-input", "", "", "", false)
+            @Html.HiddenGroupFor(model => model.ConfidentialityLevelId, new { @Value = "", id = "hdnConfedentiality" }, "BasicInformation")
+        </div>
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+            @Html.LabelFor(model => model.PriorityLevelId, new { @class = "w-100" })
+            @Html.AutoCompleteBuilder("ddlPriorityLevel", "hdnPriorityLevel", ViewData["PrioritiesData"].ToString(), Model != null ? Model.PriorityLevelId.ToString() : null, true, "form-control", "hdnPriorityHasDate", "", "", false)
+            @Html.HiddenFor(a => a.PriorityLevelId, new { id = "hdnPriorityLevel" })
+        </div>
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+            @Html.LabelFor(model => model.LetterTypeId, new { @class = "w-100" })
+            @Html.AutoCompleteBuilder("ddlOutboundExternalDocumentType", "hdnOutboundExternalDocumentType", ViewData["LetterTypeData"].ToString(), Model != null ? Model.LetterTypeId.ToString() : null, true, "form-control")
+            @Html.HiddenFor(model => model.LetterTypeId, new { id = "hdnOutboundExternalDocumentType" })
+        </div>
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+            @Html.LabelFor(model => model.ReceiveId, new { @class = " w-100" })
+            @Html.AutoCompleteBuilder("ddlReceiveMethod", "hdnReceiveId", ViewData["DeliveryMethod"].ToString(), Model != null ? Model.ReceiveId.ToString() : null, true, "form-control")
+            @Html.HiddenFor(model => model.ReceiveId, new { id = "hdnReceiveId" })
+        </div>
+
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+            @Html.LabelFor(model => model.TransactionStatusId, new { @class = "w-100" })
+            @Html.AutoCompleteBuilder("ddlTransactionStatus", "hdnTransactionStatus", ViewData["TransactionStatus"].ToString(), Model.TransactionStatusId.ToString(), true,
+           "form-control", "", "", "", false)
+            @Html.HiddenGroupFor(model => model.TransactionStatusId, new { id = "hdnTransactionStatus" }, "BasicInformation")
+        </div>
+
+        @*<div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+            <div>
+                <label class="check">
+                    <div class="checkbox">
+                        <label>
+                            <input id="IsAppointment" type="checkbox" value="">
+                            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                        </label>
+                        @Html.LabelFor(model => model.IsAppointment, new { @class = "dark-color p-0" })
+                    </div>
+                </label>
+                @Html.Hidden("IsAppointment")
+            </div>
+            <div id="AppointmentDateContent" style="display:none;" class="with-icon">
+                @Html.Hidden("hdnAppointmentDateHDateUm", "", new { id = "hdnAppointmentDateHDateUm" })
+                @Html.Calendar("AppointmentDateCal", "hdnAppointmentDateGreg", "hdnAppointmentDateHDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+                <a href="javascript:void(0)" class="date-icon date-icon1"><i class="uicon icon_calendar"></i></a>
+                @Html.HiddenGroupFor(model => model.AppointmentDate, new { id = "hdnAppointmentDateGreg" })
+                <i id="AppointmentDateIcon" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                <span id="AppointmentDateMessage" style="color:red"></span>
+            </div>
+        </div>*@
+
+
+
+        <div class="form-group col-sm-6 col-xs-12 mb-3">
+
+            <label class="w-100">@DbRes.TResource("User.OutboundInternal.BasicInfo.Remarks") </label>
+            @Html.TextAreaGroupFor(model => model.Remarks, new { @class = "form-control long-textarea2" })
+        </div>
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+            <div>
+                <label class="check">
+                    <div class="checkbox">
+                        <label>
+                            <input id="IsAppointment" type="checkbox" value="">
+                            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                        </label>
+                        @Html.LabelFor(model => model.IsAppointment, new { @class = "dark-color p-0" })
+                    </div>
+                </label>
+                @Html.Hidden("IsAppointment")
+            </div>
+            <div id="AppointmentDateContent" style="display:none;" class="with-icon">
+                @Html.Hidden("hdnAppointmentDateHDateUm", "", new { id = "hdnAppointmentDateHDateUm" })
+                @Html.Calendar("AppointmentDateCal", "hdnAppointmentDateGreg", "hdnAppointmentDateHDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+                <a href="javascript:void(0)" class="date-icon date-icon1"><img src="~/Content/User/lib/images/SystemIcon/main bar-08.svg" width="30" /></a>
+                @Html.HiddenGroupFor(model => model.AppointmentDate, new { id = "hdnAppointmentDateGreg" })
+                <i id="AppointmentDateIcon" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                <span id="AppointmentDateMessage" style="color:red"></span>
+            </div>
+        </div>
+    </div>
+</div>
+<hr />
+<script>
+    $(document).ready(function () {
+        $('#AppointmentDateCal').attr('autocomplete', 'off');
+        $('#IsAppointment').off().on("change", onChangeAppointment);
+    });
+    function onChangeAppointment() {
+        $('#CommonVM_IsAppointment').val($('#IsAppointment').is(":checked"));
+        if ($('#IsAppointment').is(":checked")) {
+            $('#AppointmentDateContent').show();
+        }
+        else {
+            $('#AppointmentDateContent').hide();
+        }
+
+        ClearInputs("AppointmentDateContent");
+    }
+</script>

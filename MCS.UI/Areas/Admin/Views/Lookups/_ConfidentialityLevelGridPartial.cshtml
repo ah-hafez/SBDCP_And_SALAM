@@ -1,0 +1,36 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.Lookups
+@using MCS.GridMvc.Helpers;
+@using MCS.GridMvc.Html;
+@using MCS.Common;
+
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<ConfidentialityLevelVM>
+@{
+    ViewBag.Title = "_ConfidentialityLevelGridPartial";
+}
+
+@Html.Grid(Model).Named("ConfidentialityLevel").Columns(columns =>
+{
+    columns.Add(model => model.Id).Css("hidden_");
+    columns.Add(model => model.LocalizationVMs[0].Text, "ConfidentialityLevelNameAr").Titled(DbRes.TResource("Admin.Lookups.ConfidentialityLevel.Name.ar"));
+    columns.Add(model => model.LocalizationVMs[1].Text, "ConfidentialityLevelNameEn").Titled(DbRes.TResource("Admin.Lookups.ConfidentialityLevel.Name.en"));
+
+}).WithPaging(GridHelper.PageSize)
+
+<script>
+    var token = $("#token input[name='__RequestVerificationToken']").val()
+    var ConfidentialityLevelGridEventHandler = "@Url.Action("UpdateConfidentialityLevel", "Lookups")?__RequestVerificationToken=" + token;
+    function prepareConfidentialityLevelGrid() {
+            $(".grid-mvc").gridmvc();
+        pageGrids.ConfidentialityLevel.ajaxify({
+            getPagedData: ConfidentialityLevelGridEventHandler,
+                requestType: "GET",
+            getData: ConfidentialityLevelGridEventHandler
+            });
+        }
+
+        $(document).ready(function () {
+            prepareConfidentialityLevelGrid();
+        });
+</script>
+

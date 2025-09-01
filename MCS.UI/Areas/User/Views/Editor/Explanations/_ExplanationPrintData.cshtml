@@ -1,0 +1,42 @@
+﻿@model MCS.UI.Areas.User.Models.Transaction.ExplanationVM
+@using MCS.UI.Areas.User.Models.Transaction;
+@{
+    Layout = "~/Views/Shared/_EmptyLayout.cshtml";
+
+}
+<div>
+    <div id="PrintArea">
+
+                <div class="row ">
+                    <div class="col-md-12">
+                        <div class="col-lg-3 col-md-3 col-sm-3 mb-3">
+                            <label class="w-100">
+                                @DbRes.TResource("User.Explanation.ExplanationNumber") : 
+                            </label>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 mb-3">
+                            <label class="w-100">
+                                @DbRes.TResource("User.Explanation.FromUser") : @Model.FromUser
+                            </label>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 mb-3">
+                            <label class="w-100">
+                                @DbRes.TResource("User.Explanation.ConfidentialityName") :  @Model.ConfidentialityName
+
+                            </label>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 mb-3">
+                            <label class="w-100">
+                                @DbRes.TResource("User.Explanation.TransactionNumber") : @Model.TransactionNumber
+                                <img src="@ViewData["barcode2D"]" alt="" style="height: 45px; max-width: 160px;">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row ">
+                    <div class="col-md-12">
+                    </div>
+                </div>
+
+    </div>
+</div>

@@ -1,0 +1,45 @@
+﻿@using MCS.UI.Helpers
+@using MCS.Common
+@using MCS.UI.Areas.User.Models.File
+@model TransactionTrayInfoVM
+
+@{
+    var isHubEditable = Model.TransactionDetailsInfoVM.StatusId == TransactionStatus.NotSent.LookupIdentity(LookupCategory.TransactionStatus, SessionInfo.CultureShortName)
+            || Model.TransactionDetailsInfoVM.StatusId == TransactionStatus.Rejected.LookupIdentity(LookupCategory.TransactionStatus, SessionInfo.CultureShortName);
+    var encryptedIsHubEditable = MCS.Framework.Encryption.AESEncrytDecry.Base64Encode(isHubEditable.ToString());}
+
+<tr class="bg-white" style="cursor: pointer; " data-id="@Model.TransactionDetailsInfoVM.Id">
+    <td>
+        <div class="d-flex">
+            <div class="d-flex">
+                <div>@Model.TransactionDetailsInfoVM.Number</div>
+            </div>
+        </div>
+    </td>
+    <td>
+        @DateHelper.GetDate(@Model.TransactionDetailsInfoVM.DateH)
+        @Model.TransactionDetailsInfoVM.Date.ToShortTimeString()
+    </td>
+
+    <td class="">
+        <div class="correspondence-icon-table w-100 d-flex">
+            @if (Model.TransactionDetailsInfoVM.TransactionCategoryId == TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName))
+            {
+                <a onclick="Open(@Model.TransactionDetailsInfoVM.Id,'@Model.TransactionDetailsInfoVM.EncryptedId')"
+                   title="@DbRes.TResource("User.Inbound.EditInbound")" data-isHubEditable="@encryptedIsHubEditable">
+                    <img src="~/Content/User/lib/images/SystemIcon/main bar-24.svg" width="28" />
+                </a>
+            }
+            else if (Model.TransactionDetailsInfoVM.TransactionCategoryId == TransactionCategory.ExternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName))
+            {
+                <a onclick="Open(@Model.TransactionDetailsInfoVM.Id,'@Model.TransactionDetailsInfoVM.EncryptedId')"
+                   title="@DbRes.TResource("User.OutboundExternal.EditExternalOutbound")" data-isdraft="@Model.TransactionDetailsInfoVM.EncryptedIsDraft"
+                   data-isHubEditable="@encryptedIsHubEditable">
+                    <img src="~/Content/User/lib/images/SystemIcon/main bar-24.svg" width="28" />
+                </a>
+            }
+        </div>
+        @Html.StickyHidden("TransactionCategoryId", ((TransactionCategory)Model.TransactionDetailsInfoVM.TransactionCategoryId).ToString(), new { id = "hdnTransactionType_" + Model.TransactionDetailsInfoVM.Id })
+        @Html.StickyHidden("Type", Model.TransactionDetailsInfoVM.TransactionCategoryId.ToString(), new { id = "hdnType_" + Model.TransactionDetailsInfoVM.Id })
+    </td>
+</tr>

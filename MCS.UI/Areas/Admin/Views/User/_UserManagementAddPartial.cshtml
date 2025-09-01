@@ -1,0 +1,642 @@
+﻿@using MCS.Framework.Localization
+@model MCS.UI.Areas.Admin.Models.AddUserProfileVM
+@using MCS.UI.Areas.User.Models.Lookups
+@using MCS.Common;
+
+@{
+    ViewBag.Title = "_UserAddPartial";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+@{List<CultureVM> cultureVMs = ViewData["Culture"] as List<CultureVM>;}
+<div class="content_all">
+    <div class="mx-3 mx-md-5 header-container d-flex flex-row align-items-center">
+        <div class="d-flex flex-column flex-lg-row align-items-lg-center flex-grow-1 mb-3 mb-lg-0">
+            <h3 class="site-color mb-2 mb-lg-4">إضافة مستخدم </h3>
+        </div>
+
+        <div class="close-icon pl-2 mt-0 ml-auto">
+            <a class="circle-icon color-white" href="@Url.Action("Index", "User")" data-bs-toggle="tooltip" data-placement="bottom" title="إغلاق"><i class="la la-close"></i></a>
+        </div>
+    </div>
+
+
+    <div class="content_container">
+        <div class="row white-container  mx-3 mx-md-5">
+            @using (Html.BeginForm("", "", FormMethod.Post, new { id = "formAddUser" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="form-row">
+                    <div class="form-group col-lg-3 col-md-4  col-sm-6 col-xs-12">
+                        @Html.LabelFor(model => model.UserName)<span class='red-color ml-1 ml-1'>*</span>
+                        @Html.TextBoxGroupFor(model => model.UserName, "AddUser", new { @class = "form-control" })
+                    </div>
+
+                    <div class="form-group col-lg-3 col-md-4  col-sm-6 col-xs-12">
+                        @Html.LabelFor(model => model.UserNationalId)
+                        @Html.NumericTextBoxFor(model => model.UserNationalId, new { placeholder = DbRes.TResource("Admin.User.Exam") + " 0123456789", @class = "form-control", maxlength = "10" }, "AddUser")
+                    </div>
+                    @Html.StickyHiddenFor(model => model.CategoryId, new { @Value = 1 })
+                    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                        @Html.LabelFor(model => model.TitleId, new { id = "TitleId" })<span class='red-color ml-1 ml-1'>*</span>
+                        @Html.AutoCompleteBuilder("ddlAddTitle", "hdnAddTitleId", LookupCategory.Title, null, true, "form-control")
+                        @Html.HiddenGroupFor(model => model.TitleId, new { @Value = "", id = "hdnAddTitleId" }, "AddUser")
+                    </div>
+
+                    <div class="form-group col-lg-3 col-md-4  col-sm-6 col-xs-12">
+                        @Html.Label(DbRes.TResource("Admin.User.Name.ar"))<span class='red-color ml-1 ml-1'>*</span>
+                        @Html.TextBoxGroupFor(model => model.Names[0].Text, "AddUser", new { @class = "form-control", maxlength = "150" }, DbRes.TValidation("Admin.UserCategory.NameRequired." + cultureVMs[0].ShortName))
+                        @Html.StickyHiddenFor(model => model.Names[0].CultureId, new { @Value = (int)CultureType.Arabic })
+                    </div>
+
+                    <div class="form-group col-lg-3 col-md-4  col-sm-6 col-xs-12">
+                        @Html.Label(DbRes.TResource("Admin.User.Name.en"))<span class='red-color ml-1 ml-1'>*</span>
+                        @Html.TextBoxGroupFor(model => model.Names[1].Text, "AddUser", new { @class = "form-control", maxlength = "150" }, DbRes.TValidation("Admin.UserCategory.NameRequired." + cultureVMs[1].ShortName))
+                        @Html.StickyHiddenFor(model => model.Names[1].CultureId, new { @Value = (int)CultureType.English })
+                    </div>
+                    <div class="form-group col-lg-3 col-md-12  col-sm-6 col-xs-12">
+                        @Html.LabelFor(model => model.Email)<span class='red-color ml-1 ml-1'>*</span>
+                        @Html.TextBoxGroupFor(model => model.Email, "AddUser", new { @class = "form-control", type = "Email", maxlength = "150" })
+                    </div>
+                    <div class="form-group col-lg-3 col-md-4  col-sm-6 col-xs-12">
+                        <label>رسالة تأكيد عند الدخول</label><span class='red-color ml-1 ml-1'></span>
+                        <div class="form-check form-check-inline col-xs-12">
+                            @Html.CheckBoxFor(model => model.SMSNotifications, new { @class = "form-check-input" })
+                            <label class="dark-color p-0">
+                                @DbRes.TResource("User.UserPreferences.Yes")
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group col-lg-3 col-md-4  col-sm-6 col-xs-12">
+                        @Html.LabelFor(model => model.PhoneNumber)
+                        @Html.TextBoxGroupFor(model => model.PhoneNumber, "AddUser", new { placeholder = DbRes.TResource("Admin.User.Exam") + " 0599999999", @class = "form-control", maxlength = "15" })
+
+                    </div>
+                    <div class="form-group col-lg-3 col-md-4  col-sm-6 col-xs-12">
+                        <label>رقم التحويلة</label><span class='ml-1 ml-1'></span>
+                        @Html.TextBoxGroupFor(model => model.InternalNumber, "AddUser", new { @class = "form-control", maxlength = "15" })
+
+                    </div>
+                    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                        <label>@DbRes.TResource("User.Transaction.Name.Gender") </label><span class='red-color ml-1 ml-1'>*</span>
+                        @Html.AutoCompleteBuilder("ddlGender", "Gender", LookupCategory.Gender, null, true, "form-control")
+                        @Html.HiddenGroupFor(model => model.Gender, new { @Value = "", id = "Gender" }, "AddUser")
+                    </div>
+
+                    <div class="form-group col-lg-3 col-md-4  col-sm-6 col-xs-12">
+                        <div class=" col-xs-12">
+                            @Html.LabelFor(model => model.TransactionProcessingPeriod)<span class='red-color ml-1 ml-1'>*</span>
+                        </div>
+                        <div class=" col-xs-11">
+                            @Html.NumericTextBoxFor(model => model.TransactionProcessingPeriod, new { @class = "form-control" }, validationGroup: "AddUser")
+                        </div>
+                        <span class="input-group-prepend bg-none">
+                            <span class="input-group-text">يوم</span>
+                        </span>
+                    </div>
+                    <div class="form-group col-lg-5 col-md-6 col-sm-6 col-xs-12">
+                        @Html.LabelFor(model => model.RoleId)<span class='red-color ml-1 ml-1'>*</span>
+                        @Html.AutoCompleteBuilder("Roles", "hdnRoles", ViewData["Roles"].ToString(), Model != null ? Model.RoleId.ToString() : null, true, "form-control", "", "", "", false, "AddUser", null)
+                        @Html.HiddenGroupFor(model => model.RoleId, new { @Value = "", id = "hdnRoles" }, "AddUser")
+                    </div>
+                    <div class="form-group col-lg-3 col-md-4  col-sm-6 col-xs-12">
+                        <label>مخول باستلام المتابعة</label><span class='red-color ml-1 ml-1'></span>
+                        <div class="form-check form-check-inline col-xs-12">
+                            @Html.CheckBoxFor(model => model.IsFollowUpUser, new { @class = "form-check-input" })
+                            <label class="dark-color p-0">
+                                @DbRes.TResource("User.UserPreferences.Yes")
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group col-lg-3 col-md-4  col-sm-6 col-xs-12">
+                        <label>مخول باستخدام التطبيق</label><span class='red-color ml-1 ml-1'></span>
+                        <div class="form-check form-check-inline col-xs-12">
+                            @Html.CheckBoxFor(model => model.AllowMobile, new { @class = "form-check-input", id = "ChkAllowMobile" })
+                            <label class="dark-color p-0">
+                                @DbRes.TResource("User.UserPreferences.Yes")
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12" id="dvUsermobileClass" style="display: none;">
+                        @Html.LabelFor(model => model.UserMobileClassId, new { id = "UsermobileClassId" })<span class='red-color ml-1 ml-1'>*</span>
+                        @Html.AutoCompleteBuilder("ddlUsermobileClass", "hdnUsermobileClassId", LookupCategory.UserMobileClass, Model != null ? Model.UserMobileClassName : null, true, "form-control")
+                        @Html.HiddenGroupFor(model => model.UserMobileClassId, new { @Value = "", id = "hdnUsermobileClassId" }, "EditUser")
+                        @Html.HiddenGroupFor(model => model.UserMobileClassName, new { @Value = "", id = "hdnUsermobileClassName" }, "EditUser")
+
+                        @Html.HiddenFor(model => model.UserMobileClassName)
+
+                    </div>
+                    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 pl-3 align-self-end mang-button">
+                        <button type="button" class="btn btn-lg btn-st1 w-xs-100" onclick="AddRoleBox()">إضافة الادوار</button>
+                    </div>
+                    <div class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0">
+                        <div class="added_departments d-flex flex-wrap" id="dvAddedRoles">
+
+                        </div>
+                    </div>
+
+                    <div class="form-group col-lg-5 col-md-6 col-sm-6 col-xs-12">
+                        <fieldset id="dvMainDepartmentsTree">
+                            @Html.DepartmentsTree(ViewData["orgUnitDataInfo"] as TreeViewModel, model => model.MainOrgUnitId, TreeMode.Single, "MainDepartmentsTree", true, null, "AddUser", "dvMainDepartmentsTree")
+                        </fieldset>
+                        @*<label>@Html.DisplayNameFor(model => model.MainOrgUnitId)</label><span class='red-color ml-1 ml-1'>*</span>
+                            @Html.EditorFor(model => model.MainOrgUnitId, "OrgHierarchyCaller", additionalViewData: new { treeId = "MainDepartmentsTree", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Common"), GetNodeInfoByIdActionURL = @Url.Action("GetInternalPartyInfoById", "Common"), GetNodeInfoByNumActionURL = @Url.Action("GetInternalPartyInfoByNumber", "Common"), onClickfunction = "", ValidationGroup = "AddUser", ShowAddPartyButton = false })*@
+
+
+                    </div>
+                    <div class="clearfix w-100"></div>
+                    <div class="form-group col-lg-5 col-md-6 col-sm-6 col-xs-12">
+                        <fieldset id="dvOthersDepartmentsTree">
+                            @Html.DepartmentsTree(ViewData["orgUnitDataInfo"] as TreeViewModel, model => model.OrgUnits, TreeMode.Single, "OthersDepartmentsTree", true, null, "AddUser", "dvOthersDepartmentsTree")
+                        </fieldset>
+                        @*<label>@Html.DisplayNameFor(model => model.OrgUnits)<span class="stark"></span></label>*@
+                        @*@Html.EditorFor(model => model.OrgUnits, "OrgHierarchyCaller", additionalViewData: new { treeId = "OthersDepartmentsTree", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Common"), GetNodeInfoByIdActionURL = @Url.Action("GetInternalPartyInfoById", "Common"), GetNodeInfoByNumActionURL = @Url.Action("GetInternalPartyInfoByNumber", "Common"), onClickfunction = "", ValidationGroup = "AddUser", ShowAddPartyButton = false })*@
+
+
+                    </div>
+
+                    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 pl-3 align-self-end mang-button">
+                        <button type="button" class="btn btn-lg btn-st1 w-xs-100" onclick="AddEntityBox()">@DbRes.TResource("Admin.User.AddEntity")</button>
+                    </div>
+                    <div class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0">
+                        <div class="added_departments d-flex flex-wrap" id="dvAddedDepartments">
+
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                        <p class="stark">@DbRes.TResource("Admin.User.MustFill") * </p>
+                    </div>
+                    <div class="form-group col-lg-3 col-md-4  col-sm-6 col-xs-12 hide">
+
+                        @Html.CustomLabelFor(model => model.Password, new { id = "lblPassword", @class = "S" })
+                        <span class='red-color ml-1 ml-1'>*</span>
+                        <div class="">
+                            @Html.PasswordGroupFor(model => model.Password, "AddUser", new { @class = "form-control", @autocomplete = "off", maxlength = "50", @value = "P@$$w0rd" })
+                        </div>
+
+                    </div>
+                    <div class="form-group col-lg-3 col-md-4  col-sm-6 col-xs-12 hide">
+
+                        @Html.CustomLabelFor(model => model.ConfirmPassword, new { id = "lblConfirmPassword", @class = "" })
+                        <span class='red-color ml-1 ml-1'>*</span>
+                        <div class="">
+                            @Html.PasswordGroupFor(model => model.ConfirmPassword, "AddUser", new { @class = "form-control", @autocomplete = "off", maxlength = "50", @value = "P@$$w0rd" })
+                        </div>
+
+                    </div>
+                    <hr class="mb-3 mt-2">
+
+                    @Html.StickyHiddenFor(model => model.SelectedOrgUnitsIds, new { id = "selectedEntities" })
+                    @Html.StickyHiddenFor(model => model.UserGroups, new { id = "selectedRoles" })
+
+                    <div id="PermissionsTree">
+
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="mx-3 mx-md-5 mb-4 d-flex">
+        <button class="btn btn-lg btn-st3 ml-auto" data-dismiss="modal" onclick="checkInputs()">حفظ</button>
+        @Html.ActionButton(DbRes.TResource("Admin.Permissions.Save"), Url.Action("AddUserProfile", "User"), "divGrid", null, null, "OnAddSuccess", null, "post", "AddUser", "btnAddUser", "formAddUser", "btn btn-lg btn-st3 ml-auto hidden_")
+    </div>
+</div>
+<script>
+    $(document).on("change", "#ChkAllowMobile", function ()
+    {
+        debugger;
+        if ($(this).is(':checked'))
+        {
+
+            $('#dvUsermobileClass').show();
+        } else
+        {
+            $('#dvUsermobileClass').hide();
+        }
+    });
+    function OnAddSuccess(data, div) {
+        debugger;
+        if (data.MessageType == 0) {
+            debugger;
+            $("#" + div).html("");
+            $("#" + div).html(data.Html);
+            //jQuery.validator.unobtrusive.parse('#' + div);
+            ShowSuccesMessage(data.MessageText, redirect());
+            ClearInputs('formAddUser');
+        }
+        else {
+            if (data.MessageType == 2) {
+                ShowErrorMessage(data.MessageText);
+            }
+            else if (data.MessageType == 1) {
+                ShowCustomConfirmMessage('@DbRes.TValidation("Admin.Confirm.Activation")', 'CheckUserNameExists', data.UserId);
+            }
+        }
+    }
+
+     function ActivateDeleteUser(UserId) {
+        $.ajax({
+            type: 'get',
+            data: { id: UserId },
+            url: '@Url.Action("ActivateDeleteUser", "User")',
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    ShowInformationMessage(data.MessageText, redirect());
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            }
+        });
+    }
+     function redirect() {
+          setTimeout(function () {
+            window.location.href = '@Url.Action("Index", "User", new { area="Admin"})';
+        }, 2000);
+    }
+    function checkInputs() {
+
+        if (selectedRoles.length == 0) {
+
+            ShowErrorMessage("@DbRes.TValidation("Admin.User.RoleRequired")");
+            return false;
+
+        }
+        if (selectedEntities.length == 0) {
+
+            var MainentityName = $("#MainDepartmentsTree_txtDepartmentName").val();
+            var MainentityId = $("#MainDepartmentsTree_hdnDepartmentId").val();
+
+            selectedEntities.push(MainentityId);
+            $("#selectedRoles").val(selectedRoles);
+            $("#btnAddUser").click();
+        }
+        else {
+            $("#selectedEntities").val(selectedEntities.join(','));
+            $("#selectedRoles").val(selectedRoles);
+            $("#btnAddUser").click();
+        }
+
+
+    }
+    function GetGroupPermissionsByGroupId() {
+        var groupId = $("#hdnRoles").val();
+        $.ajax({
+            url: '@Url.Action("GetGroupPermissionsByGroupId", "User")',
+            type: 'get',
+            data: { groupId: groupId },
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    $("#PermissionsTree").html("");
+                    $("#PermissionsTree").html(data.Html);
+                }
+                else {
+                    // ShowErrorMessage(data.MessageText);
+                }
+            }
+        });
+    }
+                        var selectedEntities = [];
+    function AddEntityBox() {
+        debugger
+        var entityId = $("#OrgUnits").val();
+        var entityName = $("#leftOthersDepartmentsTree").val();
+        var MainentityId = $("#MainOrgUnitId").val();
+        var MainentityName = $("#leftMainDepartmentsTree").val();
+
+        if (entityId == "" && entityName == "") {
+            return false;
+        }
+        if (entityId == MainentityId && entityName == MainentityName ){
+            ShowErrorMessage("@DbRes.TResource("Admin.User.alreadyAddedEntity")");
+            return false;
+        }
+        var box = "<div class='added_item mr-4 mb-3' id='EntityBox_" + entityId + "'>";
+        box += "<span class='added-class d-flex'>";
+        box += "<span>" + entityName + "</span>";
+        box += "<a onclick='deleteEntityBox(" + entityId + ")' class='color-burgundy ml-2'><i class='icon-tables-delete'></i></a>";
+        box += "</span>";
+        box += "</div>";
+
+        if (checkIfExist(entityId)) {
+            ShowErrorMessage("@DbRes.TValidation("User.Transaction.AssignmentAlreadyAdded")");
+
+        }
+        else
+        {
+            selectedEntities.push(entityId);
+            $("#dvAddedDepartments").append(box);
+        }
+        ClearInputs("OthersDepartmentsTree");
+    }
+
+    var selectedRoles = [];
+    function AddRoleBox() {
+        var roleId =  $("#hdnRoles").val();
+        var roleName = $("#Roles").val();
+
+        if (roleId == "" && roleName == "") {
+            return false;
+        }
+        var box = "<div class='added_item mr-4 mb-3' id='RoleBox_" + roleId + "'>";
+        box += "<span class='added-class d-flex'>";
+        box += "<span>" + roleName + "</span>";
+        box += "<a onclick='deleteRoleBox(" + roleId + ")' class='color-burgundy ml-2'><i class='icon-tables-delete'></i></a>";
+
+        box += "</span>";
+        box += "</div>";
+
+        if (checkRoleIfExist(roleId)) {
+            ShowErrorMessage("لقد تم ادخال هذا الدور من قبل ، اختر دور اخر");
+
+        }
+        else
+        {
+            selectedRoles.push(roleId);
+            $("#dvAddedRoles").append(box);
+        }
+
+    }
+    function deleteRoleBox(boxId) {
+        var index = selectedRoles.indexOf(boxId + "");
+        if (index > -1) {
+            selectedRoles.splice(index, 1);
+        }
+        $("#RoleBox_" + boxId).remove();
+    }
+
+    function checkRoleIfExist(roleId) {
+
+        var exist = false;
+        selectedRoles.forEach(function (item) {
+            if (item == roleId) {
+                exist = true
+                return;
+            }
+        });
+        return exist;
+    }
+
+                        function deleteEntityBox(boxId) {
+                            var index = selectedEntities.indexOf(boxId + "");
+                            if (index > -1) {
+                                selectedEntities.splice(index, 1);
+                            }
+        $("#EntityBox_" + boxId).remove();
+    }
+
+    function checkIfExist(entityId) {
+        debugger
+        var exist = false;
+        selectedEntities.forEach(function (item) {
+            if (item == entityId) {
+                exist = true
+                return;
+            }
+        });
+        return exist;
+    }
+
+    function ActivateDeleteUserName(UserId) {
+        $.ajax({
+            type: 'get',
+            data: { id: UserId },
+            url: '@Url.Action("ActivateDeleteUser", "User")',
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    ShowInformationMessage(data.MessageText, redirectEdit(UserId));
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            }
+        });
+    }
+
+    function redirectEdit(userId) {
+        setTimeout(function () {
+            window.location.href = '@Url.Action("GetUserProfile", "User", new { area="Admin"})' + '?id=' + userId;
+        }, 2000);
+    }
+
+    function CheckUserNameExists() {
+        var userName = $('#UserName').val();
+
+        if (userName != undefined && userName != '' && userName.length > 3) {
+            $.ajax({
+                cache: false,
+                type: 'get',
+                url: '@Url.Action("CheckUserNameExists", "User")',
+                data: { userName: userName },
+                success:
+                    function (data) {
+                        if (data.MessageType == 0 && data.MessageText != '' && data.UserId > 0) {
+                            ShowCustomConfirmMessage(data.MessageText, 'ActivateDeleteUserName', data.UserId);
+                        }
+                        else {
+                            //ShowErrorMessage(data.MessageText);
+                        }
+                    },
+                error: function (xhr) {
+
+                }
+            });
+        }
+    }
+
+    $("#UserName").on("blur", function (e) {
+        CheckUserNameExists();
+    });
+</script>
+
+
+
+
+
+
+
+
+@*@using (Html.BeginForm("AddUser", "Admin", FormMethod.Post, new { id = "formAddUser", @class = "form-horizontal form-row" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="panel-heading">
+            <h3 class="panel-title">@DbRes.TResource("Admin.User.AddUser")</h3>
+        </div>
+        <div class="panel-body" id="dvAddTreeContainer">
+            <p>@DbRes.TResource("Global.Forms.MandatoryFields")</p>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.CustomLabelFor(model => model.TitleId, new { id = "lblUserNoTitle", @class = "col-md-4 control-label" })
+                        <div class="col-md-8">
+                            <div class="">
+                                <div class="input-group">
+                                    @Html.AutoCompleteBuilder("ddlAddTitle", "hdnAddTitleId", LookupCategory.Title, null, true, "form-control")
+                                    <span class="input-group-addon link">
+                                        <a class="dia_users" onclick="OpenUserTitleAdd(); return false;" href="#"><i class="fa fa-plus-circle"></i></a>
+                                    </span>
+                                </div>
+                                @Html.HiddenGroupFor(model => model.TitleId, new { @Value = "", id = "hdnAddTitleId" }, "AddUser")
+                            </div>
+                        </div>
+                    </div>
+
+                    @{List<CultureVM> cultureVMs = ViewData["Culture"] as List<CultureVM>;}
+
+                    @if (cultureVMs != null)
+                    {
+                        for (int i = 0; i < cultureVMs.Count; i++)
+                        {
+                            <div class="form-group">
+                                @Html.CustomLabelFor(model => model.Names[i].CultureName, new { @class = "col-md-4 control-label" }, DbRes.TResource(string.Format("Admin.User.Name.{0}", cultureVMs[i].ShortName)))
+                                @Html.StickyHiddenFor(model => model.Names[i].CultureId, new { @Value = cultureVMs[i].Id })
+                                <div class="col-md-8">
+                                    <div class="">
+                                        @Html.TextBoxGroupFor(model => model.Names[i].Text, "AddUser", new { @class = "form-control" }, DbRes.TValidation(string.Format("Admin.User.Name.{0}", cultureVMs[i].ShortName)))
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.CustomLabelFor(model => model.CategoryId, new { id = "lblEmployeeCategoryTitle", @class = "col-md-4 control-label" })
+                        <div class="col-md-8">
+                            <div class="">
+                                @Html.AutoCompleteBuilder("ddlAddEmployeeCategory", "hdnAddEmployeeCategoryId", ViewData["UserCategory"] as string, null, true, "form-control")
+                                @Html.HiddenGroupFor(model => model.CategoryId, new { @Value = "", id = "hdnAddEmployeeCategoryId" }, "AddUser")
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.CustomLabelFor(model => model.UserName, new { id = "lblUserNameTitle", @class = "col-md-4 control-label" })
+                        <div class="col-md-8">
+                            <div id="userDiv" class="input-group">
+                                @Html.TextBoxGroupFor(model => model.UserName, "AddUser", new { @class = "form-control", maxlength = "50" })
+                                <span class="input-group-addon link">
+                                    <a class="dia_users" onclick="SearchUsers();" href="#"><i class="fa fa-check-circle"></i></a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.CustomLabelFor(model => model.TransactionProcessingPeriod, new { id = "lblProcessingTimeTitle", @class = "col-md-4 control-label" })
+                        <div class="col-md-6">
+                            <div class="">
+                                @Html.NumericTextBoxFor(model => model.TransactionProcessingPeriod, new { @Value = "", @class = "form-control", maxlength = "3" }, "AddUser")
+                            </div>
+                        </div>
+                        <div class="col-md-2">@DbRes.TResource("Admin.User.Day")</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.CustomLabelFor(model => model.Email, new { id = "lblEmailTitle", @class = "col-md-4 control-label" })
+                        <div class="col-md-8">
+                            <div class="">
+                                @Html.TextBoxGroupFor(model => model.Email, "AddUser", new { @class = "form-control", maxlength = "50" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.CustomLabelFor(model => model.PhoneNumber, new { @class = "col-md-4 control-label" })
+                        <div class="col-md-8">
+                            <div class="">
+                                @Html.NumericTextBoxFor(model => model.PhoneNumber, new { placeholder = DbRes.TResource("Admin.User.Exam") + " 966999999999", @class = "form-control", maxlength = "12" }, "AddUser")
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.CustomLabelFor(model => model.UserNationalId, new { @class = "col-md-4 control-label" })
+                        <div class="col-md-8">
+                            <div class="">
+                                @Html.NumericTextBoxFor(model => model.UserNationalId, new { placeholder = DbRes.TResource("Admin.User.Exam") + " 0123456789", @class = "form-control", maxlength = "10" }, "AddUser")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="AddTree">
+                @Html.Partial("_UserManagementTreePermissions", Model)
+            </div>
+            @Html.DepartmentsTree(ViewData["OrgUnits"] as TreeViewModel, model => model.OrgUnits, TreeMode.Multiple, "frmAddForm", Request.IsAjaxRequest())
+        </div>
+        <div id="OrgUnitAddContent"></div>
+        <div class="panel-footer middle">
+            @Html.ConfirmAction(OperationType.Save, "btnSave", DbRes.TResource("Admin.User.Save"), "AddUserProfile", "divGridContainer", null, null, "OnAddSuccess",
+           null, "", "post", "formAddUser", "AddUser", "btn btn-save pull-right",clientFunctionToCall: "GetOrganizationUnitIdsAddMode")
+            @Html.ResetButton("Clear('dvAddTreeContainer')")
+        </div>
+        @Html.Partial("_ImportUsersPartial")
+    }
+
+
+    <script type="text/javascript">
+        function GetOrganizationUnitIdsAddMode() {
+            $('#OrgUnitAddContent').empty();
+            $("[data-name='OrgUnits']").find('.tag').each(function (index) {
+                $('#OrgUnitAddContent').append("<input name='OrgUnitList[" + index + "].Id' value=" + this.id + " type='hidden'/>");
+            });
+            return true;
+        }
+
+        $(function () {
+            var hml = $('<div>').append($('#userDiv').find(".field-validation-valid").clone()).html();
+            $("#userDiv").find(".field-validation-valid").remove();
+            $("#userDiv").after(hml);
+        })
+
+        $.validator.unobtrusive.adapters.add(
+            'validatenames',
+            ['validationgroup'],
+            function (options) {
+                options.rules['validatenames'] = {
+                    validationgroup: options.params['validationgroup']
+                };
+                options.messages['validatenames'] = options.message;
+            });
+
+        $.validator.addMethod('validatenames',
+            function (value, element, parameters) {
+                if (value != "") {
+                    if (keyDepartment.indexOf(value) == -1) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        );
+
+        function SearchUsers() {
+            if ($("#UserName").val() != "")
+                $.ajax({
+                    cache: false,
+                    type: "GET",
+                    url: '@Url.Action("CheckUserName", "User")',
+                    data: { "username": $("#UserName").val() },
+                    success: function (response) {
+                        if (response.UsersList.length == 1) {
+                            $("#Email").val(response.UsersList[0].Email);
+                            $("#Names_1__Text").val(response.UsersList[0].EmployeeName);
+                        } else {
+                            ShowDialogAjax('@Url.Action("GetActiveDirectoryUsers")', { users: response.UsersList, type: 1, username: $("#UserName").val() }, 'ActiveDirectoryUsersSuccess');
+                        }
+                    }
+                });
+        }
+        function ActiveDirectoryUsersSuccess(data, $obj) {
+            $obj.setContent(data.View);
+        }
+
+        function OpenUserTitleAdd() {
+
+            ShowDialogAjax('@Url.Action("OpenAddUserTitle")', { mode: 'Add' }, 'OpenUserTitleAdduccess');
+        }
+
+        function OpenUserTitleAdduccess(data, $obj) {
+
+            $obj.setContent(data.Html);
+            jQuery.validator.unobtrusive.parse('#frmUserTitle');
+        }
+    </script>*@

@@ -1,0 +1,38 @@
+﻿@model MCS.UI.Areas.User.Models.Transaction.ExplanationVM
+@using MCS.UI.Areas.User.Models.Transaction;
+
+<div>
+    <div class="text-right panel-body">
+        <button id="btnPrintExplanations" class="btn btn-site" onclick="PrintData(); return false;">
+            <i class="la la-print"></i> 
+            @DbRes.TResource("User.Editor.Explanations.PrintAll")
+        </button>
+    </div>
+    <div id="PrintArea">
+        <div class="row ">
+            <div class="col-md-12">
+                @Html.Partial("~/Areas/User/Views/Editor/Explanations/_ExplanationsGridPartial.cshtml", ViewData["ExplanationsData"])
+            </div>
+        </div>
+        <div class="row ">
+            <div class="col-md-12">
+                @if (ViewData["ExplanationsData"] != null)
+                {
+                    List<ExplanationVM> explanations = ViewData["ExplanationsDataObject"] as List<ExplanationVM>;
+
+                    foreach (ExplanationVM explanationVM in explanations)
+                    {
+                        <object type="application/pdf" data="@Url.Action("GetExplanationById", "Shared", new {explanationVM.Id })" style="height:100vh;width:100%;"></object>
+                        <br />
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function PrintData() {       
+        window.print();
+    }
+</script>

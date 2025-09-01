@@ -1,0 +1,119 @@
+﻿@using MCS.Framework.Controls.Mvc
+@using MCS.Framework.Controls
+@using MCS.Framework.Localization
+@model MCS.UI.Areas.User.Models.File.TransactionTrayInfoVM
+<div class="search mx-5 mx-xs-3 white-container mt-2 pb-2 filter-box">
+    <div class="form-row">
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <label class="">@DbRes.TResource("User.Inbound.BasicInfo.Destination")</label>
+            @Html.AutoCompleteBuilder("ExternalPartyId", "hdnExternalPartyId", ViewData["ExternalPartysData"].ToString(), "", true, "form-control", "", "", "", true)
+            @Html.StickyHidden("hdnExternalPartyId", "", new { @Value = "", id = "hdnExternalPartyId" })
+
+
+
+            @*@Html.EditorFor(, "OrgHierarchyCaller", additionalViewData: new { treeId = "ExternalPartyId", GetChildrenActionURL = @Url.Action("GetExternalPartyChildren", "Shared"), GetNodeInfoByIdActionURL = @Url.Action("GetExternalPartyInfoById", "Shared"), GetNodeInfoByNumActionURL = @Url.Action("GetExternalPartyInfoByNumber", "Shared"), onClickfunction = "", ValidationGroup = "", ShowAddPartyButton = false })*@
+
+        </div>
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <label class="">@DbRes.TResource("User.Transaction.Link.TransactionNumber")</label>
+            <input class="form-control trans-input" id="TransId" onkeypress="return IsNumeric(event);">
+        </div>
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <label class="">@DbRes.TResource("User.Transaction.PriorityLevel")</label>
+            @Html.AutoCompleteBuilder("PriorityLevelId", "hdnPriorityLevelId", ViewData["PrioritiesData"].ToString(), "", true, "form-control", "", "", "", true)
+            @Html.StickyHidden("hdnPriorityLevelId", "", new { @Value = "", id = "hdnPriorityLevelId" })
+        </div>
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <label class="">@DbRes.TResource("User.Transaction.ConfidentialityLevel")</label>
+            @Html.AutoCompleteBuilder("ConfidentialityLevelId", "hdnConfidentialityLevelId", ViewData["ConfidentialityDataList"].ToString(), "", true, "form-control", "", "", "", true)
+            @Html.StickyHidden("hdnConfidentialityLevelId", "", new { @Value = "", id = "hdnConfidentialityLevelId" })
+        </div>
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <label class="">@DbRes.TResource("User.File.TransactionType")</label>
+            @Html.AutoCompleteBuilder("TransactionType", "hdnTransactionTypeId", ViewData["TransactionTypesForFilters"].ToString(), "", true, "form-control", "", "", "", true, "", onChangeCallback: "chechSourseTypeId")
+            @Html.StickyHidden("hdnTransactionTypeId", "", new { @Value = "", id = "hdnTransactionTypeId" })
+        </div>
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <label class="">@DbRes.TResource("User.Inbound.BasicInfo.InboundType")</label>
+            @Html.AutoCompleteBuilder("SourceTypeId", "hdnSourceTypeId", ViewData["TransactionTypesData"].ToString(), "", true, "form-control", "", "", "", true)
+            @Html.StickyHidden("hdnSourceTypeId", "", new { @Value = "", id = "hdnSourceTypeId" })
+        </div>
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 with-icon">
+            <label>@DbRes.TResource("User.Transaction.CreateDate")</label>
+            @Html.Calendar("DateCal", "hdnDateCal", "hdnHasDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), "", "dataCal form-control")
+            <a class=" date-icon2 " onclick="showCalender('DateCal')"><img src="~/Content/User/lib/images/SystemIcon/main bar-08.svg" width="30" /></a>
+            @Html.StickyHidden("hdnDateCal", "", null)
+        </div>
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <label class="">@DbRes.TResource("User.Transaction.BasicInfo.SubjectClassifications")</label>
+            @Html.AutoCompleteBuilder("SubjectClassification", "hdnSubjectClassification", ViewData["LetterTypeData"].ToString(), "", true, "form-control", "", "", "", true)
+            @Html.StickyHidden("hdnSubjectClassification", "", null)
+        </div>
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <label class="">@DbRes.TResource("User.File.Subject")</label>
+            @Html.TextBox("Description", "", "", new { @class = "form-control", @id = "Description" })
+        </div>
+        <div class="form-group col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-3" id="dvDepartmentsTree">
+            <fieldset class="field-set">
+                <div id="dvDepartmentsTreeFromEntity">
+                    @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.FromEntityId, TreeMode.Single, "treeDirectedToOrgUnit", false, "", "", "dvDepartmentsTreeFromEntity")
+
+                </div>
+            </fieldset>
+        </div>
+        @Html.StickyHidden("hdnAssignDateCal", "", null)
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <label class="">@DbRes.TResource("User.Transaction.PrivecyLevel")</label>
+            @Html.AutoCompleteBuilder("PrivecyLevelId", "hdnPrivecyLevelId", ViewData["PrivecyLevelsData"] != null ? ViewData["PrivecyLevelsData"].ToString() : "", "", true, "form-control", "", "", "", true)
+            @Html.StickyHidden("hdnPrivecyLevelId", "", new { @Value = "", id = "hdnPrivecyLevelId" })
+        </div>
+        <div class="col-xs-12 panel-body row text-right">
+            <input type="button" value="@DbRes.TResource("User.Search.SubmitSearch")" class="btn btn-st2" onclick="FilterBy()" />
+        </div>
+    </div>
+</div>
+
+<div class="search mx-5 mx-xs-3 white-container mt-2 pb-2 order-box">
+    <div class="form-row">
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <label class=" ">@DbRes.TResource("User.Inbound.BasicInfo.Destination")</label>
+            @Html.AutoCompleteBuilder("ExternalParty", "hdnExternalPartyIdForSorting", ViewData["ExternalPartyAscDesc"].ToString(), "", true, "form-control", onChangeCallback: "doSort")
+            @Html.StickyHidden("hdnExternalPartyIdForSorting", "", new { @Value = "", id = "hdnExternalPartyIdForSorting" })
+        </div>
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <label class="">@DbRes.TResource("User.Inbound.BasicInfo.InboundNumber")</label>
+            @Html.AutoCompleteBuilder("Number", "NumberAcsDescId", ViewData["NumberAcsDesc"].ToString(), "", true, "form-control", onChangeCallback: "doSort")
+            @Html.StickyHidden("NumberAcsDescId", "", new { @Value = "", id = "NumberAcsDescId" })
+        </div>
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 ">
+            <label class="">@DbRes.TResource("User.Transaction.PriorityLevel")</label>
+            @Html.AutoCompleteBuilder("Priority", "hdnPriorityIdForSorting", ViewData["PriorityAscDesc"].ToString(), "", true, "form-control", onChangeCallback: "doSort")
+            @Html.StickyHidden("hdnPriorityIdForSorting", "", new { @Value = "", id = "hdnPriorityIdForSorting" })
+        </div>
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 ">
+            <label class="">@DbRes.TResource("User.Transaction.ConfidentialityLevel")</label>
+            @Html.AutoCompleteBuilder("Confidentiality", "hdnConfidentialityLevelIdForSorting", ViewData["ConfidentialityAscDesc"].ToString(), "", true, "form-control", onChangeCallback: "doSort")
+            @Html.StickyHidden("hdnConfidentialityLevelIdForSorting", "", new { @Value = "", id = "hdnConfidentialityLevelIdForSorting" })
+        </div>
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <label class=" ">@DbRes.TResource("User.Inbound.BasicInfo.InboundType")</label>
+            @Html.AutoCompleteBuilder("SourceType", "hdnOrderBySourceType", ViewData["SourceTypeAscDesc"].ToString(), "", true, "form-control", onChangeCallback: "doSort")
+            @Html.StickyHidden("hdnOrderBySourceType", "", new { @Value = "", id = "hdnOrderBySourceType" })
+        </div>
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <label class=" ">@DbRes.TResource("User.Transaction.CreateDate")</label>
+            @Html.AutoCompleteBuilder("Date", "hdnSortByDate", ViewData["SortByDate"].ToString(), "", true, "form-control", onChangeCallback: "doSort")
+            @Html.StickyHidden("hdnSortByDate", "", new { @Value = "", id = "hdnSortByDate" })
+        </div>
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <label class=" ">@DbRes.TResource("User.File.AssignDate")</label>
+            @Html.AutoCompleteBuilder("AssignDate", "hdnSortByAssignDate", ViewData["SortByDate"].ToString(), "", true, "form-control", onChangeCallback: "doSort")
+            @Html.StickyHidden("hdnSortByAssignDate", "", new { @Value = "", id = "hdnSortByAssignDate" })
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#DateCal').attr('autocomplete', 'off');
+    });
+</script>

@@ -1,0 +1,107 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Common;
+@using MCS.UI.Areas.User.Models.Assignment
+@model VIPTransactionAssignmentVM
+@{
+    bool selectfirst = false;
+    if (Model.ActionId == 0)
+    {
+        selectfirst = true;
+    }
+}
+@using (Html.BeginCollectionItem("AssignmentVM"))
+{
+
+    <div class="row TransactionAssignment col-lg-10" style="padding-right:100px" id="@Model.Key">
+
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mt-4 divRadio">
+            <div class="inline-radio">
+                <div class="radio">
+                    <label>
+                        @if (Model.IsAssigned.HasValue && Model.IsAssigned.Value)
+                        {
+                            <input onchange="UpdateAssignedToEntity(this); ActionChanged();" type="radio" class="rValue" name="Radio" id="Radio_@Html.IdFor(a => a.IsAssigned).ToString()" checked />
+                        }
+                        else
+                        {
+                            <input onchange="UpdateAssignedToEntity(this); ActionChanged();" type="radio" class="rValue" name="Radio" id="Radio_@Html.IdFor(a => a.IsAssigned).ToString()" />
+                        }
+
+                        <span class="cr"><i class="cr-icon"></i></span>
+                        <text>إحالة</text>
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        @{bool isCopyChecked = (Model.ChkConstant || (Model.IsCopy.HasValue && Model.IsCopy.Value));}
+                        @if (isCopyChecked)
+                        {
+                            <input onchange="UpdateIsCopy(this); ActionChanged();" type="checkbox" id="ch_@Html.IdFor(a => a.IsCopy).ToString()" value="@isCopyChecked.ToString()" checked>
+                        }
+                        else
+                        {
+
+                            <input onchange="UpdateIsCopy(this); ActionChanged();" type="checkbox" id="ch_@Html.IdFor(a => a.IsCopy).ToString()" value="@isCopyChecked.ToString()">
+                        }
+                        <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                        <text style="color:black">صورة</text>
+                    </label>
+                </div>
+            </div>
+            @Html.HiddenFor(a => a.IsAssigned, new { id = "hdn_" + Html.IdFor(a => a.IsAssigned).ToString(), @class = "isAssigned", @Value = false })
+            @Html.HiddenFor(a => a.IsCopy, new { id = "hdn_" + Html.IdFor(a => a.IsCopy).ToString(), @class = "IsCopy", @Value = isCopyChecked })
+            @Html.HiddenFor(a => a.IsBcc, new { id = "hdn_" + Html.IdFor(a => a.IsBcc).ToString(), @class = "IsBcc" })
+            @Html.HiddenFor(a => a.ToOrgUnitId)
+            @Html.HiddenFor(a => a.ToOrgUnitName)
+            @Html.HiddenFor(a => a.ToUserId, new { @class = "ToUserId" })
+            @Html.HiddenFor(a => a.ToUserName)
+            @Html.HiddenFor(a => a.DeliveryMethodId)
+            @Html.HiddenFor(a => a.GroupId)
+        </div>
+
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mt-4 ToOrgUnitName">
+            <label>@Model.ToOrgUnitName /</label>
+        </div>
+        <div class="ToUserId col-lg-3 col-md-4 col-sm-6 col-xs-12 mt-4">
+            <label id="ToUserNamelabel" style="word-break:break-word">@Model.ToUserName</label>
+        </div>
+
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mt-4 divDDl ActionId d-flex" title="حذف">
+            @*<label class="control-label">@DbRes.TResource("User.Transaction.Assignment.ActionId")<span class="stark NotIndividual">*</span></label>*@
+            @Html.AutoCompleteBuilder("Action_" + Html.IdFor(a => a.ActionId).ToString(), Html.IdFor(a => a.ActionId).ToString(), ViewData["AllActionsData"].ToString(), Model != null ? Model.ActionId.ToString() : null, true, "form-control DDLClass col-lg-12", "", "", "", selectfirst, "", "ActionChanged")
+            @Html.HiddenGroupFor(model => model.ActionId, new { @Value = "", id = Html.IdFor(a => a.ActionId).ToString() }, "AssignmentPaper")
+            <a class="edit_link" onclick="DeleteAssignment('@Model.Key')"> <i class="glyphicon glyphicon-remove" style="margin-top:9px; margin-right:6px; color:red"></i> </a>
+        </div>
+
+        <div class="col-lg-12"></div>
+        @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.CopiesInternal.BCC))
+        {
+
+            <div class="checkbox mt-3 col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                <label>
+                    <input onchange="UpdateIsBCC(this); ActionChanged();" type="checkbox" id="ch_@Html.IdFor(a => a.IsBcc).ToString()">
+                    <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                    <text style="color:black">نسخة مخفية</text>
+                </label>
+            </div>
+
+            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mb-2">
+                @Html.LabelFor(model => model.SpecialExplanation, new { @class = "control-lable" })
+                @Html.TextBoxFor(model => model.SpecialExplanation, new { @class = "form-control", style = "white-space:nowrap" })
+            </div>
+        }
+
+
+        <hr />
+
+    </div>
+}
+<script>
+    function DeleteAssignment(id)
+    {
+
+        var value;
+        value = '#' + id;
+        $(value).remove();
+    }
+</script>

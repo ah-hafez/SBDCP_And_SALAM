@@ -1,0 +1,125 @@
+﻿@model AjaxGrid<MCS.UI.Areas.User.Models.Transaction.TransactionFollowUpVM>
+@using MCS.UI.Helpers
+@using MCS.UI.Areas.User.Models.File
+
+
+@Html.Grid(Model).CollectionName("FollowUps").Named("grdFollowUps").Columns(columns =>
+{  columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Id, new { id = "Id_" + model.Id }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Key, new { id = "Key_" + model.Id }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.FollowUpUserId, new { id = "UserId_" + model.FollowUpUserId }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.FollowUpEntityId, new { id = "FromEntityId_" + model.FollowUpEntityId }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.FollowUpStatusId, new { id = "FollowUpStatusId_" + model.FollowUpStatusId }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(model => model.FollowUpType).Titled(DbRes.TResource("User.FollowUp.FollowUpType"));
+    columns.Add(model => model.CreatingEntityName).Titled(DbRes.TResource("User.FollowUp.CreatingUserName"));
+    columns.Add(model => model.CreationDateHj).Titled(DbRes.TResource("User.FollowUp.CreationDate"));
+    columns.Add(model => model.EmployeeEntityName).Titled(DbRes.TResource("User.FollowUp.FollowUpUser"));
+    columns.Add(model => model.FollowUpReceiveDateHj).Titled(DbRes.TResource("User.FollowUp.FollowUpReceiveDate"));
+    columns.Add(model => model.FollowUpExpireDateHj).Titled(DbRes.TResource("User.FollowUp.FollowUpExpireDate"));
+    columns.Add(model => model.FollowUpStatus).Titled(DbRes.TResource("User.FollowUp.FollowUpStatus"));
+})
+<script>
+    function showAddNotesPopup(id) {
+     
+		$.ajax({
+			url: '@Url.Action("GetFollowUpDetailsById", "File")',
+			type: 'GET',
+            data: { id: id},
+            success: function (data) {
+                debugger
+                if (data.MessageType != 2) {
+                    //  $('#transId').val(transId);
+                 ShowRejectTransactionPopupp('@DbRes.TResource("User.Transaction.FollowUp.Notes")', '', '', '', '');
+                $("#CalMessageError").parent().parent().prepend(data.Html)
+                }
+                else {
+                    //  $('#transId').val(transId);
+                 ShowRejectTransactionPopupp('لا يوجد ملاحظات', '', '', '', '');
+                $("#CalMessageError").parent().parent().prepend(data.Html)
+                }
+
+			}
+        });
+
+    }
+    function BuildRejectModelContent(messageText, RejectTransactionTxt, DaysToCompleteTxt, rejectBtn) {
+        debugger
+        var rejectBtnHtml = '';
+        if (rejectBtn && rejectBtn != '') {
+            rejectBtnHtml = '<button class="reject-button-popup btn-site" data-dismiss="modal">' + rejectBtn + '</button>';
+        }
+        var modelHeader = '<div class="modal-header"></div>';
+        var modelBody;
+        if (DaysToCompleteTxt != '') {
+
+            modelBody = '<div class="modal-body"><h4 class="site-color title4 text-center">' + messageText + '</h4><div class="row"><div class="col-xs-12 col-sm-10 col-sm-push-1">' +
+                '<fieldset>' +
+                '<div class="form-group"><label>' + RejectTransactionTxt + '</label></div> <i id="CalMessageError" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i> <span id="errorMessageValidate" style="color:red;"></span>' +
+                '</fieldset>' +
+
+                '<fieldset>' +
+                '<div class="form-group">' +
+                '<label>' + DaysToCompleteTxt + '</label>' +
+                '<div><input id="expectedDays" onkeypress="return IsNumeric(event);" class="form-control"></div>' +
+                '</div>' +
+                '<i id="CalDaysMessageError" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>' +
+                '<span id="errorDaysMessageValidate" style="color:red;"></span>' +
+                '</fieldset >' +
+                '</div ></div ></div> ';
+        }
+        else {
+
+
+            modelBody = '<div class="modal-body"><h4 class="site-color title4 text-center">' + messageText + '</h4><div class="row"><div class="col-xs-12 col-sm-10 col-sm-push-1">' +
+                '<fieldset>' +
+                '<div class="form-group"><label>' + RejectTransactionTxt + '</label></div> <i id="CalMessageError" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i> <span id="errorMessageValidate" style="color:red;"></span>' +
+                '</fieldset>' +
+                '<fieldset>' +
+                '<i id="CalDaysMessageError" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>' +
+                '<span id="errorDaysMessageValidate" style="color:red;"></span>' +
+                '</fieldset >' +
+                '</div ></div ></div> ';
+        }
+
+        var modelFooter = '<div  class="modal-footer actions-buttons">' + rejectBtnHtml + '<button class="close-button-popup btn-site" >إغلاق</button>  </div>';
+        return modelHeader + modelBody + modelFooter;
+    }
+    function ShowRejectTransactionPopupp(messageText, OnCloseFunction, RejectTransactionTxt, DaysToCompleteTxt, rejectBtn) {
+        debugger
+        $.confirm({
+            title: false,
+            cancelButton: __dialogCloseText,
+            cancelButtonClass: 'btn-site',
+            content: BuildRejectModelContent(messageText, RejectTransactionTxt, DaysToCompleteTxt, rejectBtn),
+            template: '<div class="jconfirm white"><div class="jconfirm-bg"></div><div class="modal-dialog"><div class="modal-content"><div class="content" style="margin:0px"></div></div></div>',
+            icon: 'fa fa-info',
+            animation: 'scale',
+            columnClass: 'alert_success alert_new col-md-6 col-md-offset-3 col-xs-6 col-xs-offset-3',
+            backgroundDismiss: false,
+            closeIcon: true,
+            confirmButton: false,
+            cancel: function () {
+                if (OnCloseFunction != '' && OnCloseFunction != undefined) {
+                    window[OnCloseFunction]();
+                }
+            },
+            onOpen: function () {
+                if ($('.reject-button-popup')) {
+                    $('.reject-button-popup').click(function (e) {
+                        $(document).trigger("RejectButtonPopupClicked", '');
+                    });
+                }
+                if ($('.btn-close')) {
+                    $('.btn-close').click(function (e) {
+                        $('.close-button-popup').click();
+                    });
+                }
+                jQuery(function () {
+                    jQuery('.jconfirm-box').draggable({
+                        revert: false
+                    });
+                });
+            },
+        });
+    }
+
+</script>

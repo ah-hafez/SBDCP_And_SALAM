@@ -1,0 +1,51 @@
+﻿@{
+    /**/
+
+    Layout = "~/Views/Shared/_EmptyLayout.cshtml";
+}
+<div>
+    <div class="form-row BasicInfo ml-3 pt-4">
+        <div class="d-flex pl-sm-5" style="margin-right:-45px; margin-bottom:16px;">
+
+            <div class="pl-sm-5 Editor-div d-flex">
+                <span class="gray3">@DbRes.TResource("User.Transaction.Link.TransactionNumber") : </span>
+                <span class="date-value Editor-lable">
+                    @ViewData["TransactionsNumber"]
+                </span>
+            </div>
+            <div class="pl-sm-5 d-flex">
+                <span class="gray3">@DbRes.TResource("User.Transaction.PriorityLevel") : </span>
+                <span class="transaction-number Editor-lable">@ViewData["PriorityLevel"]</span>
+            </div>
+
+            <div class="pl-5 Editor-div">
+                <span class="gray3">@DbRes.TResource("User.Transaction.ConfidentialityLevel") : </span>
+                <span class="date-value Editor-lable">
+                    @ViewData["ConfidentialityName"]
+                </span>
+            </div>
+
+        </div>
+        <div class="pl-sm-5 col-lg-12">
+            <span class="gray3">@DbRes.TResource("User.Inbound.BasicInfo.Subject") : </span>
+            <span class="transaction-number Editor-lable">@ViewData["Subject"]</span>
+        </div>
+    </div>
+    <div class="row ">
+        <div class="col-md-12 pl-5 pr-5">
+            @Html.Partial("~/Areas/User/Views/Shared/TransactionCertificate/_AssignmentGridElectronicreceipt.cshtml", ViewData["AssignmentsData"])
+        </div>
+        <div class="col-md-12 pl-5 pr-5">
+            <span>النسخ الخارجية</span>
+
+            @Html.Partial("~/Areas/User/Views/Shared/TransactionCertificate/_ExternalCopiesGridElectronicreceipt.cshtml", ViewData["ExternalCopiesData"])
+        </div>
+
+        <div class="col-md-12 pl-5 pr-5">
+            <span>النسخ الداخلية</span>
+
+            @Html.Partial("~/Areas/User/Views/Shared/TransactionCertificate/_CopiesGridElectronicreceipt.cshtml", ViewData["CopiesData"])
+        </div>
+    </div>
+
+</div>

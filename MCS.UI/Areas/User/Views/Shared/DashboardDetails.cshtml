@@ -1,0 +1,94 @@
+﻿@using MCS.UI.Areas.User.Models.Transaction;
+@model AjaxGrid<TransactionDetailsVM>
+@using MCS.Framework.Localization;
+@using MCS.Framework.Controls;
+@using MCS.UI.Common;
+@using MCS.UI.Helpers;
+@using System.Reflection;
+@using MCS.UI.Areas.Admin.Models.Lookups
+@using System.Globalization;
+@{
+    Layout = "~/Views/Shared/_DialogLayout.cshtml";
+}
+<div class="row ">
+
+
+
+    
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" id="theme" href="@UIConfigurations.GetFullLocalURl()/Content/User/lib/css/theme_@(SessionInfo.CultureShortName).css" />
+        @if (SessionInfo.CultureShortName == "ar")
+        {
+            <link rel="stylesheet" type="text/css" id="theme" href="@UIConfigurations.GetFullLocalURl()/Content/User/lib/css/rtl.css" />
+        }
+        <link type="image/x-icon" rel="shortcut icon" href="@UIConfigurations.GetFullLocalURl()/Content/User/lib/favicon.png">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <meta name="theme-color" content="#0c7c5a">
+         
+        <link href="@UIConfigurations.GetFullLocalURl()/Content/User/lib/css/new.css" rel="stylesheet" />
+        <link href="@UIConfigurations.GetFullLocalURl()/Content/User/lib/plugins/select2/select2.min.css" rel="stylesheet" />
+        <link href="@UIConfigurations.GetFullLocalURl()/Content/User/lib/css/dawood-style.css" rel="stylesheet" />
+         
+        <style>
+            .pagebreak {
+                page-break-after: always;
+            }
+
+            table.rprt {
+                width: 80%;
+            }
+
+                table.rprt td {
+                    padding: 5px;
+                    text-align: center;
+                }
+
+            table.rprtGrid {
+                width: 100%;
+                border: 1px solid #000000;
+            }
+
+                table.rprtGrid td {
+                    padding: 5px;
+                    border-bottom: 1px dashed #ffffff;
+                }
+        </style>
+     
+    <table style=" background-color: #ffffff" class="rprt">
+        <tr>
+            <td>
+                <p>
+                    المملكة العربية السعودية
+                </p>
+
+                <p>
+                    الامانة العامة لمجلس الخدمة العسكرية
+                </p>
+            </td>
+            <td>
+
+                @if (ViewData["LogoFile"] != null)
+                {
+                    <img class="" width="200" src="~/Content/User/lib/images/GAMI_Logo_Color-01.svg" />
+                }
+                <img class="" width="200" src="~/Content/User/lib/images/GAMI_Logo_Color-01.svg" />
+
+
+                <br>
+
+
+                <b>
+                    @*تقرير / ع*@
+                </b>
+                <br />
+
+            </td>
+        </tr>
+    </table>
+    <div class="col-md-12">
+        @Html.Partial("_DashboardDetailsGrid", Model, ViewData)
+    </div>
+</div>

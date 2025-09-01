@@ -1,0 +1,36 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.Lookups
+@using MCS.GridMvc.Helpers;
+@using MCS.GridMvc.Html;
+@using MCS.Common;
+
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<AttachmentExtensionVM>
+@{
+    ViewBag.Title = "_AttachmentExtensionsGridPartial";
+}
+
+@Html.Grid(Model).Named("AttachmentExtensions").Columns(columns =>
+{
+    columns.Add(model => model.Id).Titled(DbRes.TResource("Admin.Priority.Id")).Css("hidden_");
+    columns.Add(model => model.ExtensionName, "ExtensionName").Titled(DbRes.TResource("Admin.Lookups.AttachmentEctension.Type"));
+    //columns.Add(model => model.UserName, "UserName").Titled(DbRes.TResource("Admin.Lookups.PriorityExceptions.UserName"));
+ 
+}).WithPaging(GridHelper.PageSize)
+
+<script>
+    var token = $("#token input[name='__RequestVerificationToken']").val()
+    var AttachmentExtensionsGridEventHandler = "@Url.Action("UpdateAttachmentExtentionsGrid", "Lookups")?__RequestVerificationToken=" + token;
+    function prepareAttachmentExtensionsReportGrid() {
+            $(".grid-mvc").gridmvc();
+        pageGrids.AttachmentExtensions.ajaxify({
+            getPagedData: AttachmentExtensionsGridEventHandler,
+                requestType: "GET",
+            getData: AttachmentExtensionsGridEventHandler
+            });
+        }
+
+        $(document).ready(function () {
+            prepareAttachmentExtensionsReportGrid();
+        });
+</script>
+

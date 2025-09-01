@@ -1,0 +1,304 @@
+﻿@model MCS.UI.Areas.User.Models.Transaction.Outbound.External.VIPEditOutboundExternalBasicInfoVM
+@using MCS.Common;
+@using MCS.Framework.Localization
+@using MCS.Framework.Controls;
+@using MCS.UI.Helpers
+@using MCS.UI.Common
+@using MCS.UI.Areas.User.Models.Transaction;
+@{
+    var doconutIncludeIframeUrl = UIConfigurations.GetFullURl() + string.Format("{0}?hidecontrols=true&sIncludedItemDoc=true&showwatermark={1}", SystemConfigurations.DoconutIframeUrl, "true");
+}
+<div class="white-bg" id="dvBasicInfo">
+    <div class="form-row BasicInfo">
+        <div class="d-flex flex-column pt-2 pr-3 pl-5 pb-0 top-details">
+            <div class="d-flex" style="margin-right:-45px; margin-bottom:16px;">
+                <div class="pl-sm-5 Editor-div">
+                    <div class="gray3">@DbRes.TResource("User.OutboundDraft.BasicInfo.DraftNumber") :</div>
+                    <div class="transaction-number Editor-lable">@Model.Number</div>
+                    @Html.Hidden("hdnNumber", @Model.Number)
+                </div>
+                <div class="pl-5 Editor-div">
+                    <div class="gray3">@DbRes.TResource("User.OutboundDraft.TransactionCreatedDate") </div>
+                    <div class="date-value Editor-lable">
+                        @Model.CreatedDateH
+                    </div>
+                </div>
+                <div class="pl-5 Editor-div">
+                    <div class="gray3">@DbRes.TResource("User.Audit.TransactionLog.EntityId") </div>
+                    <div class="date-value Editor-lable">
+                        @Model.EntityName
+                    </div>
+                </div>
+                <div class="pl-5 Editor-div">
+                    <div class="gray3">@DbRes.TResource("User.Transaction.ConfidentialityLevel") </div>
+                    <div class="date-value Editor-lable" id="ConfidentialityLevelText">
+                        @Model.ConfidentialityLevelText
+                    </div>
+                </div>
+                <div class="pl-sm-5">
+                    <div class="gray3">@DbRes.TResource("User.Transaction.Subject")</div>
+                    <div class="transaction-number Editor-lable" id="subject" style="word-break:break-all">@Model.Subject</div>
+                    @Html.HiddenFor(model => model.Subject)
+                </div>
+                <div class="pl-sm-5" style="display:none;">
+                    <div class="" id="PriorityLevelText">@Model.PriorityLeveText</div>
+
+                </div>
+
+            </div>
+            <div class="d-flex" style="margin-right:-45px; margin-bottom:16px;">
+                <div class="pl-sm-5 Editor-div">
+                    <div class="gray3">@DbRes.TResource("User.OutboundInternal.BasicInfo.Summary") :</div>
+                    <div class="transaction-number Editor-lable">
+                        @Model.Summary
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-12">
+            <ul class="custom-sub-nav-tabs mb-2 mb-sm-auto d-flex flex-nowrap" role="tablist" style="border: 1px solid white; border-radius: 20px; padding: 5px;">
+                <li role="presentation" class="vipTab">
+                    <a class="site-color-vip px-2 d-block d-sm-inline" onclick="basicInfo()" title="@DbRes.TResource("User.OutboundExternal.DataInsertion")">
+                        <span>@DbRes.TResource("User.OutboundExternal.DataInsertion")</span>
+                        <i class="uicon icon_folder1"></i>
+                    </a>
+                </li>
+                <div style="border-left: 2px solid #FFF; height: 24px; "></div>
+
+                <li role="presentation" id="reply" class="vipTab ml-3">
+                    <a class="site-color-vip  px-2 d-block d-sm-inline" title="@DbRes.TResource("User.OutboundInternal.Assignment")" onclick="assignmentPaper()">
+                        <span>@DbRes.TResource("User.OutboundInternal.Assignment")</span>
+                        <i class="fa fa-book"></i>
+                    </a>
+                </li>
+
+            </ul>
+
+        </div>
+
+        <div class="col-xs-12" id="ArchivingPartial">
+
+            @{Html.ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+            @Html.Partial("~/Areas/User/Views/Vip/Editor/_VIPDraftEditorPartial.cshtml", ViewData["EditorViewModel"], Html.ViewData)
+            @{Html.ViewData.TemplateInfo.HtmlFieldPrefix = null;};
+            @Html.Partial("~/Areas/User/Views/Transaction/_ArchivingPartialMainDocument.cshtml", new TransactionArchiveVM(TransactionAttachmentType.Main, true, false, true, bReadOnly: false), Html.ViewData)
+            <div id="dvScanningArchiving" style="display:none">
+
+                <div id="dvDocumentViewerEditorContainerArchiving" class="">
+
+                    <iframe src="@doconutIncludeIframeUrl" class="col-md-12" style="height:1430px; width:100%" id="frameViewerAttachmentForArchiving"></iframe>
+
+                </div>
+
+
+            </div>
+        </div>
+
+        @Html.StickyHidden("hdnDocumentId", ViewData["hdnDocumentId"].ToString(), new { id = "hdnDocumentId" })
+    </div>
+
+    @*<div class="row" id="ArchivingPartial">
+            @Html.Partial("~/Areas/User/Views/Vip/Archives/_ArchivingPartialMainDocument.cshtml", new TransactionArchiveVM(TransactionAttachmentType.Main, true, false, false), Html.ViewData)
+            @Html.StickyHiddenFor(model => model.IsDecisionDraft, new { id = "hdnIsDecisionDraft" })
+        </div>*@
+</div>
+<script>
+    $(document).ready(function ()
+    {
+
+        if ($("#hdnTypeId").val() == '52')
+        {
+            $('.RecordNumber').show();
+        }
+        $("#ddlTypeId").change(function ()
+        {
+
+            if ($("#hdnTypeId").val() == '52')
+            {
+                $('.RecordNumber').show();
+            }
+            else
+            {
+                $('.RecordNumber').hide();
+            }
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        onChangeDeliveryMethod();
+    });
+
+    function onChangeDeliveryMethod() {
+        var value = $('#hdnBasicDeliveryMethod').val();
+        switch (parseInt(value)) {
+            case DeliveryMethodType.Paper:
+                ShowHideReporterContent(true);
+                break;
+            case DeliveryMethodType.Electronic:
+                ShowHideReporterContent(false);
+                break;
+            case DeliveryMethodType.ElectronicPaper:
+                ShowHideReporterContent(true);
+                break;
+            default:
+        }
+    }
+
+           function ShowArchiviableData(id, documentId, key) {
+
+
+        var token = $('form:first').find("input[name='__RequestVerificationToken']").val();
+
+            var url = "@Url.Action("VIPViewArchive", "OutboundInternal")";
+            var data = { key: id, documentId: documentId, __RequestVerificationToken: token };
+            $.ajax({
+                type: "POST",
+                url: url,
+                cache: false,
+                data: data,
+                success: function (data) {
+
+                    debugger;
+                    if (data.MessageType !== 2) {
+                        $('#dvexplanationsText').hide();
+                            $('#dvScanningArchiving').show();
+                            $('.doconutContainerForArchiving').hide();
+                            document.getElementById('frameViewerAttachmentForArchiving').contentWindow.location.reload();
+
+                    }
+                }
+            });
+
+    }
+        function ShowTextData(id, documentId, key) {
+        debugger;
+             $.ajax({
+            type: 'get',
+            cache: false,
+            url: '@Url.Action("GetExplanationByDocumentId", "VipOutboundDraft")',
+                 data: { id: documentId, hdnExplanationDocumentSessionKey: key },
+                 success: function (data) {
+                     debugger;
+
+                if (data.Type == 3) {
+
+                    $("#archivetxtDescription").val(data.Content);
+                    document.getElementById('explinationDateTime').innerText = data.Date;
+                    document.getElementById('explinationFromUser').innerText = data.FromUser;
+                    $('#dvexplanationsText').show();
+                    $('.doconutContainerForArchiving').hide();
+                    $('#dvScanningArchiving').hide();
+                }
+            }
+        });
+    }
+         function PreviewTransactionDocumentForLink(transactionId) {
+        $.ajax({
+            type: 'get',
+            url: '@Url.Action("GetMainDocumentByTransactionId", "OutboundInternal")',
+            data: { transactionId: transactionId, __RequestVerificationToken: token },
+            success: function (data) {
+                debugger
+                if (data.MessageType != 2) {
+
+                    var documentId = EncryptionKey(data.DocumentDTOResult.Id).toString();
+
+                    ShowArchiviableData(transactionId, documentId, "");
+
+
+                }
+                else {
+                    RedirectToTargetPage();
+                }
+            }
+        });
+
+    }
+
+    $(document).on("click", "span[data-node-id]", function () {
+        var elemnt = $(this);
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('LoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetExternalPartyNodes")',
+                data: { parentId: $(this).data("node-id"), letterId: $("#hdnOutboundDocumentType").val(), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+                success:
+                    function (data) {
+                        $(elemnt).closest('li').children('ul').last().empty()
+
+                        $(elemnt).closest('li').children('ul').last().append(data);
+
+                        if ($(elemnt).attr('data-isRefreshEnabled').toLowerCase() == 'false') {
+
+                            $(elemnt).removeClass("LoadedData")
+                        }
+                    }
+            });
+        }
+
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('ExternalLoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetOrgUnitsNodes")',
+                data: { parentId: $(this).data("node-id"), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+                success:
+                    function (data) {
+
+                        $(elemnt).closest('li').children('ul').last().empty()
+
+                        $(elemnt).closest('li').children('ul').last().append(data);
+
+                        $(elemnt).removeClass("ExternalLoadedData");
+                    }
+            });
+        }
+    });
+    $(document).on("focusout", "#ddlTypeId", function () {
+        if ($('#hdnTypeIsPopularization').val() === "true") {
+            $(".dvPopulariazationTo").show();
+        }
+        else {
+            $(".dvPopulariazationTo").hide();
+            $("#hdnPopulariazationGroupId").val("");
+            $("#hdnPopulariazationGroupId").trigger("change");
+            //to clear to popul...
+        }
+
+    })
+    $('._openDia').click(function () {
+        ShowDialog('@Url.Action("AssignmentGroupAdd", new { txtId = "ddlPopulariazationGroupId", divContainer = "dvPopulariazationTo" })');
+        //
+    });
+
+    $(document).ready(function () {
+
+        $('.disabled').prop('disabled', true);
+
+
+
+    });
+    $('#aArchive').click(function ()
+    {
+        $('#dvExplanation').hide();
+        $('#first-tab').show();
+
+    });
+    $('#aExplanation').click(function ()
+    {
+        $('#first-tab').hide();
+        $('#dvExplanation').show();
+
+    });
+</script>
+<style>
+    .RedBorder {
+        border: 1px solid #fe0000 !important
+    }
+
+    .VIPEditLable {
+        color: green;
+        font-weight: bold;
+    }
+</style>

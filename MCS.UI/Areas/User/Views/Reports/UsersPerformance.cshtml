@@ -1,0 +1,236 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Common
+@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+@model MCS.UI.Areas.User.Models.UserPerformanceReportViewModel
+
+@{
+    ViewBag.Title = DbRes.TResource("User.Report.UsersPerformance.Reports");
+    Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
+}
+
+<div id="dvContainer">
+    <div class="page-title">
+        <h2><span class="fa fa-arrow-circle-o-left"></span>@DbRes.TResource("User.Report.UsersPerformance.Reports")</h2>
+    </div>
+    <div class="page-content-wrap">
+        <div class="row">
+            <div class="col-md-12">
+                @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmInputsReportUsersAchievement", @class = "form-horizontal form-row" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">@DbRes.TResource("User.Report.UsersPerformance.UsersPerformanceReport")</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.OrgUnitId, TreeMode.Single, "dvOrgUnitsTree", true, "GetOrgUnitUsers", "UserPerformance")
+                                    <div class="form-group">
+                                        <label class="col-md-4 control-label">@DbRes.TResource("User.Report.UsersPerformance.DateBetween")</label>
+                                        <div class="col-md-8" style="direction:ltr;">
+                                            <div class="input-group">
+                                                @Html.Hidden("hdnToDateUm", "", new { id = "hdnToDateUm" })
+                                                @Html.Calendar("toDateCal", "hdnToDateGreg", "hdnToDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+                                                <span class="input-group-addon add-on"> - </span>
+                                                @Html.Hidden("hdnFromDateUm", "", new { id = "hdnFromDateUm" })
+                                                @Html.Calendar("fromDateCal", "hdnFromDateGreg", "hdnFromDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+                                            </div>
+                                            @Html.HiddenGroupFor(model => model.ToDateTime, new { id = "hdnToDateGreg", @Value = "", @Class = "formField form-control" }, "UserPerformance")
+                                            @Html.HiddenGroupFor(model => model.FromDateTime, new { id = "hdnFromDateGreg", @Value = "", @Class = "formField form-control" }, "UserPerformance")
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-4 control-label">@DbRes.TResource("User.Report.UsersPerformance.ReportType")</label>
+                                        <div class="col-md-8">
+                                            @Html.RadioButtonFor(model => model.IsGeneralReport, true, new { id = "GeneralReport" })
+                                            @DbRes.TResource("User.Report.UsersPerformance.GeneralReport")
+                                            @Html.RadioButtonFor(model => model.IsGeneralReport, false, new { id = "DetailedReport" })
+                                            @DbRes.TResource("User.Report.UsersPerformance.DetailedReport")
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.UserId, new { @class = "col-md-4 control-label" })
+                                        <div class="col-md-8">
+                                            @Html.AutoCompleteBuilder("ddlUserId", "hdnUserId", ViewData["OrgUnitsUsersData"] != null ? ViewData["OrgUnitsUsersData"].ToString() : null, Model != null ? Model.UserId.ToString() : null, true, "form-control")
+                                            @Html.HiddenGroupFor(model => model.UserId, new { @Value = "", @class = "formField", id = "hdnUserId" })
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-4 control-label">@DbRes.TResource("User.Report.UsersPerformance.TimeBetween")</label>
+                                        <div class="col-md-8" style="direction:ltr;">
+                                            <div class="input-group">
+                                                @Html.AutoCompleteBuilder("ddlHourTo", "hdnHourToId", LookupCategory.Hour, null, true, "form-control time")
+                                                @Html.HiddenGroupFor(model => model.HourTo, new { @Value = "", id = "hdnHourTo" }, "")
+                                                @Html.Hidden("hdnHourToId", new { @Value = "", id = "hdnHourToId" }, "")
+                                                <span class="input-group-addon anchored">:</span>
+                                                @Html.AutoCompleteBuilder("ddlMinuteTo", "hdnMinuteToId", LookupCategory.Minute, null, true, "form-control time")
+                                                @Html.HiddenGroupFor(model => model.MinuteTo, new { @Value = "", id = "hdnMinuteTo" }, "")
+                                                @Html.Hidden("hdnMinuteToId", new { @Value = "", id = "hdnMinuteToId" }, "")
+                                                <span class="input-group-addon add-on"> - </span>
+                                                @Html.AutoCompleteBuilder("ddlHourFrom", "hdnHourFromId", LookupCategory.Hour, null, true, "form-control time")
+                                                @Html.HiddenGroupFor(model => model.HourFrom, new { @Value = "", id = "hdnHourFrom" })
+                                                @Html.Hidden("hdnHourFromId", new { @Value = "", id = "hdnHourFromId" }, "")
+                                                <span class="input-group-addon add-on anchored">:</span>
+                                                @Html.AutoCompleteBuilder("ddlMinuteFrom", "hdnMinuteFromId", LookupCategory.Minute, null, true, "form-control time")
+                                                @Html.HiddenGroupFor(model => model.MinuteFrom, new { @Value = "", id = "hdnMinuteFrom" })
+                                                @Html.Hidden("hdnMinuteFromId", new { @Value = "", id = "hdnMinuteFromId" }, "")
+                                            </div>
+                                            @Html.HiddenTimeSpanFor(model => model.TimeFrom, "ddlHourFrom", "ddlMinuteFrom", "UserPerformance")
+                                            @Html.HiddenTimeSpanFor(model => model.TimeTo, "ddlHourTo", "ddlMinuteTo", "UserPerformance")
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-footer">                       
+                            @Html.ClientButton(DbRes.TResource("User.Report.UsersPerformance.Search"), "btnSearch", "btn btn-permissions pull-right", "Redirect", UserClaims.Reports.UserPerformanceReports)
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    @Html.Hidden("SelectedOrgUnitName", null, new { @class = "formField" })
+    @Html.Hidden("SelectedUserName", null, new { @class = "formField" })
+    @Html.Hidden("CultureName", SessionInfo.CultureShortName)
+</div>
+<form class="form-horizontal form-row" target="_blank" action="@(MCS.UI.UrlHelper.GetBaseUri() + "/ReportViewer.aspx?ReportName=UsersAchievement")" method="post" id="frmReportUsersAchievement">
+</form>
+<form class="form-horizontal form-row" target="_blank" action="@(MCS.UI.UrlHelper.GetBaseUri() + "/ReportViewer.aspx?ReportName=UsersAchievementDetailed")" method="post" id="frmReportUsersAchievementDetailed"></form>
+
+<script>
+
+    $(function () {
+        $("#SelectedOrgUnitName").val($("#divForm__dvOrgUnitsTree .txtDepartmentName").val());
+    })
+
+
+    function Redirect() {
+
+
+        ClickedSubmit = "UserPerformance";
+
+        DateTimeValidation();
+
+        if ($('#frmInputsReportUsersAchievement').valid()) {
+
+           
+            if ($("#hdnToDateGreg").val() != "") {
+                var ToDate = $("#hdnToDateGreg").val().split(' ')[0];
+                $("#hdnToDateGreg").val(ToDate + " " + $("#hdnTimeSpanTimeTo").val());
+            }
+
+            if ($("#hdnFromDateGreg").val() != "") {
+
+                var FromDate = $("#hdnFromDateGreg").val().split(' ')[0];
+                $("#hdnFromDateGreg").val(FromDate + " " + $("#hdnTimeSpanTimeFrom").val());
+            }
+
+            if ($("#DetailedReport").is(":checked")) {
+                $("#OrgUnitId").addClass("formField");
+                $("#frmReportUsersAchievementDetailed").append($("#dvContainer .formField").clone());
+                $("#frmReportUsersAchievementDetailed").append($("#CultureName").clone());
+                $("#frmReportUsersAchievementDetailed").submit();
+                $("#frmReportUsersAchievementDetailed").html("");
+            }
+            else{
+                $("#OrgUnitId").addClass("formField");
+                $("#frmReportUsersAchievement").append($("#dvContainer .formField").clone());
+                $("#frmReportUsersAchievement").submit();
+                $("#frmReportUsersAchievement").html("");
+            }
+          
+        }
+    }
+
+    function GetOrgUnitUsers() {
+
+        if ($("#OrgUnitId").val() != "") {
+
+            $("#SelectedOrgUnitName").val($("#divForm__dvOrgUnitsTree .txtDepartmentName").val());
+
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetUsersByOrgUnitId")',
+                data: { id: $("#OrgUnitId").val() },
+                success:
+               function (data) {
+
+                   $("#ddlUserId").val("");
+                   $("#hdnUserId").val("");
+                   AutoCompleteChangeList("ddlUserId", data);
+
+                   $("#ddlUserId").prop('disabled', false);
+               }
+            });
+            return false;
+        }
+        else {
+            $("#ddlUserId").prop('disabled', true);
+            $("#ddlUserId").val("");
+            $("#hdnUserId").val("");
+            AutoCompleteChangeList("ddlUserId", "[]");
+        }
+    }
+
+    $('#ddlUserId').change(function () {
+
+        $('#SelectedUserName').val($('#ddlUserId').val());
+    });
+
+
+    function DateTimeValidation() {
+
+        var fromDate = $("#hdnFromDateGreg").val();
+        var toDate = $("#hdnToDateGreg").val();
+
+        if (fromDate == null || fromDate == '' || toDate == null || toDate == '')
+            return true;
+
+        var date1 = convertdate(fromDate);
+        var date2 = convertdate(toDate);
+
+        if (date1 != date2) {
+
+            $("#hdnTimeSpanTimeFrom").val('');
+            $("#hdnTimeSpanTimeTo").val('');
+        }
+        else {
+
+            AppendHours('hdnTimeSpanTimeFrom', 'ddlHourFrom');
+            AppendMinutes('hdnTimeSpanTimeFrom', 'ddlMinuteFrom');
+
+            AppendHours('hdnTimeSpanTimeTo', 'ddlHourTo');
+            AppendMinutes('hdnTimeSpanTimeTo', 'ddlMinuteTo');
+        }
+
+        return true;
+    }
+
+    $('#ddlHourTo').change(function () {
+
+        $('#hdnHourTo').val($('#ddlHourTo').val());
+    });
+
+    $('#ddlMinuteTo').change(function () {
+
+        $('#hdnMinuteTo').val($('#ddlMinuteTo').val());
+    });
+
+    $('#ddlHourFrom').change(function () {
+
+        $('#hdnHourFrom').val($('#ddlHourFrom').val());
+    });
+
+    $('#ddlMinuteFrom').change(function () {
+
+        $('#hdnMinuteFrom').val($('#ddlMinuteFrom').val());
+    });
+
+</script>
+

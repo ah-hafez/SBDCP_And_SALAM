@@ -1,0 +1,278 @@
+﻿@model MCS.UI.Areas.User.Models.Transaction.TransactionCopyVM
+@using MCS.Common;
+@using MCS.Framework.Localization
+
+@{string controller = "Editor";}
+@{ViewData.TemplateInfo.HtmlFieldPrefix = "TransactionCopy";}
+
+<div class="single-wrapper">
+    <div id="dvEditorCopiesBody">
+        <div id="dvEditorCopiesForm" class="form-horizontal form-row">
+            @Html.HiddenFor(model => model.OrgUnitName, new { id = "hdnCopyEditorOrgUnitName" })
+            <div class="form-group col-lg-6 col-md-4 col-sm-6 col-xs-12 mb-3">
+               
+                    <div id="dvCopyDepartmentsTree">
+                        @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.OrgUnitId, TreeMode.Single, "dvCopyDepartmentsTree", true, "GetCopyUsersByOrgUnitId", "Copies", "dvCopyDepartmentsTree")
+                        @*<label>@Html.DisplayNameFor(model => model.OrgUnitId)<span class="stark">*</span></label>*@
+                        @*@Html.EditorFor(model => model.OrgUnitId, "OrgHierarchyCaller", additionalViewData: new { treeId = "dvCopyDepartmentsTree", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Shared"), GetNodeInfoByIdActionURL = @Url.Action("GetInternalPartyInfoById", "Shared"), GetNodeInfoByNumActionURL = @Url.Action("GetInternalPartyInfoByNumber", "Shared"), onClickfunction = "GetCopyUsersByOrgUnitId", ValidationGroup = "Copies", ShowAddPartyButton = false })*@
+                    </div> 
+            </div>
+            <div class="col-md-4">
+                <fieldset>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.UserId, new { @class = "control-label" })
+                        <div>
+                            @Html.AutoCompleteBuilder("ddlCopyOrgUnitUsers", "hdnCopyOrgUnitUsers", null, null, true, "form-control")
+                            @Html.HiddenFor(model => model.UserName, new { id = "hdnCopyOrgUnitUserName", @class = "UserName" })
+                            @Html.HiddenGroupFor(model => model.UserId, new { id = "hdnCopyOrgUnitUsers", @Value = "", @class = "UserId" })
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="col-md-4">
+                <fieldset>
+                    <div class="form-group">
+                        @Html.Label(@DbRes.TResource("User.Transaction.Assignment.Reason"), new { @class = "control-label" }) <span class="stark">*</span>
+                        <div>
+                            @Html.AutoCompleteBuilder("ddlCopyActionId", "hdnCopyActionId", ViewData["AllActionsData"].ToString(), Model != null ? Model.ActionId.ToString() : null, true, "form-control", "hdnCopyActionTypeId")
+                            @Html.HiddenGroupFor(model => model.ActionId, new { @Value = "", id = "hdnCopyActionId" }, "Copies")
+                            @Html.HiddenGroupFor(model => model.ActionName, new { id = "hdnCopyActionName" }, "Copies")
+                            @Html.HiddenGroupFor(model => model.ActionTypeId, new { @Value = "", id = "hdnCopyActionTypeId" }, "Copies")
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+            @*<div class="col-xs-12">
+                    <p class="stark">@DbRes.TResource("Admin.User.MustFill") * </p>
+                </div>*@
+        </div>
+        @*@Html.StickyHidden("hdnEditorCopies", ViewData["hdnCopyArray"].ToString())*@
+        <div class="row">
+            <div class="col-xs-12 row text-right">
+                @Html.StickyHiddenFor(model => model.Key, new { id = "hdnEditorEditKey" })
+                @Html.ClientActionButton(DbRes.TResource("User.Transaction.Copies.Add"), Url.Action("AddCopy", controller), "dvCopiesGrid", "CopyOnSuccess", null, "Copies", "btnCopy", "dvEditorCopiesBody", "btn-site", null, null, "", "<i class='glyphicon glyphicon-plus'></i>")
+                @Html.ClientActionButton(DbRes.TResource("User.Transaction.Copies.Edit"), Url.Action("EditCopy", controller), "dvCopiesGrid", "CopiesOnEditSuccess", null, "Copies", "btnEditCopies", "dvEditorCopiesBody", " btn-site hidden_", null, null, "")
+                <a class="btn-site " style="display:none" id="aCancelCopy" onclick="CancelCopyEdit(); return false;">@DbRes.TResource("User.Transaction.Name.Cancel")</a>
+            </div>
+        </div>
+        <hr />
+        <div class="panel-body">
+            <div class="row">
+                <div id="dvCopiesGrid">
+                    @Html.Partial("~/Areas/User/Views/Editor/Copies/_CopiesGridPartial.cshtml", Model.Copies, new ViewDataDictionary { { "IsEnableAction", Model.IsEnableAction } })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $("#ddlCopyOrgUnitUsers").prop('disabled', true);
+
+    $(document).on('change', '#ddlCopyOrgUnitUsers', function () {
+
+        $('#hdnCopyOrgUnitUserName').val($('#ddlCopyOrgUnitUsers').val());
+    });
+
+    $(document).on("change", "#ddlCopyActionId", function () {
+        $("#hdnCopyActionName").val($(this).val());
+    })
+            $(document).on("click", "span[data-node-id]", function () {
+        var elemnt = $(this);
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('LoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetExternalPartyNodes")',
+                data: { parentId: $(this).data("node-id"), letterId: $("#hdnInboundDocumentType").val(), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+                success:
+                    function (data) {
+
+                        $(elemnt).closest('li').children('ul').last().empty()
+
+                        $(elemnt).closest('li').children('ul').last().append(data);
+
+                        if ($(elemnt).attr('data-isRefreshEnabled').toLowerCase() == 'false') {
+
+                            $(elemnt).removeClass("LoadedData")
+                        }
+                    }
+            });
+        }
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('InternalLoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetOrgUnitsNodes")',
+                data: { parentId: $(this).data("node-id"), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+                success:
+                    function (data) {
+
+                        $(elemnt).closest('li').children('ul').last().empty()
+
+                        $(elemnt).closest('li').children('ul').last().append(data);
+
+                        $(elemnt).removeClass("InternalLoadedData");
+                    }
+            });
+        }
+    });
+
+    function GetCopyUsersByOrgUnitId() {
+     
+        //if ($("#divForm__dvCopyDepartmentsTree").find(".hdnDepartmentId").val() != '' && $("#dvEditorCopiesBody .txtDepartmentName").val() != '') {
+        if ($("#TransactionCopy_OrgUnitId").val() != "" && $("#TransactionCopy_OrgUnitId").val() != undefined) {
+        $("#hdnCopyOrgUnitUsers").val('');
+            $("#ddlCopyOrgUnitUsers").val('');
+            $("#hdnCopyOrgUnitUserName").val('');
+            $('#hdnCopyEditorOrgUnitName').val($('#dvEditorCopiesBody .txtDepartmentName').val());
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetUnitUsers", controller)',
+                data: { id: $("#TransactionCopy_OrgUnitId").val() },
+               // data: { id: selectedParty },
+                success:
+               function (data) {
+                   AutoCompleteChangeList("ddlCopyOrgUnitUsers", data);
+                   $("#ddlCopyOrgUnitUsers").trigger('change');
+                   $("#hdnCopyOrgUnitUsers").trigger('change');
+                   $("#ddlCopyOrgUnitUsers").prop('disabled', false);
+               }
+            });
+            return false;
+        }
+        else {
+
+            AutoCompleteChangeList("ddlCopyOrgUnitUsers", "[]");
+            $("#hdnCopyOrgUnitUsers").val('');
+            $("#ddlCopyOrgUnitUsers").trigger('change');
+            $("#hdnCopyOrgUnitUsers").trigger('change');
+            $("#ddlCopyOrgUnitUsers").prop('disabled', true);
+        }
+    }
+    function GetCopyById(key) {
+        $("#dvCopyDepartmentsTree_hdnDepartmentId").val($("#OrgUnitId_" + key).val());
+        SetTreeDefaultInfo("dvCopyDepartmentsTree");
+
+        //$("#divForm__dvCopyDepartmentsTree").find(".hdnDepartmentId").val($("#OrgUnitId_" + key).val());
+        //$("#dvEditorCopiesBody .txtDepartmentName").val($("#OrgUnitName_" + key).val());
+        //$("#dvEditorCopiesBody .txtDepartmentNumber").val($("#OrgUnitId_" + key).val());
+        //GetCopyUsersByOrgUnitId();
+        $("#hdnCopyOrgUnitUsers").val('');
+        $("#ddlCopyOrgUnitUsers").val('');
+        $("#hdnCopyOrgUnitUserName").val('');
+        $('#hdnCopyOrgUnitName').val($('#dvCopiesForm .txtDepartmentName').val());
+
+        $("#ddlCopyOrgUnitUsers").val($("#UserName_" + key).val());
+        $("#hdnCopyOrgUnitUserName").val($("#UserName_" + key).val());
+        $("#hdnCopyOrgUnitUsers").val($("#UserId_" + key).val());
+        $("#hdnCopyActionId").val($("#ActionId_" + key).val());
+        $("#ddlCopyActionId").val($("#ActionName_" + key).val());
+        $("#hdnCopyActionName").val($("#ActionName_" + key).val());
+        $("#hdnEditorEditKey").val(key);
+        $("#btnCopy").hide();
+        $("#btnResetCopy").hide();
+        $("#btnEditCopies").show();
+        $("#aCancelCopy").show();
+        $("#btnEditCopies").removeClass("hidden_");
+     
+        if ($("#OrgUnitId_" + key).val() != '' && $("#OrgUnitId_" + key).val() != undefined)
+        {
+             $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetUnitUsers", controller)',
+                data: { id: $("#OrgUnitId_" + key).val() },
+                success:
+               function (data) {
+                   AutoCompleteChangeList("ddlCopyOrgUnitUsers", data);
+                   $("#ddlCopyOrgUnitUsers").trigger('change');
+                   $("#hdnCopyOrgUnitUsers").trigger('change');
+                   $("#ddlCopyOrgUnitUsers").prop('disabled', false);
+               }
+            });
+        }
+
+        return false;
+    }
+
+    function CopyOnSuccess(data) {
+        $("#dvCopiesBody .txtDepartmentName").val($("#OrgUnitName_" + data.key).val());
+        if (data.MessageType != 2) {
+            $("#grid-table-grdCopies > tbody > .grid-empty-text").remove();
+            $("#grid-table-grdCopies > tbody:last").append(data.Html);
+            ClearInputs('dvEditorCopiesForm');
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function ResetActionCopies() {
+        $("#btnCopy").show();
+        $("#btnEditCopies").hide();
+        $("#aCancelCopy").hide();
+    }
+
+    function OnDeleteCopiesSuccess(data) {
+        if (data.MessageType != 2) {
+            $("#grid-table-grdCopies > tbody > .grid-empty-text").remove();
+            $("#grid-table-grdCopies > tbody:last").append(data.Html);
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    $(document).on("change", "#Key", function () {
+        if ($(this).val().length == 10) {
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("GetCopies",controller)',
+                cache:false,
+                data: { "key": $(this).val() },
+                success:
+               function (data) {
+                   var hasData = false;
+                   $.each(data, function (name, value) {
+                       $("#dvEditorCopiesBody #" + name).val(value);
+                       hasData = true;
+                   });
+                   if (hasData) {
+                       $("#dvEditorCopiesBody #key").trigger("change");
+                   }
+                   else {
+                       if ($("#btnCopy").css("display") == "block") {
+                           $("#dvEditorCopiesBody #Id").val("");
+                       }
+                   }
+                   return;
+               }
+            });
+        }
+    })
+    function CancelCopyEdit()
+    {
+        $("#btnCopy").show();
+        $("#btnResetCopy").show();
+        $("#btnEditCopies").hide();
+        $("#aCancelCopy").hide();
+        $('#grid-table-grdCopies').find('#Key_' + $("#hdnEditorEditKey").val()).closest('tr').removeClass("grid-row-selected");
+        ClearInputs('dvEditorCopiesForm');
+    }
+
+    function CopiesOnEditSuccess(data, div) {
+        if (data.MessageType != 2) {
+            if (data.Key != "") {
+                $('#grid-table-grdCopies').find('#Key_' + data.Key).closest('tr').replaceWith(data.Html);
+            }
+            $("#dvCopiesBody .txtDepartmentName").val($("#OrgUnitName_" + data.key).val());
+            ClearInputs('dvEditorCopiesForm');
+            $("#btnCopy").show();
+            $("#btnResetCopy").show();
+            $("#btnEditCopies").hide();
+            $("#aCancelCopy").hide();
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+</script>
+

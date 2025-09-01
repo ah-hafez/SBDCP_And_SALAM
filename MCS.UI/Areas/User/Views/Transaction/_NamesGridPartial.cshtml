@@ -1,0 +1,38 @@
+﻿@model AjaxGrid<MCS.UI.Areas.User.Models.Transaction.TransactionNameVM>
+
+@{
+    var operationType = ViewData["IsEnableAction"] ?? true;
+    string controller = TempData.Peek("ControllerName") != null ? TempData.Peek("ControllerName").ToString() : ViewContext.RouteData.Values["controller"].ToString();
+    ViewData.TemplateInfo.HtmlFieldPrefix = "TransactionName";
+    //var permissionText = (Convert.ToInt32(ViewData["TransactionCategoryId"]) == TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName)) ? UserClaims.Inbound.DeleteNames : UserClaims.Outbound.DeleteNames;
+}
+
+@Html.Grid(Model).CollectionName("Names").Named("grdNames").Columns(columns =>
+{
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Id, new { id = "Id_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Key, new { id = "Key_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Address, new { id = "Address_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.City, new { id = "City_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Email, new { id = "Email_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Gender, new { id = "Gender_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.MobileNumber, new { id = "MobileNumber_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.NationalityId, new { id = "NationalityId_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.OtherInformation, new { id = "OtherInformation_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Phone, new { id = "Phone_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.RelativeRelation, new { id = "RelativeRelation_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.TitleId, new { id = "TitleId_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.CivilID, new { id = "CivilID_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.FirstName, new { id = "FirstName_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.SendSMS, new { id = "SendSMS_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+
+    columns.Add(model => model.CivilID).Titled(DbRes.TResource("User.Transaction.Name.CivilID"));
+    columns.Add(model => model.FirstName).Titled(DbRes.TResource("User.Transaction.Name.FullName"));
+    columns.Add(model => model.Phone).Titled(DbRes.TResource("User.Transaction.Name.Phone"));
+
+    if ((bool)operationType)
+    {
+        columns.Add().Titled("تعديل").Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => @Html.ClientLinkTag("", cssClass: "edit_link", title: DbRes.TResource("Grid.Edit"), clientFunctionToCall: "GetNameById(" + model.Key + ")", permissionCode: UserClaims.Names.Edit, innerHtml: "<i class='fa fa-edit'></i>"));
+        columns.Add().Titled("حذف").Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => @Html.ClientLinkTag("", cssClass: "edit_link", permissionCode: UserClaims.Names.Delete, clientFunctionToCall: "DeleteActionGrid(" + "'grdNames'," + model.Key + ",'" + DbRes.TResource("Grid.DeleteMassage") + "','dvNamesForm','','','ResetActionName')", innerHtml: "<i class='glyphicon glyphicon-trash color-danger'></i>"));
+    }
+})
+

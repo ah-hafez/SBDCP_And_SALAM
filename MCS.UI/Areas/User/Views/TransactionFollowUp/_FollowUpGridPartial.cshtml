@@ -1,0 +1,24 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Transaction
+@using MCS.GridMvc.Helpers;
+@using MCS.GridMvc.Html;
+@using MCS.Common;
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<TransactionFollowUpVM>
+
+
+@Html.Grid(Model).CollectionName("FollowUps").Named("grdFollowUps").Columns(columns =>
+{
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Id, new { id = "Id_" + model.Id }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Key, new { id = "Key_" + model.Id }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.FollowUpUserId, new { id = "UserId_" + model.FollowUpUserId }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.FollowUpEntityId, new { id = "FromEntityId_" + model.FollowUpEntityId }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(model => model.FollowUpType).Titled(DbRes.TResource("User.FollowUp.FollowUpType"));
+    columns.Add(model => model.CreatingEntityName).Titled(DbRes.TResource("User.FollowUp.CreatingUserName"));
+    columns.Add(model => model.CreationDateHj).Titled(DbRes.TResource("User.FollowUp.CreationDate"));
+    columns.Add(model => model.FollowUpUserName).Titled(DbRes.TResource("User.FollowUp.FollowUpUser"));
+    columns.Add(model => model.FollowUpReceiveDateHj).Titled(DbRes.TResource("User.FollowUp.FollowUpReceiveDate"));
+    columns.Add(model => model.FollowUpExpireDateHj).Titled(DbRes.TResource("User.FollowUp.FollowUpExpireDate"));
+    columns.Add(model => model.FollowUpStatus).Titled(DbRes.TResource("User.FollowUp.FollowUpStatus"));
+
+
+})

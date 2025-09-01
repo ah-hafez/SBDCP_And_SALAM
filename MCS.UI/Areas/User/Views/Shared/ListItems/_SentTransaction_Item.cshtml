@@ -1,0 +1,557 @@
+﻿@using MCS.Common
+@using MCS.UI.Helpers
+@using MCS.UI.Areas.User.Models.File
+@model TransactionTrayInfoVM
+
+@{
+    string colorType = string.Empty;
+    string isIndivisualText = Model.TransactionDetailsInfoVM.TransactionCategoryId == TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName) ? Model.TransactionDetailsInfoVM.IsIndividual ? string.Format("({0})", DbRes.TResource("User.Inbound.BasicInfo.InboundDestination.Individual")) : string.Format("({0})", DbRes.TResource("User.Inbound.BasicInfo.InboundDestination.Entities")) : string.Empty;
+    string className = "result";
+    string classNameTo = "result";
+    if (Model.TransactionDetailsInfoVM.ConfidentialityId == 28 || Model.TransactionDetailsInfoVM.ConfidentialityId == 29)
+    {
+        className = "resultReed";
+    }
+    if (Model.TransactionDetailsInfoVM.TransactionTypeId == 2)
+    {
+        classNameTo = "resultReed";
+    }
+    bool isPermition = false;
+    string Confidentiality = "ConfidentialityNormal";
+    string ConfidentialityBac = "ConfidentialityNormalBackg";
+
+    switch (Model.TransactionDetailsInfoVM.ConfidentialityId)
+    {
+        case (int)Confedentiality.HandDelivered:
+            {
+                Confidentiality = "ConfidentialityVeryRed";
+                ConfidentialityBac = "ConfidentialityVeryRedBackg";
+
+                if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.ConfidentialityOfTransactions.HandDelivered))
+                {
+                    isPermition = true;
+                }
+
+                break;
+            }
+        case (int)Confedentiality.HighConfidential:
+            {
+                Confidentiality = "ConfidentialityMidRed";
+                ConfidentialityBac = "ConfidentialityMidRedBackg";
+
+                if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.ConfidentialityOfTransactions.HandDelivered) || SessionInfo.CurrentUser.Claims.Contains(UserClaims.ConfidentialityOfTransactions.ExtremlyConfidential))
+                {
+                    isPermition = true;
+                }
+
+                break;
+            }
+        case (int)Confedentiality.Secret:
+            {
+                Confidentiality = "ConfidentialityRed";
+                ConfidentialityBac = "ConfidentialityRedBackg";
+
+                if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.ConfidentialityOfTransactions.HandDelivered) || SessionInfo.CurrentUser.Claims.Contains(UserClaims.ConfidentialityOfTransactions.ExtremlyConfidential) || SessionInfo.CurrentUser.Claims.Contains(UserClaims.ConfidentialityOfTransactions.Secret))
+                {
+                    isPermition = true;
+                }
+
+                break;
+            }
+        case (int)Confedentiality.Normal:
+            {
+                isPermition = true;
+                break;
+            }
+    }
+
+}
+
+<style>
+    .description {
+        text-align: center;
+        color: white;
+    }
+
+    .cardTable {
+        max-height: 200px;
+        min-height: 197px;
+    }
+
+        .cardTable .table.section2 {
+            transform: translateY(-169px);
+            background: white;
+            display: none;
+        }
+
+        .cardTable:hover .table.section2 {
+            transform: translateY(-179px);
+            display: inline-table;
+            min-height: 197px;
+        }
+
+
+    .ConfidentialityNormalBackg {
+        border: 2px solid #869AB7;
+    }
+
+    .ConfidentialityVeryRedBackg, .ConfidentialityRedBackg, .ConfidentialityMidRedBackg {
+        border: 2px solid #c41c0e;
+    }
+
+
+    .correspondence-icon .info {
+        color: white !important;
+    }
+</style>
+@foreach (TransactionAssignmentInfoVM transactionAssignmentInfoVM in Model.TransactionAssignmentInfoVMs)
+{
+    string recived = "Notrecived";
+    if (transactionAssignmentInfoVM.Viewed)
+    {
+        recived = "recived";
+    }
+    {
+        if (Model.TransactionDetailsInfoVM.TransactionTypeColorId == Color.Red.LookupIdentity(LookupCategory.Color, SessionInfo.CultureShortName))
+        {
+
+            colorType = "reddark";
+
+        }
+        else if (Model.TransactionDetailsInfoVM.TransactionTypeColorId == Color.Blue.LookupIdentity(LookupCategory.Color, SessionInfo.CultureShortName))
+        {
+
+            colorType = "blue";
+
+
+        }
+        else
+        {
+            colorType = "gray";
+        }
+
+
+    }
+    <!-- #Start# BOX -->
+    <div class="box-grid" data-id="@Model.TransactionDetailsInfoVM.Id">
+        <div class="box animated zoomIn buttons-action hover-area @ConfidentialityBac">
+            <div class="correspondence-t">
+                <div class="d-flex">
+
+                    <div class="col-lg-9">
+                        <div class="mr-auto d-flex">
+                            <div class="checkbox">
+                                @if (Model.TransactionDetailsInfoVM.HasPermission)
+                                {
+                                    <label>
+                                        <input type="checkbox" value="" onchange="holdDataFromBox(this); EnablePrint(this); SentCheckboxChange(this);" id="ch_@Model.TransactionDetailsInfoVM.Id" data-id="@Model.TransactionDetailsInfoVM.Id" data-assignmentId="@transactionAssignmentInfoVM.Id" data-encryptedid="@Model.TransactionDetailsInfoVM.EncryptedId" class="FillIds">
+                                        <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                    </label>
+                                }
+                            </div>
+                            <div class="pl-2">@Model.TransactionDetailsInfoVM.Number</div>
+                        </div>
+                        @if (Model.TransactionDetailsInfoVM.TransactionCategoryId != TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName))
+                        {
+                            if (Model.TransactionDetailsInfoVM.ExternalPartyName == null)
+                            {
+                                <div><br /></div>
+                                if (Model.TransactionAssignmentInfoVMs[0].FromUser.Length > 20)
+                                {
+                                    <div>
+                                        @(Model.TransactionAssignmentInfoVMs[0].FromUser.CompareTo(Model.TransactionAssignmentInfoVMs[0].ToUser) == 0 ? "" : Model.TransactionAssignmentInfoVMs[0].FromUser.Substring(0,20))...
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div>
+                                        @(Model.TransactionAssignmentInfoVMs[0].FromUser.CompareTo(Model.TransactionAssignmentInfoVMs[0].ToUser) == 0 ? "" : Model.TransactionAssignmentInfoVMs[0].FromUser)
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                if (Model.TransactionDetailsInfoVM.ExternalPartyName.Length > 20)
+                                {
+                                    <div class="title" id="entityName_@Model.TransactionDetailsInfoVM.Id">@Model.TransactionDetailsInfoVM.ExternalPartyName.Substring(0, 20)...</div>
+                                }
+                                else
+                                {
+                                    <div class="title" id="entityName_@Model.TransactionDetailsInfoVM.Id">@Model.TransactionDetailsInfoVM.ExternalPartyName</div>
+                                }
+                                if (Model.TransactionAssignmentInfoVMs[0].FromUser.Length > 20)
+                                {
+                                    <div>
+                                        @(Model.TransactionAssignmentInfoVMs[0].FromUser.CompareTo(Model.TransactionAssignmentInfoVMs[0].ToUser) == 0 ? "" : Model.TransactionAssignmentInfoVMs[0].FromUser.Substring(0,20))...
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div>
+                                        @(Model.TransactionAssignmentInfoVMs[0].FromUser.CompareTo(Model.TransactionAssignmentInfoVMs[0].ToUser) == 0 ? "" : Model.TransactionAssignmentInfoVMs[0].FromUser)
+                                    </div>
+                                }
+
+                            }
+                        }
+                        else
+                        {
+                            <div class="title" id="entityName_@Model.TransactionDetailsInfoVM.Id">
+                                @if (Model.TransactionDetailsInfoVM.EntityName == null)
+                                {
+                                    <div><br /></div>
+
+                                }
+                                else
+                                {
+                                    @Model.TransactionDetailsInfoVM.EntityName
+                                }
+                            </div>
+                            <div class="">
+                                @if (Model.TransactionAssignmentInfoVMs[0].FromUser.CompareTo(Model.TransactionAssignmentInfoVMs[0].ToUser) == 0)
+                                {
+                                    <div><br /></div>
+                                }
+                                else
+                                {
+                                    if (@Model.TransactionAssignmentInfoVMs[0].FromUser.Length > 20)
+                                    {
+                                        <div>
+                                            @Model.TransactionAssignmentInfoVMs[0].FromUser.Substring(0, 20)...
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        @Model.TransactionAssignmentInfoVMs[0].FromUser
+
+                                    }
+                                }
+                            </div>
+                        }
+                        <div class=" correspondence-h">
+                            <div class="" style="margin-top:-10px;">
+                                @DateHelper.GetDate(@Model.TransactionDetailsInfoVM.DateH)
+                                @Model.TransactionDetailsInfoVM.Date.ToShortTimeString()
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr style="margin-top:-8px;" />
+
+            <div onclick='redirect()' class="correspondence-t hover-area">
+
+                @if (Model.TransactionDetailsInfoVM.HasPermission)
+                {
+                    <div class="correspondence-b d-flex flex-wrap ">
+                        <div class="f-line w-full w-f-50 @recived">
+
+                            @if (Model.TransactionDetailsInfoVM.Subject != null && Model.TransactionDetailsInfoVM.Subject.Length > 20)
+                            {
+                                <div id="example" class="description" data-bs-toggle="tooltip" data-placement="bottom" title="@Model.TransactionDetailsInfoVM.Subject">
+                                    @Model.TransactionDetailsInfoVM.Subject.Substring(0, 20)
+                                    ...
+                                </div>
+                            }
+                            else
+                            {
+                                <div class=" description">
+                                    @Model.TransactionDetailsInfoVM.Subject
+                                </div>
+                            }
+
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="correspondence-b d-flex flex-wrap" style="background: red;">
+                        <div class="f-line w-full w-f-50 description" style="color:white">
+                            غير مصرح لك
+                        </div>
+                    </div>
+                }
+
+                @if (Model.TransactionDetailsInfoVM.HasPermission)
+                {
+                    <div class="correspondence-b d-flex flex-wrap cardTable">
+                        <table class="table table-bordered section1" style="margin-top:10px;">
+                            <tbody>
+                                <tr>
+                                    <th scope="row" class="headerAddress">@DbRes.TResource("User.File.Priority")</th>
+                                    <td>
+                                        @if (Model.TransactionDetailsInfoVM.PriorityName != null && Model.TransactionDetailsInfoVM.PriorityName.Length > 5)
+                                        {
+                                            <div class="result" data-bs-toggle="tooltip" data-placement="bottom" title="@Model.TransactionDetailsInfoVM.PriorityName">
+                                                @Model.TransactionDetailsInfoVM.PriorityName.Substring(0, 5)
+
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="result">
+                                                @Model.TransactionDetailsInfoVM.PriorityName
+                                            </div>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="headerAddress">@DbRes.TResource("User.File.Confidentiality")</th>
+                                    <td>
+                                        @if (Model.TransactionDetailsInfoVM.ConfidentialityName != null && Model.TransactionDetailsInfoVM.ConfidentialityName.Length > 15)
+                                        {
+                                            <div class="@className" data-bs-toggle="tooltip" data-placement="bottom" title="@Model.TransactionDetailsInfoVM.ConfidentialityName">
+                                                @Model.TransactionDetailsInfoVM.ConfidentialityName.Substring(0, 15)
+
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="@className">
+                                                @Model.TransactionDetailsInfoVM.ConfidentialityName
+                                            </div>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="headerAddress">@DbRes.TResource("User.Inbound.BasicInfo.InboundType")</th>
+                                    <td class="@classNameTo">
+                                        @Model.TransactionDetailsInfoVM.TransactionTypeName
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <th scope="row" class="headerAddress">@DbRes.TResource("Admin.AssignmentPaperActions.Action")</th>
+                                    <td>
+                                        @if (transactionAssignmentInfoVM.Action != null)
+                                        {
+                                            <div class="result">
+
+                                                @transactionAssignmentInfoVM.Action
+
+
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="result">
+                                                ---
+                                            </div>
+                                        }
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <table class="table table-bordered section2">
+                            <tbody>
+                                <tr>
+                                    <th scope="row" class="headerAddress">@DbRes.TResource("User.TransactionCertificate.ReceiverName")</th>
+                                    <td>
+                                        @if (transactionAssignmentInfoVM.ToUser != null && transactionAssignmentInfoVM.ToUser != "")
+                                        {
+                                            <div class="result" data-bs-toggle="tooltip" data-placement="bottom" title=" @transactionAssignmentInfoVM.ToUser ">
+                                                @transactionAssignmentInfoVM.ToUser
+                                            </div>
+                                        }
+                                        else if (transactionAssignmentInfoVM.ToUser != null && transactionAssignmentInfoVM.ToUser != "")
+                                        {
+                                            <div class="result" data-bs-toggle="tooltip" data-placement="bottom" title="@transactionAssignmentInfoVM.ToUser">
+                                                @transactionAssignmentInfoVM.ToUser
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="result" data-bs-toggle="tooltip" data-placement="bottom" title="@transactionAssignmentInfoVM.ToEntity">
+                                                ---
+                                            </div>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="headerAddress">@DbRes.TResource("User.Inbound.BasicInfo.DirectedToOrgUnit")</th>
+                                    <td>
+                                        @if (transactionAssignmentInfoVM.ToUser != null && transactionAssignmentInfoVM.ToUser != "")
+                                        {
+                                            if (transactionAssignmentInfoVM.ToEntity.Length > 18)
+                                            {
+                                                <div class="result" title="@transactionAssignmentInfoVM.ToEntity">
+                                                    @transactionAssignmentInfoVM.ToEntity.Substring(0, 18) ... <span>: @transactionAssignmentInfoVM.ToUser</span>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="result">
+                                                    @transactionAssignmentInfoVM.ToEntity <span>: @transactionAssignmentInfoVM.ToUser</span>
+                                                </div>
+                                            }
+
+                                        }
+                                        else if (transactionAssignmentInfoVM.ToEntity != null && transactionAssignmentInfoVM.ToEntity != "")
+                                        {
+                                            <div class="result">
+                                                @transactionAssignmentInfoVM.ToEntity
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="result">
+                                                ---
+                                            </div>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="headerAddress">@DbRes.TResource("User.File.AssignDate")</th>
+                                    <td class="result" style="font-size:small">
+                                        @Model.TransactionAssignmentInfoVMs[0].DateH  @Model.TransactionAssignmentInfoVMs[0].Date.ToShortTimeString()
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                }
+
+                else
+                {
+                    <div class=" correspondence-b d-flex flex-wrap cardTable" style=" filter: blur(8px); -webkit-filter: blur(8px);">
+                        <table class="table table-bordered section1" style="margin-top:10px;">
+                            <tbody>
+                                <tr>
+                                    <th scope="row" class="headerAddress">@DbRes.TResource("User.File.Priority")</th>
+                                    <td>
+                                        @if (Model.TransactionDetailsInfoVM.PriorityName != null && Model.TransactionDetailsInfoVM.PriorityName.Length > 5)
+                                        {
+                                            <div class="result" data-bs-toggle="tooltip" data-placement="bottom" title="@Model.TransactionDetailsInfoVM.PriorityName">
+                                                @Model.TransactionDetailsInfoVM.PriorityName.Substring(0, 5)
+
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="result">
+                                                @Model.TransactionDetailsInfoVM.PriorityName
+                                            </div>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="headerAddress">@DbRes.TResource("User.File.Confidentiality")</th>
+                                    <td>
+                                        @if (Model.TransactionDetailsInfoVM.ConfidentialityName != null && Model.TransactionDetailsInfoVM.ConfidentialityName.Length > 5)
+                                        {
+                                            <div class="@className" data-bs-toggle="tooltip" data-placement="bottom" title="@Model.TransactionDetailsInfoVM.ConfidentialityName">
+                                                @Model.TransactionDetailsInfoVM.ConfidentialityName.Substring(0, 5)
+
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="@className">
+                                                @Model.TransactionDetailsInfoVM.ConfidentialityName
+                                            </div>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="headerAddress">@DbRes.TResource("User.Inbound.BasicInfo.InboundType")</th>
+                                    <td class="@classNameTo">
+                                        @Model.TransactionDetailsInfoVM.TransactionTypeName
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <th scope="row" class="headerAddress">@DbRes.TResource("Admin.AssignmentPaperActions.Action")</th>
+                                    <td>
+                                        @if (transactionAssignmentInfoVM.Action != null)
+                                        {
+                                            <div class="result">
+
+                                                @transactionAssignmentInfoVM.Action
+
+
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="result">
+                                                ---
+                                            </div>
+                                        }
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                }
+
+            </div>
+            <div class="correspondence-t">
+                <div class="correspondence-icon d-flex @recived" style="padding-right: 2px;">
+
+                    @if (Model.TransactionDetailsInfoVM.HasPermission)
+                    {
+                        <a id="link" href="#" title="@DbRes.TResource("User.InboundSearch.InboundCertificate")" data-id="@Model.TransactionDetailsInfoVM.Id" onclick="ShowTransactionLog(@Model.TransactionDetailsInfoVM.Id)">
+                            <img src="~/Content/User/lib/images/SystemIcon/main bar-14.svg" width="30" />
+                        </a>
+
+                        if (!transactionAssignmentInfoVM.Viewed)
+                        {
+                            bool isViewed = false;
+                            if (Model.TransactionAssignmentInfoVMs != null && Model.TransactionAssignmentInfoVMs.Count > 0)
+                            {
+                                isViewed = Model.TransactionAssignmentInfoVMs.FirstOrDefault().Viewed;
+                            }
+
+                            <div style="border-left: 3px solid white;"></div>
+                            <a href="#" title="@DbRes.TResource("User.File.ManagerRevert")" data-id="@Model.TransactionDetailsInfoVM.Id"
+                               data-Viewed="@isViewed" data-DeliveryMethodId="@Model.TransactionDetailsInfoVM.DeliveryMethodId"
+                               data-TransactionTypeId="@Model.TransactionDetailsInfoVM.TransactionTypeId"
+                               class="aRevert" data-type="@TrayActionType.Revert">
+                                <img src="~/Content/User/lib/images/SystemIcon/withdraw.svg" width="30" />
+                            </a>
+                        }
+                        else
+                        {
+                            <div style="border-left: 3px solid white;"></div>
+                            <a class="" title="@DbRes.TResource("User.File.Received")" style="cursor:initial" data-id="@Model.TransactionDetailsInfoVM.Id" data-type="@TrayActionType.Revert">
+                                <img src="~/Content/User/lib/images/SystemIcon/read.svg" width="20" />
+                            </a>
+                        }
+
+                    }
+
+                    <div style="border-left: 3px solid white;"></div>
+                    <a data-bs-toggle="tooltip" data-placement="top" title="إخفاء" onclick="HideTransaction(@transactionAssignmentInfoVM.Id , @Model.TransactionDetailsInfoVM.Id)">
+                        <img src="~/Content/User/lib/images/SystemIcon/main bar-29.svg" width="20" />
+
+                    </a>
+                    <div class="ml-auto">
+                        <div class="info">
+                            <i class="la la-paperclip"></i>
+                            <span>
+                                @Model.TransactionDetailsInfoVM.AttachmentCount
+                                @DbRes.TResource("User.Transaction.Attachments")
+                            </span>
+                            @if (Model.TransactionDetailsInfoVM.HasLinks)
+                            {
+                                <i class="la la-link"></i>
+                                <span>
+                                    @DbRes.TResource("Admin.TransactionLink.Link")
+                                </span>
+                            }
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+<script>
+    function redirect() {
+        var link = $(event.currentTarget).parent().find('.correspondence-icon').children()[0];
+        link.click();
+    }
+</script>

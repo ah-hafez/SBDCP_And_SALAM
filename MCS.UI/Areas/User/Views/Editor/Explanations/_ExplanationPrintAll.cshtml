@@ -1,0 +1,85 @@
+﻿@model MCS.UI.Areas.User.Models.Transaction.ExplanationVM
+@using MCS.UI.Areas.User.Models.Transaction;
+@using CustomGridMvc = MCS.GridMvc.Ajax.GridExtensions;
+@using MCS.GridMvc;
+@using MCS.UI.Helpers
+@{ 
+    int trsx = (int)ViewData["TransactionId"];
+}
+<div>
+    <input type="hidden" value="@ViewData["TransactionId"]" id="trxId" />
+    <div class="text-left panel-body">
+        <button id="btnPrintExplanations" class="btn btn-site" onclick="PrintData(); return false;"><i class="la la-print"></i> @DbRes.TResource("User.Editor.Explanations.PrintAll")</button>
+        <button class="btn btn-st1 btn-lg" onclick="ExportToPdf()"><i class="la la-file-pdf-o"></i> @DbRes.TResource("User.Transaction.Reports.Export")</button>
+
+
+
+    </div>
+    <div id="PrintArea">
+        @if (ViewData["ExplanationsDataObject"] != null)
+        {
+            List<ExplanationVM> explanations = ViewData["ExplanationsDataObject"] as List<ExplanationVM>;
+            int explanationNumber = 1;
+            foreach (ExplanationVM explanationVM in explanations)
+            {
+                    <div class="row ">
+                        <div class="col-md-12">
+                            <div class="col-lg-3 col-md-3 col-sm-3 mb-3">
+                                <label class="w-100">
+                                    @DbRes.TResource("User.Explanation.ExplanationNumber") : @explanationNumber
+                                </label>                               
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 mb-3">
+                                <label class="w-100">
+                                    @DbRes.TResource("User.Explanation.FromUser") : @explanationVM.FromUser
+                                </label>                               
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 mb-3">
+                                <label class="w-100">
+                                    @DbRes.TResource("User.Explanation.ConfidentialityName") :  @explanationVM.ConfidentialityName
+
+                                </label>                               
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 mb-3">
+                                <label class="w-100">
+                                    @DbRes.TResource("User.Explanation.TransactionNumber") : @explanationVM.TransactionNumber
+                                    <img src="@ViewData["barcode2D"]" alt="" style="height: 45px; max-width: 160px;">
+                                </label>                               
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row ">
+                        <div class="col-md-12">
+                            <object type="application/pdf" data="@Url.Action("GetExplanationById", "Shared", new { explanationVM.Id })" style="height:100vh;width:100%;"></object>
+                            @*<img src="@Url.Action("GetExplanationByIdAsImage", "Shared", new { id = explanationVM.Id })" alt="Explanation Image" style="height:100vh;width:100%;" />*@
+                            <br />
+                        </div>
+                    </div>
+                explanationNumber++;
+            }
+        }
+            @*<div class="row ">
+                <div class="col-md-12">
+                    @Html.Partial("~/Areas/User/Views/Editor/Explanations/_ExplanationsGridPartial.cshtml", ViewData["ExplanationsData"])
+                </div>
+            </div>*@
+
+    </div>
+</div>
+
+<script>
+    function ExportToPdf() {
+        var url = '@Url.Action("PrintAllExplanations", "Shared")';
+
+        var transactionId = $("#trxId").val();
+
+        var fullUrl = url + '?transactionId=' + transactionId;
+
+        ShowDialog(fullUrl, 'dialogbox col-md-12 ');
+
+
+}
+
+
+
+</script>

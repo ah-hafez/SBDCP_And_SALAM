@@ -1,0 +1,24 @@
+﻿@using MCS.UI.Areas.User.Models;
+@model AjaxGrid<UserDelegationClientAddViewModel>
+
+@{int index = 0;}
+
+@Html.Grid(Model).Named("grdDelegations").Columns(columns =>
+{
+    columns.Add(true).RenderValueAs(m => (index).ToString());
+    columns.Add(model => model.DirectedToName).Titled(DbRes.TResource("User.UserDelegation.EmployeeName"));
+    columns.Add(model => model.OrgUnitName).Titled(DbRes.TResource("User.UserDelegation.Unit"));
+    columns.Add(model => model.PriorityName).Titled(DbRes.TResource("User.UserDelegation.Priority"));
+    columns.Add(model => model.TransactionTypeName).Titled(DbRes.TResource("User.UserDelegation.SourceType"));
+    columns.Add(model => model.ConfidentialityName).Titled(DbRes.TResource("User.UserDelegation.Confidentiality"));
+    columns.Add(model => model.FromDateH).Encoded(false).Sanitized(false).Titled(DbRes.TResource("User.UserDelegation.FromTo")).RenderValueAs(m => @<label> @m.FromDateH - @m.ToDateH</label>);
+    columns.Add(true).RenderValueAs(m => m.OrgUnitId.ToString());
+    columns.Add(true).RenderValueAs(m => m.DirectedToId.ToString());
+    columns.Add(true).RenderValueAs(m => m.ConfidentialityId.ToString());
+    columns.Add(true).RenderValueAs(m => m.SourceTypesId.ToString());
+    columns.Add(true).RenderValueAs(m => m.ConfidentialityId.ToString());
+    columns.Add(true).RenderValueAs(m => m.FromDate.ToString());
+    columns.Add(true).RenderValueAs(m => m.ToDate.ToString());
+    columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => @<a class="edit_link" onclick="GetDelegationByIndex(@(index++))" title="@DbRes.TResource("Grid.Edit")"><i class='fa fa-edit'></i></a>).Titled(DbRes.TResource("Grid.Edit"));
+    columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => @Html.ConfirmImageButton(Url.Action("ClientDeleteDelegation", "UserPreferences"), "grdDelegations", 0, "dvGrid", "footer :input", null, "OnClientDeleteDelegationSuccess", null, "post", DbRes.TResource("Grid.DeleteMassage"), "")).Titled(DbRes.TResource("Grid.Delete"));
+})

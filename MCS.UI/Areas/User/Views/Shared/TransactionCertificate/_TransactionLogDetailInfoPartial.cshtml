@@ -1,0 +1,23 @@
+﻿@using MCS.Framework.Localization
+
+@model AjaxGrid<MCS.UI.TransactionLogDetailInfoVM>
+
+@{
+    ViewBag.Title = "_TransactionLogDetailInfoGridPartial";
+
+}
+
+<div class="single-wrapper">
+    <div class="panel-body">
+        <div class="col-xs-12 text-center">
+            <h4 class="title6">@DbRes.TResource("User.Log.ActionsLog")</h4>
+        </div>
+        <div id="TransactionLogDetailInfo" style="">
+        @Html.Grid(Model).Named("grdTransactionLogDetailInfo").Columns(columns =>
+        {
+            columns.Add(model => model.Description).Titled(DbRes.TResource("User.TransactionCertificate.MovementType"));
+            columns.Add(model => model.Date).Titled(DbRes.TResource("User.TransactionCertificate.MovementDate"));
+        })
+        </div>
+    </div>
+</div>

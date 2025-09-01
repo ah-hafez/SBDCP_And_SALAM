@@ -1,0 +1,230 @@
+﻿@model MCS.UI.Areas.User.Models.Transaction.Outbound.Internal.EditOutboundInternalBasicInfoVM
+@using MCS.Common;
+@using MCS.Framework.Localization
+@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+
+<div class="panel-body">
+    <p>@DbRes.TResource("Global.Forms.MandatoryFields")</p>
+    <div class="row">
+        <div class="panel-group accordion accordion-dc">
+
+
+            <div class="col-sm-12">
+
+                <div class="col-sm-4">
+                    <fieldset>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.TransactionTypeId, new { @class = "col-md-4 control-label" })
+                            @Html.AutoCompleteBuilder("ddlTransactionSourceType", "hdnTransactionSourceType", ViewData["TransactionTypesData"].ToString(), Model.TransactionTypeId.ToString(), true, "form-control")
+                            @Html.HiddenGroupFor(model => model.TransactionTypeId, new { id = "hdnTransactionSourceType" }, "BasicInformation")
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="col-sm-4">
+                    <fieldset>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.LetterTypeId, new { @class = "col-md-4 control-label" })
+                            @Html.AutoCompleteBuilder("ddlTypeId", "hdnTypeId", ViewData["LetterTypeData"].ToString(), Model != null ? Model.LetterTypeId.ToString() : null, true, "form-control", "hdnTypeIsPopularization")
+                            @Html.HiddenGroupFor(model => model.LetterTypeId, new { @Value = "", id = "hdnTypeId" }, "BasicInformation")
+                            @Html.Hidden("hdnTypeIsPopularization", null, new { id = "hdnTypeIsPopularization" })
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ConfidentialityLevelId, new { @class = "col-md-4 control-label" })
+                        @Html.AutoCompleteBuilder("ddlConfedentiality", "hdnConfedentiality", ViewData["ConfidentialityData"].ToString(), Model.ConfidentialityLevelId.ToString(), true, "form-control")
+                        @Html.HiddenGroupFor(model => model.ConfidentialityLevelId, new { id = "hdnConfedentiality" }, "BasicInformation")
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div id="dvPopulariazationTo" class="dvPopulariazationTo form-group" style="display:none;">
+                    @Html.LabelFor(model => model.GroupId, new { @class = "col-md-4 control-label" })
+                    <div class="col-md-8">
+                        @Html.AutoCompleteBuilder("ddlPopulariazationGroupId", "hdnPopulariazationGroupId", ViewData["AssignmentGroupData"].ToString(), null, true, "form-control")
+                        @Html.HiddenGroupFor(model => model.GroupId, new { @Value = "", id = "hdnPopulariazationGroupId" }, null)
+                        @Html.StickyHidden("hdnGroupData", ViewData["AssignmentGroupData"].ToString())
+                    </div>
+                </div>
+                <div class="dvPopulariazationTo form-group" style="display:none;">
+
+                    <div class="col-md-8">
+                        <div class="panel-title">
+                            @{if (Convert.ToBoolean(ViewData["IsAllowedToCreateGroup"]))
+                                {
+                                    <a class="btn btn-primary btn-block btn-rounded create_group _openDia">
+                                        <i class="fa fa-group"></i>@DbRes.TResource("User.Transaction.Assignment.CreateGroup")
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a style=" pointer-events: none;cursor: default;" class="btn btn-primary btn-block btn-rounded create_group disable">
+                                        <i class="fa fa-group"></i>@DbRes.TResource("User.Transaction.Assignment.CreateGroup")
+                                    </a>
+                                }
+                            }
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PriorityLevelId, new { @class = "col-md-4 control-label" })
+                    @Html.AutoCompleteBuilder("ddlPriorityLevel", "hdnPriorityLevel", ViewData["PrioritiesData"].ToString(), Model.PriorityLevelId.ToString(), true, "form-control", "hdnPriorityHasDate")
+                    @Html.HiddenGroupFor(model => model.PriorityLevelId, new { id = "hdnPriorityLevel" }, "BasicInformation")
+                    @Html.Hidden("hdnPriorityHasDate", null, new { id = "hdnPriorityHasDate" })
+                </div>
+            </div>
+
+            <div class="form-group" style="display:none;" id="dvHasDateContainer">
+                <label class="col-md-4 control-label"></label>
+                <div class="col-md-4" style="direction:ltr;">
+                    @Html.HiddenGroupFor(model => model.RemindDateH, new { id = "hdnHasDateUm" }, "BasicInformation")
+                    @Html.Calendar("HasDateCal", "hdnHasDateGreg", "hdnHasDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), Model.RemindDateH, "form-control")
+                    @Html.HiddenGroupFor(model => model.RemindDate, new { id = "hdnHasDateGreg" }, "BasicInformation")
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group">
+                        @Html.AutoCompleteBuilder("ddlMinute", "hdnMinuteId", LookupCategory.Minute, null, true, "form-control time", null, null, false, null, DbRes.TResource("Global.MinuteSymbole"))
+                        @Html.HiddenGroupFor(model => model.Minute, new { id = "hdnMinute" }, "")
+                        @Html.Hidden("hdnMinuteId", new { @Value = "", id = "hdnMinuteId" }, "")
+                        <span class="input-group-addon anchored">:</span>
+                        @Html.AutoCompleteBuilder("ddlHour", "hdnHourId", LookupCategory.Hour, null, true, "form-control time", null, null, false, null, DbRes.TResource("Global.HourSymbole"))
+                        @Html.HiddenGroupFor(model => model.Hour, new { id = "hdnHour" }, "")
+                        @Html.Hidden("hdnHourId", new { @Value = "", id = "hdnHourId" }, "")
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="control-label"> @Html.LabelFor(model => model.Remarks)</label>
+                    <textarea class="form-control long-textarea2"></textarea>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="control-label"> @Html.LabelFor(model => model.Subject)</label>
+                    <textarea class="form-control long-textarea2"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel-body">
+    <div class="row">
+
+        <div class="col-md-6">
+            @*@Html.DepartmentsTree(ViewData["SuggestedTopicsData"] as TreeViewModel, model => model.SuggestedTopicId, TreeMode.Single, "dvSuggestedTopicTree", true, "SetSuggestedTopic", "BasicInformation")*@
+        </div>
+    </div>
+    @*<div class="col-md-6">
+
+        @Html.DepartmentsTree(ViewData["SubjectClassificationsData"] as TreeViewModel, model => model.SubjectClassifications, TreeMode.Multiple, "treeSubjectClassifications", true, null, "BasicInformation")
+    </div>*@
+</div>
+
+<script>
+    $("#ddlTypeId").focusout( function () {
+        if ($('#hdnTypeIsPopularization').val() === "true") {
+            $(".dvPopulariazationTo").show();
+        }
+        else {
+            $(".dvPopulariazationTo").hide();
+            $("#hdnPopulariazationGroupId").val("");
+            $("#hdnPopulariazationGroupId").trigger("change");
+            //to clear to popul...
+        }
+
+    })
+    $('._openDia').click(function () {
+        ShowDialog('@Url.Action("AssignmentGroupAdd","OutboundInternal", new { txtId = "ddlPopulariazationGroupId", divContainer = "dvPopulariazationTo" })');
+        //
+    });
+
+    $(document).ready(function () {
+        if ($('#hdnPriorityHasDate').val() === "true") {
+            $("#dvHasDateContainer").show();
+            $('#ddlHour').val($('#hdnHour').val());
+            $('#ddlHour').trigger("focusout");
+            if ($('#hdnMinute').val().length == 1) {
+
+                $('#ddlMinute').val("0" + $('#hdnMinute').val());
+                $('#ddlMinute').trigger("focusout");
+            }
+            else {
+                $('#ddlMinute').val($('#hdnMinute').val());
+                $('#ddlMinute').trigger("focusout");
+            }
+        }
+    });
+
+    $(document).on("change", "#ddlHour", function () {
+
+        $('#hdnHour').val($('#ddlHour').val());
+    });
+
+    $(document).on("change", "#ddlMinute", function () {
+
+        $('#hdnMinute').val($('#ddlMinute').val());
+    });
+
+    $(document).on("change", "#ddlPriorityLevel", function () {
+        if ($('#hdnPriorityHasDate').val() === "true") {
+            $("#dvHasDateContainer").show();
+        }
+        else {
+            $("#dvHasDateContainer").hide();
+            $("#hdnHasDateGreg").val("");
+            $("#hdnMinute").val("");
+            $("#hdnHour").val("");
+            $("#HasDateCal").val("");
+            $("#ddlHour").val("");
+            $("#ddlMinute").val("");
+        }
+
+    })
+
+    function CheckPriorityIfHasDate()
+    {
+        if ($('#dvHasDateContainer').css('display') == 'block' && $("#hdnHasDateGreg").val() == "") {
+
+            ShowErrorMessage('@Html.Raw(DbRes.TValidation("User.Inbound.RemindDateRequired"))');
+            return false;
+        }
+        if ($("#hdnHasDateGreg").val() != "") {
+            var dateNow = $.datepicker.formatDate('dd/mm/yy', new Date($.now()));
+            var currentDate = convertdate(dateNow);
+            var selectedDate = convertdate($("#hdnHasDateGreg").val());
+
+            if (selectedDate <= currentDate) {
+                ShowErrorMessage('@Html.Raw(DbRes.TValidation("User.Inbound.RemindDateCompare"))');
+                return false;
+            }
+
+            if ($('#dvPopulariazationTo').css('display') == 'block' && $("#hdnPopulariazationGroupId").val() == "") {
+
+                ShowErrorMessage('@Html.Raw(DbRes.TValidation("User.OutboundInternal.PopulariazationRequired"))');
+                return false;
+            }
+
+        }
+         if (!ValidateCopy()) {
+            return false;
+        }
+        return true;
+    }
+
+</script>

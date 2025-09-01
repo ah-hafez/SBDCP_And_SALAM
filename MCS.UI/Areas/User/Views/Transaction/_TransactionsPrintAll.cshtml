@@ -1,0 +1,143 @@
+﻿@using MCS.UI.Areas.User.Models.Transaction;
+@using CustomGridMvc = MCS.GridMvc.Ajax.GridExtensions;
+@using MCS.GridMvc;
+@using MCS.UI.Helpers
+@using MCS.UI.Areas.User.Models.Shared;
+@model  List<MCS.UI.Areas.User.Models.Shared.DocumentVM>
+
+<style>
+    body {
+        direction: rtl;
+        padding: 0px;
+        margin: 0px;
+    }
+
+    .A4Page {
+        width: 95%;
+        page-break-after: always;
+    }
+
+
+    .A4PageEx {
+        padding-top: 10px;
+        border: 1px;
+        height: 50%;
+        width: 90%;
+    }
+
+    .divPageBreak {
+        page-break-before: always;
+    }
+
+    .divPageImageBreak {
+        page-break-after: always;
+    }
+
+    .divImage {
+        position: relative;
+        height: 200px;
+        overflow: hidden;
+    }
+
+    .imgEX {
+        position: absolute;
+        /*top: -9999px;
+        left: -9999px;
+        right: -9999px;
+        bottom: -9999px;
+        margin: auto;*/
+    }
+
+    /*.printArea {
+            display: none;
+        }*/
+
+    @@media print {
+        .printArea {
+            display: block;
+        }
+
+        .hideButton {
+            display: none;
+        }
+
+        @@page {
+            size: A4;
+            margin: 0cm 0.625cm 0cm 0.625cm !important;
+            padding: 0;
+        }
+
+        body {
+            direction: rtl;
+            padding: 0px;
+            margin: 0px;
+        }
+    }
+</style>
+<div>
+    <div class="text-right panel-body hideButton">
+        @if(!Model.FirstOrDefault().HidePrint)
+        { 
+         <button id="btnPrint" class="btn btn-site" onclick="PrintData(); return false;"><i class="la la-print"></i> @DbRes.TResource("User.Editor.Explanations.PrintAll")</button>
+        }
+    </div>
+    <div id="PrintArea" class="printArea">
+
+        @foreach (var doc in Model)
+        {
+            <div class="divPageBreak">
+                <div>
+                    <h3 class="site-color">
+                        @DbRes.TResource("User.MainDocument")
+                    </h3>
+
+                </div>
+
+
+                <div class="divPageImageBreak">
+                    <div class="col-lg-3 col-md-3 col-sm-3 mb-3">
+                        <table>
+                            <tr>
+                                <td>
+                                    <label class="w-100">
+                                        @DbRes.TResource("User.Explanation.FromUser") : @doc.FromUserName
+                                    </label>
+
+                                </td>
+                                <td>
+                                    &nbsp;
+                                </td>
+                                @*<td>
+                                    <label class="w-100">
+                                        @DbRes.TResource("User.Explanation.TransactionNumber") : @doc.Number
+                                    </label>
+
+                                </td>*@
+                            </tr>
+                        </table>
+
+
+                    </div>
+                    <div class="">
+                        @for (int i = 0; i < doc.MainDocumentImages.Count(); i++)
+                        {
+                            <div class="divPageImageBreak">
+                                <img alt='Image' class="A4Page" src='data:image/png;base64,@doc.MainDocumentImages[i]' })' />
+                            </div>
+                        }
+
+                    </div>
+                </div>
+
+            </div>
+
+        }
+
+    </div>
+</div>
+
+<script>
+    function PrintData() {
+        window.print();
+    }
+</script>

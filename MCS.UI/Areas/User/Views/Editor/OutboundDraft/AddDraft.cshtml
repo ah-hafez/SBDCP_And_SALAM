@@ -1,0 +1,315 @@
+﻿@*@model MCS.UI.Areas.User.Models.Transaction.Outbound.Draft.AddOutboundDraftVM
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Transaction;
+@using MCS.UI.Areas.User.Models.Assignment;
+@using MCS.Framework.Controls.DocumentViewer;
+@using MCS.Common;
+
+
+
+@{ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
+
+}
+
+@{string controller = TempData.Peek("ControllerName") != null ? TempData.Peek("ControllerName").ToString() : ViewContext.RouteData.Values["controller"].ToString();}
+
+
+<div class="panel-body editor">
+    <p class="subtitle">@DbRes.TResource("User.OutboundDraft.OutboundDraft")</p>
+    <div class="clear"></div>
+    <div class="modal-body">
+        @using (Html.BeginForm("DraftOutboundAdd", "OutboundDraft", FormMethod.Post, new { id = "frmAddOutboundDraft" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.StickyHiddenFor(model => model.Id, new { id = "hdnOutboundDraftId" })
+            @Html.StickyHiddenFor(model => model.HijriRecordDate, new { id = "hdnHijriRecordDate" })
+            @Html.StickyHiddenFor(model => model.IsSigned, new { id = "hdnIsSigned" })
+
+            <div class="page-content-wrap page-tabs-item active tabscontent" id="first-tab">
+                @{
+                    Html.ViewData.TemplateInfo.HtmlFieldPrefix = "OutboundDraftBasicInfo";
+                    Html.ViewData.Add("HijriDate", string.Empty);
+                    Html.ViewData.Add("HijriDateTitle", DbRes.TResource("User.OutboundDraft.BasicInfo.RecordDate"));
+                    Html.ViewData.Add("TransactionNumber", string.Empty);
+                    Html.ViewData.Add("TransactionNumberTitle", DbRes.TResource("User.OutboundDraft.BasicInfo.DraftNumber"));
+                }
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-horizontal form-row">
+                            <div class="panel panel-default">
+                                <div id="dvBasicInfo">
+                                    @Html.Partial("~/Areas/User/Views/Editor/OutboundDraft/_BasicInfoAddPartial.cshtml", Model.OutboundDraftBasicInfo, Html.ViewData)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="page-content-wrap page-tabs-item tabscontent" id="second-tab">
+                @{Html.ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+                @Html.Partial("~/Areas/User/Views/Transaction/_CopiesPartial.cshtml", new TransactionCopyVM(), Html.ViewData)
+
+                @{Html.ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+                @Html.Partial("~/Areas/User/Views/Transaction/_ExternalCopiesPartial.cshtml", new TransactionExternalCopyVM(), Html.ViewData)
+            </div>
+            <div class="page-content-wrap page-tabs-item tabscontent" id="fourth-tab">
+                @{ Html.ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+                @Html.Partial("~/Areas/User/Views/Transaction/_AttachmentsPartial.cshtml", new TransactionAttachmentVM(), Html.ViewData)
+                @Html.Partial("~/Areas/User/Views/Transaction/_ArchivingPartial.cshtml", new TransactionArchiveVM(), Html.ViewData)
+            </div>
+            <div class="page-content-wrap page-tabs-item tabscontent" id="third-tab">
+                @{Html.ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+                @Html.Partial("~/Areas/User/Views/Transaction/_EditorPartial.cshtml", ViewData["EditorViewModel"], Html.ViewData)
+            </div>
+            <div class="page-content-wrap page-tabs-item tabscontent" id="fifth-tab">
+                @{Html.ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+                @Html.Partial("~/Areas/User/Views/Shared/_AssignmentsPartial.cshtml", new TransactionAssignmentVM(), Html.ViewData)
+            </div>
+            <div id="dvEditorPartialContainer" style="position:absolute; visibility:hidden; display:block;">
+                @Html.DocumentViewer("frameViewerEditor", AnnotationsMode.ReadWrite, null, true, "OnSign")
+            </div>
+            <div class="page-content-wrap">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="panel panel-default">
+                            <div class="panel-footer only">
+                                @Html.ConfirmAction(OperationType.Save, "btnSaveOutboundDraft", DbRes.TResource("User.OutboundDraft.Save"), Url.Action("AddOutboundDraft", "Editor"), null, null, null, "OnSuccess", null, DbRes.TResource("User.Inbound.SaveMessage"), "post", "frmAddOutboundDraft", "OutboundDraft", "btn btn-save pull-right", "SaveContent", UserClaims.Editor.Draft, "NotValid")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @Html.StickyHidden("hdnInboundId")
+        }
+    </div>
+</div>
+
+<script>
+    var signedCount = 0;
+    function OnSign(actionType) {
+        if (actionType == "add") {
+            signedCount++;
+        }
+        else {
+            signedCount--;
+        }
+    }
+
+    $("ul.anchor a").click(function () {
+        $("ul.anchor a").removeClass("selected");
+        $("ul.anchor a").addClass("disabled");
+        $(this).addClass("selected");
+        $(".tabscontent").removeClass("active");
+
+        var divId = $(this).data("divid");
+        $("#" + divId).addClass("active");
+    });
+
+    function SetSuggestedTopic() {
+        $("#txtAreaSubject").val($("#divForm__dvSuggestedTopicTree .txtDepartmentName").val());
+    }
+
+    $(document).ready(function () {
+        tinymce.execCommand('mceRemoveEditor', true, 'txtEditor');
+        tinyMCE.execCommand('mceAddEditor', true, "txtEditor");
+
+        $("#hdnInboundId").val($("#hdnTransEditorId").val());
+
+        $("#dvDocumentViewerEditorContainer").html($("#dvEditorPartialContainer").html());
+        $("#dvEditorPartialContainer").html("");
+    })
+
+    $('#dvArchivingRadioButtons').hide();
+    $("#ckMain").prop("checked", false);
+    $("#ckAttachment").prop("checked", true);
+
+    $("#dvAttchmentsTypeContainer").show();
+
+    $("#ddlDirectedToId").prop('disabled', true);
+
+    function ShowPrintDialog() {
+        var params = { transactionId: $("#hdnOutboundDraftId").val() };
+        var newUrl = '@Url.Action("PrinttingBarcodes", "Shared")' + "?" + $.param(params);
+
+        ShowDialog(newUrl);
+    }
+
+    $(document).on('change', '#ddlTypeId', function () {
+
+        GetExternalPartisByLetterId(-1);
+    });
+
+
+
+    function GetExternalPartisByLetterId(selectedParty) {
+
+        $.ajax({
+            cache: false,
+            type: 'get',
+            url: '@Url.Action("GetExternalPartiesbyLetterId", controller)',
+            data: { LetterId: $("#hdnTypeId").val(), selectedParty: selectedParty },
+            success:
+           function (data) {
+
+               if ($('#divContainer__dvDestinationTree').css('display') == 'block') {
+
+                   ShowHideTree('#divContainer__dvDestinationTree');
+               }
+
+               $('#divContainer__dvDestinationTree').remove();
+
+               $("#divContainerDraftExternalParties").html("");
+
+               $("#divContainerDraftExternalParties").html(data);
+
+               GetUsersByPartyId();
+           }
+        });
+        return false;
+    }
+
+    function SaveContent() {
+        
+        var type = $('#hdnEditorType').val();
+
+        if (type == 'Scanning') {
+
+            var tokenValue = document.getElementById('frameViewerEditor').contentDocument.getElementById("_hdnToken").value;
+
+            $('#hdnContent').val(tokenValue);
+            $("#hdnIsSigned").val(signedCount > 0);
+        }
+        else {
+            $("#hdnIsSigned").val($("#txtEditor_ifr").contents().find('.imgSign').length > 0);
+        }
+        //if ($('#dvTextEditor').is(":visible"))
+        //{
+        //    var formType = $('#ddlOrgUnitFormDocument').val();
+        //    if (!formType)
+        //    {
+        //        $('#formTypeValidationIcon, #formTypeValidationText').removeClass("hidden_");
+        //        return false;
+        //    }
+        //}
+        if ($('#dvHasDateContainer').css('display') == 'block' && $("#hdnHasDateGreg").val() == "")
+        {
+
+            ShowErrorMessage('@Html.Raw(DbRes.TValidation("User.Inbound.RemindDateRequired"))');
+            return false;
+        }
+        if ($("#hdnHasDateGreg").val() != "")
+        {
+            var dateNow = $.datepicker.formatDate('dd/mm/yy', new Date($.now()));
+            var currentDate = convertdate(dateNow);
+            var selectedDate = convertdate($("#hdnHasDateGreg").val());
+
+            if (selectedDate < currentDate) {
+                ShowErrorMessage('@Html.Raw(DbRes.TValidation("User.Inbound.RemindDateCompare"))');
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    function GetUsersByPartyId() {
+
+        if ($("#OutboundDraftBasicInfo_DestinationId").val() != "") {
+            $.ajax({
+                type: 'Get',
+                url: '@Url.Action("GetManagersByPartyId", controller)',
+                data: { id: $("#OutboundDraftBasicInfo_DestinationId").val() },
+                success:
+               function (data) {
+
+                   AutoCompleteChangeList("ddlDirectedToId", data);
+
+                   $("#ddlDirectedToId").val('');
+                   $("#hdnDirectedToId").val('');
+
+                   $("#ddlDirectedToId").prop('disabled', false);
+               }
+            });
+            return false;
+        }
+        else {
+
+            AutoCompleteChangeList("ddlDirectedToId", "[]");
+
+            $("#ddlDirectedToId").val('');
+            $("#hdnDirectedToId").val('');
+
+            $("#ddlDirectedToId").prop('disabled', true);
+        }
+    }
+
+
+
+    function OnSuccess(data) {
+
+        if (data.MessageType != 2) {
+
+            $(".transaction-number").html(data.OutboundDraftNumber);
+            $(".date-value").html(data.Date);
+            $("#hdnOutboundDraftId").val(data.Id);
+            $("#hdnTransactionId").val(data.Id);
+
+            $("#anchorAssignment").show();
+            $("#ulTabs").removeClass("steps_4");
+            $("#ulTabs").addClass("steps_5");
+
+            $("#btnSaveOutboundDraft").hide();
+            $("#dvBasicInfo :input").each(function () {
+                $(this).attr("disabled", true);
+            });
+
+            ShowSuccesMessage(data.MessageText);
+        }
+        else {
+
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+    function NotValid() {
+
+        var validBasicInfo = true;
+
+        $('#dvBasicInfo input').each(function () {
+
+            if ($(this).hasClass('invalid-input')) {
+
+                validBasicInfo = false;
+
+                $('div, a').removeClass('active');
+
+                if (!$('#first-tab').hasClass('active'))
+                    $('#first-tab').addClass('active');
+
+                if (!$('#aFirstTap').hasClass('active'))
+                    $('#aFirstTap').addClass('active');
+            }
+        });
+
+        if (validBasicInfo) {
+
+            $('#third-tab input').each(function () {
+
+                if ($(this).hasClass('invalid-input')) {
+
+                    $('div, a').removeClass('active');
+
+                    if (!$('#third-tab').hasClass('active'))
+                        $('#third-tab').addClass('active');
+
+                    if (!$('#anchorEditor').hasClass('active'))
+                        $('#anchorEditor').addClass('active');
+                }
+            });
+        }
+    }
+
+</script>
+<script>
+    $.noConflict();
+</script>*@
+

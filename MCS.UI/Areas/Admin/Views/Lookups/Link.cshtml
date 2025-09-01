@@ -1,0 +1,131 @@
+﻿@using MCS.Framework.Localization
+@using MCS.GridMvc.Ajax.GridExtensions
+@using MCS.UI.Areas.Admin.Models.Lookups;
+@model LinkViewModel
+@{
+    /**/
+
+    ViewBag.Title = DbRes.TResource("Admin.TransactionLink.Link");
+    Layout = "~/Areas/Admin/Views/Shared/_LookupsLayout.cshtml";
+}
+
+<div class="mx-3 mx-md-5 header-container d-flex flex-row align-items-center">
+    <div class="d-flex flex-column flex-md-row align-items-md-center flex-grow-1">
+        <h3 class="site-color mb-4">@DbRes.TResource("Admin.TransactionLink.Link")</h3>
+    </div>
+</div>
+<div class="white-container mx-3 mx-md-5">
+    <div id="dvAdd" style="display:block;">
+        @Html.Partial("~/Areas/Admin/Views/Lookups/_LinkAddPartial.cshtml", Model.AddLink)
+    </div>
+    <div id="dvEdit" style="display:none;">
+        @Html.Partial("~/Areas/Admin/Views/Lookups/_LinkEditPartial.cshtml", Model.EditLink)
+    </div>
+    <div class="table-responsive mt-3" id="GridLink">
+        <div class="w-100 d-flex align-items-center mt-2 mb-2">
+            <h3 class="white-c-title">@DbRes.TResource("Admin.Grid.LinkTypes")</h3>
+            <span class="roundedred ml-3">@(((AjaxGrid<LinkVM>)ViewData["GridData"]).ItemsCount)</span>
+            <span class="pl-2 gray4">@DbRes.TResource("Admin.Grid.Records")</span>
+        </div>
+        @Html.Partial("~/Areas/Admin/Views/Lookups/_LinkGridPartial.cshtml", ViewData["GridData"])
+    </div>
+</div>
+
+<script>
+    function ShowEditDiv() {
+
+        $("#dvEdit").css("display", "block");
+        $("#dvAdd").css("display", "none");
+    }
+
+    function HideEditDiv() {
+        $("#dvEdit").css("display", "none");
+        $("#dvAdd").css("display", "block");
+    }
+
+    function OnEditSuccess(data, div) {
+        if (data.MessageType != 2) {
+            $("#dvEdit").css("display", "none");
+            $("#dvAdd").css("display", "block");
+            $("#GridLink").html("");
+            $("#GridLink").html(data.Html);
+            jQuery.validator.unobtrusive.parse('#' + div);
+            ClearInputs('EditLinkContent');
+            ShowSuccesMessage(data.MessageText);
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function OnAddSuccess(data, div) {
+        if (data.MessageType != 2) {
+            $("#GridLink").html("");
+            $("#GridLink").html(data.Html);
+            jQuery.validator.unobtrusive.parse('#' + div);
+            ShowSuccesMessage(data.MessageText);
+            ClearInputs('AddLinkContent');
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function OnDeleteSuccess(data) {
+        if (data.MessageType != 2) {
+            ShowSuccesMessage(data.MessageText);
+            $("#GridLink").html("");
+            $("#GridLink").html(data.Html);
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+     function LockUnlockLookup(LookupType, LookupOperationType, FormId) {
+         var token = $("#dvAdd input[name='__RequestVerificationToken']").val()
+        var data = { lookupType: LookupType, lookupOperationType: LookupOperationType, lookUpId: FormId, __RequestVerificationToken: token};
+        $.ajax({
+            type: "post",
+            url: '@Url.Action("LockUnlockLookup", "Lookups")',
+            data: data,
+            success:
+                function (data) {
+                    if (data.MessageType != 2) {
+                        $("#GridLink").html("");
+                        $("#GridLink").html(data.Html);
+                        //ShowInformationMessage("OK");
+                    }
+                    else {
+                        ShowErrorMessage(data.MessageType);
+                    }
+                },
+            error: function (data) {
+            }
+        });
+    }
+
+    function ActiveDeactiveLookup(LookupType, LookupOperationType, FormId) {
+        var token = $("#dvAdd input[name='__RequestVerificationToken']").val()
+        var data = { lookupType: LookupType, lookupOperationType: LookupOperationType, lookUpId: FormId, __RequestVerificationToken: token};
+        $.ajax({
+            type: "post",
+            url: '@Url.Action("ActiveDeactiveLookup", "Lookups")',
+            data: data,
+            success:
+                function (data) {
+                    if (data.MessageType != 2) {
+                        $("#GridLink").html("");
+                        $("#GridLink").html(data.Html);
+                        //ShowInformationMessage("OK");
+                    }
+                    else {
+                        ShowErrorMessage(data.MessageType);
+                    }
+                },
+            error: function (data) {
+            }
+        });
+    }
+</script>
+

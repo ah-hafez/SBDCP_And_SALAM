@@ -1,0 +1,57 @@
+﻿@using MCS.Common
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.File
+@model IList<TransactionTrayInfoVM>
+@{
+    bool isVIP = (bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser);
+    DefaultDisplay defaultDisplay = (DefaultDisplay)SessionInfo.GetObjectFromSession(Constants.DefaultDisplay);
+    Session["viewType"] = "OrgUnit";
+}
+@if (defaultDisplay == DefaultDisplay.Cards@*&& !isVIP*@)
+{
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="sub-tab-1">
+            @{
+                Session["renderType"] = "cardItem";
+                Html.RenderPartial("~/Areas/User/Views/File/_FileGrid.cshtml",
+                    Model,
+                    new ViewDataDictionary {
+                    { "ListItemName", "_OrgunitItem" },
+                    { "GridName", "OrgunitGrid" },
+                    { "renderType", "cardItem" }
+
+                    });}
+        </div>
+    </div>
+}
+else
+{
+    Session["renderType"] = "tableItem";
+    Html.RenderPartial("~/Areas/User/Views/File/_FileGrid.cshtml", Model,
+        new ViewDataDictionary {
+        { "ListItemName", "_OrgunitTableItem" },
+        { "GridName", "OrgunitGrid" },
+        { "dateType", ViewData["dateType"] },
+        { "renderType", "tableItem" }
+                            });
+}
+
+<script>
+
+    var OrgunitGridEventHandler = "@Url.Action("OrgUnit", "File")";
+
+function prepareOrgunitGrid() {
+    if (!pageGrids.OrgunitGrid) {
+        $(".grid-mvc").gridmvc();
+    }
+    pageGrids.OrgunitGrid.ajaxify({
+        getPagedData: OrgunitGridEventHandler,
+        getData: OrgunitGridEventHandler,
+        callbackClientFunctionAfter: ["goToViewAfterPaging"]
+    });
+}
+
+$(document).ready(function () {
+    prepareOrgunitGrid();
+});
+</script>

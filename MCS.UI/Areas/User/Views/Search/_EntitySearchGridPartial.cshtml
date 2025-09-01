@@ -1,0 +1,77 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Search
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<EntitySearchResultVM>
+
+<div style="margin-bottom:50px;">
+
+    @Html.Grid(Model, "_CardGrid").Named("EntitySearch").CollectionName("EntitySearchResult").Columns(columns=>
+    {
+        columns.Add(true).Titled("").RenderValueAs(mvcgridcolumn => Html.Partial("ListItems/_EntitySearch_Item", mvcgridcolumn))
+        .Sanitized(false).Encoded(false);
+    }).WithPaging(UIHelper.PageSize)
+</div>
+
+
+
+<script>
+    var myEntitySearchGridEventHandler = "@Url.Action("SearchPaging", "Search")";
+    function prepareEntitySearchGrid() {
+        pageGrids.EntitySearch = undefined;
+        var filterData = $("#frmSearch").serializeArray();
+        if (!pageGrids.EntitySearch) {
+            $("div[data-gridname='EntitySearch']").gridmvc();
+        }
+        //if (!pageGrids.EntitySearch) {
+        //    $(".grid-mvc").gridmvc();
+        //}
+        pageGrids.EntitySearch.ajaxify({ getPagedData: myEntitySearchGridEventHandler, requestType: "POST", getData: myEntitySearchGridEventHandler, optionalData: filterData });
+
+    }
+
+    $(document).ready(function () {
+        prepareEntitySearchGrid();
+    });
+
+     
+
+
+
+
+
+    function ShowPrintDialog(id) {
+        var params = { transactionId: id };
+        ShowDialogAjaxPrintingBarcodes('@Url.Action("PrinttingBarcodes","Shared")' + "?" + $.param(params), {}, 'OpenPrintDialogSuccess', 'dialogbox col-md-12 ');
+    }
+
+    function OpenPrintDialogSuccess(data, $obj) {
+        if (data.MessageType != 2) {
+            $obj.setContent(data.Html);
+        }
+        else {
+            __dialog.close();
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function ShowVisitTickect(id) {
+        var actionUrl = '@Url.Action("PrintTicket", "Shared")' + "?transactionId=" + id;
+
+        PrintButton(actionUrl);
+
+    }
+
+
+    function Open(Id, type) {
+        var url = "";
+        switch (type) {
+            case 14:
+                url = '@Url.Action("Edit", "Inbound", new { id = "-1" })';
+                break;
+            case 15:
+                url = '@Url.Action("Edit", "OutboundExternal", new { id = "-1", IsFromDraft = false })';
+                break;
+        }
+        url = url.replace("-1", Id);
+        window.location.href = url;
+    }
+</script>

@@ -1,0 +1,82 @@
+﻿@using MCS.GridMvc.Columns;
+@model MCS.GridMvc.IGrid
+@if (Model == null) { return; }
+@if (Model.RenderOptions.RenderRowsOnly)
+{
+    @RenderGridBody();
+}
+else
+{
+    <div class="grid formAction noBorder noMarginTop noAnimation grid-mvc" data-lang="@Model.Language" data-gridname="@Model.RenderOptions.GridName" data-selectable="@Model.RenderOptions.Selectable.ToString().ToLower()" data-multiplefilters="@Model.RenderOptions.AllowMultipleFilters.ToString().ToLower()">
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered table-striped" id="grid-table-@Model.RenderOptions.GridName">
+                @* Draw grid header *@
+                <thead>
+                    @RenderGridHeader()
+                </thead>
+                <tbody class="tbody">
+                    @RenderGridBody()
+                </tbody>
+            </table>
+            @RenderGridPager()
+        </div>
+    </div>
+}
+@helper RenderGridBody()
+{
+    if (!Model.ItemsToDisplay.Any())
+    {
+        <tr class="grid-empty-text">
+            <td colspan="@(Model.Columns.Count() + 1)">
+                @Model.EmptyGridText
+            </td>
+        </tr>
+    }
+    else
+    {
+        foreach (object item in Model.ItemsToDisplay)
+        {
+            string addcolorRow = "";
+            if (item.GetType().Name == "TransactionCopyVM")
+            {
+
+                bool isbcc = (bool)item.GetType().GetProperty("IsBcc").GetValue(item, null);
+                if (isbcc)
+                {
+                    addcolorRow = "PrivateCopyCs";
+                }
+
+            }
+
+            <tr class="grid-row @Model.GetRowCssClasses(item) datarow @addcolorRow">
+                @using (Html.BeginCollectionItem(Model.CollectionName))
+                {
+                    foreach (IGridColumn column in Model.Columns)
+                    {
+                        @column.CellRenderer.Render(column, column.GetCell(item), item)
+                    }
+                }
+            </tr>
+
+
+        }
+    }
+}
+@helper RenderGridHeader()
+{
+    <tr>
+        @foreach (IGridColumn column in Model.Columns)
+        {
+            @column.HeaderRenderer.Render(column)
+        }
+    </tr>
+}
+@helper RenderGridPager()
+{
+    if (Model.EnablePaging && Model.Pager != null)
+    {
+        <div class="grid-footer">
+            @Html.Partial(Model.Pager.TemplateName, Model.Pager)
+        </div>
+    }
+}

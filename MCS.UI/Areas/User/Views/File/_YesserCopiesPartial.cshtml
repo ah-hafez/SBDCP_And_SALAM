@@ -1,0 +1,113 @@
+﻿
+@using MCS.Common
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.File
+@model IList<TransactionTrayInfoVM>
+
+
+
+<div class="boxes">
+    <div class="d-flex flex-wrap align-content-start">
+        @foreach (TransactionTrayInfoVM transactionTrayInfoVM in Model)
+        {
+            <!-- #Start# BOX -->
+            <div class="box-grid">
+                <div class="box no_sorting animated zoomIn buttons-action" id="box_@transactionTrayInfoVM.TransactionDetailsInfoVM.Id">
+                    <div class="correspondence-t">
+                        <div class="d-flex">
+                            <div class="ml-auto d-flex">
+                                <div>@transactionTrayInfoVM.TransactionDetailsInfoVM.DocumentNumber</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="correspondence-h">
+                        <div class="title">
+                            @transactionTrayInfoVM.TransactionDetailsInfoVM.ExternalPartyName
+                        </div>
+                        <div class="date">
+                            @transactionTrayInfoVM.TransactionDetailsInfoVM.Date
+                        </div>
+                    </div>
+                    <div class="correspondence-b d-flex flex-wrap">
+                        <div class="f-line w-full">
+                            @if (transactionTrayInfoVM.TransactionDetailsInfoVM.Subject != null && transactionTrayInfoVM.TransactionDetailsInfoVM.Subject.Length > 30)
+                            {
+                                <div id="example" class="description" data-bs-toggle="tooltip" data-placement="bottom" title="@transactionTrayInfoVM.TransactionDetailsInfoVM.Subject">
+                                    @transactionTrayInfoVM.TransactionDetailsInfoVM.Subject
+                                </div>
+                            }
+                            else
+                            {
+                                <div class=" description">
+                                    @transactionTrayInfoVM.TransactionDetailsInfoVM.Subject
+                                </div>
+                            }
+                        </div>
+                        <div class="f-line w-medium w-small">
+                            <div class="heading">@DbRes.TResource("User.File.Priority")</div>
+                            <div>@transactionTrayInfoVM.TransactionDetailsInfoVM.PriorityName</div>
+                        </div>
+                        <div class="f-line w-medium w-small">
+                            <div class="heading">@DbRes.TResource("User.File.Confidentiality")</div>
+                            <div>@transactionTrayInfoVM.TransactionDetailsInfoVM.ConfidentialityName</div>
+                        </div>
+                        <div class="f-line w-medium w-small">
+                            <div class="heading">@DbRes.TResource("User.GeneralSearch.Type")</div>
+                            <div>@transactionTrayInfoVM.TransactionDetailsInfoVM.TransactionTypeName</div>
+                        </div>
+                    </div>
+                    <div class="correspondence-icon d-flex">
+                        <div class="">
+                            <a href="#" title="@DbRes.TResource("User.Copies.Show")" class="circle color-blue" data-transactionId="@transactionTrayInfoVM.TransactionDetailsInfoVM.Id"
+                               data-transactionNumber="@transactionTrayInfoVM.TransactionDetailsInfoVM.DocumentNumber" data-orgUnitId="@transactionTrayInfoVM.TransactionDetailsInfoVM.OrgUnitId" onclick="ViewTransaction(this)">
+                                <i class="la la-folder-open-o"></i>
+                            </a>
+                            <a href="#" title="@DbRes.TResource("User.File.Viewed")" onclick="MarkAsSeen(this)" class="color-gray circle" data-transactionId="@transactionTrayInfoVM.TransactionDetailsInfoVM.Id"
+                               data-transactionNumber="@transactionTrayInfoVM.TransactionDetailsInfoVM.DocumentNumber" data-orgUnitId="@transactionTrayInfoVM.TransactionDetailsInfoVM.OrgUnitId">
+                                <i class="la la-check-square"></i>
+                            </a>
+                            @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Outbound.CreateInternalOutboundFromCopy))
+                            {
+                                <a href="#" onclick="CreateOutboundInternal(this)" data-transactionId="@transactionTrayInfoVM.TransactionDetailsInfoVM.Id" title="@DbRes.TResource("User.File.CreateOutboundInternal")" class="color-red circle"
+                                   data-transactionNumber="@transactionTrayInfoVM.TransactionDetailsInfoVM.DocumentNumber" data-orgUnitId="@transactionTrayInfoVM.TransactionDetailsInfoVM.OrgUnitId">
+                                    <i class=" icon-outline-note-add"></i>
+                                </a>
+                            }
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    function CreateOutboundInternal(obj) {
+
+        var transactionNumber = $(obj).data('transactionnumber');
+        var OrgUnitId = $(obj).data('orgunitid');
+        var token = $('form:first').find("input[name='__RequestVerificationToken']").val();
+        $.ajax({
+            url: '@Url.Action("CreateOutboundInternal", "Hub")',
+            type: 'POST',
+            cache: false,
+            data: { transactionNumber: transactionNumber, OrgUnitId: OrgUnitId, __RequestVerificationToken: token },
+            success: function (data) {
+                if (data != "true") {
+                    window.location.href = '@Url.Action("Edit", "OutboundInternal")' + '/' + data;
+                } else if (data != "Success") {
+                    ShowErrorMessage('حدث خطأ');
+                    return;
+                }
+
+                //ShowInformationMessage('تم الاستلام');
+                //window.location.reload();
+                //window.location.href = 'Url.Action("YESSERTransactions" , "File")';
+            },
+            error: function (a, b, c, d) {
+                ShowErrorMessage('حدث خطأ');
+            }
+        });
+    };
+</script>

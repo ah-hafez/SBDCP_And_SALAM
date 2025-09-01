@@ -1,0 +1,9 @@
+﻿@using MCS.Framework.Localization
+<div class="panel-title_content">
+    @{string date =!string.IsNullOrEmpty(ViewData["HijriDate"].ToString())? ViewData["HijriDate"].ToString() + " " + DbRes.TResource("User.Transaction.HijriSymbol") : null;}
+
+
+    @*<span>@ViewData["HijriDateTitle"]:<em class="date-value">@date</em></span>
+    <span> / </span>*@
+    <span>@ViewData["TransactionNumberTitle"]:<em class="transaction-number">@ViewData["TransactionNumber"]</em></span>
+</div>

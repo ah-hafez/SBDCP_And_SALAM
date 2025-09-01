@@ -1,0 +1,55 @@
+﻿@using MCS.UI.Areas.Admin.Models.User
+@using MCS.Framework.Controls.Mvc
+@using MCS.Framework.Localization
+@model AjaxGrid<ActiveDirectoryUserVM>
+
+@{
+    Layout = "~/Views/Shared/_AdminDialogLayout.cshtml";
+}
+<div class="content-rtl panel panel-default dialogbox_panel">
+    <div class="panel-heading">
+        <h3 class="panel-title">@DbRes.TResource("Admin.User.UsersNames")</h3>
+    </div>
+    <div class="modal-body">
+        <div class="panel-body">
+            <div class="row">
+                <div class="table-responsive">
+                    @Html.Partial("~/Areas/Admin/Views/User/_ActiveDirectoryUsersGridPartial.cshtml", Model, new ViewDataDictionary { { "UserName", ViewData["UserName"].ToString() } })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="hdnType" value='@ViewData["type"]' />
+
+<script>
+    $(function () {
+        $("#UsersGrid").addClass("selected");
+    })
+    function UserSelected(UserName, EmployeeName, Email) {
+        $(".closeIcon").click()
+        if ($("#hdnType").val() == 1) {
+            $("#Email").val(Email);
+            $("#Names_1__Text").val(EmployeeName);
+            $("#UserName").val(UserName);
+        } else {
+            $("#formEditUser").find("#EmailEdit").val(Email);
+            $("#formEditUser").find("#Names_1__Text").val(EmployeeName);
+            $("#UserNameEdit").val(UserName);
+        }
+    }
+
+    $(document).on("click", ".grid-row", function () {
+        var email = $(this).find("td").eq(0).html();
+        var employeeName = $(this).find("td").eq(1).html();
+        var userName = $(this).find("td").eq(2).html();
+
+        UserSelected(userName, employeeName, email);
+    })
+</script>
+
+
+
+
+
+

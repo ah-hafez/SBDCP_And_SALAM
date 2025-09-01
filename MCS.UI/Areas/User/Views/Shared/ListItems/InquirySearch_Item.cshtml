@@ -1,0 +1,278 @@
+﻿
+@model MCS.UI.Areas.User.Models.Search.InquirySearchResultVM
+
+<style>
+
+
+    .description {
+        text-align: center;
+    }
+
+    .cardTable {
+        max-height: 170px;
+        min-height: 170px;
+    }
+
+    .cardTableRemove {
+        max-height: 200px;
+        min-height: 197px;
+        filter: blur(8px);
+        -webkit-filter: blur(8px);
+    }
+</style>
+<div class="box-grid col-lg-3 col-md-6 col-sm-12 col-xs-12 mb-3">
+    <div class="box animated zoomIn buttons-action">
+
+
+        <div class="correspondence-t">
+            <div class="d-flex">
+
+                <div class="col-lg-9 ">
+                    <div class="mr-auto d-flex" style="font-weight:bold; font-size:16px;">
+                        <div id="Number" class="pl-2">@Model.Number</div>
+                    </div>
+                    <div class="title" id="">
+                        @if (Model.ToEntity.Length > 20)
+                        {
+                            <a id="example2" data-bs-toggle="tooltip" data-placement="bottom" title="  @Model.ToEntity">
+                                @Model.ToEntity.Substring(0, 20)
+                                ...
+                            </a>
+                        }
+                        else
+                        {
+                            @Model.ToEntity
+                        }
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+        <hr style="margin-top:2px;" />
+
+        <div class="hover-area correspondence-t">
+            @if (Model.HasPermission)
+            {
+                <div class="correspondence-b d-flex flex-wrap" style="background: #e8e8e8">
+                    <div class="f-line w-full w-f-50">
+                        @if (Model.Subject.Length > 30)
+                        {
+                            <div id="example" class="description" data-bs-toggle="tooltip" data-placement="bottom" title="@Model.Subject">
+                                @Model.Subject
+                            </div>
+                        }
+                        else
+                        {
+                            <div id="example" class="description">
+                                @Model.Subject
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="correspondence-b d-flex flex-wrap" style="background: red;">
+                    <div class="f-line w-full w-f-50 description" style="color:white">
+                        غير مصرح لك
+                    </div>
+                </div>
+            }
+            <div class="correspondence-b d-flex flex-wrap cardTable">
+
+                <table class="table table-bordered section1 mx-2" style="margin-top:10px;">
+                    <tbody>
+                        <tr>
+                            <th scope="row" class="headerAddress">@DbRes.TResource("User.OutboundAdvancedSearch.TransactionStatus")</th>
+                            <td class="result">
+                                @Model.StatusName
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="headerAddress">@DbRes.TResource("User.Transaction.Assignment.ToEmployee")</th>
+                            <td>
+
+                                <div class="result">
+                                    @Model.ToUser
+                                </div>
+
+                            </td>
+                        </tr>
+
+                        <tr>
+                        </tr>
+
+                    </tbody>
+                </table>
+
+
+
+            </div>
+
+            <div class="correspondence-icon d-flex" style="padding-right: 2px;">
+                @if (@Model.HasPermission)
+                {
+                    if (Model.TransactionTypeId == (int)TransactionCategory.ExternalOutbound)
+                    {
+
+                        <a href="#" title="@DbRes.TResource("User.OutboundSearch.OutboundCertificate")"   onclick="OutboundCertificate(@Model.Id)">
+                            <img src="~/Content/User/lib/images/SystemIcon/main bar-14.svg" width="30" />
+                        </a>
+                        <div style="border-left: 3px solid white;"></div>
+
+                    }
+                    else if (Model.TransactionTypeId == (int)TransactionCategory.InternalOutbound)
+                    {
+                        <a href="#" title="@DbRes.TResource("User.OutboundInternal.OutboundInternalCertificate")"   onclick="InquiryCertificate(@Model.Id)">
+                            <img src="~/Content/User/lib/images/SystemIcon/main bar-14.svg" width="30" />
+                        </a>
+                        <div style="border-left: 3px solid white;"></div>
+
+                    }
+                    else if (Model.TransactionTypeId == (int)TransactionCategory.DraftOutbound)
+                    {
+                        <a href="#" title="@DbRes.TResource("User.OutboundCertificate.DraftOutboundCertificate")"   onclick="OutboundCertificate(@Model.Id)">
+                            <img src="~/Content/User/lib/images/SystemIcon/main bar-14.svg" width="30" />
+                        </a>
+                        <div style="border-left: 3px solid white;"></div>
+                    }
+                    else
+                    {
+                        <a href="#" title="@DbRes.TResource("User.InboundSearch.InboundCertificate")"   onclick="InquiryCertificate(@Model.Id)">
+                            <img src="~/Content/User/lib/images/SystemIcon/main bar-14.svg" width="30" />
+                        </a>
+                        <div style="border-left: 3px solid white;"></div>
+                    }
+
+
+                    <a href="#" title="@DbRes.TResource("User.InboundSearch.PrintVisitTicket")"   onclick="ShowVisitTickect(@Model.Id)">
+                        <img src="~/Content/User/lib/images/SystemIcon/printer.svg" width="25" />
+                    </a>
+
+                    if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.GeneralPermissions.PrintEncryptionCode))
+                    {
+                        <div style="border-left: 3px solid white;"></div>
+
+                        <a href="#" title="@DbRes.TResource("User.InboundSearch.PrintBarcode")"   onclick="ShowPrintDialog(@Model.Id)">
+                            <img src="~/Content/User/lib/images/SystemIcon/barcode-scanner.svg" width="35" />
+                        </a>
+                    }
+                }
+
+
+
+
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+@*<div class="box-grid">
+        <div class="box gray animated zoomIn buttons-action">
+            <div class="correspondence-t">
+                <div class="d-flex">
+                    <div class="administration-top">
+                    </div>
+                </div>
+            </div>
+            <div class="correspondence-h">
+                <div class="subject">
+                    @if (Model.HasPermission)
+                    {
+                        if (Model.Subject.Length > 30)
+                        {
+                            <a id="example" class=" ui-tooltip ui-corner-all ui-widget-shadow" style="color:#262f6b" data-bs-toggle="tooltip" data-placement="bottom" title="  @Model.Subject">
+                                @Model.Subject.Substring(0, 30)
+                                ...
+                            </a>
+                        }
+                        else
+                        {
+                            @Model.Subject
+                        }
+                    }
+                    else
+                    {
+                        <div>***</div>
+                    }
+                </div>
+            </div>
+            <div class="correspondence-b d-flex flex-wrap">
+                <div class="f-line">
+                    <div class="heading">@DbRes.TResource("User.InboundCertificate.InboundNumber")</div>
+                    <div>
+                        <span class="light-count box_yellow">@Model.Number</span>
+                    </div>
+                </div>
+                <div class="f-line">
+                    <div class="heading">@DbRes.TResource("User.OutboundAdvancedSearch.TransactionStatus")</div>
+                    <div>@Model.StatusName</div>
+                </div>
+                <div class="f-line">
+                    <div class="heading"> @DbRes.TResource("User.Transaction.Assignment.ToOrgUnitId")</div>
+                    <div>
+                        @if (Model.ToEntity.Length > 20)
+                        {
+                            <a id="example2" class=" ui-tooltip ui-corner-all ui-widget-shadow" style="color:#262f6b" data-bs-toggle="tooltip" data-placement="bottom" title="  @Model.ToEntity">
+                                @Model.ToEntity.Substring(0, 20)
+                                ...
+                            </a>
+                        }
+                        else
+                        {
+                            @Model.ToEntity
+                        }
+                    </div>
+                </div>
+                <div class="f-line">
+                    <div class="heading">@DbRes.TResource("User.Transaction.Assignment.ToEmployee")</div>
+                    <div>@Model.ToUser</div>
+                </div>
+            </div>
+            <div class="correspondence-icon d-flex flex-column flex-sm-row">
+                <div class="ml-auto d-flex">
+                    @if (@Model.HasPermission)
+                    {
+                        if (Model.TransactionTypeId == (int)TransactionCategory.ExternalOutbound)
+                        {
+
+                            <a href="#" title="@DbRes.TResource("User.OutboundSearch.OutboundCertificate")"   class='edit_trash circle color-gray' onclick="OutboundCertificate(@Model.Id)">
+                                <i class="fas fa-scroll"></i>
+                            </a>
+                        }
+                        else if (Model.TransactionTypeId == (int)TransactionCategory.InternalOutbound)
+                        {
+                            <a href="#" title="@DbRes.TResource("User.OutboundInternal.OutboundInternalCertificate")"   class='edit_trash circle color-gray' onclick="InquiryCertificate(@Model.Id)">
+                                <i class="fas fa-scroll"></i>
+                            </a>
+                        }
+                        else if (Model.TransactionTypeId == (int)TransactionCategory.DraftOutbound)
+                        {
+                            <a href="#" title="@DbRes.TResource("User.OutboundCertificate.DraftOutboundCertificate")"   class='edit_trash circle color-gray' onclick="OutboundCertificate(@Model.Id)">
+                                <i class='fas fa-scroll'></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <a href="#" title="@DbRes.TResource("User.InboundSearch.InboundCertificate")"   class='edit_trash circle color-gray' onclick="InquiryCertificate(@Model.Id)">
+                                <i class="fas fa-scroll"></i>
+                            </a>
+                        }
+
+                        if (Model.TransactionTypeId != (int)TransactionCategory.DraftOutbound)
+                        {
+                            <a href="#" title="@DbRes.TResource("User.InboundSearch.PrintVisitTicket")"   class='edit_trash circle color-sky-blue' onclick="ShowVisitTickect(@Model.Id)">
+                                <i class='fa fa-ticket-alt'></i>
+                            </a>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>*@

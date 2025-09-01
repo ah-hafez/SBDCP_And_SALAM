@@ -1,0 +1,45 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Lookups
+@model MCS.UI.Areas.Admin.Models.Permission.PermissionEditVM
+
+@{
+    Layout = "~/Views/Shared/_AdminDialogLayout.cshtml";
+}
+
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmAddPermission", @class = "form-horizontal form-row" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="content-rtl panel panel-default dialogbox_panel">
+        <div class="panel-heading">
+            <h3 class="panel-title">@DbRes.TResource("Admin.Permissions.EditPermission")</h3>
+        </div>
+        <div class="panel-body editor">
+            <div class="row">
+                @{List<CultureVM> Culture = (List<CultureVM>)ViewData["Culture"];}
+                @for (int i = 0; i < Culture.Count; i++)
+                {
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.CustomLabelFor(model => model.Names[i].CultureName, new { @class = "col-md-4 control-label" }, DbRes.TResource("Admin.Permissions.PermissionName." + Culture[i].ShortName))
+                            @Html.StickyHiddenFor(model => model.Names[i].CultureId, new { Value = Culture[i].Id })
+                            @Html.StickyHiddenFor(model => model.Names[i].Id, new { Value = Model.Names[i].Id })
+                            <div class="col-md-7">
+                                <div class="">
+                                    @Html.TextBoxGroupFor(model => model.Names[i].Text, null, new { @class = "form-control empty" }, DbRes.TValidation("Admin.Permissions.NameRequired." + Culture[i].ShortName))
+                                </div>
+                                <span class="help-block"></span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        @Html.StickyHiddenFor(model => model.Id)
+
+        <div class="panel-footer">
+            @Html.ActionButton(DbRes.TResource("Admin.Permissions.Edit"), "EditPermission", "AddTree", null, null, "OnSuccess", null, "post", null, "btnAdd", "frmAddPermission", "btn btn-permissions pull-right")
+            <button type="button" class="btn btn-default" id="btnClose" onclick="__dialog.close(); return false;">@DbRes.TResource("Admin.Permissions.Close")</button>
+        </div>
+    </div>
+}

@@ -1,0 +1,25 @@
+﻿@model OrgHierarchyTreeViewModel
+
+@foreach (var node in Model.Nodes)
+{
+    string canSelect = node.IsSelectable ? "hierarchy-node" : string.Empty;
+    <div class="toggle-item" data-node-parent-id="@node.ParentId" data-node-id="@node.Id">
+        <input type="radio" name="A" value="" id="item-radio-a" />
+        <label for="item-radio-a">
+            <div class="dir-item @canSelect" data-node-id="@node.Id" data-node-name="@node.Name" data-node-number="@node.DepartmentNumber" data-node-isyesserregistered="@node.IsYesserRegistered" data-node-email="@node.Email" data-modal-container="@Model.TreeId" data-callback-function="@Model.CallBackFunction">
+                <div class="d-flex flex-row align-items-center">
+                    <div class="px-2 dir-num">@node.DepartmentNumber</div>
+                    <div class="px-2 flex-grow-1 dir-name">@node.Name</div>
+                    @if (node.HasChilds)
+                    {
+                        <div class="pr-2 font-weight-bolder">
+                            <a href="#" class="dir-item-btn toggle-children-visibility" data-node-parent-id="@node.ParentId" data-node-id="@node.Id" data-getChildrenUrl="@Model.GetChildrenActionURL" data-getchildrenparameters="@Model.GetChildrenActionParameters" data-modal-container="@Model.TreeId" data-callback-function="@Model.CallBackFunction" data-orgunittreemode="@Model.OrgUnitTreeMode">
+                                <i class="la la-plus"></i>
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </label>
+    </div>
+}

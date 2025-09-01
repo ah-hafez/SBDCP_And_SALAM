@@ -1,0 +1,172 @@
+﻿@using MCS.UI.Helpers
+@using MCS.Common
+@model MCS.UI.Areas.User.Models.Search.InboundSearchResultVM
+
+@{
+    /**/
+
+    // ViewData["dateType"] = ViewData["dateType"] ?? TransactionDateType.Any;
+    ViewData["dateType"] = 4;
+    string colorType = string.Empty;
+    string className = "result";
+    string classNameTo = "result";
+    if (Model.ConfidentialityId == 28 || Model.ConfidentialityId == 29)
+    {
+        className = "resultReed";
+    }
+    if (Model.TransactionTypeId == 2)
+    {
+        classNameTo = "resultReed";
+    }
+    string remindDate = (((TransactionDateType)ViewData["dateType"] == TransactionDateType.HasDate)
+                                   ? @DateHelper.GetDate(@Model.RemindDateH) + " - " + Model.RemindDate.Value.ToString("hh:mm tt")
+                                   : (TransactionDateType)ViewData["dateType"] == TransactionDateType.Late
+                                   ? DateTime.Now.Date >= Model.Date.Date.AddDays(2)
+                                   ? (Int32.Parse((DateTime.Now.Date - Model.Date.Date.AddDays(2)).Days.ToString()) + 1).ToString()
+                                   : Model.RemindDate.ToString() != ""
+                                   ? (Int32.Parse((DateTime.Now.Date - Model.Date.Date).Days.ToString()) + 1).ToString()
+                                   : "---"
+                                   : "");
+}
+
+@if (Model.ColorCode == Color.Red.LookupIdentity(LookupCategory.Color, SessionInfo.CultureShortName))
+{
+
+    colorType = "red";
+
+}
+else if (Model.ColorCode == Color.Blue.LookupIdentity(LookupCategory.Color, SessionInfo.CultureShortName))
+{
+
+    colorType = "green";
+
+
+}
+else
+{
+    colorType = "red";
+}
+
+<tr class="bg-white" style="cursor: pointer; " data-id="@Model.Id">
+
+
+    <td>
+        <div class="pr-1" id="Number_@Model.Id">@Model.Number</div>
+
+    </td>
+
+    <td onclick="redirect()">
+        @Model.TransactionType
+    </td>
+
+
+
+    <td class="subject-td" onclick="redirect()">
+        @if (Model.HasPermission)
+        {
+            if (Model.Subject != null && Model.Subject.Length > 8)
+            {
+                <div id="example" class="Tabledescription" data-bs-toggle="tooltip" data-placement="bottom" title="@Model.Subject">
+                    @Model.Subject.Substring(0, 8)...
+                </div>
+            }
+            else
+            {
+                <div id="example" class="Tabledescription">
+                    @Model.Subject
+                </div>
+            }
+        }
+        else
+        {
+            <div class="description">***</div>
+        }
+    </td>
+    <td onclick="redirect()">
+        <div class="date" style="text-align: right;">
+            @DateHelper.GetDate(@Model.DateH)
+            @Model.Date.ToShortTimeString()
+        </div>
+    </td>
+    <td onclick="redirect()">
+        <div class="result">
+
+            <div class="" data-bs-toggle="tooltip" data-placement="bottom" title="@Model.PriorityName">
+                @Model.PriorityName
+            </div>
+
+        </div>
+    </td>
+    <td onclick="redirect()">
+        <div class="@classNameTo">
+            @Model.ConfidentialityName
+        </div>
+    </td>
+
+    <td class="result">
+        @if (Model.TransactionAssignmentInfoVM.Date != null && Model.TransactionAssignmentInfoVM.Date > (Convert.ToDateTime("01/01/2000")))
+        {
+            <div class="result" data-bs-toggle="tooltip" data-placement="bottom" title="@Model.TransactionAssignmentInfoVM.Date">
+                @if (Model.TransactionAssignmentInfoVM.Date.ToString().Length > 10)
+                {
+                    @Model.TransactionAssignmentInfoVM.Date.ToString().Substring(0, 10)
+                }
+                else
+                {
+                    @Model.TransactionAssignmentInfoVM.Date.ToString()
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="result">
+                ---
+            </div>
+        }
+    </td>
+
+    <td class="result">
+        @if (Model.TransactionAssignmentInfoVM.FromEntity != null)
+        {
+            <div class="result" data-bs-toggle="tooltip" data-placement="bottom" title="@Model.TransactionAssignmentInfoVM.FromEntity">
+
+                @if (Model.TransactionAssignmentInfoVM.FromEntity.Length > 15)
+                {
+                    @Model.TransactionAssignmentInfoVM.FromEntity.Substring(0, 10)
+                }
+                else
+                {
+                    @Model.TransactionAssignmentInfoVM.FromEntity
+                }
+            </div>
+        }
+        else
+        {
+            <div class="result">
+                ---
+            </div>
+        }
+    </td>
+
+
+    <td class="result">
+        @if (Model.TransactionAssignmentInfoVM.Action != null)
+        {
+            <div class="result">
+
+                @Model.TransactionAssignmentInfoVM.Action
+
+
+            </div>
+        }
+        else
+        {
+            <div class="result">
+                ---
+            </div>
+        }
+    </td>
+
+
+

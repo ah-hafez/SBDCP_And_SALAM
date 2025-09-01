@@ -1,0 +1,15 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MCS.DTO.Tenants
+{
+    public class TenantCultureDTO: BaseDTO
+    {
+        public string ShortName { get; set; }
+        public int? NameId { get; set; }
+        public TenantLookupDTO Name { get; set; }
+    }
+}

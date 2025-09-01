@@ -1,0 +1,1289 @@
+﻿@using MCS.UI.Areas.User.Models
+@using MCS.UI.Areas.User.Models.UserPreferences
+@using MCS.Framework.Localization
+@using MCS.Common
+@model UserPreferenceVM
+
+@{
+    /**/
+
+    ViewBag.Title = DbRes.TResource("User.UserPreferences.UserPreferences");
+    Layout = "~/Areas/User/Views/Shared/_SearchLayout.cshtml";
+}
+<script src="~/Scripts/jSignature/jSignature.js"></script>
+<script src="~/Scripts/jSignature/plugins/jSignature.UndoButton.js"></script>
+
+<div class="d-flex flex-column flex-sm-row mx-5 mx-xs-3 mb-3 header-container mt-5">
+    <h3 class="site-color">@DbRes.TResource("User.UserPreferences.UserPreferences")</h3>
+</div>
+<div class="white-container mx-5 mx-xs-3">
+    <div class="tab-content">
+        <div class=" white-bg">
+            <div class="form-row">
+
+                @using (Html.BeginForm("AddUserPreferences", "UserPreferences", FormMethod.Post, new { id = "formAddUserPreferences", @class = "tab-content" }))
+                {
+                    @Html.AntiForgeryToken()
+                    if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.UserPreferences.Language))
+                    {
+                        <div class="form-group col-lg-3 col-md-6 col-sm-12 col-xs-12 mb-3">
+                            <label class="w-100">@DbRes.TResource("User.UserPreferences.Language")<span class="stark">*</span></label>
+                            @Html.AutoCompleteBuilder("ddlLanguage", "hdnLanguageId", ViewData["Cultures"] as string, Model != null ? Model.LanguageId.ToString() : null, true, "form-control")
+                        </div>
+                    }
+                    @Html.HiddenGroupFor(model => model.LanguageId, new { id = "hdnLanguageId" }, "AddUserPereference")
+
+
+
+                    <div class="form-group col-lg-9 col-md-12 col-xs-12 col-sm-12">
+                        @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.UserPreferences.Theme))
+                        {
+                            <div class="form-group col-lg-3 col-md-6 col-sm-12 col-xs-12 mb-3">
+                                <label class="w-100">@DbRes.TResource("User.UserPreferences.Theme")</label>
+                                @Html.AutoCompleteBuilder("ddlThemes", "hdnThemeId", ViewData["Theme"] as string, Model != null ? Model.Theme.ToString() : null, true, "form-control")
+                            </div>
+                        }
+
+                        <div class="form-group col-lg-3 col-md-6 col-sm-12 col-xs-12 mb-3">
+                            <label class="w-100"> @DbRes.TResource("Admin.User.Email")</label>
+                            <div>
+                                @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                            </div>
+                        </div>
+
+                    </div>
+                    @Html.HiddenGroupFor(model => model.Theme, new { id = "hdnThemeId" }, "AddUserPereference")
+
+
+                    <div class="form-group col-lg-3 col-md-6 col-sm-12 col-xs-12 mb-3 hide" style="text-align:center">
+                        <label class="w-100">رسالة تأكيد عند الدخول</label>
+                        <div class="checkbox">
+                            @Html.CheckBoxFor(m => m.SMSNotifications, new { @class = "form-check-input" })
+                            <label class="dark-color p-0">
+                                @DbRes.TResource("User.UserPreferences.Yes")
+                            </label>
+                        </div>
+                    </div>
+                    if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.UserPreferences.Signature))
+                    {
+                        if (Model.HasSignaturePasswordText == false)
+                        {
+                            <div class="form-group col-lg-3 col-md-6 col-sm-12 col-xs-12 mb-3">
+                                <label class="w-100">@DbRes.TResource("UserPreferences.PasswordToSign")</label>
+                                <div class="checkbox">
+                                    <label>
+                                        <input id="chPasswordToSign" type="checkbox" onclick="onPasswordToSignChange(this)">
+                                        <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                    </label>
+                                    <label class="dark-color p-0">
+                                        @DbRes.TResource("User.UserPreferences.Yes")
+                                    </label>
+                                </div>
+                            </div>
+                            <div id="SignaturePasswordContent" style="display:none;">
+                                <div class="form-group col-xs-6 mb-3">
+                                    <div class="row form-group col-xs-6 mb-3">
+                                        <label class="w-100">@DbRes.TResource("UserPreferences.NewPassword")</label>
+                                        @Html.PasswordGroupFor(model => model.NewPassword, "AddUserPereference", new { @class = "form-control" })
+                                    </div>
+                                    <div class="form-group col-xs-6 mb-3">
+                                        <label class="w-100">@DbRes.TResource("UserPreferences.ConfirmPassword")</label>
+                                        @Html.PasswordGroupFor(model => model.ConfirmPassword, "AddUserPereference", new { @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="">
+                                <div class="form-group col-lg-3 col-md-6 col-sm-12 col-xs-12 mb-3" style="text-align:center">
+                                    <label class="w-100">@DbRes.TResource("UserPreferences.PasswordProtection")</label>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input id="chPasswordProtection" type="checkbox" onclick="onPasswordProtectionChange(this)">
+                                            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                        </label>
+                                        <label class="dark-color p-0">
+                                            @DbRes.TResource("User.UserPreferences.Yes")
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group panel-body col-xs-6 mb-3">
+                                <div>
+                                    @Html.ClientButton(DbRes.TResource("UserPreferences.ChangeSignaturePassword"), "btnChangePassword", " btn btn-st1", "onChangePassword")
+                                </div>
+
+                            </div>
+                        }
+
+
+
+
+                    }
+
+                    @*<div class="form-group col-lg-12 col-md-12 col-xs-12 col-sm-12">
+
+
+
+                            <div class="form-group col-lg-5 col-md-6 col-sm-12 col-xs-12">
+                                <div id="dvDepartmentsTree">
+                                    <label>@Html.DisplayNameFor(model => model.FollowUpOrgId)</label>
+                                    @Html.EditorFor(model => model.FollowUpOrgId, "OrgHierarchyCaller", additionalViewData: new { treeId = "FollowUpOrgId", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Shared"), GetNodeInfoByIdActionURL = @Url.Action("GetInternalPartyInfoById", "Shared"), GetNodeInfoByNumActionURL = @Url.Action("GetInternalPartyInfoByNumber", "Shared"), onClickfunction = "GetUsersByOrgUnitId", ValidationGroup = "", ShowAddPartyButton = false })
+                                </div>
+                            </div>
+                            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                                @Html.LabelFor(model => model.FollowUpUserId, new { @class = "w-100" })
+                                <div>
+                                    @Html.AutoCompleteBuilder("ddlOrgUnitUsers", "hdnOrgUnitUsers", null, null, true, "form-control")
+                                    @Html.HiddenGroupFor(model => model.FollowUpUserId, new { id = "hdnOrgUnitUsers", @Value = "", @class = "UserId" })
+                                    <span class="help-block"></span>
+                                </div>
+                            </div>
+
+
+
+
+                        </div>*@
+
+                    <div class="form-group col-lg-3 col-md-6 col-sm-12 col-xs-12 mb-3 hide">
+                        <label class="w-100">رقم الهاتف </label>
+                        <div>
+                            @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    @*<div class="form-group col-lg-3 col-md-6 col-sm-12 col-xs-12 mb-3">
+                            <label class="w-100">البريد الالكتروني</label>
+                            <div>
+                                @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                            </div>
+                        </div>*@
+                    @*<div class="form-group col-lg-12 col-md-12 col-xs-12 col-sm-12">
+                            <div class="mt-2 text-danger pull-left">
+                                <p class="stark">@DbRes.TResource("Admin.User.MustFill") * </p>
+                            </div>
+                        </div>*@
+
+
+                    <div class="form-group col-lg-3 col-md-6 col-sm-12 col-xs-12 mb-3">
+                        <label class="w-100">طريقة العرض الافتراضية:</label>
+                        <div>
+                            @Html.RadioButtonFor(model => model.DefaultDisplay, 1, new { @class = "rbSignature" })
+                            <label class="">بطاقات</label>
+                            @Html.RadioButtonFor(model => model.DefaultDisplay, 2, new { @class = "rbSignature" })
+                            <label class="">جدول</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-lg-3 col-md-6 col-sm-12 col-xs-12 mb-3">
+                        <label class="w-100">طريقة العرض ورقة الاحالة:</label>
+                        <div>
+                            @Html.RadioButtonFor(model => model.DefaultAssignmentPaper, false, new { @class = "rbSignature" })
+                            <label class="">الكتروني</label>
+                            @Html.RadioButtonFor(model => model.DefaultAssignmentPaper, true, new { @class = "rbSignature" })
+                            <label class="">ورقي</label>
+                        </div>
+                    </div>
+                    <div class="row"><hr /></div>
+                    <div class="row push-up-20 col xs-12">
+                        <div class="form-group col-lg-8 col-md-12 col-sm-12 col-xs-12 mb-3">
+                            <label class="w-100">@DbRes.TResource("User.UserPreferences.UserNotificationsSubscription")</label>
+
+                            @for (int i = 0; i < Model.NotificationSubscriptions.Count; i++)
+                            {
+                                if (Model.NotificationSubscriptions[i].Id != (int)NotificationSubscriptions.VerificationCode)
+                                {
+                                    <label class="form-group col-lg-3 col-md-6 col-sm-12 col-xs-12 mb-3">
+                                        @Html.CheckBoxFor(model => Model.NotificationSubscriptions[i].IsSelected, new { @class = "require-one" })
+                                        @Html.StickyHiddenFor(model => Model.NotificationSubscriptions[i].Id)
+                                        @Html.LabelFor(model => model.NotificationSubscriptions[i].Name, Model.NotificationSubscriptions[i].Name, null)
+                                    </label>
+                                }
+
+                            }
+                        </div>
+                    </div>
+
+                    <div class="row"><hr /></div>
+                    <div class="row push-up-20 col xs-12">
+                        <div class="form-row col xs-6">
+                            @*here too*@
+                            @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.UserPreferences.Signature))
+                            {
+                                <div class="form-group col-xs-6 mb-3">
+                                    <label class="w-100"> &nbsp;&nbsp;&nbsp;&nbsp; @DbRes.TResource("User.UserPreferences.ElectronicSignature")</label>
+                                    <div class="col-md-8 row mt-3">
+                                        <label class="col-md-12">
+                                            @Html.RadioButtonFor(model => model.Signature, SignType.UploadFile.ToString(), new { @class = "rbSignature" })
+                                            <i class="icon-buttons-add pr-2"></i>@DbRes.TResource("User.UserPreferences.UploadSignature")
+                                        </label>
+                                        <label class="col-md-12">
+                                            @Html.RadioButtonFor(model => model.Signature, SignType.SignOnScreen.ToString(), new { @class = "rbSignature" })
+                                            <i class="icon-buttons-attach pr-2"></i> @DbRes.TResource("User.UserPreferences.SignOnScreen")
+                                        </label>
+                                        <label class="col-md-12">
+                                            @Html.RadioButtonFor(model => model.Signature, SignType.KeepPresent.ToString(), new { @class = "rbSignature" })
+                                            <i class="icon-document"></i>@DbRes.TResource("User.UserPreferences.KeepCurrentSignature")
+                                        </label>
+                                        <label class="col-md-12">
+
+                                            @Html.RadioButtonFor(model => model.Signature, SignType.Wacom.ToString(), new { @class = "rbSignature, openWacomWindow" })
+                                            <i class="ui-icon-document-b"></i>@DbRes.TResource("Wacom")
+
+                                        </label>
+                                        <label class="col-md-12">
+                                            @Html.RadioButtonFor(model => model.Signature, SignType.Delete.ToString(), new { @class = "rbSignature" })
+                                            <i class="glyphicon glyphicon-trash color-danger"></i>@DbRes.TResource("User.UserPreferences.DeleteSignatureImage")
+                                        </label>
+                                    </div>
+                                    <div class="form-group" id="dvSignatureFile" style="display:none;">
+                                        <div class="col-md-10">
+                                            <button class="fileinput btn btn-st1 upload_design none_push" onclick="$('#SignatureFile').click(); return false;">@DbRes.TResource("User.UserPreferences.UploadSignature")</button>
+                                            <label id="lblSignFileName"></label>
+                                            <input type="file" class="fileinput btn btn-st1 upload_design none_push" name="SignatureFile" id="SignatureFile"
+                                                   data-filename-placement="inside" title="@DbRes.TResource("User.UserPreferences.UploadSignature")" style="display:none;" />
+                                        </div>
+                                        <div class="col-md-2">
+                                            @*<button class="btn btn-up pull-right">حمل</button>*@
+                                        </div>
+                                    </div>
+                                    <div class="form-group" id="dvCurrentSignature">
+                                        <label class="w-100">&nbsp;&nbsp;&nbsp;&nbsp; @DbRes.TResource("User.UserPreferences.ImageSignature")</label>
+                                        <div style="width:70%;height:50%;">
+                                            @if (ViewData["SignatureImgBase64"] != null)
+                                            {
+                                                <div class="signatures modal-content m-3 signatureStyle">
+                                                    <img id="Signature" src="@("data:image/png;base64, " + ViewData["SignatureImgBase64"])" alt="Signatur">
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style="display:none" id="dvCurrentSignatureWacom">
+                                        <label class="w-100">@DbRes.TResource("User.UserPreferences.ImageSignature")</label>
+                                        <div>
+
+                                            <div class="signatures modal-content signatureStyle m-3">
+                                                <img id="SignatureWacom" alt="Signatur" style="width:100%;height:100%;">
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group mt-xl-n5" id="dvSignatureHere" style="visibility:hidden;">
+                                        <div class="col-md-12 m-2 ">
+                                            <div id="signature" class="signatures modal-content signatureStyle">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.UserPreferences.Mark))
+                            {
+                                <div class=" form-group col-xs-6 mb-3">
+                                    <label class="w-100">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; @DbRes.TResource("User.UserPreferences.Marking")</label>
+                                    <div class="col-md-8 row mt-3">
+                                        <label class="col-md-12">
+                                            @Html.RadioButtonFor(model => model.Marking, SignType.UploadFile, new { @class = "rbMarking" })
+                                            <i class="icon-buttons-add pr-2"></i>@DbRes.TResource("User.UserPreferences.UploadMarker")
+                                        </label>
+                                        <label class="col-md-12">
+                                            @Html.RadioButtonFor(model => model.Marking, SignType.SignOnScreen, new { @class = "rbMarking" })
+                                            <i class="icon-buttons-attach pr-2"></i>@DbRes.TResource("User.UserPreferences.SignOnScreen")
+                                        </label>
+                                        <label class="col-md-12">
+                                            @Html.RadioButtonFor(model => model.Marking, SignType.KeepPresent, new { @class = "rbMarking" })
+                                            <i class="icon-document"></i>@DbRes.TResource("User.UserPreferences.KeepCurrentMarking")
+                                        </label>
+                                        <label class="col-md-12">
+                                            @Html.RadioButtonFor(model => model.Marking, SignType.Wacom, new { @class = "rbMarking, openWacomWindow" })
+                                            <i class="ui-icon-document-b"></i>@DbRes.TResource("Wacom")
+                                        </label>
+                                        <label class="col-md-12">
+                                            @Html.RadioButtonFor(model => model.Marking, SignType.Delete, new { @class = "rbMarking" })
+                                            <i class="glyphicon glyphicon-trash color-danger"></i>@DbRes.TResource("User.UserPreferences.DeleteMarkerImage")
+                                        </label>
+
+                                    </div>
+                                    <div class="form-group" id="dvMarkingFile" style="display:none;">
+                                        <div class="col-md-10">
+                                            <button class="fileinput btn btn-st1 upload_design none_push" onclick="$('#MarkingFile').click(); return false;">@DbRes.TResource("User.UserPreferences.UploadMarker")</button>
+                                            <label id="lblMarkFileName"></label>
+                                            <input type="file" class="fileinput btn btn-st1 upload_design none_push" name="MarkingFile" id="MarkingFile" data-filename-placement="inside"
+                                                   title="@DbRes.TResource("User.UserPreferences.UploadMarker")" accept=".jpg,.jpeg,.png" onchange="validateFileType()" style="display:none;" />
+                                        </div>
+                                        <div class="col-md-2">
+                                        </div>
+                                    </div>
+                                    <div class="form-group" id="dvCurrentMarking">
+                                        <label class="w-100">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; @DbRes.TResource("User.UserPreferences.ImageMarker")</label>
+                                        <div style="width:70%;height:50%;">
+                                            @if (ViewData["MarkingImgBase64"] != null)
+                                            {
+
+                                                <div id="CurrentSignatures" class="signatures modal-content m-3 signatureStyle">
+                                                    <img id="Marking" src="@("data:image/png;base64, " + ViewData["MarkingImgBase64"])" style="width:70%;height:50%;">
+                                                </div>
+                                            }
+
+                                        </div>
+                                    </div>
+                                    <div class="form-group mt-xl-n5" id="dvMarkingHere" style="visibility:hidden;">
+                                        <div class="col-md-12 m-2 ">
+                                            <div id="marking" class=" signatures modal-content  signatureStyle">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.UserPreferences.MessageSignature))
+                            {
+                                <div class=" form-group col-xs-6 mb-3">
+                                    <label class="w-100">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; @DbRes.TResource("User.UserPreferences.MessageSignature")</label>
+                                    <div class="col-md-8 row mt-3">
+                                        <label class="col-md-12">
+                                            @Html.RadioButtonFor(model => model.MessageSignature, SignType.UploadFile, new { @class = "rbMessageSignature" })
+                                            <i class="icon-buttons-add pr-2"></i>@DbRes.TResource("User.UserPreferences.UploadMessageSignature")
+                                        </label>
+                                        <label class="col-md-12">
+                                            @Html.RadioButtonFor(model => model.MessageSignature, SignType.SignOnScreen, new { @class = "rbMessageSignature" })
+                                            <i class="icon-buttons-attach pr-2"></i>@DbRes.TResource("User.UserPreferences.SignOnScreen")
+                                        </label>
+                                        <label class="col-md-12">
+                                            @Html.RadioButtonFor(model => model.MessageSignature, SignType.KeepPresent, new { @class = "rbMessageSignature" })
+                                            <i class="icon-document"></i>@DbRes.TResource("User.UserPreferences.KeepCurrentMessageSignature")
+                                        </label>
+                                        <label class="col-md-12">
+                                            @Html.RadioButtonFor(model => model.MessageSignature, SignType.Wacom, new { @class = "rbMessageSignature, openWacomWindow" })
+                                            <i class="ui-icon-document-b"></i>@DbRes.TResource("Wacom")
+                                        </label>
+                                        <label class="col-md-12">
+                                            @Html.RadioButtonFor(model => model.MessageSignature, SignType.Delete, new { @class = "rbMessageSignature" })
+                                            <i class="glyphicon glyphicon-trash color-danger"></i>@DbRes.TResource("User.UserPreferences.DeleteMessageSignatureImage")
+                                        </label>
+
+                                    </div>
+                                    <div class="form-group" id="dvMessageSignatureFile" style="display:none;">
+                                        <div class="col-md-10">
+                                            <button class="fileinput btn btn-st1 upload_design none_push" onclick="$('#MessageSignatureFile').click(); return false;">@DbRes.TResource("User.UserPreferences.UploadMessageSignature")</button>
+                                            <label id="lblMessageSignatureFileName"></label>
+                                            <input type="file" class="fileinput btn btn-st1 upload_design none_push" name="MessageSignatureFile" id="MessageSignatureFile" data-filename-placement="inside"
+                                                   title="@DbRes.TResource("User.UserPreferences.UploadMessageSignature")" accept=".jpg,.jpeg,.png" onchange="validateMessageSignatureFileType()" style="display:none;" />
+                                        </div>
+                                        <div class="col-md-2">
+                                        </div>
+                                    </div>
+                                    <div class="form-group" id="dvCurrentMessageSignature">
+                                        <label class="w-100">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; @DbRes.TResource("User.UserPreferences.ImageMessageSignaturer")</label>
+                                        <div style="width:70%;height:50%;">
+                                            @if (ViewData["MessageSignatureImgBase64"] != null)
+                                            {
+
+                                                <div id="CurrentSignatures" class="signatures modal-content m-3 signatureStyle">
+                                                    <img id="MessageSignature" src="@("data:image/png;base64, " + ViewData["MessageSignatureImgBase64"])" style="width:70%;height:50%;">
+                                                </div>
+                                            }
+
+                                        </div>
+                                    </div>
+                                    <div class="form-group mt-xl-n5" id="dvMessageSignatureHere" style="visibility:hidden;">
+                                        <div class="col-md-12 m-2 ">
+                                            <div id="messageSignature" class=" signatures modal-content  signatureStyle">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+                        <div class="form-row col xs-6 hidden" display: none">
+                            @*//herere*@
+                            @*@if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.UserPreferences.SignatureCommand))
+                                {*@
+                            <div class="form-group col-xs-6 mb-3">
+                                <label class="w-100">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; @DbRes.TResource("User.User.UserPreferences.SignatureCommand")</label>
+                                <div class="col-md-8 row mt-3">
+                                    <label class="col-md-12">
+                                        @Html.RadioButtonFor(model => model.SignatureCommand, SignType.UploadFile, new { @class = "rbSignatureCommand" })
+                                        <i class="icon-buttons-add pr-2"></i>@DbRes.TResource("User.UserPreferences.UploadSignature")
+                                    </label>
+                                    <label class="col-md-12">
+                                        @Html.RadioButtonFor(model => model.SignatureCommand, SignType.SignOnScreen, new { @class = "rbSignatureCommand" })
+                                        <i class="icon-buttons-attach pr-2"></i> @DbRes.TResource("User.UserPreferences.SignOnScreen")
+                                    </label>
+                                    <label class="col-md-12">
+                                        @Html.RadioButtonFor(model => model.SignatureCommand, SignType.KeepPresent, new { @class = "rbSignatureCommand" })
+                                        <i class="icon-document"></i>@DbRes.TResource("User.UserPreferences.KeepCurrentSignature")
+                                    </label>
+                                    <label class="col-md-12">
+
+                                        @Html.RadioButtonFor(model => model.SignatureCommand, SignType.Wacom, new { @class = "rbSignatureCommand, openWacomWindow" })
+                                        <i class="ui-icon-document-b"></i>@DbRes.TResource("Wacom")
+
+                                    </label>
+                                    <label class="col-md-12">
+                                        @Html.RadioButtonFor(model => model.SignatureCommand, SignType.Delete, new { @class = "rbSignatureCommand" })
+                                        <i class="glyphicon glyphicon-trash color-danger"></i>@DbRes.TResource("User.UserPreferences.DeleteSignatureImage")
+                                    </label>
+                                </div>
+                                <div class="form-group hidden" id="dvSignatureCommandFile" style="display:none;">
+                                    <div class="col-md-10">
+                                        <button class="fileinput btn btn-st1 upload_design none_push" onclick="$('#SignatureCommandFile').click(); return false;">@DbRes.TResource("User.UserPreferences.UploadSignature")</button>
+                                        <label id="lblSignCommandFileName"></label>
+                                        <input type="file" class="fileinput btn btn-st1 upload_design none_push" name="SignatureCommandFile" id="SignatureCommandFile"
+                                               data-filename-placement="inside" title="@DbRes.TResource("User.UserPreferences.UploadSignature")" style="display:none;" />
+                                    </div>
+                                    <div class="col-md-2">
+                                        @*<button class="btn btn-up pull-right">حمل</button>*@
+                                    </div>
+                                </div>
+                                <div class="form-group" id="dvCurrentSignature">
+                                    <label class="w-100">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; @DbRes.TResource("User.UserPreferences.ImageSignature")</label>
+                                    <div>
+                                        @if (ViewData["SignatureCommandImgBase64"] != null)
+                                        {
+                                            <div class="signatures modal-content m-3 signatureStyle">
+                                                <img id="SignatureCommand" src="@("data:image/png;base64, " + ViewData["SignatureCommandImgBase64"])" alt="SignaturCommand" style="width:70%;height:50%;">
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group" style="display:none" id="dvCurrentSignatureCommandWacom">
+                                    <label class="w-100">@DbRes.TResource("User.UserPreferences.ImageSignature")</label>
+                                    <div>
+
+                                        <div class="signatures modal-content signatureStyle m-3">
+                                            <img id="SignatureCommandWacom" alt="SignaturCommand" style="width:100%;height:100%;">
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div class="form-group m-3 mt-xl-n5" id="dvSignatureCommandHere" style="visibility:hidden;">
+                                    <div class="col-md-12 m-2 ">
+                                        <div id="signatureCommand" class="signatures modal-content signatureStyle">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @*}*@
+                            @*@if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.UserPreferences.SignatureBehalf))
+                                {*@
+                            <div class="form-group col-xs-6 mb-3">
+                                <label class="w-100">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; @DbRes.TResource("User.User.UserPreferences.SignatureBehalf")</label>
+                                <div class="col-md-8 row mt-3">
+                                    <label class="col-md-12">
+                                        @Html.RadioButtonFor(model => model.SignatureBehalf, SignType.UploadFile, new { @class = "rbSignatureBehalf" })
+                                        <i class="icon-buttons-add pr-2"></i>@DbRes.TResource("User.UserPreferences.UploadSignature")
+                                    </label>
+                                    <label class="col-md-12">
+                                        @Html.RadioButtonFor(model => model.SignatureBehalf, SignType.SignOnScreen, new { @class = "rbSignatureBehalf" })
+                                        <i class="icon-buttons-attach pr-2"></i> @DbRes.TResource("User.UserPreferences.SignOnScreen")
+                                    </label>
+                                    <label class="col-md-12">
+                                        @Html.RadioButtonFor(model => model.SignatureBehalf, SignType.KeepPresent, new { @class = "rbSignatureBehalf" })
+                                        <i class="icon-document"></i>@DbRes.TResource("User.UserPreferences.KeepCurrentSignature")
+                                    </label>
+                                    <label class="col-md-12">
+
+                                        @Html.RadioButtonFor(model => model.SignatureBehalf, SignType.Wacom, new { @class = "rbSignatureBehalf, openWacomWindow" })
+                                        <i class="ui-icon-document-b"></i>@DbRes.TResource("Wacom")
+
+                                    </label>
+                                    <label class="col-md-12">
+                                        @Html.RadioButtonFor(model => model.SignatureBehalf, SignType.Delete, new { @class = "rbSignatureBehalf" })
+                                        <i class="glyphicon glyphicon-trash color-danger"></i>@DbRes.TResource("User.UserPreferences.DeleteSignatureImage")
+                                    </label>
+                                </div>
+                                <div class="form-group" id="dvSignatureBehalfFile" style="display:none;">
+                                    <div class="col-md-10">
+                                        <button class="fileinput btn btn-st1 upload_design none_push" onclick="$('#SignatureBehalfFile').click(); return false;">@DbRes.TResource("User.UserPreferences.UploadSignature")</button>
+                                        <label id="lblSignBehalfFileName"></label>
+                                        <input type="file" class="fileinput btn btn-st1 upload_design none_push" name="SignatureBehalfFile" id="SignatureBehalfFile"
+                                               data-filename-placement="inside" title="@DbRes.TResource("User.UserPreferences.UploadSignature")" style="display:none;" />
+                                    </div>
+                                    <div class="col-md-2">
+                                        @*<button class="btn btn-up pull-right">حمل</button>*@
+                                    </div>
+                                </div>
+                                <div class="form-group" id="dvCurrentSignature">
+                                    <label class="w-100"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@DbRes.TResource("User.UserPreferences.ImageSignature")</label>
+                                    <div>
+                                        @if (ViewData["SignatureBehalfImgBase64"] != null)
+                                        {
+                                            <div class="signatures modal-content m-3 signatureStyle">
+                                                <img id="SignatureBehalf" src="@("data:image/png;base64, " + ViewData["SignatureBehalfImgBase64"])" alt="SignaturBehalf" style="width:70%;height:50%;">
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group" style="display:none" id="dvCurrentSignatureBehalfWacom">
+                                    <label class="w-100">@DbRes.TResource("User.UserPreferences.ImageSignature")</label>
+                                    <div>
+
+                                        <div class="signatures modal-content signatureStyle m-3">
+                                            <img id="SignatureBehalfWacom" alt="SignaturBehalf" style="width:100%;height:100%;">
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div class="form-group mt-xl-n5" id="dvSignatureBehalfHere" style="visibility:hidden;">
+                                    <div class="col-md-12 m-2 ">
+                                        <div id="signatureBehalf" class="signatures modal-content signatureStyle">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @*}*@
+                        </div>
+
+
+
+
+
+
+
+                    </div>
+
+                    <div id="footer">
+                        @Html.HiddenFor(model => model.SignaturePasswordText)
+                        @Html.StickyHiddenFor(model => model.UserId)
+                        @Html.StickyHiddenFor(model => model.Id)
+                        @Html.CustomCheckBoxFor(model => model.ActivateDelegation, new { @id = "ActivateDelegation2", @style = "display:none;" }, "")
+                        @Html.StickyHidden("hdnUsersArray", "[]")
+                        @Html.StickyHidden("hdnCurrentUsersArray", ViewData["CurrentDelegations"].ToString())
+                        @Html.StickyHidden("hdnSignatureImgBase64")
+                        @Html.StickyHidden("hdnSignatureBehalfImgBase64")
+                        @Html.StickyHidden("hdnSignatureCommandImgBase64")
+                        @Html.StickyHidden("hdnMarkingImgBase64")
+                        @Html.StickyHidden("hdnMessageSignatureImgBase64")
+
+                    </div>
+                }
+
+            </div>
+            <div class="content_container content_container--footer">
+                <dvi class="col-xs-12 text-right preview-mini-options">
+                    <div style="display:none">
+                        @Html.ActionLink(DbRes.TResource("User.UserPreferences.Save"), "AddUserPereference", "UserPreferences",
+                           null, null, "OnAddUserPereferenceSuccess", null, "post", "AddUserPereference", "btnAddPereference",
+                           "formAddUserPreferences", "btn-site", "PasswordEncryptor")
+                    </div>
+                    <button class="btn btn-st1 btn-lg pull-right" onclick="GenerateVerificationCode()">@DbRes.TResource("User.UserPreferences.Save")</button>
+                </dvi>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="~/Scripts/aes.min.js"></script>
+
+<script type="text/javascript">
+
+
+
+
+    var wacomSigType = '';
+    $(document).ready(function () {
+        $('#SignatureFile').change(function (e) {
+            var geekss = e.target.files[0].name;
+            $('#lblSignFileName').html(geekss);
+        });
+        $('#SignatureCommandFile').change(function (e) {
+            var geekssCommand = e.target.files[0].name;
+            $('#lblSignCommandFileName').html(geekssCommand);
+        });
+        $('#SignatureBehalfFile').change(function (e) {
+            var geekssBehalf = e.target.files[0].name;
+            $('#lblSignBehalfFileName').html(geekssBehalf);
+        });
+
+        $('.openWacomWindow').change(function () {
+            wacomSigType = $(this).attr('id');
+            event.preventDefault();
+            OpenWacomDialog();
+        })
+
+        $('#MarkingFile').change(function (e) {
+
+            var geekss = e.target.files[0].name;
+            $('#lblMarkFileName').html(geekss);
+        });
+        $('#MessageSignatureFile').change(function (e) {
+
+            var geekss = e.target.files[0].name;
+            $('#lblMessageSignatureFileName').html(geekss);
+        });
+
+        var hasSignaturePasswordText = JSON.parse('@Model.HasSignaturePasswordText'.toLowerCase());
+        $.validator.unobtrusive.parseDynamicContent = function (selector) {
+            var $selector = $(selector),
+                $jqValUnob = $.validator.unobtrusive,
+                selectorsDataValAttr = $selector.attr('data-val'),
+                $validationInputs = $selector.find(':input[data-val=true]');
+
+            if ((selectorsDataValAttr !== 'true') &&
+                ($validationInputs.length === 0)) {
+                return;
+            }
+
+            if (selectorsDataValAttr === 'true') {
+                $jqValUnob.parseElement(selector, true);
+            }
+
+            $validationInputs.each(function () {
+                $jqValUnob.parseElement(this, true);
+            });
+
+            //get the relevant form
+            var $form = $selector.first().closest('form');
+
+            $jqValUnob.syncValdators($form);
+        };
+        /* synchronizes the unobtrusive validation with jquery validator */
+        $.validator.unobtrusive.syncValdators = function ($form) {
+            if ($.hasData($form[0])) {
+                var unobtrusiveValidation = $form.data('unobtrusiveValidation'),
+                    validator = $form.validate();
+
+                // add validation rules from unobtrusive to jquery
+                $.each(unobtrusiveValidation.options.rules, function (elname, elrules) {
+                    if (validator.settings.rules[elname] == undefined) {
+                        var args = {};
+                        $.extend(args, elrules);
+                        args.messages = unobtrusiveValidation.options.messages[elname];
+                        $("[name='" + elname + "']").rules("add", args);
+                    } else {
+                        $.each(elrules, function (rulename, data) {
+                            if (validator.settings.rules[elname][rulename] == undefined) {
+                                var args = {};
+                                args[rulename] = data;
+                                args.messages = unobtrusiveValidation.options.messages[elname][rulename];
+                                $("[name='" + elname + "']").rules("add", args);
+                            }
+                        });
+                    }
+                });
+                // remove all validation rules from jquery that arn't in unobtrusive
+                $.each(validator.settings.rules, function (elname, elrules) {
+                    if (unobtrusiveValidation.options.rules[elname] === undefined) {
+                        delete validator.settings.rules[elname];
+                    } else {
+                        $.each(elrules, function (rulename, data) {
+                            if (rulename !== "messages" && unobtrusiveValidation.options.rules[elname][rulename] === undefined) {
+                                delete validator.settings.rules[elname][rulename];
+                            }
+                        });
+                    }
+                });
+            }
+        };
+        $.validator.unobtrusive.unparseContent = function (selector) {
+            var $selector = $(selector);
+
+            // if its  a text node, then exit
+            if ($selector && $selector.length > 0 && $selector[0].nodeType === 3) {
+                return;
+            }
+
+            var $form = $selector.first().closest('form'),
+                unobtrusiveValidation = $form.data('unobtrusiveValidation');
+
+            $selector.find(":input[data-val=true]").each(function () {
+                removeValidation($(this), unobtrusiveValidation);
+            });
+            if ($selector.attr('data-val') === 'true') {
+                removeValidation($selector, unobtrusiveValidation);
+            }
+            $.validator.unobtrusive.syncValdators($form);
+        };
+        function removeValidation($element, unobtrusiveValidation) {
+            var elname = $element.attr('name');
+            if (elname !== undefined) {
+                $element.rules('remove');
+                if (unobtrusiveValidation) {
+                    if (unobtrusiveValidation.options.rules[elname]) {
+                        delete unobtrusiveValidation.options.rules[elname];
+                    }
+                    if (unobtrusiveValidation.options.messages[elname]) {
+                        delete unobtrusiveValidation.options.messages[elname];
+                    }
+                }
+            }
+        }
+
+        $("#formAddUserPreferences").find('#NewPassword').attr('autocomplete', 'new-password');
+        $("#formAddUserPreferences").find('#ConfirmPassword').attr('autocomplete', 'new-password');
+        if (!hasSignaturePasswordText) {
+            $.validator.unobtrusive.unparseContent('#NewPassword');
+            $.validator.unobtrusive.unparseContent('#ConfirmPassword');
+        }
+
+    });
+
+    function onPasswordToSignChange() {
+        var currentElement = $(event.currentTarget);
+        var newValue = currentElement.is(':checked');
+        if (newValue) {
+            $('#SignaturePasswordContent').show();
+            $.validator.unobtrusive.parseDynamicContent('#SignaturePasswordContent');
+        }
+        else {
+            $('#SignaturePasswordContent').hide();
+            $.validator.unobtrusive.unparseContent('#NewPassword');
+            $.validator.unobtrusive.unparseContent('#ConfirmPassword');
+        }
+    }
+
+    function onPasswordProtectionChange() {
+
+        ShowChangePasswordDialog('@PasswordType.Delete');
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    function onChangePassword() {
+        event.preventDefault();
+        ShowChangePasswordDialog('@PasswordType.Edit');
+    }
+
+    function GenerateVerificationCode() {
+        event.preventDefault();
+        if ($('#chPasswordToSign').is(':checked') && $('#formAddUserPreferences').valid()) {
+             ShowGenerateVerificationCode();
+
+            //$('#btnAddPereference').click();
+        }
+        else {
+            var isValid = CheckValidation();
+            if (isValid) {
+                $('#btnAddPereference').click();
+            }
+        }
+    }
+
+    function ShowGenerateVerificationCode() {
+        __dialogVerification = $.confirm({
+            title: false,
+            content: function ($obj) {
+                return $.ajax({
+                    url: '@Url.Action("GenerateVerificationCode", "UserPreferences")',
+                    type: 'get',
+                    success: function (data) {
+                        if (data.MessageType != 2) {
+                            $obj.setContent(data.Html);
+                            jQuery.validator.unobtrusive.parse('#frmCheckVerification');
+                        }
+                        else {
+                            ShowErrorMessage(data.MessageText);
+                        }
+                    }
+                });
+            },
+            onOpen: function () {
+                jQuery(function () {
+                    jQuery('.jconfirm-box').draggable({
+                        revert: false,
+                    });
+                });
+                $("#Loader").hide();
+            },
+            confirmButton: false,
+            icon: 'fa fa-info',
+            animation: 'scale',
+            columnClass: "dialogbox col-md-6 col-md-offset-2 col-xs-6 col-xs-offset-2",
+            backgroundDismiss: false,
+            closeIcon: true,
+            cancelButton: false
+        });
+    }
+
+    function OnSuccessCheckVerification(data) {
+        if (data.MessageType != 2) {
+            __dialogVerification.close();
+            if (data.VerificationType == VerificationType.NeedCode) {
+                ShowGenerateVerificationCode();
+            } else if (data.VerificationType == VerificationType.None) {
+                //Call Save Button
+                var isValid = CheckValidation();
+                if (isValid) {
+                    $('#btnAddPereference').click();
+                }
+            }
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function ShowChangePasswordDialog(passwordType) {
+        __dialogChangePassword = $.confirm({
+            title: false,
+            content: function ($obj) {
+                return $.ajax({
+                    url: '@Url.Action("ChangePassword", "UserPreferences")',
+                    type: 'get',
+                    data: { passwordType: passwordType },
+                    success: function (data) {
+                        if (data.MessageType != 2) {
+                            $obj.setContent(data.Html);
+                            jQuery.validator.unobtrusive.parse('#frmChangePassword');
+                        }
+                        else {
+                            ShowErrorMessage(data.MessageText);
+                        }
+                    }
+                });
+            },
+            onOpen: function () {
+                jQuery(function () {
+                    jQuery('.jconfirm-box').draggable({
+                        revert: false,
+                    });
+                });
+                $("#Loader").hide();
+            },
+            confirmButton: false,
+            icon: 'fa fa-info',
+            animation: 'scale',
+            columnClass: "dialogbox col-md-6 col-md-offset-2 col-xs-6 col-xs-offset-2",
+            backgroundDismiss: false,
+            closeIcon: true,
+            cancelButton: false
+        });
+    }
+
+    function OnSuccessChangePassword(data) {
+        if (data.MessageType != 2) {
+            __dialogChangePassword.close();
+            window.location.href = '@Url.Action("Index", "UserPreferences")';
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+    function PasswordEncryptor() {
+        if ($('#NewPassword') && $('#NewPassword').length > 0 && $('#NewPassword').val().trim() != "") {
+            var newPassword = $('#NewPassword').val().trim();
+            var key = CryptoJS.enc.Utf8.parse('8080808080808080');
+            var iv = CryptoJS.enc.Utf8.parse('8080808080808080');
+
+            $('#SignaturePasswordText').val(CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(newPassword), key,
+                {
+                    keySize: 128 / 8,
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                }));
+            $('#NewPassword').val($('#SignaturePasswordText').val());
+            $('#ConfirmPassword').val($('#SignaturePasswordText').val());
+        }
+        return true;
+    }
+    $(".rbSignatureCommand").change(function () {
+        if ($(this).val() == "UploadFile") {
+            $("#dvSignatureCommandHere").css("visibility", "hidden");
+            $("#dvCurrentSignatureCommand").hide();
+            $("#dvSignatureCommandFile").show();
+        }
+        else if ($(this).val() == "SignOnScreen") {
+            $("#dvSignatureCommandHere").css("visibility", "visible");
+            $("#dvCurrentSignatureCommand").hide();
+            $("#dvSignatureCommandFile").hide();
+        }
+        else {
+            $("#dvSignatureCommandHere").css("visibility", "hidden");
+            $("#dvCurrentSignatureCommand").show();
+            $("#dvSignatureCommandFile").hide();
+        }
+    })
+    $(".rbSignature").change(function () {
+        if ($(this).val() == "UploadFile") {
+            $("#dvSignatureHere").css("visibility", "hidden");
+            $("#dvCurrentSignature").hide();
+            $("#dvSignatureFile").show();
+        }
+        else if ($(this).val() == "SignOnScreen") {
+            $("#dvSignatureHere").css("visibility", "visible");
+            $("#dvCurrentSignature").hide();
+            $("#dvSignatureFile").hide();
+        }
+        else {
+            $("#dvSignatureHere").css("visibility", "hidden");
+            $("#dvCurrentSignature").show();
+            $("#dvSignatureFile").hide();
+        }
+    })
+    $(".rbSignatureBehalf").change(function () {
+        if ($(this).val() == "UploadFile") {
+            $("#dvSignatureBehalfHere").css("visibility", "hidden");
+            $("#dvCurrentSignatureBehalf").hide();
+            $("#dvSignatureBehalfFile").show();
+        }
+        else if ($(this).val() == "SignOnScreen") {
+            $("#dvSignatureBehalfHere").css("visibility", "visible");
+            $("#dvCurrentSignatureBehalf").hide();
+            $("#dvSignatureBehalfFile").hide();
+        }
+        else {
+            $("#dvSignatureBehalfHere").css("visibility", "hidden");
+            $("#dvCurrentSignatureBehalf").show();
+            $("#dvSignatureBehalfFile").hide();
+        }
+    })
+    $(".rbMarking").change(function () {
+        if ($(this).val() == "UploadFile") {
+            $("#dvMarkingHere").css("visibility", "hidden");
+            $("#dvCurrentMarking").hide();
+            $("#dvMarkingFile").show();
+        }
+        else if ($(this).val() == "SignOnScreen") {
+            $("#dvMarkingHere").css("visibility", "visible");
+            $("#dvCurrentMarking").hide();
+            $("#dvMarkingFile").hide();
+        }
+        else {
+            $("#dvMarkingHere").css("visibility", "hidden");
+            $("#dvCurrentMarking").show();
+            $("#dvMarkingFile").hide();
+        }
+    })
+    $(".rbMessageSignature").change(function () {
+        if ($(this).val() == "UploadFile") {
+            $("#dvMessageSignatureHere").css("visibility", "hidden");
+            $("#dvCurrentMessageSignature").hide();
+            $("#dvMessageSignatureFile").show();
+        }
+        else if ($(this).val() == "SignOnScreen") {
+            $("#dvMessageSignatureHere").css("visibility", "visible");
+            $("#dvCurrentMessageSignature").hide();
+            $("#dvMessageSignatureFile").hide();
+        }
+        else {
+            $("#dvMessageSignature").css("visibility", "hidden");
+            $("#dvCurrentMessageSignature").show();
+            $("#dvMessageSignatureFile").hide();
+        }
+    })
+    $("#ActivateDelegation").change(function () {
+        $("#ActivateDelegation2").prop('checked', $(this).is(':checked'));
+    });
+
+    function OnAddUserPereferenceSuccess(data, div) {
+        if (data.MessageType != 2) {
+            window.location.href = '@Url.Action("Index", "UserPreferences")';
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function GetDelegationById(id) {
+        $.ajax({
+            type: 'get',
+            url: '@Url.Action("GetDelegationById", "UserPreferences")',
+            data: { id: id },
+            success:
+           function (data) {
+               $("#dvEditDelegation").html('');
+               $("#dvEditDelegation").html(data.Html);
+               $("#dvEditDelegation").show();
+               $("#dvAddUserDelegation").hide();
+               jQuery.validator.unobtrusive.parse('#frmEditUserDelegation');
+           }
+        });
+    }
+
+    function GetDelegationByIndex(index) {
+        $.ajax({
+            type: 'post',
+            url: '@Url.Action("GetDelegationByIndex", "UserPreferences")',
+            data: { index: index, hdnUsersArray: $("#hdnUsersArray").val(), hdnCurrentUsersArray: $("#hdnCurrentUsersArray").val() },
+            success:
+           function (data) {
+               $("#dvEditDelegation").html('');
+               $("#dvEditDelegation").html(data.Html);
+               $("#dvEditDelegation").show();
+               $("#dvAddUserDelegation").hide();
+               $("#hdnEditUsersArray").val(data.hdnValue);
+               jQuery.validator.unobtrusive.parse('#frmClientEditUserDelegation');
+           }
+        });
+    }
+
+    function OnDeleteDelegationSuccess(data, div) {
+        if (data.MessageType != 2) {
+            ShowSuccesMessage(data.MessageText);
+            $("#hdnCurrentUsersArray").val(data.hdnValue);
+            $("#hdnAddCurrentUsersArray").val(data.hdnValue);
+            $("#hdnEditCurrentUsersArray").val(data.hdnValue);
+
+            $("#dvEditDelegation").hide();
+            $("#dvAddUserDelegation").show();
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function OnClientDeleteDelegationSuccess(data, div) {
+        if (data.MessageType != 2) {
+
+            ShowSuccesMessage(data.MessageText);
+            UpdateValues(data.hdnValue);
+
+            $("#dvEditDelegation").hide();
+            $("#dvAddUserDelegation").show();
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function OnEditSuccess(data, div) {
+        if (data.MessageType != 2) {
+            ShowSuccesMessage(data.MessageText);
+            $("#" + div).html("");
+            $("#" + div).html(data.Html);
+            $("#hdnCurrentUsersArray").val(data.hdnValue);
+            $("#hdnAddCurrentUsersArray").val(data.hdnValue);
+            $("#hdnEditCurrentUsersArray").val(data.hdnValue);
+            $("#dvEditDelegation").hide();
+            $("#dvAddUserDelegation").show();
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+
+    function HideEditDiv() {
+        $("#dvEditDelegation").css("display", "none");
+        $("#dvAddUserDelegation").css("display", "block");
+    }
+
+    function UpdateValues(value) {
+        $("#hdnAddUsersArray").val(value);
+        $("#hdnEditUsersArray").val(value);
+        $("#hdnUsersArray").val(value);
+    }
+
+    function validateFileType() {
+        var arrayType = ['jpg', 'jpeg', 'png'];
+        var fileName = $("#MarkingFile").val();
+        if (fileName != undefined) {
+            var idxDot = fileName.lastIndexOf(".") + 1;
+            var extFile = fileName.substr(idxDot, fileName.length).toLowerCase();
+            if (extFile != "" && $.inArray(extFile, arrayType) == -1) {
+                ShowErrorMessage("@DbRes.TValidation("User.Setting.ValidateFileType")");
+                return false
+            }
+            else
+                return true;
+        }
+        return true;
+    }
+
+    function validateMessageSignatureFileType() {
+        var arrayType = ['jpg', 'jpeg', 'png'];
+        var fileName = $("#MessageSignatureFile").val();
+        if (fileName != undefined) {
+            var idxDot = fileName.lastIndexOf(".") + 1;
+            var extFile = fileName.substr(idxDot, fileName.length).toLowerCase();
+            if (extFile != "" && $.inArray(extFile, arrayType) == -1) {
+                ShowErrorMessage("@DbRes.TValidation("User.Setting.ValidateFileType")");
+                return false
+            }
+            else
+                return true;
+        }
+        return true;
+    }
+
+
+    $(document).ready(function () {
+
+        // This is the part where jSignature is initialized.
+        var $sigdiv = $("#signature").jSignature({ 'UndoButton': true, 'undoButtonText': "" });
+        var $sigdivCommand = $("#signatureCommand").jSignature({ 'UndoButton': true, 'undoButtonText': "" });
+        var $sigdivBehalf = $("#signatureBehalf").jSignature({ 'UndoButton': true, 'undoButtonText': "" });
+        var $sigdivmarking = $("#marking").jSignature({ 'UndoButton': true, 'undoButtonText': "" });
+        var $sigdivmessageSignature = $("#messageSignature").jSignature({ 'UndoButton': true, 'undoButtonText': "" });
+
+    })
+    function CheckValidation() {
+        if ($("input[name='Signature']:checked").val() == "UploadFile") {
+            if ($("#SignatureFile").val() == "") {
+                ShowErrorMessage("@DbRes.TValidation("User.UserPreferences.SignatureRequired")");
+                return false;
+            }
+        }
+        else if ($("input[name='Signature']:checked").val() == "SignOnScreen") {
+            if ($("#signature").jSignature('getData', "native").length == 0) {
+                ShowErrorMessage("@DbRes.TValidation("User.UserPreferences.SignatureRequired")");
+                return false;
+            }
+        }
+        if ($(".rbSignatureCommand:checked").val() == "SignOnScreen") {
+            if ($("#signatureCommand").jSignature('getData', "native").length == 0) {
+                ShowErrorMessage("@DbRes.TValidation("User.UserPreferences.SignatureRequired")");
+                return false;
+            }
+        }
+        else if ($(".rbSignatureCommand:checked").val() == "UploadFile") {
+            if ($("#signatureCommandFile").val() == "") {
+                ShowErrorMessage("@DbRes.TValidation("User.UserPreferences.SignatureRequired")");
+                return false;
+            }
+        }
+        if ($(".rbSignatureBehalf:checked").val() == "UploadFile") {
+            if ($("#SignatureBehalfFile").val() == "") {
+                ShowErrorMessage("@DbRes.TValidation("User.UserPreferences.SignatureRequired")");
+                return false;
+            }
+        }
+        else if ($(".rbSignatureBehalf:checked").val() == "SignOnScreen") {
+            if ($("#signatureBehalf").jSignature('getData', "native").length == 0) {
+                ShowErrorMessage("@DbRes.TValidation("User.UserPreferences.SignatureRequired")");
+                return false;
+            }
+        }
+        if ($(".rbMarking:checked").val() == "UploadFile") {
+            if ($("#MarkingFile").val() == "") {
+                ShowErrorMessage("@DbRes.TValidation("User.UserPreferences.MarkingRequired")");
+                return false;
+            }
+        }
+        else if ($(".rbMarking:checked").val() == "SignOnScreen") {
+            if ($("#marking").jSignature('getData', "native").length == 0) {
+                ShowErrorMessage("@DbRes.TValidation("User.UserPreferences.MarkingRequired")");
+                return false;
+            }
+        }
+        if ($(".rbMessageSignature:checked").val() == "UploadFile") {
+            if ($("#MessageSignatureFile").val() == "") {
+                ShowErrorMessage("@DbRes.TValidation("User.UserPreferences.MessageSignatureRequired")");
+                return false;
+            }
+        }
+        else if ($(".rbMessageSignature:checked").val() == "SignOnScreen") {
+            if ($("#messageSignature").jSignature('getData', "native").length == 0) {
+                ShowErrorMessage("@DbRes.TValidation("User.UserPreferences.MessageSignatureRequired")");
+                return false;
+            }
+        }
+
+        var dataSignature = $("#signature").jSignature('getData', "default");
+        var datamessageSignature = $("#messageSignature").jSignature('getData', "default");
+        var datamarking = $("#marking").jSignature('getData', "default");
+
+        var dataSignatureCommand = $("#signatureCommand").jSignature('getData', "default");
+        var dataSignatureBehalf = $("#signatureBehalf").jSignature('getData', "default");
+
+        if ($("input[name='Signature']:checked").val() == "SignOnScreen") {
+            $("#hdnSignatureImgBase64").val(dataSignature);
+        }
+
+        if ($(".rbSignatureCommand:checked").val() == "SignOnScreen") {
+            $("#hdnSignatureCommandImgBase64").val(dataSignatureCommand);
+        }
+
+        if ($(".rbSignatureBehalf:checked").val() == "SignOnScreen") {
+            $("#hdnSignatureBehalfImgBase64").val(dataSignatureBehalf);
+        }
+
+        if ($(".rbMarking:checked").val() == "SignOnScreen") {
+            $("#hdnMarkingImgBase64").val(datamarking);
+        }
+        if ($(".rbMessageSignature:checked").val() == "SignOnScreen") {
+            $("#hdnMessageSignatureImgBase64").val(datamessageSignature);
+        }
+
+        return true;
+    }
+
+
+    function GetUsersByOrgUnitId() {
+
+        if ($("#divForm__dvDepartmentsTree").find(".hdnDepartmentId").val() != '') {
+            $("#hdnOrgUnitUsers").val('');
+            $("#ddlOrgUnitUsers").val('');
+            //$("#hdnOrgUnitUserName").val('');
+            //$('#hdnOrgUnitName').val($('#dvBeneficiaryBody .txtDepartmentName').val());
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetUnitUsers", "Editor")',
+                data: { id: $("#FollowUpOrgId").val() },
+                success:
+               function (data) {
+                   AutoCompleteChangeList("ddlOrgUnitUsers", data);
+                   $("#ddlOrgUnitUsers").trigger('change');
+                   $("#hdnOrgUnitUsers").trigger('change');
+                   $("#ddlOrgUnitUsers").prop('disabled', false);
+               }
+            });
+            return false;
+        }
+        else {
+
+            AutoCompleteChangeList("ddlOrgUnitUsers", "[]");
+            $("#hdnOrgUnitUsers").val('');
+            $("#ddlOrgUnitUsers").trigger('change');
+            $("#hdnOrgUnitUsers").trigger('change');
+            $("#ddlOrgUnitUsers").prop('disabled', true);
+        }
+    }
+
+
+
+    $(document).ready(function () {
+        $('#ddlOrgUnitUsers').focus();
+        if ('@Model.FollowUpUserId' != '') {
+            SetData(@Model.FollowUpUserId)
+        }
+    });
+
+    function SetData(keyValue) {
+        GetUsersByOrgUnitId();
+        $("#hdnOrgUnitUsers").val(keyValue);
+    }
+
+    function OpenWacomDialog() {
+       // nSelectedSign = nType;
+        var url = 'http://localhost/';
+        window.open("@Url.Action("OpenWacom", "Shared")", "MyDialog", 100, 100, "menubar=0,toolbar=0");
+
+        return false;
+    }
+
+    function capturedSig(sImageData) {
+        switch (wacomSigType) {
+            case "Signature":
+                $('#hdnSignatureImgBase64').val(' data:image/png;base64,' + sImageData);
+                break;
+            case "SignatureCommand":
+                $('#hdnSignatureCommandImgBase64').val(' data:image/png;base64,' + sImageData);
+                break;
+            case "SignatureBehalf":
+                $('#hdnSignatureBehalfImgBase64').val(' data:image/png;base64,' + sImageData);
+                break;
+            case "Marking":
+                $('#hdnMarkingImgBase64').val(' data:image/png;base64,' + sImageData);
+                break;
+            case "MessageSignature":
+                $('#hdnMessageSignatureImgBase64').val(' data:image/png;base64,' + sImageData);
+                break;
+        }
+    }
+</script>
+
+<style type="text/css">
+    #marking, #signature, #signatureBehalf, #signatureCommand, #messageSignature {
+        margin-top: 33px;
+        cursor: crosshair
+    }
+</style>

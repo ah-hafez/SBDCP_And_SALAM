@@ -1,0 +1,13 @@
+﻿@model AjaxGrid<MCS.UI.Areas.User.Models.Transaction.TransactionExternalCopyVM>
+@using MCS.UI.Helpers
+
+@Html.Grid(Model).Named("grdExternalCopies").Columns(columns =>
+{
+    columns.Add(model => model.FromUserName).Titled(DbRes.TResource("User.TransactionCertificate.SenderName"));
+    columns.Add(model => model.FromOrgUnitName).Titled(DbRes.TResource("User.TransactionCertificate.SenderDepartmentName"));
+    columns.Add(model => model.UserName).Titled(DbRes.TResource("User.TransactionCertificate.ReceiverName"));
+    columns.Add(model => model.OrgUnitName).Titled(DbRes.TResource("User.TransactionCertificate.ReceiverDepartmentName"));
+    columns.Add(model => model.DateH).Titled(DbRes.TResource("User.TransactionCertificate.AssignmentDateTime"));
+    columns.Add(false).RenderValueAs(model => @DateHelper.GetDate(null)).Titled(DbRes.TResource("User.TransactionCertificate.RecivedAssignmentDateTime"));
+    columns.Add(model => model.ActionName).Titled(DbRes.TResource("User.TransactionCertificate.ExternalCopies.ActionName"));
+})

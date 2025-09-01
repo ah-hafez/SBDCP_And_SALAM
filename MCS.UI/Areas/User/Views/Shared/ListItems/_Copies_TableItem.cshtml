@@ -1,0 +1,264 @@
+﻿@using MCS.UI.Helpers
+@using MCS.Common
+@using MCS.UI.Areas.User.Models.File
+@model TransactionTrayInfoVM
+
+@{
+    //string colorType = string.Empty;
+    string className = "result";
+    string classNameTo = "result";
+    string transType = string.Empty;
+
+    if (Model.TransactionDetailsInfoVM.TransactionCategoryId == (int)TransactionCategorieColor.InternalOutbound)
+    {
+
+        transType = "InternalOutboundLineTable";
+
+    }
+    else if (Model.TransactionDetailsInfoVM.TransactionCategoryId == (int)TransactionCategorieColor.Inbound)
+    {
+
+        transType = "InboundLineTable";
+
+
+    }
+    else
+    {
+        transType = "OutboundExternalTable";
+    }
+    if (Model.TransactionDetailsInfoVM.ConfidentialityId == 28 || Model.TransactionDetailsInfoVM.ConfidentialityId == 29)
+    {
+        className = "resultReed";
+    }
+    if (Model.TransactionDetailsInfoVM.TransactionTypeId == 2)
+    {
+        classNameTo = "resultReed";
+    }
+    bool isPermition = false;
+    string Confidentiality = "ConfidentialityNormal";
+    string ConfidentialityBac = "ConfidentialityNormalBackg";
+    switch (Model.TransactionDetailsInfoVM.ConfidentialityId)
+    {
+        case (int)Confedentiality.HandDelivered:
+            {
+                Confidentiality = "ConfidentialityVeryRed";
+                ConfidentialityBac = "ConfidentialityVeryRedBackg";
+
+                if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.ConfidentialityOfTransactions.HandDelivered))
+                {
+                    isPermition = true;
+                }
+
+                break;
+            }
+        case (int)Confedentiality.HighConfidential:
+            {
+                Confidentiality = "ConfidentialityMidRed";
+                ConfidentialityBac = "ConfidentialityMidRedBackg";
+
+                if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.ConfidentialityOfTransactions.HandDelivered) || SessionInfo.CurrentUser.Claims.Contains(UserClaims.ConfidentialityOfTransactions.ExtremlyConfidential))
+                {
+                    isPermition = true;
+                }
+
+                break;
+            }
+        case (int)Confedentiality.Secret:
+            {
+                Confidentiality = "ConfidentialityRed";
+                ConfidentialityBac = "ConfidentialityRedBackg";
+
+                if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.ConfidentialityOfTransactions.HandDelivered) || SessionInfo.CurrentUser.Claims.Contains(UserClaims.ConfidentialityOfTransactions.ExtremlyConfidential) || SessionInfo.CurrentUser.Claims.Contains(UserClaims.ConfidentialityOfTransactions.Secret))
+                {
+                    isPermition = true;
+                }
+
+                break;
+            }
+        case (int)Confedentiality.Normal:
+            {
+                isPermition = true;
+                break;
+            }
+    }
+}
+<style>
+    .ConfidentialityRed {
+        border-right: 4px solid #c41c0e;
+    }
+
+    .ConfidentialityMidRed {
+        border-right: 4px solid #c41c0e;
+    }
+
+    .ConfidentialityVeryRed {
+        border-right: 4px solid #c41c0e;
+    }
+</style>
+<tr class="bg-white @Confidentiality @transType" style="cursor: pointer; " data-id="@Model.TransactionDetailsInfoVM.Id" data-copyId="@Model.TransactionDetailsInfoVM.TransactionCopyId">
+    <td>
+        <div class="checkbox">
+            <div class="">
+                <label>
+                    @if (Model.TransactionDetailsInfoVM.CopyStatus != TransCopyStatus.Delete.LookupIdentity(LookupCategory.TransCopyStatus, SessionInfo.CultureShortName))
+                    {
+                        <input type="checkbox" value="" onchange="holdDataFromBox(this); CheckCopyStatus(@Model.TransactionDetailsInfoVM.CopyStatus);" id="ch_@Model.TransactionDetailsInfoVM.TransactionCopyId" data-id="@Model.TransactionDetailsInfoVM.TransactionCopyId" data-status="@Model.TransactionDetailsInfoVM.CopyStatus" class="FillIds">
+                        <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                    }
+                </label>
+
+            </div>
+        </div>
+    </td>
+    <td onclick="redirect()">
+        <div>
+            @if (Model.TransactionDetailsInfoVM.IsOpr)
+            {
+                <span class="pr-1" id="Number_@Model.TransactionDetailsInfoVM.Id">@Model.TransactionDetailsInfoVM.Number</span><span>  OPR</span>
+            }
+            else
+            {
+                <span class="pr-1" id="Number_@Model.TransactionDetailsInfoVM.Id">@Model.TransactionDetailsInfoVM.Number</span>
+            }
+
+
+            @*@if (Model.TransactionDetailsInfoVM.ToUserName != null && Model.TransactionDetailsInfoVM.ToUserName != "")
+                {
+                    <span class="pr-1"><i class="fas fa-user" data-bs-toggle="tooltip" data-placement="bottom" title="@DbRes.TResource("User.Transaction.SendedToPerson")"></i></span>
+                }*@
+        </div>
+    </td>
+    @*<td onclick="redirect()">
+            @Model.TransactionDetailsInfoVM.TransactionCategory
+        </td>*@
+    <td class="title" id="entityName_@Model.TransactionDetailsInfoVM.Id" onclick="redirect()">
+        <div>
+            @Model.TransactionDetailsInfoVM.EntityName
+        </div>
+    </td>
+
+
+    <td class="subject-td" @ViewData["onClick"] onclick="redirect()">
+        @if (Model.TransactionDetailsInfoVM.HasPermission)
+        {
+            <div id="example" class="Tabledescription">
+                @Model.TransactionDetailsInfoVM.Subject
+            </div>
+        }
+        else
+        {
+            <div class="description">***</div>
+        }
+    <td onclick="redirect()">
+        <div class="" style="text-align: right;">
+            @DateHelper.GetDate(@Model.TransactionDetailsInfoVM.DateH)
+            @Model.TransactionDetailsInfoVM.Date.ToShortTimeString()
+        </div>
+    </td>
+    <td onclick="redirect()">
+        <div class="">
+            @Model.TransactionDetailsInfoVM.ToEntityName
+        </div>
+    </td>
+    <td onclick="redirect()">
+        <div class="">
+            <div class="@className"> @Model.TransactionDetailsInfoVM.PriorityName</div>
+        </div>
+    </td>
+    <td onclick="redirect()">
+        <div class="@classNameTo">@Model.TransactionDetailsInfoVM.ConfidentialityName</div>
+    </td>
+
+
+    <td class="">
+        <div class="correspondence-icon-table d-flex">
+            @if (Model.TransactionDetailsInfoVM.CopyStatus != TransCopyStatus.Delete.LookupIdentity(LookupCategory.TransCopyStatus, SessionInfo.CultureShortName))
+            {
+                <div>
+                    @if (Model.TransactionDetailsInfoVM.HasPermission)
+                    {
+                        <a id="link" href="#" title="@DbRes.TResource("User.Copies.Show")" data-id="@Model.TransactionDetailsInfoVM.EncryptedId" data-tray="@Model.TransactionDetailsInfoVM.TransactionCategoryId" data-encrypttray="@Model.TransactionDetailsInfoVM.EncryptedTransactionCategoryId" data-copyId="@Model.TransactionDetailsInfoVM.TransactionCopyId" class="aView" data-type="@Model.TransactionDetailsInfoVM.TransactionCategoryId">
+                            <img src="~/Content/User/lib/images/SystemIcon/main bar-22.svg" width="30" />
+                        </a>
+                        if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Outbound.CreateInternalOutboundFromCopy) && !Model.IsVIPUser)
+                        {
+                            <a href="#" title="@DbRes.TResource("User.Copies.CreateOutboundInternal")" data-id="@Model.TransactionDetailsInfoVM.EncryptedId" data-tray="@Model.TransactionDetailsInfoVM.EncryptedTransactionCategoryId" data- class="CreateInternalOutbound" data-type="@TrayActionType.CreateOutbound">
+                                <img src="~/Content/User/lib/images/SystemIcon/add.svg" width="30" />
+                            </a>
+                        }
+                        <a id="link" href="#" title="@DbRes.TResource("User.InboundSearch.InboundCertificate")" data-id="@Model.TransactionDetailsInfoVM.Id" onclick="ShowTransactionLog(@Model.TransactionDetailsInfoVM.Id)">
+                            <img src="~/Content/User/lib/images/SystemIcon/main bar-14.svg" width="30" />
+                        </a>
+                    }
+
+                    @if (Model.TransactionDetailsInfoVM.CopyStatus == TransCopyStatus.NotViewed.LookupIdentity(LookupCategory.TransCopyStatus, SessionInfo.CultureShortName))
+                    {
+                        <a href="#" title="@DbRes.TResource("User.File.Viewed")" data-id="@Model.TransactionDetailsInfoVM.Id" data-tray="@Model.TransactionDetailsInfoVM.TransactionCategoryId" data- class="aMarkSeen" data-type="@TrayActionType.Viewed">
+                            <img src="~/Content/User/lib/images/SystemIcon/main bar-27.svg" width="30" />
+                        </a>
+                    }
+                    else
+                    {
+                        <a href="#" title="@DbRes.TResource("User.File.Delete")" data-id="@Model.TransactionDetailsInfoVM.Id" data-tray="@Model.TransactionDetailsInfoVM.TransactionCategoryId" data- class="aMarkDelete" data-type="@TrayActionType.DeleteCopy">
+                            <img src="~/Content/User/lib/images/SystemIcon/delete.svg" width="28" />
+                        </a>
+                    }
+
+                </div>
+            }
+            else
+            {
+                <a href="#" title="@DbRes.TResource("User.File.SaveRevert")" data-id="@Model.TransactionDetailsInfoVM.Id" data- class="aSaveCopyRevert" data-type="@TrayActionType.UndoDeleteCopy">
+                    <img src="~/Content/User/lib/images/SystemIcon/main bar-36.svg" width="25" />
+                </a>
+            }
+        </div>
+    </td>
+</tr>
+
+<script>
+
+    function redirect() {
+
+        var link = $(event.currentTarget).parent().find('#link');
+        link.click();
+    }
+    $('.aView').unbind('click').on('click', function (e) {
+        var isVIPUser = '@SessionInfo.GetObjectFromSession(Constants.IsVIPUser)';
+
+        var type = $(this).data("type");
+        var trayId = $(this).data("tray");
+        var id = $(this).data("id");
+        var encrypttype = $(this).data("encrypttray");
+        var trxId = EncryptionKey(id);
+        var copyId = $(this).data("copyid");
+
+        if (type == @(TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName))|| type == @(TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName))) {
+            encrypttrayId =' @MCS.Framework.Encryption.AESEncrytDecry.Base64Encode(((int)TrayType.Copies).ToString())';
+        }
+        else if ((type == @(TransactionCategory.ExternalOutbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName)))) {
+            encrypttrayId = '@MCS.Framework.Encryption.AESEncrytDecry.Base64Encode(((int)TrayType.CopiesOutbound).ToString())';
+        }
+
+        if ($(e.target).hasClass('aViewed'))
+            return;
+
+        var url = '';
+        if (isVIPUser =="True")
+        {
+            url = '@Url.Action("VipCopy","Vip",new { area="user"} )?transactionId=' + trxId + "&transactionCopyId="+ EncryptionKey(copyId);
+        }
+        else
+        {
+            var url = '@Url.Action("Index","Editor",new { area="user"} )?transactionId=' + trxId + "&transactionCopyId=" + EncryptionKey(copyId)+ '&trayId=' + encrypttrayId + "&transactionCategoryId=" + encrypttype;
+        }
+
+        window.location.href = url;
+    });
+    $(".aSaveCopyRevert").unbind('click').click(function (e) {
+        debugger
+        e.stopPropagation();
+        _this = this;
+        ShowConfirmMessage('هل انت متأكد من التراجع من الحفظ ؟', "ViewedTransaction");
+    })
+</script>

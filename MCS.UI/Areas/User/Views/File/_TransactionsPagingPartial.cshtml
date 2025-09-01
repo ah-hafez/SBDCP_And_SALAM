@@ -1,0 +1,207 @@
+﻿
+@using MCS.Framework.Localization
+
+
+<style>
+    select#ddlPaging {
+        padding: 0px 8px !important;
+        -webkit-appearance: menulist-button !important;
+    }
+</style>
+<div class="row">
+    <div class="pull-left">
+        <div class="col check_all">
+            <input type="checkbox" style="display:none;" class="checkall" />
+        </div>
+    </div>
+    <div class="pull-right">
+        <div class="col">
+            <div class="input-group">
+                @Html.TextBox("txtCurrentPage", 1, new { id = "txtCurrentPage", @class = "form-control", onkeypress = "return IsNumeric(event);" })
+                @Html.Hidden("hdnCurrentPage", 1, new { id = "hdnCurrentPage" })
+            </div>
+        </div>
+        <div class="col">
+            @DbRes.TResource("User.File.From")
+        </div>
+        <div class="col">
+            @{
+                int pages = Convert.ToInt32(ViewData["RowsCount"]) / Convert.ToInt32(ViewData["PageSize"]);
+                if (Convert.ToInt32(ViewData["RowsCount"]) % Convert.ToInt32(ViewData["PageSize"]) > 0)
+                {
+                    pages++;
+                }
+            }
+            @(pages)
+            @Html.Hidden("hdnPagesCount", pages, new { id = "hdnPagesCount" })
+        </div>
+        <div class="col">
+            <ul class="pagination pagination-sm">
+                <li><a data-type="previous" class="CustomPaging">«</a></li>
+                <li><a data-type="next" class="CustomPaging">»</a></li>
+            </ul>
+        </div>
+        <div class="col">
+            <div class="select-group">
+                <select id="ddlPaging" class="grid-page-size form-control">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="30">30</option>
+                    <option value="40">40</option>
+                    <option value="50">50</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#ddlPaging select").val('@(ViewData["PageSize"])');
+    });
+
+    $(".checkall").click(function () {
+        $('.check_trans').prop('checked', this.checked);
+    });
+
+    $(document).on("change", ".check_trans", function () {
+
+        var allCheck = true;
+        var someCheck = $('.check_trans:checked').length > 0;
+        $('.check_trans').each(function () {
+
+            if (!$(this).prop('checked')) {
+                allCheck = false;
+            }
+        })
+
+        if (someCheck) {
+            $("#ancOpenAssignments").removeClass("disable_a");
+        }
+        else {
+            $("#ancOpenAssignments").addClass("disable_a");
+        }
+
+        $('.checkall').prop('checked', allCheck);
+
+    });
+
+    $(".CustomPaging").click(function () {
+        var type = $(this).data("type");
+        UpdateTrayTransactions(type);
+    })
+    $("#ddlPaging").change(function () {
+        UpdateTrayTransactions(1);
+    });
+
+    function UpdateTrayTransactions(type) {
+
+        var type = type;
+        var orderBy = $("#hdnOrderBy").val();
+        var dir = $("#hdnDirection").val();
+        var filter = $("#hdnFilter").val();
+        var fromDate = $("#hdnFromDateValue").val();
+        var toDate = $("#hdnToDateValue").val();
+        var number = $("#hdnSearchTransactionNumberValue").val();
+        var dateType = $("#hdnFilterDateType").val();
+        var PageSize = $("#ddlPaging").val();
+        var page;
+
+        if (type == "next") {
+            page = parseInt($("#hdnCurrentPage").val()) + 1;
+        }
+        else if (type == "previous") {
+            page = parseInt($("#hdnCurrentPage").val()) - 1;
+        } else
+            page = 1;
+
+        if (page <= 0 || page > parseInt($("#hdnPagesCount").val())) {
+            return false;
+        }
+
+        var trayid = parseInt($("#hdnTrayId").val());
+
+        var data = {
+            trayId: trayid, page: page, gridColumn: orderBy, dir: dir, filter: filter,
+            fromDate: fromDate, toDate: toDate, searchColumn: number, dateType: dateType, pageSize: PageSize
+        };
+
+        $.ajax({
+            url: '@Url.Action("UpdateTrayTransactions", "File")',
+            type: 'POST',
+            cache: false,
+            data: data,
+            success: function (data) {
+
+                $("#dvTransactionsContainer").html("");
+                $("#dvTransactionsContainer").html(data.Html);
+                $("#txtCurrentPage").val(page);
+                $("#hdnCurrentPage").val(page);
+                $("#ddlPaging option[value=" + data.PageSize + "]").attr('selected', 'selected');
+
+                if (page > 1) {
+                    $("#previousPage").parent().removeClass("disabled");
+                }
+
+                if (page == parseInt($("#hdnPagesCount").val())) {
+                    $("#nextPage").addClass("disabled");
+                }
+
+                $("#list_transaction").find(".view_Editor:first").trigger("click");
+            },
+            error: function (a) {
+            }
+        });
+    }
+
+    function GetTransactions() {
+        var page = parseInt($("#txtCurrentPage").val());
+        var trayid = parseInt($("#hdnTrayId").val());
+        var orderBy = $("#hdnOrderBy").val();
+        var dir = $("#hdnDirection").val();
+        var filter = $("#hdnFilter").val();
+        var fromDate = $("#hdnFromDateValue").val();
+        var toDate = $("#hdnToDateValue").val();
+        var number = $("#hdnSearchTransactionNumberValue").val();
+        var viewType = $("#hdnViewFile").val();
+        var dateType = $("#hdnFilterDateType").val();
+        var PageSize = $("#ddlPaging").val();
+        var data = {
+            trayId: trayid, page: page, gridColumn: orderBy, dir: dir, filter: filter
+                    , fromDate: fromDate, toDate: toDate, searchColumn: number, viewType: viewType, dateType: dateType, pageSize: PageSize
+        };
+
+        if (page <= 0 || page > parseInt($("#hdnPagesCount").val())) {
+            return false;
+        }
+
+        $.ajax({
+            url: '@Url.Action("UpdateTrayTransactions","File")',
+            type: 'POST',
+            cache: false,
+            data: data,
+            success: function (data) {
+                $("#dvTransactionsContainer").html("");
+                $("#dvTransactionsContainer").html(data.Html);
+                $("#txtCurrentPage").val(page);
+                $("#hdnCurrentPage").val(page);
+                $("#ddlPaging option[value=" + data.PageSize + "]").attr('selected', 'selected');
+                if (page > 1) {
+                    $("#previousPage").parent().removeClass("disabled");
+                }
+
+                if (page == parseInt($("#hdnPagesCount").val())) {
+                    $("#nextPage").addClass("disabled");
+                }
+            },
+            error: function (a) {
+            }
+        });
+    }
+    $("#txtCurrentPage").keyup(function (event) {
+        if (event.keyCode == 13) { GetTransactions(); }
+    });
+
+</script>
+
+

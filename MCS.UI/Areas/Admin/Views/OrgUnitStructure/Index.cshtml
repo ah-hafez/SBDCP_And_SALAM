@@ -1,0 +1,117 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Framework.Controls.Mvc;
+@using MCS.Common;
+
+@{
+    ViewBag.Title = DbRes.TResource("Admin.OrgUnitStructure.Title");
+    Layout = "~/Areas/Admin/Views/Shared/_OrgUnitStructureLayout.cshtml";
+}
+
+<body class="vertical-menu 2-columns   menu-flipped fixed-navbar " data-open="click"
+      data-menu="vertical-menu" data-col="2-columns" dir="rtl">
+    <div class="container-all">
+        <div class="mx-3 mx-md-5 header-container d-flex flex-row align-items-center ">
+            <div class="d-flex flex-column flex-lg-row align-items-lg-center flex-grow-1 mb-3 mb-lg-0 mt-3">
+                <h3 class="site-color mb-2 mb-lg-4">@DbRes.TResource("Admin.OrgUnitStructure.OrgStructure")</h3>
+            </div>
+        </div>
+        @Html.Partial("~/Areas/Admin/Views/OrgUnitStructure/_OrgUnitRootTreeViewPartial.cshtml");
+
+    </div>
+    @*<div class="modal" role="dialog" id="Modal1">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <h3>هل أنت متأكد من حذف الإدارة</h3>
+                </div>
+                <div class="text-center">
+                    <button class="btn  btn-st1 mt-3 mb-5" data-dismiss="modal">
+                        إلغاء
+                    </button>
+                    <button class="btn  btn-st2 mt-3 mb-5" data-dismiss="modal" data-toggle="modal" data-target="#Modal2">
+                        نعم
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>*@
+    <div class="modal" role="dialog" id="Modal2">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <h3>تم حذف الإدارة بنجاح</h3>
+                </div>
+                <div class="text-center">
+                    <button class="btn  btn-st1 mt-3 mb-5" data-dismiss="modal" data-toggle="modal" data-target="Modal2">
+                        موافق
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+
+
+
+    $('.search-target').click(function () {
+        $('.filter-box.search').slideToggle('fast');
+        $('.sort-target').removeClass("active");
+        $('.filter-target').removeClass("active");
+        $(this).toggleClass("active");
+        $('.filter-box.filter').hide();
+        $('.filter-box.sort').hide();
+
+    });
+    function GetOrgStructureSearchById() {
+
+        var filter = "";
+        var token = $("#frmExternalPartiesSearch input[name='__RequestVerificationToken']").val();
+
+        if ($("#divContainerOrgParties .hdnDepartmentId").val() != "" && $("#divContainerOrgParties .hdnDepartmentId").val() != null) {
+
+            if (filter.length > 0) {
+                filter += "&";
+            }
+            $("#divContainerOrgParties .hdnDepartmentId").val();
+        }
+
+        $("#filterData").val(filter);
+        $.ajax({
+            type: 'post',
+            data: { id: $("#divContainerOrgParties .hdnDepartmentId").val()},
+            url: '@Url.Action("GetOrgStructureSearchById", "OrgUnitStructure")',
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    $("#divOrgUnit").html("");
+                    $("#divOrgUnit").html(data.Html);
+                }
+                
+            }
+        });
+    }
+
+  
+    function GetDestinationUsersByOrgUnitId() {
+
+        $("#InboundBasicInfo_DestinationId").val($("#DestinationId_hdnDepartmentId").val());
+
+        if ($("#DestinationId_hdnDepartmentId").val() != "") {
+            $.ajax({
+                cache: false,
+                type: 'get',
+                url: '@Url.Action("GetManagersByPartyId")',
+                data: { id: $("#DestinationId_hdnDepartmentId").val() },
+                success:
+                    function (data) {
+                        var isChecked = $('#Individual:checked').val() ? true : false;
+                        if (isChecked) {
+                         return false;
+                        }
+               }
+            });
+            return false;
+        }
+
+    }
+</script>

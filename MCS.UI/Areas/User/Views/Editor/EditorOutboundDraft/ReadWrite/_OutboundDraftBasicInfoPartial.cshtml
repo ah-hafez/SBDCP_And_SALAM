@@ -1,0 +1,514 @@
+﻿@model MCS.UI.Areas.User.Models.Transaction.TransactionBasicInfoVM
+@using MCS.Common;
+@using MCS.Framework.Localization
+@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+
+@using (Html.BeginForm("UpdateDraftBasicInfo", "Editor", FormMethod.Post, new { id = "frmEditorBasicInfo" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="content_container content_container--body white-bg" id="BasicInfoPartial">
+        <div class="col-xs-12">
+            <div class="single-wrapper">
+                <div class="row">
+                    <div class="panel-group accordion accordion-dc">
+                        <div class="row form-horizontal form-row">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="col-xs-6">
+                                        <span class="indent-text">@DbRes.TResource("User.Editor.BasicInfo.OutboundDraft.Number") : <em class="transaction-number">@Html.DisplayFor(model => model.Number)</em></span>
+                                    </div>
+                                    <div class="col-xs-6  text-right">
+                                        <span class="indent-text">@DbRes.TResource("User.Editor.BasicInfo.OutboundDraft.Date") : <em class="date-value">@Html.DisplayFor(model => model.DateH)</em></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="col-sm-4">
+                                        <fieldset>
+                                            <div class="form-group">
+                                                @Html.StickyHiddenFor(model => model.IsDraft, "")
+                                                @Html.LabelFor(model => model.IsDraft, new { @class = " control-label" })  <span class="stark">*</span>
+                                                <div class="inline-radio">
+                                                    <div class="radio">
+                                                        <label>
+                                                            @Html.CustomRadioButtonFor(model => model.IsDraft, false, new { @class = "iradioOutboundType", id = "ExternalOutbound" })
+                                                            @DbRes.TResource("User.OutboundExternal.ExternalOutbound")
+                                                        </label>
+                                                    </div>
+                                                    <div class="radio">
+                                                        <label>
+                                                            @Html.CustomRadioButtonFor(model => model.IsDraft, true, new { @class = "iradioOutboundType", id = "OutboundDraft", Checked = "checked" })
+                                                            @DbRes.TResource("User.OutboundExternal.OutboundDraft")
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <fieldset>
+                                            @Html.LabelFor(model => model.SourceTypeId, new { @class = "col-md-4 control-label" })
+                                            <div class="form-group">
+                                                @Html.AutoCompleteBuilder("ddlEditorDraftSourceType", "hdnEditorDraftSourceType", ViewData["TransactionTypesData"].ToString(), Model.SourceTypeId.ToString(), true, "form-control")
+                                                @Html.HiddenGroupFor(model => model.SourceTypeId, new { @Value = "", id = "hdnEditorDraftSourceType" }, "OutboundDraft")
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <fieldset>
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.LetterTypeId, new { @class = "control-label" }) <span class="stark">*</span>
+                                                <div>
+                                                    @Html.AutoCompleteBuilder("dllEditorLetterType", "hdnEditorLetterType", ViewData["LetterTypeData"].ToString(), Model.LetterTypeId.ToString(), true, "form-control")
+                                                    @Html.HiddenGroupFor(model => model.LetterTypeId, new { @Value = "", id = "hdnEditorLetterType" }, "OutboundDraft")
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                    <div class="col-sm-4" id="divEditorDraftExternalParties">
+                                        @Html.Partial("~/Areas/User/Views/Editor/EditorOutboundDraft/ReadWrite/_ExternalPartiesPartial.cshtml", new ViewDataDictionary { { "ExternalPartiesData", ViewData["ExternalPartiesData"] } })
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <fieldset>
+                                            <div class="form-group">
+                                                @Html.Label(DbRes.TResource("User.OutboundExternal.BasicInfo.DirectedTo"), new { @class = "control-label" })
+                                                <div>
+                                                    @Html.AutoCompleteBuilder("ddlEditorExternalPartyManagerId", "hdnEditorExternalPartyManagerId", ViewData["ExternalPartiesManagers"].ToString(), Model.ExternalPartyManagerId.ToString(), true, "form-control")
+                                                    @Html.HiddenGroupFor(model => model.ExternalPartyManagerId, new { @Value = "", id = "hdnEditorExternalPartyManagerId" }, "OutboundDraft")
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <fieldset>
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.DeliveryMethodId, new { @class = " control-label" })<span class="stark"> *</span>
+                                                <div>
+                                                    @Html.AutoCompleteBuilder("ddlBasicDeliveryMethod", "hdnBasicDeliveryMethod", LookupCategory.DeliveryMethod, Model != null ? Model.DeliveryMethodId.ToString() : null, false, "form-control")
+                                                    @Html.HiddenGroupFor(model => model.DeliveryMethodId, new { @Value = "", id = "hdnBasicDeliveryMethod" }, "OutboundDraft")
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                    @*<div class="col-sm-4">
+                                        <fieldset>
+                                            <div class="form-group">
+                                                @Html.Label(DbRes.TResource("User.Editor.BasicInfo.OutboundDraft.SignedByUser"), new { @class = "control-label" })
+                                                <div>
+                                                    @Html.AutoCompleteBuilder("ddlEditorSignedByUserId", "hdnEditorSignedByUserId", ViewData["OrgUnitsManagers"].ToString(), Model.SignedByUserId.ToString(), true, "form-control")
+                                                    @Html.HiddenGroupFor(model => model.SignedByUserId, new { @Value = "", id = "hdnEditorSignedByUserId" }, "OutboundDraft")
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                    </div>*@
+                                    <div class="col-sm-8 NoExtraPaddind">
+
+                                        <div class="col-sm-6">
+                                            <fieldset>
+                                                <div class="form-group">
+                                                    @Html.Label(DbRes.TResource("User.Transaction.PriorityLevel"), new { @class = "control-label" }) <span class="stark">*</span>
+                                                    <div>
+                                                        @Html.AutoCompleteBuilder("ddlEditorPriorityLevel", "hdnEditorPriorityLevel", ViewData["PrioritiesData"].ToString(), Model.PriorityId.ToString(), true, "form-control", "hdnEditorPriorityHasDate")
+                                                        @Html.HiddenGroupFor(model => model.PriorityId, new { @Value = "", id = "hdnEditorPriorityLevel" }, "OutboundDraft")
+                                                        @Html.Hidden("hdnEditorPriorityHasDate", null, new { id = "hdnEditorPriorityHasDate" })
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+
+                                        <div class="col-sm-6">
+                                            <fieldset>
+                                                <div class="form-group">
+                                                    @Html.Label(DbRes.TResource("User.Transaction.ConfidentialityLevel"), new { @class = "control-label" }) <span class="stark">*</span>
+                                                    <div>
+                                                        @Html.AutoCompleteBuilder("dllEditorConfidentiality", "hdnEditorConfidentiality", ViewData["ConfidentialityData"].ToString(), Model.ConfidentialityId.ToString(), true, "form-control")
+                                                        @Html.HiddenGroupFor(model => model.ConfidentialityId, new { @Value = "", id = "hdnEditorConfidentiality" }, "OutboundDraft")
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+
+                                        <div class="col-sm-6">
+                                            <fieldset>
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.PostCode, new { @class = "control-label" })
+                                                    <div>
+                                                        @Html.TextBoxGroupFor(model => model.PostCode, "OutboundDraft", new { @class = "form-control" })
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+
+                                        <div class="col-sm-6">
+                                            <fieldset>
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.POBox, new { @class = "control-label" })
+                                                    <div>
+                                                        @Html.TextBoxGroupFor(model => model.POBox, "OutboundDraft", new { @class = "form-control", maxlength = "12" })
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-4 form-group ">
+                                        <fieldset>
+                                            <div class="form-group ">
+                                                @Html.Label(DbRes.TResource("User.Inbound.BasicInfo.Subject"), new { @class = "control-label" })<span class="stark">*</span>
+                                                <div>
+                                                    @Html.TextAreaGroupFor(model => model.Subject, new { id = "txtAreaSubject", @class = "form-control long-textarea2" }, "OutboundDraft")
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+
+                                    @Html.HiddenFor(model => model.TransactionTypeId, new { id = "hdnEditorBasicInfoTransactionTypeId" })
+                                    @Html.StickyHidden("hdnTransactionId", ViewData["TransactionId"].ToString(), new { id = "hdnDraftBasicInfoTransactionId", @class = "TransactionId" })
+                                    @*<div class="col-sm-4">
+                                            <fieldset>
+                                                @Html.DepartmentsTree(ViewData["SubjectClassificationsData"] as TreeViewModel, model => model.SubjectClassifications, TreeMode.Multiple, "treeSubjectClassifications", true, null, "BasicInformation")
+                                            </fieldset>
+                                        </div>*@
+
+                                    <div>
+                                        <div class="col-sm-4">
+                                            <div class="col-sm-12">
+                                                <fieldset>
+                                                    <div class="form-group">
+                                                        <label class="control-label">@DbRes.TResource("User.Inbound.BasicInfo.IsAppointment") </label>
+                                                        <div class="inline-radio">
+                                                            <div class="radio">
+                                                                <label>
+                                                                    @Html.RadioButton("radio1", "1", new { id = "radio1", @class = "withAppointment" })
+                                                                    <span class="cr"><i class="cr-icon glyphicon glyphicon-stop"></i></span>
+                                                                    <text> @DbRes.TResource("Global.Dialog.Yes")</text>
+                                                                </label>
+                                                            </div>
+
+                                                            <div class="radio">
+                                                                <label>
+                                                                    @Html.RadioButton("radio1", "0", new { Checked = "checked", id = "radio1", @class = "withoutAppointment" })
+                                                                    <span class="cr"><i class="cr-icon glyphicon glyphicon-stop"></i></span>
+                                                                    <text> @DbRes.TResource("Global.Dialog.No")</text>
+
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </fieldset>
+                                            </div>
+                                            <div class="col-sm-12">
+                                                <fieldset>
+                                                    <div class="form-group" id="datePicker">
+                                                        <div class="with-icon" >
+                                                            @Html.Calendar("HasDateCal", "hdnHasDateGreg", "hdnHasDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), Model != null ? Model.RemindDateH : null, "form-control")
+                                                            <a href="javascript:void(0)" class="date-icon"><img src="~/Content/User/lib/images/SystemIcon/main bar-08.svg" width="30" /></a>
+                                                            @Html.HiddenGroupFor(model => model.RemindDate, new { id = "hdnHasDateGreg" }, "BasicInformation")
+                                                            @Html.HiddenGroupFor(model => model.RemindDateH, new { id = "hdnHasDateUm" }, "BasicInformation")
+                                                        </div>
+                                                        <div class="indent-text">
+                                                            <div class="col-sm-4">
+                                                                @Html.AutoCompleteBuilder("ddlMinute", "hdnMinuteId", LookupCategory.Minute, null, true, "form-control time", null, null, false, null, DbRes.TResource("Global.MinuteSymbole"))
+                                                                @Html.HiddenGroupFor(model => model.Minute, new { id = "hdnMinute" }, "")
+                                                                @Html.Hidden("hdnMinuteId", new { @Value = "", id = "hdnMinuteId" }, "")
+                                                            </div>
+                                                            <div class="col-sm-4">
+                                                                @Html.AutoCompleteBuilder("ddlHour", "hdnHourId", LookupCategory.Hour, null, true, "form-control time", null, null, false, null, DbRes.TResource("Global.HourSymbole"))
+                                                                @Html.HiddenGroupFor(model => model.Hour, new { id = "hdnHour" }, "")
+                                                                @Html.Hidden("hdnHourId", new { @Value = "", id = "hdnHourId" }, "")
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                    <span id="CalMessage" style="color:red"></span>
+                                                </fieldset>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <fieldset>
+                                                <div class="form-group External text-center">
+                                                    <label class="control-label "></label>
+                                                    <div>
+                                                        @Html.ClientButton(DbRes.TResource("User.OutboundExternal.BasicInfo.AddNewExternalParty"), null, " btn-site", "AddExternalParty", UserClaims.AddExternalParty.AddExternalPartyForOutbound)
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                        <div class="col-xs-12">
+                                            <p class="stark">@DbRes.TResource("Admin.User.MustFill") * </p>
+                                        </div>
+                                        <hr />
+                                    </div>
+                                    <div class="row panel-body">
+                                        <div class="col-xs-12 text-center">
+                                            @Html.ConfirmAction(OperationType.Save, "btnSaveBasicInfo", DbRes.TResource("User.Editor.Explanations.Save"), Url.Action("UpdateDraftBasicInfo", "Editor"), null, null, null, "OnSaveBasicInfoSuccess", null, DbRes.TResource("User.Editor.Explanation.SaveMessage"), "post", "frmEditorBasicInfo", "OutboundDraft", " btn-site", "CheckPriorityIfHasDate", UserClaims.Editor.Draft)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    function AddExternalParty() {
+        var token = $("#frmEditorBasicInfo").find("input[name='__RequestVerificationToken']").val();
+        ShowDialogAjax('@Url.Action("AddNewExternalPartyForTransaction")', {
+            treeName: "dvDestinationTree",
+            onAddPartyfuntion: "GetExternalParties",
+            __RequestVerificationToken: token
+        }, 'OpenExternalPartyDialogSuccess', 'dialogbox col-md-12 ');
+    }
+
+    $(document).on('change', '#ddlOutboundExternalDocumentType', function () {
+        GetExternalPartisByLetterId(-1);
+    });
+
+
+
+    function GetExternalPartisByLetterId(selectedNode) {
+        $.ajax({
+            type: 'get',
+            url: '@Url.Action("GetExternalParties")',
+            data: {selectedParty: selectedNode },
+            success:
+                function (data) {
+
+               if ($('#divContainer__dvDestinationTree').css('display') == 'block') {
+
+                   ShowHideTree('#divContainer__dvDestinationTree');
+               }
+
+               $('#divContainer__dvDestinationTree').remove();
+
+               $("#divContainerExternalParties").html("");
+
+               $("#divContainerExternalParties").html(data);
+
+           }
+        });
+        return false;
+        //}
+    }
+    $(document).on("change", "#radio1", function () {
+        if ($(this).val() == 0) {
+            $('#hdnHasDateUm').val("");
+            $('#hdnHasDateGreg').val("");
+            $('#hdnMinute').val("");
+            $('#hdnHour').val("");
+            $('#datePicker').hide();
+        } else {
+            $('#datePicker').show();
+            $('#hdnHasDateGreg').val('@Model.RemindDate')
+            $('#hdnHour').val('@Model.Hour')
+            $('#hdnMinute').val('@Model.Minute')
+            FillDateAndTime();
+        }
+    });
+    function SetSuggestedTopic() {
+        $("#txtAreaSubject").val($("#divForm__dvSuggestedTopicTree .txtDepartmentName").val());
+    }
+
+    function GetEditorUsersByPreparationEntityId() {
+     
+        if ($("#divForm__treeSignedByOrgUnitId").find(".hdnDepartmentId").val() != "" && $("#divForm__treeSignedByOrgUnitId").find(".hdnDepartmentId").val() != undefined) {
+
+            $.ajax({
+                type: 'Get',
+                url: '@Url.Action("GetUnitUsers","Editor")',
+                data: { id: $("#divForm__treeSignedByOrgUnitId").find(".hdnDepartmentId").val() },
+                success:
+               function (data) {
+
+                   AutoCompleteChangeList("ddlEditorSignedByUserId", data);
+
+                   $("#ddlEditorSignedByUserId").val('');
+                   $("#hdnEditorSignedByUserId").val('');
+               }
+            });
+            return false;
+        }
+        else {
+
+            AutoCompleteChangeList("ddlEditorSignedByUserId", "[]");
+
+            $("#ddlEditorSignedByUserId").val('');
+            $("#hdnEditorSignedByUserId").val('');
+
+        }
+    }
+
+    $(document).on('change', '#dllEditorLetterType', function () {
+
+            GetEditorExternalPartisByLetterId(-1);
+    });
+
+
+
+    function GetEditorExternalPartisByLetterId(selectedParty) {
+
+        $.ajax({
+            cache: false,
+            type: 'get',
+            url: '@Url.Action("GetExternalPartiesbyLetterId")',
+            data: { LetterId: $("#hdnEditorLetterType").val(), selectedParty: selectedParty },
+            success:
+           function (data) {
+
+               if ($('#divContainer__ExternalPartyTree').css('display') == 'block') {
+
+                   ShowHideTree('#divContainer__ExternalPartyTree');
+               }
+
+               $('#divContainer__ExternalPartyTree').remove();
+
+               $("#divEditorDraftExternalParties").html("");
+
+               $("#divEditorDraftExternalParties").html(data);
+
+               GetEditorUsersByPartyId();
+           }
+        });
+        return false;
+    }
+
+    function GetEditorUsersByPartyId() {
+
+        if ($("#divForm__ExternalPartyTree").find(".hdnDepartmentId").val() != "") {
+
+            $.ajax({
+                type: 'Get',
+                url: '@Url.Action("GetManagersByPartyId","Editor")',
+                data: { id: $("#divForm__ExternalPartyTree").find(".hdnDepartmentId").val() },
+                success:
+               function (data) {
+
+                   AutoCompleteChangeList("ddlEditorExternalPartyManagerId", data);
+                   $("#ddlEditorExternalPartyManagerId").val('');
+                   $("#hdnEditorExternalPartyManagerId").val('');
+               },
+            });
+            return false;
+        }
+        else {
+
+            AutoCompleteChangeList("ddlEditorExternalPartyManagerId", "[]");
+
+            $("#ddlEditorExternalPartyManagerId").val('');
+            $("#hdnEditorExternalPartyManagerId").val('');
+
+            //$("#ddlSignedById").prop('disabled', false);
+        }
+    }
+
+    function OnSaveBasicInfoSuccess(data, div) {
+        if (data.MessageType != 2) {
+
+            ShowSuccesMessage(data.MessageText)
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        GetExternalPartisByLetterId(-1);
+        if ($('#hdnHasDateGreg').val() == "") {
+            $('.withoutAppointment').trigger('change');
+            $('.withoutAppointment').attr('checked', 'checked');
+        } else {
+            FillDateAndTime();
+        }
+
+        $('#ddlEditorDraftSourceType').attr("disabled", true);
+        $('.iradioOutboundType').attr("disabled", true);
+    });
+
+    $(document).on("change", "#ddlHour", function () {
+
+        $('#hdnHour').val($('#ddlHour').val());
+    });
+
+    $(document).on("change", "#ddlMinute", function () {
+
+        $('#hdnMinute').val($('#ddlMinute').val());
+    });
+
+    function FillDateAndTime() {
+        $(".withAppointment").click();
+        $('#ddlHour').val($('#hdnHour').val());
+        $('#ddlHour').trigger("focusout");
+        if ($('#hdnMinute').val().length == 1) {
+
+            $('#ddlMinute').val("0" + $('#hdnMinute').val());
+            $('#ddlMinute').trigger("focusout");
+        }
+        else {
+            $('#ddlMinute').val($('#hdnMinute').val());
+            $('#ddlMinute').trigger("focusout");
+        }
+    }
+    function CheckPriorityIfHasDate() {
+        if ($('#datePicker').css('display') == 'block' && $("#hdnHasDateGreg").val() == "") {
+             $("#CalMessage").html('@Html.Raw(DbRes.TValidation("User.Inbound.RemindDateRequired"))');
+            return false;
+        }
+        var dateNow = $.datepicker.formatDate('dd/mm/yy', new Date($.now()));
+        var currentDate = convertdate(dateNow);
+        if ($("#hdnHasDateGreg").val() != "") {
+
+            if ($("#hdnHasDateGreg").val() != undefined) {
+                 var selectedDate = convertdate($("#hdnHasDateGreg").val());
+
+                if (selectedDate < currentDate) {
+                    $("#CalMessage").html('@Html.Raw(DbRes.TValidation("User.Inbound.RemindDateCompare"))');
+                return false;
+                }
+            }
+        }
+        if ($('#datePicker').css('display') == 'block' && ($('#ddlMinute').val() == "" || $('#ddlHour').val() == "")) {
+              $("#CalMessage").html('@Html.Raw(DbRes.TValidation("User.Inbound.RemindTime"))');
+            return false;
+        }
+
+
+        if ($('#datePicker').css('display') == 'block' && ($('#ddlMinute').val() != "" && $('#ddlHour').val() != "")) {
+            var time = new Date();
+            if (convertdate($("#hdnHasDateGreg").val()) > currentDate) {
+                $("#CalMessage").html("")
+                return true;
+            }
+            else if ($("#hdnHasDateGreg").val() > convertdate($("#hdnHasDateGreg").val())) {
+                $("#CalMessage").html("")
+                return true;
+            }
+            else if ($('#ddlHour').val() > time.getHours()) {
+                $("#CalMessage").html("")
+                return true;
+            }
+            else if ($('#ddlHour').val() == time.getHours() && $('#ddlMinute').val() > time.getMinutes()) {
+                $("#CalMessage").html("")
+                return true;
+            }
+            else {
+                 $("#CalMessage").html('@Html.Raw(DbRes.TValidation("User.Inbound.WrongRemindTime"))');
+                 return false;
+            }
+        }
+
+         if (!ValidateCopy()) {
+           
+            return false;
+        }
+
+         return true;
+    }
+</script>

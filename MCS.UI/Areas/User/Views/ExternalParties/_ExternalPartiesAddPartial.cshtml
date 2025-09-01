@@ -1,0 +1,279 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Lookups
+@using MCS.UI.Areas.User.Models.ExternalParties
+
+@model MCS.UI.Areas.User.Models.ExternalParties.ExternalPartyAddVM
+@{
+    /**/
+
+    Layout = null;
+ 
+
+    if(Model.Types == null)
+    {
+        Model.Types = new List<ExternalPartyListTypeVM>();
+    }
+
+}
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmAddParty", @class = "form-horizontal" }))
+{ 
+    <div class=" row col-md-12">
+        <div class="col-md-4">
+            <fieldset>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PartyNumber, new { @class = "control-label" })<span class="stark">*</span>
+                    <div>
+                        @Html.NumericTextBoxFor(model => model.PartyNumber, new { id = "ddlPartyNumber", @class = "form-control empty", maxlength = "10" })
+                        <span id="dvpartyNumberMessage" style="color:red"></span>
+                        @Html.HiddenGroupFor(model => model.PartyNumber, new { id = "hdnPartyNumber" })
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+
+        @{List<CultureVM> Culture = (List<CultureVM>)ViewData["Culture"];}
+
+        @*@for (int i = 0; i < Culture.Count; i++)
+            {
+                <div class="col-md-4">
+                    <fieldset>
+                        <div class="form-group">
+                            @Html.CustomLabelFor(model => model.Name[i].CultureName, new { @class = " control-label" }, DbRes.TResource("User.ExternalParty.Name." + Culture[i].ShortName))<span class="stark">*</span>
+                            <div>
+                                @Html.StickyHiddenFor(model => model.Name[i].CultureId, new { Value = Culture[i].Id })
+                                @Html.StickyHiddenFor(model => model.Name[i].CultureName, new { Value = Culture[i].ShortName })
+                                @Html.TextBoxGroupFor(model => model.Name[i].Text, null, new { @class = "form-control empty" }, DbRes.TValidation("User.ExternalParty.NameRequired." + Culture[i].ShortName))
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </div>
+            }*@
+
+        <div class="col-md-4">
+            <fieldset>
+                <div class="form-group">
+                    <label class="">الاسم بالعربي</label>
+
+                    <div class="">
+                        @Html.TextBoxGroupFor(model => model.NameAr, null, new { @class = "form-control" })
+                    </div>
+                    <span class="help-block"></span>
+                </div>
+            </fieldset>
+        </div>
+        <div class="col-md-4">
+            <fieldset>
+                <div class="form-group">
+                    <label class="">الاسم بالانجليزي</label>
+
+                    <div class="">
+                        @Html.TextBoxGroupFor(model => model.NameEn, null, new { @class = "form-control" })
+                    </div>
+                    <span class="help-block"></span>
+                </div>
+            </fieldset>
+        </div>
+
+        <div class="col-md-4">
+            <fieldset>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PhoneNumber, new { @class = "control-label" })
+                    <div>
+                        @Html.NumericTextBoxFor(model => model.PhoneNumber, new { @class = "form-control empty", maxlength = "15" })
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <div class="col-md-4">
+            <fieldset>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.FaxNumber, new { @class = "control-label" })
+                    <div>
+                        @Html.NumericTextBoxFor(model => model.FaxNumber, new { @class = "form-control empty", maxlength = "10" })
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <div class="col-md-4">
+            <fieldset>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Email, new { @class = "control-label" })
+                    <div>
+                        @Html.TextBoxGroupFor(model => model.Email, null, new { @class = "form-control empty" })
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+
+        @for (int i = 0; i < Culture.Count; i++)
+        {
+            <div class="col-md-4">
+                <fieldset>
+                    <div class="form-group">
+                        @Html.CustomLabelFor(model => model.Address[i].CultureName, new { @class = "control-label" }, DbRes.TResource("User.ExternalParty.Address." + Culture[i].ShortName))
+                        <div>
+                            @Html.StickyHiddenFor(model => model.Address[i].CultureId, new { @Value = Culture[i].Id })
+                            @Html.StickyHiddenFor(model => model.Address[i].CultureName, new { @Value = Culture[i].ShortName })
+                            @Html.TextBoxGroupFor(model => model.Address[i].Text, null, new { @class = "form-control empty adrress_Text" }, DbRes.TValidation(string.Format("User.ExternalParty.AddressRequired.{0}", Culture[i].ShortName)))
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        }
+        @*@Html.HiddenFor(model => model.ParentId, new { @id = "hdnParentId" })*@
+
+        <div class="col-md-4 panel-body">
+            <fieldset>
+                @Html.LabelFor(model => model.IsVirtual, new { @class = "control-label" })
+                <div class="form-group">
+                    <label>
+                        @Html.CheckBoxFor(model => model.IsVirtual)
+                    </label>
+                </div>
+            </fieldset>
+        </div>
+
+
+        <div class="col-md-2">
+            <fieldset id="Types">
+                <div class="form-group">
+                    @for (int i = 0; i < Model.Types.Count; i++)
+                    {
+                        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                            <div class="">
+                                <label>
+                                    @*@Html.CheckBoxFor(model => model.AddExternalParty.Types[i].IsSelected, new { @class = "" })*@
+                                    @Html.StickyHiddenFor(model => model.Types[i].Id)
+                                    @*@Html.LabelFor(model => model.AddExternalParty.Types[i].Text, Model.AddExternalParty.Types[i].Text, new { @class = "form-check-label" })*@
+                                </label>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </fieldset>
+        </div> 
+
+        @for (int i = 0; i < Culture.Count; i++)
+        {
+            <div class="col-md-4">
+                <fieldset>
+                    <div class="form-group">
+                        <div>
+                            @Html.StickyHiddenFor(model => model.Name[i].CultureId, new { Value = Culture[i].Id })
+                            @Html.StickyHiddenFor(model => model.Name[i].CultureName, new { Value = Culture[i].ShortName })
+                        </div>
+                    </div>
+
+                </fieldset>
+            </div>
+        }
+        @*<div class="col-md-2">
+                @Html.LabelFor(model => model.Types[0].Text, Model.Types[0].Text, new { @class = "none" })
+            </div>*@
+        <div class="form-group col-lg-6 col-md-6 col-sm-12 col-xs-12" id="divContainerExternalParties">
+            <label>الجهة<span class="stark">*</span></label>
+            @Html.EditorFor(model => model.ParentId, "OrgHierarchyCaller", additionalViewData: new { treeId = "ParentId", GetChildrenActionURL = @Url.Action("GetExternalPartyChildren", "Shared"), GetNodeInfoByIdActionURL = @Url.Action("GetExternalPartyInfoById", "Shared"), GetNodeInfoByNumActionURL = @Url.Action("GetExternalPartyInfoByNumber", "Shared"), onClickfunction = "SetData()", ValidationGroup = "", ShowAddPartyButton = false })
+            @Html.HiddenFor(model => model.ParentId, new { @id = "hdnParentId" })
+        </div>
+    </div>
+    <div id="Addfooter" class="panel-footer text-center">
+        @Html.ActionButton(DbRes.TResource("User.ExternalParty.Save"), Url.Action("AddTransactionExternalParty"), "TreeDiv", null, null, "OnAddSuccess", null, "post", null, "btnAddParty", "frmAddParty", "btn btn-st1 btn-lg pull-right", "CheckPartyNumber")
+    </div>
+}
+
+<script>
+    $.validator.addMethod('require-oneAdd', function (value) {
+        return $('.require-oneAdd:checked').size() > 0;
+    });
+    var checkboxes = $('.require-oneAdd');
+    var checkbox_names = $.map(checkboxes, function (e, i) {
+        return $(e).attr("name")
+    }).join(" ");
+
+    $('#ddlPartyNumber').change(function () {
+        $('#dvpartyNumberMessage').html('');
+    });
+    $('.require-oneAdd').change(function ()
+    {
+        var data = $('#Types').find('input[type=CheckBox]');
+        var count = data.length;
+        for (var i = 0; i < count; i++) {
+            var checkBox = data[i];
+            if ($(checkBox).is(':checked')) {
+                $("#_msgvalAdd").hide();
+                break;
+            }
+            else {
+                $("#_msgvalAdd").removeClass("field-validation-error").addClass("field-validation-valid").show();
+                $("#_msgvalAdd").find("i").remove(".glyphicon")
+            }
+        }
+    });
+
+    function CheckPartyNumber() {
+        var number = $('#ddlPartyNumber').val();
+        var valid = false;
+        $.ajax({
+            type: 'Get',
+            url: '@Url.Action("CheckPartyNumber")',
+            data: { Number: number, partyId: -1 },
+            async: false,
+            success:
+                function (data) {
+                    if (data.Exists) {
+                        valid = true;
+                    }
+                    else {
+                        $('#dvpartyNumberMessage').html('رقم الجهة مدخل مسبقا');
+                        valid = false;
+                    }
+                }
+        });
+
+        return valid;
+    }
+    function SetData() {
+        $("#hdnParentId").val($("#ParentId_hdnDepartmentId").val());
+    }
+
+
+    function OnAddSuccess(data, div) {
+        if (data.MessageType != 2) {
+            var id = data.Id;
+            ClearInputs('frmEditParty');
+            OpenEditView(id);
+            $("#" + div).html("");
+            $("#" + div).html(data.Html);
+            RefreshJsTree('TreeDiv');
+
+            var parentNode = $('*[node=' + id + ']').parent().parent().attr('node');
+
+            node = $('*[node=' + id + ']');
+
+            if (parentNode != undefined && parentNode != 0 )
+                OpenTreeNode(parentNode);
+
+            jQuery.validator.unobtrusive.parse('#' + div);
+            ShowSuccesMessage(data.MessageText)
+            $("._selected").find("a.jstree-anchor").addClass("jstree-clicked");
+            $("#hdnPartyId").val(id);
+            $("#Addfooter").addClass("middle");
+            $("#AddManager").show();
+
+            GetExternalParties(data.Id);
+         
+            var transactionId = '@ViewData["TransactionId"]';
+            if(@ViewData["TransactionId"]!=null && @ViewData["TransactionId"] != 0){
+
+                var actionType=@Convert.ChangeType(MCS.Common.AuditingActionCode.AddNewExternalParty, MCS.Common.AuditingActionCode.ViewTransactionCopies.GetTypeCode());
+                PostTransactionLog(actionType, @ViewData["TransactionId"]);
+            }
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+</script>
+

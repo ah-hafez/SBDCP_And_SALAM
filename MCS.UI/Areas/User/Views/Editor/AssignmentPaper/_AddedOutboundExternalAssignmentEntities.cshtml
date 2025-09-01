@@ -1,0 +1,87 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Common;
+@using MCS.UI.Areas.User.Models.Assignment
+@model TransactionAssignmentVM
+
+@using (Html.BeginCollectionItem("TransactionAssignments"))
+{
+
+    <div>
+        <div class="row TransactionAssignment" id="@Model.Key">
+
+            <div class="form-group col-lg-1 col-md-4 col-sm-6 col-xs-12 mb-3 divRadio">
+                @*<label class="control-label">النوع<span class="stark">*</span></label>*@
+                <div class="inline-radio">
+                    <div class="radio">
+                        <label>
+                            <input onchange="UpdateAssignedToEntity(this); ActionChanged();" type="radio" class="rValue" name="Radio" id="Radio_@Html.IdFor(a => a.IsAssigned).ToString()" />
+                            <span class="cr"><i class="cr-icon"></i></span>
+                        </label>
+                    </div>
+
+                </div>
+                @Html.HiddenFor(a => a.IsAssigned, new { id = "hdn_" + Html.IdFor(a => a.IsAssigned).ToString(), @class = "isAssigned", @Value = false })
+                @Html.HiddenFor(a => a.IsCopy, new { id = "hdn_" + Html.IdFor(a => a.IsCopy).ToString(), @class = "IsCopy", @Value = Model.ChkConstant })
+                @Html.HiddenFor(a => a.ToOrgUnitId)
+                @Html.HiddenFor(a => a.ToOrgUnitName)
+                @Html.HiddenFor(a => a.ToUserId, new { @class = "ToUserId" })
+                @Html.HiddenFor(a => a.ToUserName)
+                @Html.HiddenFor(a => a.DeliveryMethodId, new { @Value = 2703 })
+                @Html.HiddenFor(a => a.GroupId)
+            </div>
+
+            <div class="form-group col-lg-4 col-md-4 col-sm-6 col-xs-12 mb-3 ToOrgUnitName">
+
+                @*<label class="control-label">اسم الادارة :</label>*@
+                <div style="display:flex; gap:2px;">
+                    <label>@Model.ToOrgUnitName /</label>
+                    <div class="ToUserId">
+                        <label id="ToUserNamelabel">@Model.ToUserName</label>
+                    </div>
+                </div>
+            </div>
+
+
+            <!--<div class="form-group col-lg-1 col-md-4 col-sm-6 col-xs-12 mb-3 ToUserId">-->
+            @*@Html.LabelFor(model => model.ToUserId, new { @class = "control-label" })*@
+            <!--<div>
+            <label id="ToUserNamelabel">@Model.ToUserName</label>-->
+            @*@if (Model.UserImageId.HasValue && Model.UserImageId != 0)
+                {
+                    <img alt='Image' height='40px' width='40px' src='@Url.Action("GetUserImage", "Shared", new { UserImageId = Model.UserImageId.Value })' />
+                }
+                else if (Model.ToUserId != null)
+                {
+                    <img alt='Image' height='40px' width='40px' src='@MCS.UI.UrlHelper.GetBaseUri()/Content/User/lib/images/businessman.png' />
+                }*@
+            <!--</div>
+            </div>-->
+            @*</div>*@
+
+            <div class="form-group col-lg-4 col-md-4 col-sm-6 col-xs-12 mb-2 divDDl ActionId" style="display:none">
+                <label class="control-label">@DbRes.TResource("User.Transaction.Assignment.ActionId")<span class="stark NotIndividual">*</span></label>
+                @Html.AutoCompleteBuilder("Action_" + Html.IdFor(a => a.ActionId).ToString(), Html.IdFor(a => a.ActionId).ToString(), ViewData["AllActionsData"].ToString(), Model != null ? Model.ActionId.ToString() : null, true, "form-control DDLClass", "", "", "", true, "", "ActionChanged")
+                @Html.HiddenGroupFor(model => model.ActionId, new { @Value = "", id = Html.IdFor(a => a.ActionId).ToString() }, "AssignmentPaper")
+                <a class="edit_link" onclick="DeleteAssignment('@Model.Key')"> <i class="glyphicon glyphicon-remove" style="margin-top:9px; margin-right:6px; color:red"></i> </a>
+            </div>
+            <!--<div class="form-group col-lg-1 col-md-4 col-sm-6 col-xs-12 mb-1">
+            <label class="control-label"></label>-->
+            @*<a class="edit_link" onclick="DeleteAssignment('@Model.Key')"> <i class="glyphicon glyphicon-remove"></i> </a>*@
+            @*<label class="control-label"></label>
+                <a class="edit_link" data-original-title="" data-placement="top" data-bs-toggle="tooltip" onclick="return DeleteActionGrid('grdArchiving',1,'هل أنت متأكد من عملية الحذف ؟','dvAttachmentsForm','DeleteArchive','1')" style="">
+                    <i class="glyphicon glyphicon-trash color-danger"></i>
+                </a>*@
+            <!--</div>-->
+            <hr style="border-color: #0E8270;" />
+
+        </div>
+    </div>
+}
+<script>
+    function DeleteAssignment(id) {
+
+        var value;
+        value = '#' + id;
+        $(value).remove();
+    }
+</script>

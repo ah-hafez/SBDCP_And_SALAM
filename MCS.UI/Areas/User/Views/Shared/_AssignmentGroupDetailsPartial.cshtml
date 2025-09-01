@@ -1,0 +1,94 @@
+﻿@model MCS.UI.Areas.User.Models.AssignmentGroupDetailVM
+@using MCS.Common;
+@using MCS.Framework.Localization
+
+@{string controller = TempData.Peek("ControllerName") != null ? TempData.Peek("ControllerName").ToString() : ViewContext.RouteData.Values["controller"].ToString();}
+
+<div class="panel-body">
+    <fieldset class="attachments">
+        <legend class="no_collapse">@DbRes.TResource("User.Transaction.AssignmentDetail.GroupDetails")</legend>
+        <div class="panel-body">
+            <div class="row" id="dvAssignmentDetailBody">
+                <div class="panel-group accordion">
+                    <!-- ACCORDION -->
+                    <div class="col-md-6">
+                        @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.OrgUnitId, TreeMode.Single, "treeAssignmentDetails", true, "GetAllUsers", "AssignmentDetails")
+                        @Html.HiddenGroupFor(model => model.OrgUnitName, new { @Value = "", id = "hdnOrgUnitName" }, "AssignmentDetails")
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.UserProfileId, new { @class = "col-md-4 control-label", id = "lblLinkType" })
+                            <div class="col-md-8">
+                                <div class="">
+                                    @Html.AutoCompleteBuilder("ddlUserProfileId", "hdnUserProfileId", null, null, true, "form-control")
+                                    @Html.HiddenGroupFor(model => model.UserProfileId, new { @Value = "", id = "hdnUserProfileId" }, "AssignmentDetails")
+                                    @Html.HiddenGroupFor(model => model.UserProfileName, new { @Value = "", id = "hdnUserProfileName" }, "AssignmentDetails")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                </div><!-- END ACCORDION -->
+                @Html.StickyHidden("hdnAssignmentDetails", "[]")
+            </div>
+        </div>
+
+
+
+        <div class="panel-footer middle">
+            @Html.ClientActionButton(DbRes.TResource("User.Transaction.AssignmentDetail.Add"), Url.Action("AddAssignmentDetail",controller), "dvAssignmentDetailsGrid", "AssignmentDetailOnSuccess", null, "AssignmentDetails", "btnAddAssignmentDetail", "dvAssignmentDetailBody", "btn btn-permissions pull-right")
+        </div>
+
+        <div class="panel-body">
+            <div class="row" id="dvAssignmentDetailsGrid">
+                @Html.Partial("~/Areas/User/Views/Shared/_AssignmentGroupDetailsGridPartial.cshtml", ViewData["AssignmentGroupDetailData"])
+            </div>
+        </div>
+    </fieldset>
+</div>
+
+<script>
+
+    $(document).on("change", "#ddlUserProfileId", function () {
+        $("#hdnUserProfileName").val($(this).val());
+    })
+
+    function GetAllUsers() {
+        
+        if ($("#divForm__treeAssignmentDetails").find("#OrgUnitId").val() != "") {
+            $.ajax({
+                type: 'post',
+                cache: false,
+                url: '@Url.Action("GetUsersByOrgUnitId", controller)',
+                data: { id: $("#divForm__treeAssignmentDetails").find("#OrgUnitId").val() },
+                success:
+               function (data) {
+                   $("#ddlUserProfileId").val("");
+                   $("#hdnUserProfileId").val("");
+                   AutoCompleteChangeList("ddlUserProfileId", data);
+               }
+            });
+        }
+        else {
+            $("#ddlUserProfileId").val("");
+            $("#hdnUserProfileId").val("");
+            AutoCompleteChangeList("ddlUserProfileId", "[]");
+        }
+
+        $("#hdnOrgUnitName").val($("#divForm__treeAssignmentDetails").find(".txtDepartmentName").val());
+    }
+
+    function AssignmentDetailOnSuccess(data, div) {
+        $("#" + div).html("");
+        $("#" + div).html(data.Html);
+        $("#hdnAssignmentDetails").val(data.hdnValue);
+    }
+
+    function OnDeleteAssignmentDetailsSuccess(data, div) {
+        $("#hdnAssignmentDetails").val(data.hdnValue);
+    }
+
+</script>

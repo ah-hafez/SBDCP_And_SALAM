@@ -1,0 +1,468 @@
+﻿<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D292E390-3933-4015-A71C-48EB7BF54B21}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MCS.Service</RootNamespace>
+    <AssemblyName>MCS.Service</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <UseIISExpress>false</UseIISExpress>
+    <Use64BitIISExpress />
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>7.2</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>7.2</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="FileSignatures">
+      <HintPath>..\Binaries\Common\FileSignatures.dll</HintPath>
+    </Reference>
+    <Reference Include="HashMechanism">
+      <HintPath>..\Binaries\Common\HashMechanism.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp">
+      <HintPath>..\Binaries\Common\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="Microsoft.AspNet.Identity.Owin">
+      <HintPath>..\Binaries\Common\Microsoft.AspNet.Identity.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.4.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.SystemWeb">
+      <HintPath>..\Binaries\Common\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Build.Framework" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Owin, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Hosting">
+      <HintPath>..\Binaries\Common\Microsoft.Owin.Hosting.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.Owin.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Cookies, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.Owin.Security.Cookies.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.OAuth">
+      <HintPath>..\Binaries\Common\Microsoft.Owin.Security.OAuth.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Common, Version=4.1.0.0, Culture=neutral, PublicKeyToken=e44a2bc38ed2c13c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.Practices.EnterpriseLibrary.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Logging, Version=4.1.0.0, Culture=neutral, PublicKeyToken=e44a2bc38ed2c13c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.Practices.EnterpriseLibrary.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="Microsoft.Practices.Unity.Configuration">
+      <HintPath>..\Binaries\Common\Microsoft.Practices.Unity.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Mvc">
+      <HintPath>..\Binaries\Common\Microsoft.Practices.Unity.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5" />
+    <Reference Include="RestSharp, Version=106.12.0.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
+      <HintPath>..\packages\RestSharp.106.12.0\lib\net452\RestSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Select.HtmlToPdf">
+      <HintPath>..\Binaries\Common\Select.HtmlToPdf.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Composition.AttributedModel">
+      <HintPath>..\Binaries\Common\System.Composition\System.Composition.AttributedModel.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Composition.Convention">
+      <HintPath>..\Binaries\Common\System.Composition\System.Composition.Convention.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Composition.Hosting">
+      <HintPath>..\Binaries\Common\System.Composition\System.Composition.Hosting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Composition.Runtime">
+      <HintPath>..\Binaries\Common\System.Composition\System.Composition.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Composition.TypedParts">
+      <HintPath>..\Binaries\Common\System.Composition\System.Composition.TypedParts.dll</HintPath>
+    </Reference>
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.DirectoryServices.AccountManagement" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Http, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.Owin">
+      <HintPath>..\Binaries\Common\System.Web.Http.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Global.asax" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="AuthorizeClaim.cs" />
+    <Compile Include="Bootstrapper.cs" />
+    <Compile Include="ChallengeResult.cs" />
+    <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\ApiBaseController.cs" />
+    <Compile Include="Controllers\CommonController.cs" />
+    <Compile Include="Controllers\DashboardController.cs" />
+    <Compile Include="Controllers\DocumentController.cs" />
+    <Compile Include="Controllers\HubController.cs" />
+    <Compile Include="Controllers\IAMController.cs" />
+    <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\GetLookupItems.cs" />
+    <Compile Include="Controllers\MobileApiController.cs" />
+    <Compile Include="Controllers\MultiTenantController.cs" />
+    <Compile Include="Controllers\ReportController.cs" />
+    <Compile Include="Controllers\ICController.cs" />
+    <Compile Include="Controllers\SearchController.cs" />
+    <Compile Include="Controllers\SettingController.cs" />
+    <Compile Include="Controllers\SharepointIntegrationController.cs" />
+    <Compile Include="Controllers\AuditLogController.cs" />
+    <Compile Include="Controllers\SurveyController.cs" />
+    <Compile Include="Controllers\VipController.cs" />
+    <Compile Include="Controllers\TransactionController.cs" />
+    <Compile Include="Controllers\TransactionLogController.cs" />
+    <Compile Include="Controllers\UserProfileController.cs" />
+    <Compile Include="Controllers\WindowsServiceController.cs" />
+    <Compile Include="Controllers\WordAddInController.cs" />
+    <Compile Include="Controllers\YesserController.cs" />
+    <Compile Include="CustomAuthenticationAttribute.cs" />
+    <Compile Include="CustomHttpApplication.cs" />
+    <Compile Include="Filters\ValidationActionFilter.cs" />
+    <Compile Include="Filters\WindowsServiceAuthorizationAttribute.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers\ADHelper.cs" />
+    <Compile Include="Helpers\PdfHelper.cs" />
+    <Compile Include="Helpers\PrincipalExtensions.cs" />
+    <Compile Include="Helpers\TaskAsyncHelper.cs" />
+    <Compile Include="Hubs\ChatServiceHub.cs" />
+    <Compile Include="Helpers\TenantsAPI\AuthorizationApiHelper.cs" />
+    <Compile Include="Mappers\AssignmentPaperBeneficiaryMapper.cs" />
+    <Compile Include="Mappers\AuditLog\AuditLogMapper.cs" />
+    <Compile Include="Mappers\IC_SUBJECTMapper.cs" />
+    <Compile Include="Mappers\AllowedAssignmentMapper.cs" />
+    <Compile Include="Mappers\AssignmentPaperGroupMapper.cs" />
+    <Compile Include="Mappers\AttachmentExtensionMapper.cs" />
+    <Compile Include="Mappers\ConfidentialityAcknowledgmentsMapper.cs" />
+    <Compile Include="Mappers\AuditMapper.cs" />
+    <Compile Include="Mappers\ChatMapper.cs" />
+    <Compile Include="Mappers\CityMapper.cs" />
+    <Compile Include="Mappers\ConfidentialityLevelMapper.cs" />
+    <Compile Include="Mappers\ReleaseNotesMapper.cs" />
+    <Compile Include="Mappers\FollowUpProccessMapper.cs" />
+    <Compile Include="Mappers\FollowUpSourceMapper.cs" />
+    <Compile Include="Mappers\FollowUpMethodMapper.cs" />
+    <Compile Include="Mappers\FollowUpPriorityTypeMapper.cs" />
+    <Compile Include="Mappers\SurveyMapper.cs" />
+    <Compile Include="Mappers\TransactionElcOutBoundMapper.cs" />
+    <Compile Include="Mappers\TransactionEncryptionCodeMapper.cs" />
+    <Compile Include="Mappers\Transaction\FollowUpAuditTrailMapper.cs" />
+    <Compile Include="Mappers\SpecificLevelMapper.cs" />
+    <Compile Include="Mappers\UserPendingGroupMapper.cs" />
+    <Compile Include="Mappers\SystemDefaultValuesMapper.cs" />
+    <Compile Include="Mappers\ReportersMapper.cs" />
+    <Compile Include="Mappers\CounterMapper.cs" />
+    <Compile Include="Mappers\DashboardHomeMapper.cs" />
+    <Compile Include="Mappers\DistributionListMapper.cs" />
+    <Compile Include="Mappers\EscalationMapper.cs" />
+    <Compile Include="Mappers\ExternalPartyAttachmentMapper.cs" />
+    <Compile Include="Mappers\HubTransactionMapper.cs" />
+    <Compile Include="Hubs\NotificationService.cs" />
+    <Compile Include="Mappers\ActionMapper.cs" />
+    <Compile Include="Mappers\AssignmentGroupDetailMapper.cs" />
+    <Compile Include="Mappers\AssignmentGroupMapper.cs" />
+    <Compile Include="Mappers\AssignmentPaperMapper.cs" />
+    <Compile Include="Mappers\AttachmentTypeMapper.cs" />
+    <Compile Include="Mappers\BarcodeMapper.cs" />
+    <Compile Include="Mappers\Collaboration\ConversationMapper.cs" />
+    <Compile Include="Mappers\CultureMapper.cs" />
+    <Compile Include="Mappers\DashboardMapper.cs" />
+    <Compile Include="Mappers\DeliveryReportMapper.cs" />
+    <Compile Include="Mappers\DocumentMapper.cs" />
+    <Compile Include="Mappers\ExplanationMapper.cs" />
+    <Compile Include="Mappers\ExternalPartyManagerMapper.cs" />
+    <Compile Include="Mappers\ExternalPartyMapper.cs" />
+    <Compile Include="Mappers\ExternalPartyTypeListMapper.cs" />
+    <Compile Include="Mappers\FormMapper.cs" />
+    <Compile Include="Mappers\LetterTypeListMapper.cs" />
+    <Compile Include="Mappers\LetterTypeMapper.cs" />
+    <Compile Include="Mappers\LinkMapper.cs" />
+    <Compile Include="Mappers\LocalizationIdentifierMapper.cs" />
+    <Compile Include="Mappers\LoginUserMapper.cs" />
+    <Compile Include="Mappers\LookupLocalizationMapper.cs" />
+    <Compile Include="Mappers\LookupMapper.cs" />
+    <Compile Include="Mappers\NotificationMapper.cs" />
+    <Compile Include="Mappers\NotificationSubscriptionMapper.cs" />
+    <Compile Include="Mappers\OrgUnitMapper.cs" />
+    <Compile Include="Mappers\OrgUnitStructureMapper.cs" />
+    <Compile Include="Mappers\PermissionMapper.cs" />
+    <Compile Include="Mappers\PriorityExceptionMapper.cs" />
+    <Compile Include="Mappers\PriorityMapper.cs" />
+    <Compile Include="Mappers\ReportMapper.cs" />
+    <Compile Include="Mappers\SearchCriteriaMapper.cs" />
+    <Compile Include="Mappers\SearchMapper.cs" />
+    <Compile Include="Mappers\SettingMapper.cs" />
+    <Compile Include="Mappers\SolrTransactionInfoMapper.cs" />
+    <Compile Include="Mappers\SubjectClassificationMapper.cs" />
+    <Compile Include="Mappers\SuggestedTopicMapper.cs" />
+    <Compile Include="Mappers\TaskMapper.cs" />
+    <Compile Include="Mappers\TaskRejectMapper.cs" />
+    <Compile Include="Mappers\TaskReminderMapper.cs" />
+    <Compile Include="Mappers\TaskWorkflowMapper.cs" />
+    <Compile Include="Mappers\TenantMapper.cs" />
+    <Compile Include="Mappers\ThemeMapper.cs" />
+    <Compile Include="Mappers\TransactionBarcodesMapper.cs" />
+    <Compile Include="Mappers\TransactionBasicinfoMapper.cs" />
+    <Compile Include="Mappers\TransactionCertificateMapper.cs" />
+    <Compile Include="Mappers\SignedDeliveryReportMapper.cs" />
+    <Compile Include="Mappers\TransactionDeliveryReportMapper.cs" />
+    <Compile Include="Mappers\Transaction\InboundTransactionMapper.cs" />
+    <Compile Include="Mappers\Transaction\OutboundDraftTransactionMapper.cs" />
+    <Compile Include="Mappers\Transaction\OutboundExternalTransactionMapper.cs" />
+    <Compile Include="Mappers\Transaction\OutboundInternalTransactionMapper.cs" />
+    <Compile Include="Mappers\Transaction\ReporterMapper.cs" />
+    <Compile Include="Mappers\Transaction\TransactionAddressMapper.cs" />
+    <Compile Include="Mappers\Transaction\TransactionAssignmentMapper.cs" />
+    <Compile Include="Mappers\Transaction\TransactionAttachmentMapper.cs" />
+    <Compile Include="Mappers\Transaction\TransactionCopyMapper.cs" />
+    <Compile Include="Mappers\Transaction\TransactionDetailsMapper.cs" />
+    <Compile Include="Mappers\Transaction\TransactionExternalCopyMapper.cs" />
+    <Compile Include="Mappers\Transaction\TransactionPathMapper.cs" />
+    <Compile Include="Mappers\Transaction\TransactionReservationMapper.cs" />
+    <Compile Include="Mappers\Transaction\TransactionFollowUpMapper.cs" />
+    <Compile Include="Mappers\Transaction\TransactionLinkMapper.cs" />
+    <Compile Include="Mappers\Transaction\TransactionLogInfoMapper.cs" />
+    <Compile Include="Mappers\Transaction\TransactionMapper.cs" />
+    <Compile Include="Mappers\Transaction\TransactionNameMapper.cs" />
+    <Compile Include="Mappers\Transaction\TransactionCategoryMapper.cs" />
+    <Compile Include="Mappers\Transaction\TransactionTaskMapper.cs" />
+    <Compile Include="Mappers\Transaction\TransactionTicketMapper.cs" />
+    <Compile Include="Mappers\Transaction\TransactionTypeMapper.cs" />
+    <Compile Include="Mappers\TrayDetailsMapper.cs" />
+    <Compile Include="Mappers\TrayMapper.cs" />
+    <Compile Include="Mappers\UserCategoryMapper.cs" />
+    <Compile Include="Mappers\UserCategoryTrayMapper.cs" />
+    <Compile Include="Mappers\UserClearanceMapper.cs" />
+    <Compile Include="Mappers\UserDelegationMapper.cs" />
+    <Compile Include="Mappers\UserMobileMapper.cs" />
+    <Compile Include="Mappers\UserPermissionMapper.cs" />
+    <Compile Include="Mappers\UserPreferenceInfoMapper.cs" />
+    <Compile Include="Mappers\UserPreferenceMapper.cs" />
+    <Compile Include="Mappers\UserProfileMapper.cs" />
+    <Compile Include="Mappers\UserTransactionsTrayMapper.cs" />
+    <Compile Include="Mappers\UserTrayPreferenceInfoMapper.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Providers\ApplicationOAuthProvider.cs" />
+    <Compile Include="Providers\OwinMiddleWareQueryStringExtractor.cs" />
+    <Compile Include="Startup.cs" />
+    <Compile Include="Mappers\UserGroupMapper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+    <Folder Include="Models\" />
+    <Folder Include="Views\Hub\" />
+    <Folder Include="Views\MultiTenant\" />
+    <Folder Include="Views\Report\" />
+    <Folder Include="Views\Yesser\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MCS.FRAMEWORK\MCS.Framework.csproj">
+      <Project>{5b5b0b7b-1a75-4a12-9cea-5b527af8b6e5}</Project>
+      <Name>MCS.Framework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MCS.Business\MCS.Business.csproj">
+      <Project>{985450a5-143c-47df-a92b-416b6dbd284c}</Project>
+      <Name>MCS.Business</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MCS.Common\MCS.Common.csproj">
+      <Project>{dd463041-b635-4b24-b3e1-0a942ab358e0}</Project>
+      <Name>MCS.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MCS.DataAccess\MCS.DataAccess.csproj">
+      <Project>{8EFBFBF5-B3F5-4FA3-91D4-4CBA735CFA11}</Project>
+      <Name>MCS.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MCS.DocRepository.Provider.DB\MCS.DocRepository.Provider.DB.csproj">
+      <Project>{dbb3964b-6163-4c46-afc1-0ccb8eab83fc}</Project>
+      <Name>MCS.DocRepository.Provider.DB</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MCS.DocRepository.Provider.ECM\MCS.DocRepository.Provider.ECM.csproj">
+      <Project>{44224a64-6aa9-4266-a194-77b5ddb32528}</Project>
+      <Name>MCS.DocRepository.Provider.ECM</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MCS.DocRepository\MCS.DocRepository.csproj">
+      <Project>{0b538a14-0747-4f7d-90c5-3d7e75c1748f}</Project>
+      <Name>MCS.DocRepository</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MCS.Domain\MCS.Domain.csproj">
+      <Project>{affe1dc1-c4bb-4219-9362-eed2d4f08ea9}</Project>
+      <Name>MCS.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MCS.DTO\MCS.DTO.csproj">
+      <Project>{dc0986f3-608b-43c7-a722-136283073f66}</Project>
+      <Name>MCS.DTO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MCS.Integration.HUB\MCS.Integration.HUB.CON.csproj">
+      <Project>{D68B8531-E5A9-4517-82E1-05412C77F7A0}</Project>
+      <Name>MCS.Integration.HUB.CON</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\Notification.config" />
+    <None Include="packages.config" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>54673</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost/MCS.Service.SBDCP</IISUrl>
+          <OverrideIISAppRootUrl>True</OverrideIISAppRootUrl>
+          <IISAppRootUrl>https://localhost/IAU.Service</IISAppRootUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <PropertyGroup>
+    <PostBuildEvent>ECHO Finished Build At: %25TIME%25</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

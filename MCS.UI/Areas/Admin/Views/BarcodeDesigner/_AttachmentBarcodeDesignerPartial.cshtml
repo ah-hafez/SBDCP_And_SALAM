@@ -1,0 +1,25 @@
+﻿@using MCS.Framework.Localization
+@{Layout = null;}
+<div class="panel-body">
+    <div class="line"></div>
+    <h3 class="push-up-20">@DbRes.TResource("Admin.BarcodeDesigner.Attachments")</h3>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="menu_code center py2 ml4" id="attachmentMenu">
+                <div class="double"><i class="fa fa-angle-double-left"></i></div>
+                <div data-id="attachment3DImage" onclick="Select('attachment3DImage');" class="attachment3DImage draggable2 Box row li"><a class="ui-widget-content" href="#"><i class="fa fa-angle-left"></i> <i><img src="~/Content/Admin/Lib/images/morasalat/code_3d.png" alt=""></i> @DbRes.TResource("Admin.AttachmentBarcodeDesigner.3DImage")</a></div>
+                <div data-id="attachment2DImage" onclick="Select('attachment2DImage');" class="attachment2DImage draggable2 Box row li"><a class="ui-widget-content" href="#"><i class="fa fa-angle-left"></i> <i><img src="~/Content/Admin/Lib/images/morasalat/code_2d.png" alt=""></i> @DbRes.TResource("Admin.AttachmentBarcodeDesigner.2DImage")</a></div>
+                <div data-id="attachmentOrgunit" onclick="Select('attachmentOrgunit');" class="attachmentOrgunit draggable2 Box row li"><a class="ui-widget-content"><i class="fa fa-angle-left"></i> @DbRes.TResource("Admin.AttachmentBarcodeDesigner.Orgunit") </a></div>
+                <div data-id="attachmentDate" onclick="Select('attachmentDate');" class="attachmentDate draggable2 Box row li"><a class="ui-widget-content"><i class="fa fa-angle-left"></i> @DbRes.TResource("Admin.AttachmentBarcodeDesigner.AttachmentDate") </a></div>
+                <div data-id="attachmentName" onclick="Select('attachmentName');" class="attachmentName draggable2 Box row li"><a class="ui-widget-content"><i class="fa fa-angle-left"></i>@DbRes.TResource("Admin.AttachmentBarcodeDesigner.AttachmentName")  </a></div>
+                <div data-id="attachmentCount" onclick="Select('attachmentCount');" class="attachmentCount draggable2 Box row li"><a class="ui-widget-content"><i class="fa fa-angle-left"></i> @DbRes.TResource("Admin.AttachmentBarcodeDesigner.Count")   </a></div>
+            </div>
+        </div>
+        <div class="col-md-1"></div>
+
+        @Html.Raw(Model.HtmlAttachment)
+
+        <div class="col-md-2"></div>
+    </div>
+</div>
+

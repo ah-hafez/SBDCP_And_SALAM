@@ -1,0 +1,521 @@
+﻿@using MCS.UI.Areas.User.Models.Report;
+@using MCS.Framework.Localization;
+@using MCS.Framework.Controls;
+@using MCS.UI.Helpers;
+
+@using System.Globalization;
+@using MCS.UI.Common;
+
+@model TransactionReportResult
+@{
+    Layout = null;
+    CultureInfo culture = new CultureInfo("en-US");
+    List<int> columnsToGrid = ViewData["ColumnsToGrid"] == null ? new List<int>() : (List<int>)ViewData["ColumnsToGrid"];
+    string imagePath = Server.MapPath("~/Content/User/lib/images/GAMI_Logo_Color-01.svg");
+    byte[] imageBytes = System.IO.File.ReadAllBytes(imagePath);
+    string base64String = Convert.ToBase64String(imageBytes);
+    string imageSource = "data:image/png;base64," + base64String;
+}
+
+<DOCTYPE html>
+    <html lang="ar">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" id="theme" href="@UIConfigurations.GetFullURl()/Content/User/lib/css/theme_@(SessionInfo.CultureShortName).css" />
+        @if (SessionInfo.CultureShortName == "ar")
+        {
+            <link rel="stylesheet" type="text/css" id="theme" href="@UIConfigurations.GetFullURl()/Content/User/lib/css/rtl.css" />
+        }
+        <link type="image/x-icon" rel="shortcut icon" href="@UIConfigurations.GetFullURl()/Content/User/lib/favicon.png">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <meta name="theme-color" content="#0c7c5a">
+        <title>@ViewBag.Title</title>
+        <!-- New -->
+        <link href="@UIConfigurations.GetFullURl()/Content/User/lib/css/new.css" rel="stylesheet" />
+        <!-- Select2 CSS -->
+        <link href="@UIConfigurations.GetFullURl()/Content/User/lib/plugins/select2/select2.min.css" rel="stylesheet" />
+        <link href="@UIConfigurations.GetFullURl()/Content/User/lib/css/dawood-style.css" rel="stylesheet" />
+        <script src="@UIConfigurations.GetFullURl()/Scripts/jquery.min.js"></script>
+        <style>
+            .pagebreak {
+                page-break-after: always;
+            }
+
+            table.rprt {
+                width: 91%;
+            }
+
+                table.rprt td {
+                    padding: 5px;
+                    text-align: center;
+                }
+
+            table.rprtGrid {
+                width: 91%;
+                border: 1px solid #000000;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+                table.rprtGrid td {
+                    padding: 5px;
+                    border-left: 1px #000000 solid;
+                    border-bottom: 1px #000000 solid !important;
+                    border-right: 1px #000000 solid;
+                }
+        </style>
+    </head>
+    <body dir="rtl" style="background-color: #ffffff;">
+
+        @{ var results = Model.TransactionPrintResultVMs; int cnt = 1; }
+        @if (results != null && results.Count > 0)
+        {
+            for (int i = 0; i < results.Count; i += 6)
+            {
+                <table class="rprt" style="direction: rtl;">
+                    <tr>
+                        <td>
+                            <p><strong>المملكة العربية السعودية</strong></p>
+                            <p><strong>الهيئة العامة للصناعات الحربية</strong></p>
+                            <br />
+                            <p><strong>الادارة المنشئة:</strong> @Model.TransactionBasicResultVM.CreatedEntity</p>
+                            <p><strong>الموظف المنشئ:</strong> @Model.TransactionBasicResultVM.CreatedBy</p>
+                        </td>
+                        <td>
+
+                            <img class="" width="200" src="~/Content/User/lib/images/GAMI_Logo_Color-01.svg" />
+                            <h3 class=""><strong>@Model.TransactionBasicResultVM.TenantName</strong></h3>
+
+                            <p><strong>تقرير / المعاملات  @Model.TransactionBasicResultVM.TransactionType</strong></p>
+                            <p>@Model.TransactionBasicResultVM.ExternalParty</p>
+                        </td>
+                        <td></td>
+                        <td style="font-size: 12px; display: inline-block;">
+                            <br>
+                            <p style="display: inline-block; margin: 0;"><strong>عدد السجلات</strong></p>
+                            <p style="display: inline-block; margin: 0;">@Model.TransactionBasicResultVM.TotalCount</p>
+
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <p><strong>من تاريخ:</strong> @Model.TransactionBasicResultVM.DateFrom - @Model.TransactionBasicResultVM.DateFromG.ToString("dd/MM/yyyy")</p>
+                            <p><strong>الى تاريخ:</strong> @Model.TransactionBasicResultVM.DateTo - @Model.TransactionBasicResultVM.DateToG.ToString("dd/MM/yyyy")</p>
+                            <p><strong>طبع في:</strong> @DateHelper.ConvertDateCalendar(Model.TransactionBasicResultVM.CreateOn, CalenderType.Ummalqura, SessionInfo.CultureShortName)</p>
+                        </td>
+                    </tr>
+
+                </table>
+                <br />
+                <br />
+                <table class="rprtGrid">
+                    <tr>
+                        <td>م</td>
+                        <td><b>@DbRes.TResource("User.Reports.TransactionNo")</b></td>
+                        <td><b>@DbRes.TResource("User.InboundSearch.Date")</b></td>
+                        @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.TransactioDescription)))
+                        {
+                            <td><b>@DbRes.TResource("User.SubjectSearch.Subject")</b></td>
+                        }
+                        @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.OrgUnit)))
+                        {
+                            <td><b>@DbRes.TResource("User.Transaction.Search.ToOrg")</b></td>
+                        }
+                        @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.ExternalParty)))
+                        {
+                            <td><b>@DbRes.TResource("User.OutboundAdvancedSearch.ExternaParty")</b></td>
+                        }
+                        @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.ToUser)))
+                        {
+                            <td><b>@DbRes.TResource("User.Transaction.Search.ToEmployee")</b></td>
+                        }
+                        @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.NumberWithDate)))
+                        {
+                            <td><b>@DbRes.TResource("User.SubjectSearch.NumberWithDate")</b></td>
+                        }
+                        @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.SourceType)))
+                        {
+                            <td><b>@DbRes.TResource("User.OutboundExternal.BasicInfo.Type")</b></td>
+                        }
+
+                        @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.Confidentiality)))
+                        {
+                            <td><b>@DbRes.TResource("User.Transaction.ConfidentialityLevel")</b></td>
+                        }
+                        @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.Priority)))
+                        {
+                            <td><b>@DbRes.TResource("User.Transaction.PriorityLevel")</b></td>
+                        }
+                        @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.TransactionStatus)))
+                        {
+                            <td><b>@DbRes.TResource("User.SubjectSearch.TransactionStatus")</b></td>
+                        }
+                        @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.TransactionStatus)))
+                        {
+                            <td><b>اخر اجراء / سبب الحفظ</b></td>
+                        }
+                        @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.DelayText)))
+                        {
+                            <td><b>متأخرة</b></td>
+                        }
+                        @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.DelayText)))
+                        {
+                            <td><b>عدد ايام التأخير</b></td>
+                        }
+                        @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.SubjectClassification)))
+                        {
+                            <td><b>@DbRes.TResource("User.Transaction.BasicInfo.SubjectClassifications")</b></td>
+                        }
+                        @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.Remarks)))
+                        {
+                            <td><b>@DbRes.TResource("User.Inbound.BasicInfo.Remarks")</b></td>
+                        }
+                        @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.DeliveryMethod)))
+                        {
+                            <td><b>@DbRes.TResource("User.Inbound.BasicInfo.ReceiveMethod")</b></td>
+                        }
+                        @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.FullName)))
+                        {
+                            <td><b>@DbRes.TResource("User.Transaction.Name.FullName")</b></td>
+                        }
+                        @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.CivilID)))
+                        {
+                            <td><b>@DbRes.TResource("User.Transaction.Name.CivilID")</b></td>
+                        }
+                        @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.MobileNumber)))
+                        {
+                            <td><b>@DbRes.TResource("User.Transaction.Name.MobileNumber")</b></td>
+                        }
+
+                        @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.InboundDateH)))
+                        {
+                            <td><b>@DbRes.TResource("User.Inbound.BasicInfo.InboundDateH")</b></td>
+                        }
+                        @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.FromEntity)))
+                        {
+                            <td><b>@DbRes.TResource("User.Transaction.Search.FromOrg")</b></td>
+                        }
+                        @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.FromUser)))
+                        {
+                            <td><b>@DbRes.TResource("User.Transaction.Search.FromEmployee")</b></td>
+                        }
+
+                        @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.CreatedOn)))
+                        {
+                            <td><b>@DbRes.TResource("User.OutboundInternal.RecordDate")</b></td>
+                        }
+                        @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.RemindDate)))
+                        {
+                            <td><b>@DbRes.TResource("Admin.Priority.HasDate")</b></td>
+                        }
+
+
+                    </tr>
+
+                    @for (int j = i; j < i + 6 && j < results.Count; j++)
+                    {
+                        var m = results[j];
+                        <tr>
+                            <td>@(cnt++)</td>
+                            <td>@m.Number</td>
+                            <td>@DateHelper.DateCalendar(m.Date, SessionInfo.CultureShortName, false)<br />@m.Date.ToString().Split(' ')[0]<br />@m.Date.ToString().Split(' ')[1] @m.Date.ToString().Split(' ')[2]</td>
+                            @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.TransactioDescription)))
+                            {
+                                <td>@m.TransactioDescription</td>
+                            }
+                            @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.OrgUnit)))
+                            {
+                                <td>@m.OrgUnitText</td>
+                            }
+                            @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.ExternalParty)))
+                            {
+                                <td>@m.ExternalPartyText</td>
+                            }
+                            @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.ToUser)))
+                            {
+                                <td>@m.ToUserText</td>
+                            }
+                            @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.NumberWithDate)))
+                            {
+                                <td>@m.NumberWithDate</td>
+                            }
+                            @*@if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.TransactionType)))
+        {
+            <td>@m.TransactionCategoryText</td>
+        }*@
+                            @*@if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.OrgUnit)))
+        {
+            <td>@m.OrgUnitText</td>
+        }*@
+                            @*@if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.Date)))
+        {
+            <td>@m.DateText</td>
+        }*@
+                            @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.SourceType)))
+                            {
+                                <td>@m.LetterTypeText</td>
+                            }
+
+                            @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.Confidentiality)))
+                            {
+                                <td>@m.ConfidentialityText</td>
+                            }
+                            @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.Priority)))
+                            {
+                                <td>@m.PriorityText</td>
+                            }
+                            @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.TransactionStatus)))
+                            {
+                                <td>@m.TransactionStatus</td>
+                            }
+                            @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.TransactionStatus)))
+                            {
+                                <td>@m.SavedReason</td>
+                            }
+                            @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.DelayText)))
+                            {
+                                <td>@m.DelayText</td>
+                            }
+                            @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.DelayText)))
+                            {
+                                <td>@m.DelayedDaysCount</td>
+                            }
+                            @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.SubjectClassification)))
+                            {
+                                <td>@m.TransactionTypeText</td>
+                            }
+                            @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.Remarks)))
+                            {
+                                <td>@m.Remarks</td>
+                            }
+                            @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.DeliveryMethod)))
+                            {
+                                <td>@m.DeliveryMethodText</td>
+                            }
+                            @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.FullName)))
+                            {
+                                <td>@m.FirstName</td>
+                            }
+                            @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.CivilID)))
+                            {
+                                <td>@m.CivilID</td>
+                            }
+                            @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.MobileNumber)))
+                            {
+                                <td>@m.MobileNumber</td>
+                            }
+
+                            @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.InboundDateH)))
+                            {
+                                <td>@m.InboundDateH</td>
+                            }
+                            @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.FromEntity)))
+                            {
+                                <td>@m.FromEntityText</td>
+                            }
+                            @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.FromUser)))
+                            {
+                                <td>@m.FromUserText</td>
+                            }
+
+                            @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.CreatedOn)))
+                            {
+                                <td>@m.CreatedOn</td>
+                            }
+                            @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.RemindDate)))
+                            {
+                                <td>@m.RemindDate</td>
+                            }
+
+                        </tr>
+                    }
+
+                </table>
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+            }
+        }
+        else
+        {
+
+            <table class="rprt" style="direction:rtl;">
+                <tr>
+                    <td>
+                        <p> المملكة العربية السعودية</p>
+                        <p>الهيئة العامة للصناعات الحربية</p>
+                    </td>
+                    <td>
+
+                        @if (ViewData["LogoFile"] != null)
+                        {
+                            <img class="" width="200" src="~/Content/User/lib/images/GAMI_Logo_Color-01.svg" />
+                        }
+                        <img class="" width="200" src="~/Content/User/lib/images/GAMI_Logo_Color-01.svg" />
+
+                        <h3 class="">@Model.TransactionBasicResultVM.TenantName</h3>
+
+                        تقرير / المعاملات  @Model.TransactionBasicResultVM.TransactionType
+                        @Model.TransactionBasicResultVM.ExternalParty
+                    </td>
+                    <td></td>
+                    <td style="font-size:12px;">
+                        <p> عدد السجلات</p>
+                        <p>@Model.TransactionBasicResultVM.TotalCount</p>
+                    </td>
+                </tr>
+                <tr>
+
+                    <td style="font-size:12px;">
+                        <p>الادارة المنشئة: @Model.TransactionBasicResultVM.CreatedEntity</p>
+                        <p> الموظف المنشئ: @Model.TransactionBasicResultVM.CreatedBy</p>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td style="font-size:12px;">
+                        <p>من تاريخ: @Model.TransactionBasicResultVM.DateFrom - @Model.TransactionBasicResultVM.DateFromG.ToString("dd/MM/yyyy")</p>
+                        <p>الى تاريخ: @Model.TransactionBasicResultVM.DateTo - @Model.TransactionBasicResultVM.DateToG.ToString("dd/MM/yyyy")</p>
+                        <p>طبع في: @DateHelper.ConvertDateCalendar(Model.TransactionBasicResultVM.CreateOn, CalenderType.Ummalqura, SessionInfo.CultureShortName)</p>
+                    </td>
+                </tr>
+            </table>
+            <br />
+            <br />
+            <table class="rprtGrid">
+                <tr>
+                    <td>م</td>
+                    <td><b>@DbRes.TResource("User.Reports.TransactionNo")</b></td>
+                    <td><b>@DbRes.TResource("User.InboundSearch.Date")</b></td>
+                    @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.TransactioDescription)))
+                    {
+                        <td><b>@DbRes.TResource("User.SubjectSearch.Subject")</b></td>
+                    }
+                    @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.ToEntity)))
+                    {
+                        <td><b>@DbRes.TResource("User.Transaction.Search.ToOrg")</b></td>
+                    }
+                    @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.ExternalParty)))
+                    {
+                        <td><b>@DbRes.TResource("User.OutboundAdvancedSearch.ExternaParty")</b></td>
+                    }
+                    @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.ToUser)))
+                    {
+                        <td><b>@DbRes.TResource("User.Transaction.Search.ToEmployee")</b></td>
+                    }
+                    @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.NumberWithDate)))
+                    {
+                        <td><b>@DbRes.TResource("User.SubjectSearch.NumberWithDate")</b></td>
+                    }
+
+
+
+                    @*@if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.OrgUnit)))
+        {
+            <td><b>@DbRes.TResource("الإدارة المنشئة")</b></td>
+        }*@
+                    @*@if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.Date)))
+        {
+            <td><b>@DbRes.TResource("User.InboundSearch.Date")</b></td>
+        }*@
+                    @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.SourceType)))
+                    {
+                        <td><b>@DbRes.TResource("User.OutboundExternal.BasicInfo.Type")</b></td>
+                    }
+
+                    @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.Confidentiality)))
+                    {
+                        <td><b>@DbRes.TResource("User.Transaction.ConfidentialityLevel")</b></td>
+                    }
+                    @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.Priority)))
+                    {
+                        <td><b>@DbRes.TResource("User.Transaction.PriorityLevel")</b></td>
+                    }
+                    @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.TransactionStatus)))
+                    {
+                        <td><b>@DbRes.TResource("User.SubjectSearch.TransactionStatus")</b></td>
+                    }
+                    @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.TransactionStatus)))
+                    {
+                        <td><b>اخر اجراء / سبب الحفظ</b></td>
+                    }
+                    @if (!columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.DelayText)))
+                    {
+                        <td><b>متأخرة</b></td>
+                    }
+                    @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.SubjectClassification)))
+                    {
+                        <td><b>@DbRes.TResource("User.Transaction.BasicInfo.SubjectClassifications")</b></td>
+                    }
+                    @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.Remarks)))
+                    {
+                        <td><b>@DbRes.TResource("User.Inbound.BasicInfo.Remarks")</b></td>
+                    }
+                    @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.DeliveryMethod)))
+                    {
+                        <td><b>@DbRes.TResource("User.Inbound.BasicInfo.ReceiveMethod")</b></td>
+                    }
+                    @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.FullName)))
+                    {
+                        <td><b>@DbRes.TResource("User.Transaction.Name.FullName")</b></td>
+                    }
+                    @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.CivilID)))
+                    {
+                        <td><b>@DbRes.TResource("User.Transaction.Name.CivilID")</b></td>
+                    }
+                    @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.MobileNumber)))
+                    {
+                        <td><b>@DbRes.TResource("User.Transaction.Name.MobileNumber")</b></td>
+                    }
+
+                    @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.InboundDateH)))
+                    {
+                        <td><b>@DbRes.TResource("User.Inbound.BasicInfo.InboundDateH")</b></td>
+                    }
+                    @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.FromEntity)))
+                    {
+                        <td><b>@DbRes.TResource("User.Transaction.Search.FromOrg")</b></td>
+                    }
+                    @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.FromUser)))
+                    {
+                        <td><b>@DbRes.TResource("User.Transaction.Search.FromEmployee")</b></td>
+                    }
+
+                    @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.CreatedOn)))
+                    {
+                        <td><b>@DbRes.TResource("User.OutboundInternal.RecordDate")</b></td>
+                    }
+                    @if (columnsToGrid.Contains(Convert.ToInt32(TransactionReportGridColumn.RemindDate)))
+                    {
+                        <td><b>@DbRes.TResource("Admin.Priority.HasDate")</b></td>
+                    }
+                </tr>
+                <tr>
+                    <td>لا يوجد بيانات للعرض</td>
+                </tr>
+            </table>
+        }
+
+
+    </body>
+</html>
+
+<style>
+    .center {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        /*width: 50%;*/
+        max-height: 43px;
+        max-width: 214px;
+    }
+</style>

@@ -1,0 +1,163 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.ExternalParties
+@model MCS.UI.Areas.User.Models.ExternalParties.ExternalPartyViewModel
+@{
+    ViewBag.Title = DbRes.TResource("User.ExternalParty.ExternalParty");
+    Layout = "~/Views/Shared/_DialogLayout.cshtml";
+}
+
+<script>
+    var treeName = '@ViewData["TreeName"].ToString()';
+</script>
+   
+
+<div class="content-rtl panel panel-default dialogbox_panel">
+    <div class="panel-heading">
+        <h3 class="title2">@DbRes.TResource("User.ExternalParty.ExternalParty")</h3>
+    </div>
+
+    <div class="modal-body">
+        <div class="panel-body">
+            <div class="row">
+                @*<div id="TreeDiv" class="col-md-3 externalParty">
+                    @Html.Partial("~/Areas/User/Views/ExternalParties/_ExternalPartiesTreePartial.cshtml", Model.Tree)
+                </div>*@
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="title2">@DbRes.TResource("User.ExternalParty.PartyInformation")</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="col-xs-12">
+                                <p class="stark">@DbRes.TResource("Admin.User.MustFill") * </p>
+                            </div>
+                            <div class="row" id="AddExternalParty">
+                                @Html.Partial("~/Areas/User/Views/ExternalParties/_ExternalPartiesAddPartial.cshtml", Model.AddExternalParty)
+                            </div>
+                            <div class="row" id="EditExternalParty" style="display:none;">
+                                @Html.Partial("~/Areas/User/Views/ExternalParties/_ExternalPartiesEditPartial.cshtml", Model.EditExternalParty)
+                            </div>
+                        </div>
+                        <div class="panel-body" id="AddManager" style="display:none;">
+                            @Html.Partial("~/Areas/User/Views/ExternalParties/ManagersManagement.cshtml", new ManagersManagementViewModel())
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    RefreshJsTree('TreeDiv');
+    var node;
+
+    $(document).on("keyup", "#treeSearch", function () {
+        var searchString = $(this).val();
+        console.log(searchString);
+        $('#jstree_default').jstree('search', searchString);
+    });
+
+    $(function () {
+        $('#jstree_default').jstree({
+            "search": {
+                "case_insensitive": true,
+                "show_only_matches": true
+            },
+            "plugins": ["search"]
+        });
+    });
+
+    $(document).on('click', '.node_Native .jstree-anchor', function (e) {
+        e.stopPropagation();
+        node = $(this).parent();
+        var nodeId = $(this).parent().closest('li').attr('node');
+        if (nodeId != 0) {
+            OpenEditView(nodeId);
+            SelectTreeNode(treeName, nodeId);
+        }
+    });
+
+    function OpenEditView(nodeId) {
+        $.ajax({
+            cache: false,
+            type: "GET",
+            url: '@Url.Action("GetPartyById")',
+            data: { "id": nodeId },
+            success: function (response) {
+
+                $('#EditExternalParty').html('');
+                $('#EditExternalParty').html(response.EditHtml);
+                $("#AddManager").html('');
+                $("#AddManager").html(response.ManagersHtml);
+
+                jQuery.validator.unobtrusive.parse('#EditExternalParty');
+                jQuery.validator.unobtrusive.parse('#AddManager');
+            }
+        });
+
+        $("#AddExternalParty").css("display", "none");
+        $("#EditExternalParty").css("display", "block");
+        $("#AddManager").css("display", "block");
+    }
+
+    function RefreshJsTree(div) {
+        var trees = $("#" + div).find('.tree');
+        for (var i = 0; i < trees.length; i++) {
+            $("#" + trees[i].id).jstree({
+                "search": { "case_insensitive": true, "show_only_matches": true },
+                "plugins": ["search"]
+            });
+        }
+    }
+
+    function AddUnit(action) {
+        var parentId = 0;
+        if (action == 1) 
+            parentId = node.closest('li').closest('ul').closest('li').attr('node');
+
+        if (action == 0)
+            parentId = node.closest('li').attr('node');
+        if (parentId == undefined)
+            parentId = 0;
+        $(".empty").val("")
+        $("#hdnParentId").val(parentId);
+
+        $("#AddExternalParty").css("display", "block");
+        $("#EditExternalParty").css("display", "none");
+        $("#AddManager").css("display", "none");
+        $("#Addfooter").removeClass("middle");
+
+        GeneratePartyNumber(parentId);
+    }
+
+    function OpenTreeNode(id) {
+        $('*[node=' + id + ']').parent().parent().removeClass('jstree-closed');
+        $('*[node=' + id + ']').parent().parent().addClass('jstree-open');
+
+        var parentNode = $('*[node=' + id + ']').parent().parent().attr('node');
+
+        if (parentNode != 0)
+            OpenTreeNode(parentNode);
+    }
+
+    function GetExternalPartisTree(selectedNode) {
+        window['@ViewData["OnAddPartyfuntion"].ToString()'](selectedNode);
+    }
+
+    function GeneratePartyNumber(parentId) {
+        if (parentId != undefined && parentId == "root") {
+            parentId = null;
+        }
+
+        $.ajax({
+            cache: false,
+            type: "GET",
+            url: '@Url.Action("GenerateExternalPartyNumber")',
+            data: { "id": parentId },
+            success: function (response) {
+                $('#frmAddParty #ddlPartyNumber').val(response);
+            }
+        });
+    }
+</script>

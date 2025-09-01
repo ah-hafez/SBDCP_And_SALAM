@@ -1,0 +1,60 @@
+﻿
+@using MCS.Common
+@using MCS.Framework.Localization
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<MCS.UI.Areas.User.Models.Search.InquirySearchResultVM>
+
+    @{
+        ViewBag.Title = DbRes.TResource("User.Search.Inquiry");
+        Layout = "~/Areas/User/Views/Shared/_SearchLayout.cshtml";
+    }
+
+
+    <div class="page-title">
+        <div class="content_container content_container--header extra-padding mt-5">
+            <div class="row">
+                <div class="col-md-12">
+                    <h3 class="title2"> @DbRes.TResource("User.Search.Inquiry")</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-content-wrap">
+        <div class="">
+
+            <div class="panel panel-default panel-results">
+                <div class="content_container content_container--header extra-padding">
+                    @*<h3 class="title2">@DbRes.TResource("User.Search.SearchResult")</h3>*@
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div id="dvGridContener">
+                            @if (ViewData["TagsData"] != null)
+                            {
+                            <div class="content_container content_container--header extra-padding">
+                                @*<h4 class="title2">@DbRes.TResource("User.Search.NoSearchResult")</h4>*@
+                                <h4 class="title2">لا يوجد معاملات توافق مدخلات البحث</h4>
+                            </div>
+                            }
+                            else
+                            {
+                              Html.RenderPartial("~/Areas/User/Views/Search/_InquirySearchPartial.cshtml", Model);
+                            }
+
+                        </div>
+                    </div>
+                </div>
+                <div id="dvLoadingIcon" class="col-md-12" style="display:none">
+                    <img style="padding-right:50%;padding-top:50px" src="~/Content/User/lib/images/ajax-loader.gif" alt="wait" />
+                </div>
+                <div class="panel-footer">
+                    <div class="row">
+                        <div class="col-md-12">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+   

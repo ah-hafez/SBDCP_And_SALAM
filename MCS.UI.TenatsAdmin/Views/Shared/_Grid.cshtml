@@ -1,0 +1,124 @@
+﻿@using MCS.Framework.Localization
+@model MCS.Framework.Controls.Mvc.IGrid
+@using MCS.Framework.Controls.Mvc
+
+@if (Model == null) { return; }
+@if (Model.RenderOptions.RenderRowsOnly)
+{
+    @RenderGridBody();
+}
+else
+{
+    @*<div class="table-responsive">*@
+    <div class="grid-mvc" data-lang="@Model.Language" data-gridname="@Model.RenderOptions.GridName" data-selectable="@Model.RenderOptions.Selectable.ToString().ToLower()" data-multiplefilters="@Model.RenderOptions.AllowMultipleFilters.ToString().ToLower()">
+        <div class="grid-wrap">
+            @if (Model.ItemsCount > 0 && Model.RenderOptions.RenderDeleteButton)
+            {
+                <input type="button" id="btnGrdDlt" class="btn btn-link pull-right" disabled="disabled" value="@DbRes.TResource("Grid.Delete")" onclick="return DeleteItems(@Model.RenderOptions.GridName,'@Model.RenderOptions.DeleteActionUrl',@Model.RenderOptions.ColumnIndex,'@Model.RenderOptions.GridName','@Model.RenderOptions.FormId','@Model.RenderOptions.DivDataUpdate','@Model.RenderOptions.onAjaxSuccess','@Model.RenderOptions.ValidFunctionCall','@DbRes.TResource("Grid.DeleteMassage")');" />
+            }
+            <div class="table_n">
+                <table id="@Model.RenderOptions.GridName" class="tbl-responsive table table-striped grid-table">
+                    @* Draw grid header *@
+                    <thead>
+                        @RenderGridHeader()
+                    </thead>
+                    <tbody>
+                        @RenderGridBody()
+                    </tbody>
+                </table>
+            </div>
+            @RenderGridPager()
+        </div>
+    </div>
+    @RenderGridScript()
+    @*</div>*@
+}
+@helper RenderGridBody()
+{
+    if (!Model.ItemsToDisplay.Any())
+    {
+
+        <tr class="grid-empty-text">
+            <td colspan="@Model.Columns.Count()">
+                @DbRes.TResource("Grid.EmptyText")
+            </td>
+        </tr>
+    }
+    else
+    {
+        foreach (object item in Model.ItemsToDisplay)
+        {
+            <tr class="grid-row @Model.GetRowCssClasses(item)">
+                @foreach (IGridColumn column in Model.Columns)
+                {
+                    @column.CellRenderer.Render(column, column.GetCell(item))
+                }
+            </tr>
+        }
+    }
+}
+@helper RenderGridHeader()
+{
+    <tr>
+        @foreach (IGridColumn column in Model.Columns)
+        {
+            @column.HeaderRenderer.Render(column)
+        }
+    </tr>
+}
+@helper RenderGridPager()
+{
+    if (Model.EnablePaging && Model.Pager != null)
+    {
+        <div class="grid-footer">
+            @Html.Partial(Model.Pager.TemplateName, Model.Pager)
+        </div>
+    }
+}
+
+@helper RenderGridScript()
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var gridName = '@Model.RenderOptions.GridName';
+            jQuery.globalEval("pageGrids." + gridName + ".ajaxify({getPagedData: '@Model.RenderOptions.UpdateActionUrl', getData: '@Model.RenderOptions.UpdateActionUrl'})");
+            jQuery.globalEval("pageGrids." + gridName + ".addFilterWidget(new DropdownlistFilterWidget())");
+            jQuery.globalEval("pageGrids." + gridName + ".addFilterWidget(new CustomTextFilterWidget())");
+            jQuery.globalEval("pageGrids." + gridName + ".initFilters()");
+            jQuery.globalEval("pageGrids." + '@Model.RenderOptions.GridName' + ".lang= GridMvc.lang." + '@SessionInfo.CultureShortName');
+
+        });
+
+
+        $(document).on("change", "#" + '@Model.RenderOptions.GridName' + ' #spanCheckBox :checkbox', function () {
+            var div = $(this).parents('div.grid-mvc');
+
+            if ($(this).is(':checked')) {
+                $(div).find('#btnGrdDlt').removeAttr('disabled');
+
+            } else {
+
+                if (!$(this).is(':checked')) {
+                    $("#" + '@Model.RenderOptions.GridName').find("#chkall").prop('checked', false);
+                    $(div).find('#btnGrdDlt').attr("disabled", true);
+                }
+
+            }
+        });
+        $(document).on('change', "#" + '@Model.RenderOptions.GridName' + ' #chkall', function () {
+
+            var checkboxes = $(this).closest("#" + '@Model.RenderOptions.GridName').find('#spanCheckBox :checkbox');
+
+            var div = $(this).parents('div.grid-mvc');
+            if ($(this).is(':checked')) {
+                checkboxes.prop('checked', true);
+                $(div).find('#btnGrdDlt').removeAttr('disabled');
+
+            } else {
+                $(div).find('#btnGrdDlt').attr("disabled", true);
+                checkboxes.prop('checked', false);
+            }
+        });
+
+    </script>
+}

@@ -1,0 +1,364 @@
+﻿@using MCS.Framework.Localization;
+@using MCS.Common
+@using MCS.UI.Areas.Admin.Models.Actions;
+@model MoveTransactionVM
+@{
+    ViewBag.Title = DbRes.TResource("Admin.Actions.MoveSingleTransaction");
+    Layout = "~/Areas/Admin/Views/Shared/_TransfersActionLayout.cshtml";
+    @*<style type="text/css">
+        .table-trans {
+            text-align: center !important;
+            background-color: #e7e9ea;
+        }
+    </style>*@
+}
+@*<div class="page-title">
+    <h2><span class="fa fa-arrow-circle-o-left"></span>@DbRes.TResource("Admin.Actions.MoveSingleTransaction")</h2>
+</div>*@
+<div class="mx-3 mx-md-5 header-container d-flex flex-row align-items-center">
+    <div class="d-flex flex-column flex-md-row align-items-md-center flex-grow-1">
+        <h3 class="site-color mb-4">@DbRes.TResource("Admin.Actions.MoveSingleTransaction")</h3>
+    </div>
+</div>
+
+@*<div class="page-content-wrap">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-horizontal form-row">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>*@
+<div class="white-container mx-3 mx-md-5">
+    @using (Html.BeginForm("", "", FormMethod.Post, new { @class = "", id = "frmMoveSingleTransaction" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenGroupFor(m => m.TransId, null, "moveSingleTransaction")
+        <div class="form-row">
+            <div class="form-group col-lg-6 col-md-8 col-sm-12 col-xs-12">
+                @Html.LabelFor(model => model.TransYear, new { @class = " control-label" })<span class="stark">*</span>
+                <div class="">
+                    @Html.AutoCompleteBuilder("ddlYear", "hdnYear", LookupCategory.Year, DateTimeUtility.GetHijriYear(DateTime.Now).ToString(), true, "form-control", null, null, false)
+                    @Html.HiddenGroupFor(model => model.TransYear, new { @Value = "", id = "hdnYear" }, "moveSingleTransaction")
+                </div>
+                <div>
+                    <i id="TransYearGlyphicon" style="color:red" class="glyphicon glyphicon-exclamation-sign hide"></i>
+                    <span id="TransYearMessage" style="color:red"></span>
+                </div>
+            </div>
+            <div class="form-group col-lg-6 col-md-8 col-sm-12 col-xs-12">
+                @Html.LabelFor(m => m.TransNumber)<span class="stark">*</span>
+                <div class="">
+                    @Html.TextBoxFor(m => m.TransNumber, new { @class = "form-control" })
+                </div>
+                <div>
+                    <i id="TransNumberGlyphicon" style="color:red" class="glyphicon glyphicon-exclamation-sign hide"></i>
+                    <span id="TransNumberMessage" style="color:red"></span>
+                </div>
+            </div>
+            <div class="form-group col-lg-6 col-md-8 col-sm-12 col-xs-12">
+                @Html.LabelFor(model => model.TransactionTypeId, new { @class = " control-label" })<span class="stark">*</span>
+                <div class="">
+                    @Html.AutoCompleteBuilder("ddlTransactionType", "hdnTransactionTypeId", ViewData["TransactionCategory"].ToString(), null, true, "form-control", "", "", "", false)
+                    @Html.HiddenGroupFor(model => model.TransactionTypeId, new { @Value = "", id = "hdnTransactionTypeId" }, "moveSingleTransaction")
+                </div>
+                <div>
+                    <i id="TransactionTypeGlyphicon" style="color:red" class="glyphicon glyphicon-exclamation-sign hide"></i>
+                    <span id="TransactionTypeMessage" style="color:red"></span>
+                </div>
+            </div>
+            <div class="form-group col-lg-6 col-md-8 col-sm-12 col-xs-12">
+                <div>
+                    <a href="javascript:;" id="btnCheckTransaction" class="btn btn-site">@DbRes.TResource("Admin.MoveTransaction.Btn.GetTransaction")</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-row" style="padding-top:1%;padding-bottom:1%;display:none;" id="tblTransactionDetails">
+            <div class="">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th class="table-trans">@DbRes.TResource("Admin.Actions.MoveTransaction.CurrentOrgUnit")</th>
+                                <th class="table-trans">@DbRes.TResource("Admin.Actions.MoveTransaction.Status")</th>
+                                <th class="table-trans">@DbRes.TResource("Admin.Actions.MoveTransaction.Subject")</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td id="CurrentOrgUnit" class="table-trans"></td>
+                                <td id="Status" class="table-trans"></td>
+                                <td id="Subject" class="table-trans"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <hr class="mb-4">
+        <div class="form-row">
+            <div class="form-group col-lg-6 col-md-8 col-sm-12 col-xs-12">
+                <div id="dvDepartmentsTree02">
+                    <fieldset class="field-set" id="dvEntityToDepartmentsTree">
+                        @Html.DepartmentsTree(ViewData["orgUnitDataInfo"] as TreeViewModel, model => model.EntityToId, TreeMode.Single, "treeDirectedToOrgUnit02", true, "GetDirectedToUsersByOrgUnitId02", "moveSingleTransaction", "dvDepartmentsTree02")
+                    </fieldset>
+                    @*<label>@DbRes.TResource("Admin.Actions.MoveUser.ToEntity")<span class="stark">*</span></label>
+        @Html.EditorFor(model => model.EntityToId, "OrgHierarchyCaller", additionalViewData: new { treeId = "treeDirectedToOrgUnit02", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Common"), GetNodeInfoByIdActionURL = @Url.Action("GetInternalPartyInfoById", "Common"), GetNodeInfoByNumActionURL = @Url.Action("GetInternalPartyInfoByNumber", "Common"), onClickfunction = "GetDirectedToUsersByOrgUnitId02", ValidationGroup = "moveSingleTransaction", ShowAddPartyButton = false })*@
+                    @Html.HiddenGroupFor(model => model.EntityToId, null, "moveSingleTransaction")
+                </div>
+                <div>
+                    <i id="EntityToGlyphicon" style="color:red" class="glyphicon glyphicon-exclamation-sign hide"></i>
+                    <span id="EntityToMessage" style="color:red"></span>
+                </div>
+            </div>
+            <div class="form-group col-lg-6 col-md-8 col-sm-12 col-xs-12">
+                <fieldset>
+                    <div class="">
+                        @Html.LabelFor(model => model.DirectedToId, new { @class = "control-label" })<span class="stark">*</span>
+                        <div>
+                            @Html.AutoCompleteBuilder("ddlDirectedToId", "hdnDirectedToId", ViewData["OrgUnitsUsersData"] != null ? ViewData["OrgUnitsUsersData"].ToString() : null, Model != null ? Model.DirectedToId.ToString() : null, true, "form-control")
+                            @Html.HiddenGroupFor(model => model.DirectedToId, new { @Value = "", id = "hdnDirectedToId" }, "moveSingleTransaction")
+                        </div>
+                        <div>
+                            <i id="DirectedToGlyphicon" style="color:red" class="glyphicon glyphicon-exclamation-sign hide"></i>
+                            <span id="DirectedToMessage" style="color:red"></span>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="mx-3 mx-md-5 mb-4 d-flex">
+    <div class="ml-auto">
+        @Html.ActionButton(DbRes.TResource("Admin.MoveTransaction.Save"),Url.Action("MoveSingleTransactionPost", "Actions"),"", null,"", "onMoveSingleTransactionSuccess", "","Post",
+                                     "moveSingleTransaction","btnMoveTrans", "frmMoveSingleTransaction", "btn btn-lg btn-st3 mx-1")
+        @Html.ResetButton("ResetForm()","","btn btn-lg btn-st3 mx-1")
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    function ResetForm() {
+        ClearInputs('frmMoveSingleTransaction');
+        $('#tblTransactionDetails').css('display', 'none');
+    }
+
+    function onMoveSingleTransactionSuccess(data) {
+        var errors = [];
+        if (data.errors.length > 0) {
+            for (var counter = 0; counter < data.errors.length; counter++) {
+                switch (data.errors[counter].Key) {
+                    case "TransId":
+                        errors.unshift('<li>' + '@DbRes.TValidation("Admin.MoveSingleTransaction.TransId")' + '</li>');
+                        break;
+                     @*case "TransNumber":
+                        errors.unshift('<li>'+'@DbRes.TValidation("Admin.MoveTransaction.TransactionNumber.Validation")'+'</li>');
+                        break;*@
+                    case "EntityToId":
+                        errors.unshift('<li>' + '@DbRes.TResource("Admin.MoveTransaction.to.Required")' + '</li>');
+                        break;
+                    case "DirectedToId":
+                        errors.unshift('<li>' + '@DbRes.TResource("Admin.MoveTransaction.DirectedToId.Required")' + '</li>');
+                        break;
+                }
+            }
+            var listOfErrors = '<ul style="list-style:none;">';
+            for (var counter = 0; counter < errors.length; counter++) {
+                listOfErrors += errors[counter];
+            }
+            listOfErrors += '</ul>';
+            ShowErrorMessage(listOfErrors);
+        }
+
+        else {
+            if (data.MessageType != 0) {
+                ShowErrorMessage('@DbRes.TResource("Admin.MoveTransaction.CantMove")');
+            }
+            else {
+                ShowSuccesMessage('@DbRes.TResource("Admin.MoveSingleTransaction.Success")', redirect());
+
+            }
+        }
+    }
+    function redirect() {
+        setTimeout(function () {
+            window.location.href = '@Url.Action("MoveSingleTransaction", "Actions",new { area="Admin"})';
+        }, 3000);
+    }
+    function GetDirectedToUsersByOrgUnitId02() {
+        var EntityToId = $('#EntityToId').val();
+       // var EntityToId = $('#EntityToId').val();
+        var token = $('#frmMoveSingleTransaction').find("input[name='__RequestVerificationToken']").val();
+        if (EntityToId != "") {
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("GetUsersByOrgUnitId","Actions")',
+                data: { id: EntityToId, __RequestVerificationToken: token },
+                success: function (data) {
+                    $("#ddlDirectedToId").val("");
+                    $("#hdnDirectedToId").val("");
+                    AutoCompleteChangeList("ddlDirectedToId", data);
+                    $("#ddlDirectedToId").prop('disabled', false);
+                },
+                error: function (jqXHR) {
+                    console.log(jqXHR.responseText);
+                }
+            });
+            return false;
+        }
+        else {
+            $("#ddlDirectedToId").prop('disabled', true);
+            $("#ddlDirectedToId").val("");
+            $("#hdnDirectedToId").val("");
+            AutoCompleteChangeList("ddlDirectedToId", "[]");
+        }
+    }
+    function GetDirectedToUsersByOrgUnitId() {
+        var EntityFromId = $('#EntityFromId').val();
+        if (EntityFromId != "") {
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("GetUsersByOrgUnitId","Actions")',
+                data: { id: EntityFromId },
+                success: function (data) {
+                    $("#ddlDirectedFromId").val("");
+                    $("#hdnDirectedFromId").val("");
+                    AutoCompleteChangeList("ddlDirectedFromId", data);
+                    $("#ddlDirectedFromId").prop('disabled', false);
+                },
+                error: function (jqXHR) {
+                    console.log(jqXHR.responseText);
+                }
+            });
+            return false;
+        }
+        else {
+            $("#ddlDirectedFromId").prop('disabled', true);
+            $("#ddlDirectedFromId").val("");
+            $("#hdnDirectedFromId").val("");
+            AutoCompleteChangeList("ddlDirectedFromId", "[]");
+        }
+
+    }
+    document.getElementById('btnCheckTransaction').addEventListener('click', function () {
+
+        var ddlYear = $.trim($('#ddlYear').val());
+        var ddlTransactionType = $.trim($('#hdnTransactionTypeId').val());
+        var TransNumber = $.trim($('#TransNumber').val());
+        if (ddlYear == '' & TransNumber == '' & ddlTransactionType == "") {
+            $("#TransYearGlyphicon").removeClass("hide");
+            $("#TransYearGlyphicon").show();
+            $("#TransNumberGlyphicon").removeClass("hide");
+            $("#TransNumberGlyphicon").show();
+            $("#TransYearMessage").html('@Html.Raw(DbRes.TValidation("Admin.MoveTransaction.TransactionYear.Required"))');
+            $("#TransNumberMessage").html('@Html.Raw(DbRes.TValidation("User.Transaction.Open.InboundNumberRequired"))');
+            $("#TransactionTypeGlyphicon").removeClass("hide");
+            $("#TransactionTypeGlyphicon").show();
+            $("#TransactionTypeMessage").html('@Html.Raw(DbRes.TValidation("User.Transaction.Link.TransactionTypeRequired"))');
+            return false;
+        }
+        if (ddlTransactionType == '' & TransNumber == '') {
+            $("#TransYearGlyphicon").hide();
+            $("#TransYearMessage").html('');
+            $("#TransactionTypeGlyphicon").removeClass("hide");
+            $("#TransactionTypeGlyphicon").show();
+            $("#TransactionTypeMessage").html('@Html.Raw(DbRes.TValidation("User.Transaction.Link.TransactionTypeRequired"))');
+            $("#TransNumberGlyphicon").removeClass("hide");
+            $("#TransNumberGlyphicon").show();
+            $("#TransNumberMessage").html('@Html.Raw(DbRes.TValidation("User.Transaction.Open.InboundNumberRequired"))');
+            return false;
+        }
+        if (ddlYear == '') {
+            $("#TransNumberGlyphicon").hide();
+            $("#TransNumberMessage").html('');
+            $("#TransactionTypeGlyphicon").hide();
+            $("#TransactionTypeMessage").html('');
+            $("#TransYearGlyphicon").removeClass("hide");
+            $("#TransYearGlyphicon").show();
+            $("#TransYearMessage").html('@Html.Raw(DbRes.TValidation("Admin.MoveTransaction.TransactionYear.Required"))');
+            @*ShowErrorMessage('@DbRes.TValidation("Admin.MoveTransaction.TransactionYear.Required")');*@
+            return false;
+        }
+        if (ddlTransactionType == '') {
+            $("#TransNumberGlyphicon").hide();
+            $("#TransNumberMessage").html('');
+            $("#TransYearGlyphicon").hide();
+            $("#TransYearMessage").html('');
+            $("#TransactionTypeGlyphicon").removeClass("hide");
+            $("#TransactionTypeGlyphicon").show();
+            $("#TransactionTypeMessage").html('@Html.Raw(DbRes.TValidation("User.Transaction.Link.TransactionTypeRequired"))');
+            return false;
+        }
+        if (TransNumber == '') {
+            $("#TransactionTypeGlyphicon").hide();
+            $("#TransactionTypeMessage").html('');
+            $("#TransYearGlyphicon").hide();
+            $("#TransYearMessage").html('');
+            $("#TransNumberGlyphicon").removeClass("hide");
+            $("#TransNumberGlyphicon").show();
+            $("#TransNumberMessage").html('@Html.Raw(DbRes.TValidation("User.Transaction.Open.InboundNumberRequired"))');
+            @*ShowErrorMessage('@DbRes.TValidation("User.Transaction.Open.InboundNumberRequired")');*@
+            return false;
+        }
+        else if (!(/^\d+$/.test(TransNumber))) {
+            $("#TransNumberGlyphicon").removeClass("hide");
+            $("#TransNumberGlyphicon").show();
+            $("#TransNumberMessage").html('@Html.Raw(DbRes.TValidation("Admin.MoveTransaction.TransactionNumber.MustNumber.JavascriptValidation"))');
+            @*ShowErrorMessage('@DbRes.TValidation("Admin.MoveTransaction.TransactionNumber.MustNumber.JavascriptValidation")');*@
+            return false;
+        }
+        else {
+            $("#TransNumberGlyphicon").hide();
+            $("#TransNumberMessage").html('');
+            $("#TransYearGlyphicon").hide();
+            $("#TransYearMessage").html('');
+            $("#TransactionTypeGlyphicon").hide();
+            $("#TransactionTypeMessage").html('');
+            var token = $('#frmMoveSingleTransaction').find("input[name='__RequestVerificationToken']").val();
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("CheckIfTransActionExist", "Actions")',
+                data: { year: ddlYear, transNum: TransNumber, transactionType: ddlTransactionType, __RequestVerificationToken: token},
+                success: function (response) {
+                    if (response.result) {
+                        $('#TransId').val(response.transactionBasicInfo.Id);
+                        $('#tblTransactionDetails').css('display','block');
+                        $('#CurrentOrgUnit').html(response.transactionBasicInfo.CurrentOrgUnit);
+                        $('#Status').html(response.transactionBasicInfo.StatusName);
+                        $('#Subject').html(response.transactionBasicInfo.Subject);
+                    }
+                    else {
+                        $('#tblTransactionDetails').css('display', 'none');
+                        ShowErrorMessage('@DbRes.TResource("User.Transaction.Open.TransactionNotFound")');
+                    }
+                },
+                error: function (jqXHR) {
+                    console.log(jqXHR.responseText);
+                }
+        });}
+    });
+    document.getElementById('TransNumber').addEventListener('change', function () {
+        if (/^\d+$/.test($('#TransNumber').val())) {
+            //its valid input , do nothing ....!
+        } else {
+             $("#TransNumberGlyphicon").removeClass("hide");
+            $("#TransNumberGlyphicon").show();
+            $("#TransNumberMessage").html('@Html.Raw(DbRes.TValidation("Admin.MoveTransaction.TransactionNumber.MustNumber.JavascriptValidation"))');
+            @*ShowErrorMessage('@DbRes.TValidation("Admin.MoveTransaction.TransactionNumber.MustNumber.JavascriptValidation")');*@
+            return false;
+        }
+    });
+</script>
+<style>
+    .RedBorder {
+        border: 1px solid #fe0000 !important
+    }
+</style>

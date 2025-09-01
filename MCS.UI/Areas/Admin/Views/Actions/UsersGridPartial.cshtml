@@ -1,0 +1,78 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models
+@using MCS.GridMvc.Helpers;
+@using MCS.GridMvc.Html;
+@using MCS.Common;
+
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<UserProfileVM>
+@{
+    ViewBag.Title = "UsersGridPartial";
+}
+
+@Html.Grid(Model).Named("Users").Columns(columns =>
+{
+    columns.Add().Encoded(false).Sanitized(false).Css("").RenderValueAs(model =>
+      MvcHtmlString.Create(
+      "<div><input type='checkbox' id='" + model.Id + "' class='chk' /></div>"
+      )).Titled(MvcHtmlString.Create(
+      "<div><input type='checkbox' class='' id='checkAll' /><span></span></div>"
+      ).ToString()).Css("col-table-checkbox");
+    columns.Add(model => model.LocalName, "UserName").Titled(DbRes.TResource("Admin.Actions.MoveUser.EmployeeName"));
+    columns.Add(model => model.RoleName, "Category").Titled(DbRes.TResource("Admin.Actions.MoveUser.Role"));
+
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.LocalName, new { id = "GridUserName_" + model.Id }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+
+}).WithPaging(GridHelper.PageSize)
+
+
+
+<script>
+    var UsersEventHandler = "@Url.Action("GetUsersGridByOrgUnitId", "Actions")";
+    function prepareUsersGrid() {
+        $(".grid-mvc").gridmvc();
+        pageGrids.Users.ajaxify({
+            getPagedData: UsersEventHandler,
+            requestType: "get",
+            getData: UsersEventHandler,
+            optionalData: { id: $("#SelectedOrgUnitId").val() }
+        });
+    }
+
+    $(document).ready(function () {
+        prepareUsersGrid();
+
+        $("#SelectedUsersCount").html(selectedUsers.length);
+
+        if (selectedUsers != []) {
+            selectedUsers.forEach(function (element) {
+                
+                $("#dvUsersGrid #" + element).prop("checked", true);
+            });
+        }
+    });
+
+
+    $("#dvUsersGrid input:checkbox[class=chk]").click(function () {
+        
+        if ($(this).is(":checked")) {
+            var htmlTag = "<div class='added_item mx-3 mb-3' id='userItem_" + $(this).attr("id") + "'>";
+            htmlTag += "<span class='added-class d-flex'>";
+            htmlTag += "<span>" + $("#GridUserName_" + $(this).attr("id")).val() + "</span>";
+            htmlTag += "<a class='color-burgundy ml-2' onclick='deleteUserItem(" + $(this).attr("id") + ")'><i class='fas fa-times-circle'></i></a>";
+            htmlTag += "</div></div>";
+            $("#selectedUsers").append(htmlTag);
+
+            selectedUsers.push($(this).attr("id"));
+            $("#SelectedUsersCount").html(selectedUsers.length);
+
+        } else {
+            
+            var index = selectedUsers.indexOf($(this).attr("id"));
+            if (index > -1) {
+                selectedUsers.splice(index, 1);
+            }
+            $("#SelectedUsersCount").html(selectedUsers.length);
+            $("#userItem_" + $(this).attr("id")).remove();
+        }
+    });
+</script>

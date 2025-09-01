@@ -1,0 +1,66 @@
+﻿@using MCS.UI.Areas.User.Models.Notifications
+@model List<NotificationVM>
+
+
+
+<li>
+    <a href="#" class="d-flex notification-row">
+        <i class="la la-bell bold2"></i>
+        <span class="bold2">@DbRes.TResource("Global.Notifications")</span>
+    </a>
+</li>
+@*<li role="separator" class="divider mb-0 mt-0"></li>*@
+@*Item notifications*@
+@if (Model != null && Model.Count > 0)
+{
+    foreach (var item in Model)
+    {
+        string ClassValue = item.IsRead ? string.Empty : "bgchange new-notification";
+        string markAsReadFunction = item.IsRead ? string.Empty : string.Format("onclick=MarkAsReadNotificationHeader({0})", item.Id);
+        string iconClass = string.Empty;
+        string valueIconDictionary;
+        bool hasValue = Constants.NotificationIcons.NotificationHeader.TryGetValue(((NotificationTemplateType)item.NotificationTemplateTypeId).ToString(), out valueIconDictionary);
+        if (hasValue)
+        {
+            iconClass = valueIconDictionary;
+        }
+        if (string.IsNullOrEmpty(item.Link))
+        {
+            <li>
+                <a id="UnRead_@(item.Id)" href="#" class="@(ClassValue) d-flex notification-row" @markAsReadFunction>
+                    <i class="@iconClass"></i>
+                    <div>
+                        <span p-0="">@item.Subject</span>
+                        <div class="pt-1 pr-3 pl-1 light-gray2 flex-column">
+                        </div>
+                    </div>
+                </a>
+            </li>@*<li role="separator" class="divider  mb-0 mt-0 p-0"></li>*@
+        }
+        else
+        {
+            string link = item.Link.Replace("{BaseUrl}", MCS.UI.UrlHelper.GetBaseUri().ToString());
+            <li>
+                <a id="UnRead_@(item.Id)" href="#" class="@(ClassValue) d-flex notification-row" @markAsReadFunction>
+                    <i class="@iconClass"></i>
+                    <div>
+                        <span p-0="">@item.Subject</span>
+                        <div class="pt-1 pr-3 pl-1 light-gray2 flex-column">
+                        </div>
+                    </div>
+                </a>
+            </li>@*<li role="separator" class="divider  mb-0 mt-0 p-0"></li>*@
+        }
+    }
+}
+else
+{
+    <li><a class="d-flex notification-row">@DbRes.TResource("Grid.EmptyText")</a></li>
+}
+<li>
+    <a id="ancViewAll" href="@Url.Action("AllNotification", "Home")" class="d-flex notification-row more">
+        <div class="w-100">@DbRes.TResource("User.Layout.ViewAll")</div>
+    </a>
+</li>
+
+

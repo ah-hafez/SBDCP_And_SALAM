@@ -1,0 +1,94 @@
+﻿@import '../Icomon/iconmoon2.css';
+
+.menu-vip {
+    line-height: 1.5rem;
+}
+
+.mv-list {
+    margin: 0px 5px 10px 5px;
+    display: block;
+    min-width: 120px;
+}
+
+    .mv-list a {
+        display: block;
+        background: #FFFFFF;
+        border: 1px solid #DDDDE5;
+        border-radius: 10px;
+        padding: 15px 20px;
+        min-width:170px;
+    }
+
+        .mv-list a .mv-label {
+            font-size: 12pt;
+            color: #2f3d5f;
+            white-space: nowrap;
+        }
+
+            .mv-list a .mv-label .number {
+                background: #0E8270;
+                border-radius: 5px;
+                padding: 4px 4px 4px 4px;
+                margin-right: 5px;
+                color: #FFFFFF;
+                font-size:11pt;
+                font-weight: normal;
+                white-space: nowrap;
+            }
+
+        .mv-list a .mv-icon {
+            font-size: 22pt;
+            margin-bottom: 7px;
+/*            background: #efefef;
+*/            border-radius: 50%;
+            min-width: 40px;
+            min-height: 40px;
+        }
+
+        .mv-list a:hover {
+            background: #DEE2E5;
+            border: 1px solid #FFFFFF;
+        }
+
+            .mv-list a:hover .mv-icon {
+                background: #CCD3D6;
+            }
+
+
+    .mv-list.active a {
+        background: #DEE2E5;
+        border: 1px solid #FFFFFF;
+    }
+
+        .mv-list.active a .mv-icon {
+            /*background: #CCD3D6;*/
+        }
+
+/* main.css */
+.NotRead .box {
+    background: #f7f7f7 !important;
+}
+
+/* Table */
+
+table > thead > tr {
+    color: #787B96 !important
+    /*    background-color: #003c8a !important;
+*/
+}
+
+td.td-border-left {
+    border-left: 1px solid #ddd;
+}
+
+td.td-border-right {
+    border-right: 1px solid #ddd;
+}
+
+.min {
+    min-width: 40px;
+    height: 20px;
+    text-align: center;
+    padding-top: 0px;
+    margin-right:-60px;
+}

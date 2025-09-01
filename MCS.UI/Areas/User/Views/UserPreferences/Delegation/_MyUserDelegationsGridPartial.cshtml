@@ -1,0 +1,45 @@
+﻿@using MCS.UI.Areas.User.Models.UserPreferences.UserDelegation;
+@model AjaxGrid<UserDelegationVM>
+
+@{
+    Layout = null;
+}
+
+@Html.Grid(Model).CollectionName("ApprovedDelegationListGrid").Named("grdApprovedDelegations").Columns(columns =>
+{
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Id, new { id = "Id_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Key, new { id = "Key_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.FromDate, new { id = "FromDate_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.ToDate, new { id = "ToDate_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.FromDateH, new { id = "FromDateH_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.ToDateH, new { id = "ToDateH_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.OrgUnitId, new { id = "OrgUnitId_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.OrgUnit, new { id = "OrgUnit_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.DirectedToId, new { id = "DirectedToId_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.DirectedTo, new { id = "DirectedTo_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Status, new { id = "Status_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.StatusId, new { id = "StatusId_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(model => model.DirectedFrom).Titled(DbRes.TResource("User.UserDelegation.FromEmployee"));
+    //columns.Add(model => model.OrgUnit).Titled(DbRes.TResource("User.UserDelegation.FromUnit"));
+    columns.Add(model => model.Status).Titled(DbRes.TResource("User.UserDelegation.Status"));
+    columns.Add(model => model.FromDateH).Titled(DbRes.TResource("User.UserDelegation.FromDate"));
+    columns.Add(model => model.ToDateH).Titled(DbRes.TResource("User.UserDelegation.ToDate"));
+    //columns.Add(model => model.FromDateH).Encoded(false).Sanitized(false).Titled(DbRes.TResource("User.UserDelegation.FromTo")).RenderValueAs(m => @<label> @m.FromDateH - @m.ToDateH</label>);
+
+}).WithPaging(GridHelper.PageSize)
+
+<script>
+    $(document).ready(function () {
+        userDelegationApproved();
+    })
+    function userDelegationApproved() {
+        $(".grid-mvc").gridmvc();
+        pageGrids.grdApprovedDelegations.ajaxify(
+            {
+                getPagedData: '@Html.Raw(Url.Action("UpdateGridDelegationsApproved", "UserPreferences"))',
+                getData: '@Html.Raw(Url.Action("UpdateGridDelegationsApproved", "UserPreferences"))',
+                requestType: "POST"
+            });
+    }
+</script>
+

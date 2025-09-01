@@ -1,0 +1,223 @@
+﻿@using MCS.DoconutMVC.Helpers
+
+
+@{
+    ViewBag.Title = "Annotations - Doconut Asp.Net MVC Document Viewer";
+    Layout = "~/Views/Shared/doconut/_Layout.cshtml";
+    bool printDocumentPermission = Session["PrintDocumentPermission"] != null && Convert.ToBoolean(Session["PrintDocumentPermission"].ToString());
+}
+
+<style>
+    .form-group label {
+        color: gray;
+        font-weight: bolder;
+        margin-top: .5rem;
+        margin-bottom: 0;
+    }
+</style>
+
+<style>
+    .toolbar {
+        margin-bottom: 5px;
+        color: inherit;
+        background-color: none;
+        padding-right: 15px;
+        padding-left: 15px;
+        padding: 5px;
+        border-radius: 6px;
+        text-align: center;
+    }
+
+
+        .toolbar nav.nav-toolbar-top, .toolbar nav.nav-toolbar-bottom {
+            padding: 3px;
+        }
+
+    #divDocViewer {
+        max-height: calc(526px - 8.7rem);
+    }
+
+    .previewBox {
+        border: none;
+    }
+</style>
+
+@section css {
+    @* CSS for the Viewer *@
+    @Html.Raw(ViewBag.ViewerCSS)
+
+    <!-- Dropzone (upload) -->
+    <link href="@Html.GetWebResourceUrl("MCS.DoconutMVC.Scripts.dropzone.basic.css")" rel="stylesheet" />
+    <link href="@Html.GetWebResourceUrl("MCS.DoconutMVC.Scripts.dropzone.dropzone.css")" rel="stylesheet" />
+
+    <!-- Bootstrap 4 -->
+    <link href="@Html.GetWebResourceUrl("MCS.DoconutMVC.Content.bootstrap.min.css")" rel="stylesheet" />
+    <link href="@Html.GetWebResourceUrl("MCS.DoconutMVC.Content.rtl.min.css")" rel="stylesheet" />
+    <link href="@Html.GetWebResourceUrl("MCS.DoconutMVC.Content.font-awesome.min.css")" rel="stylesheet" />
+
+
+    <link href="@Html.GetWebResourceUrl("MCS.DoconutMVC.Content.style.css")" rel="stylesheet" />
+    <link href="@Html.GetWebResourceUrl("MCS.DoconutMVC.Content.User.lib.fontawesome.css.all.css")" rel="stylesheet" />
+}
+
+<div class="text-center">
+    <div class="previewBox">
+        <div class="row">
+            @if (!Request.QueryString.AllKeys.Contains("hidecontrols"))
+            {
+                @Html.Partial("_Menu")
+            }
+            else if (!Request.QueryString.AllKeys.Contains("hideAllcontrols") && printDocumentPermission)
+            {
+                <div class="toolbar">
+                    <div class="btn-group">
+                        <button id="btnPrintDocument" type="button" class="btn btnEdit btn-default"   data-placement="bottom"
+                                title=@Html.GlobalResource("PrintDocumentToolTip") onclick="PrintDocument();" data-title="Stamp">
+                            <i class="fas fa-print"></i>
+                        </button>
+                        <button type="button" class="btn btnEdit btn-default"   data-placement="bottom"
+                                title=@Html.GlobalResource("DownloadDocumentToolTip") onclick="DownloadDocument('@Session["printToken"].ToString()');" data-title="Stamp">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="row">
+            <div class="col-xs-12 text-right wrapper">
+                <div id="divDocViewer" class="viewer" style="min-height:1300px !important">
+                    <div id="div_@(ViewBag.ViewerID)"></div>
+                    <input type="hidden" id="_hdnToken" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- Page Content -->
+<!-- File upload modal -->
+@Html.Partial("_FileUpload")
+
+<!-- Annotation properties modal -->
+@Html.Partial("_AnnProperties")
+@if (!Request.QueryString.AllKeys.Contains("hidecontrols"))
+{
+    @Html.Partial("_ScanningControl")
+}
+<!-- Footer -->
+@Html.Partial("_Footer")
+
+
+@section scripts {
+    <!-- Viewer header scripts include-->
+    @Html.Raw(ViewBag.ViewerScripts)
+
+    <!-- Bootstrap 4 JS -->
+    @*<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>*@
+    <script type="text/javascript" src="@Html.GetWebResourceUrl("MCS.DoconutMVC.Scripts.bootstrap.min.js")"></script>
+
+    <!-- Touch support for annotations -->
+    @*<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>*@
+    <script type="text/javascript" src="@Html.GetWebResourceUrl("MCS.DoconutMVC.Scripts.jquery.ui.touch-punch.min.js")"></script>
+
+    <!-- Drop Zone JS (For upload) -->
+    <script type="text/javascript" src="@Html.GetWebResourceUrl("MCS.DoconutMVC.Scripts.dropzone.dropzone.js")"></script>
+
+
+    <script language="javascript" type="text/javascript">
+        Dropzone.autoDiscover = false; // required if using Dropzone
+
+       // Global variables
+
+        var annMode = false;        // the see if annotation mode is ON or not
+        var objctlDoc = null;       // Server object id is "ctlDoc"
+        var loader = $(".loader");
+        var isMobile = false;
+        var resizing = false;
+        var docViewerDiv = $("#divDocViewer");
+        var w = 0;
+        var h = 0;
+        var globalToken = "";  // token variable, for current document
+
+
+        loader.hide();
+
+        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            isMobile = true;
+        }
+
+        $(window).on("load", function () {
+
+            /* Init code for viewer */
+            @Html.Raw(ViewBag.ViewerInit)
+
+            globalToken = '@ViewBag.globalToken';
+            showwatermark = '@Request.QueryString["showwatermark"]';
+            $('#_hdnToken').val(globalToken);
+            Resize();
+        });
+
+        $(window).resize(function () {
+            Resize();
+        });
+
+        if (isMobile) {
+            $(window).on("orientationchange", function (event) { Resize(event.orientation); });
+        }
+        else {
+            $(window).on("resize", function () { Resize(); });
+        }
+
+    </script>
+
+    @{
+        string host = HttpContext.Current.Request.Url.Host;
+        string applicationPath = HttpContext.Current.Request.ApplicationPath + "/";
+        string barcodeUri = string.Empty;
+        if (Session["BarcodeImgByte"] != null)
+        {
+            barcodeUri = Convert.ToBase64String(Session["BarcodeImgByte"] as byte[]);
+        }
+        string sSignature = string.Empty;
+        if (Session["SignatureImage"] != null)
+        {
+            sSignature = Convert.ToBase64String(Session["SignatureImage"] as byte[]);
+        }
+        string sStamp = string.Empty;
+        if (Session["StampImage"] != null)
+        {
+            sStamp = Convert.ToBase64String(Session["StampImage"] as byte[]);
+        }
+        string sMessage = string.Empty;
+        if (Session["MessageSignatureImage"] != null)
+        {
+            sMessage = Convert.ToBase64String(Session["MessageSignatureImage"] as byte[]);
+        }
+
+    }
+
+<script>
+        var host = '@host'
+        var applicationPath = '@applicationPath';
+        var rootPath = '@host' + '@applicationPath';
+        var GetImagePathUrl = '@Url.Action("GetImagePath", "DocoNut")';
+        var DeleteImageFileUrl = '@Url.Action("DeleteImageFile", "DocoNut")';
+        var signatureUri = '@sSignature';
+        var stampUri = '@sStamp';
+        var messageUri = '@sMessage';
+        var barcodeUri = '@barcodeUri';
+        var imageName = "@Session["UserName" as string]";
+        var urlScheme = "@Session["UrlSchema" as string]";
+        var barcodeToken = '';
+        var barcodeTokenPath = "GetBarcodeToken.ashx";
+        var barcodePath = "GetBarcode.ashx";
+        var signToken = '';
+        var signTokenPath = "AuthSign.ashx";
+        var signPath = "getSign.ashx";
+</script>
+    <!-- All viewer related scripts -->
+    <script src="@Html.GetWebResourceUrl("MCS.DoconutMVC.Scripts.viewer.js")"></script>
+
+    <!-- All annnotation related scripts -->
+    <script src="@Html.GetWebResourceUrl("MCS.DoconutMVC.Scripts.annotations.js")"></script>
+}

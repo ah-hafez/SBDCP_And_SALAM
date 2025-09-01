@@ -1,0 +1,95 @@
+﻿@using MCS.Framework.Localization
+@*@using MCS.Framework.Controls.Mvc*@
+@using MCS.UI.Areas.User.Models.Search
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<OutboundDraftSearchResultVM>
+
+<div style="margin-bottom:50px;">
+
+    @Html.Grid(Model, "_CardGrid").Named("OutboundDraftSearch").CollectionName("OutboundDraftSearchResult").Columns(columns =>
+    {
+        columns.Add(true).Titled("").RenderValueAs(mvcgridcolumn => Html.Partial("ListItems/_OutboundDraftSearch_Item", mvcgridcolumn))
+        .Sanitized(false).Encoded(false);
+    }).WithPaging(UIHelper.PageSize)
+</div>
+
+
+
+
+<script>
+    var myOutboundDraftSearchGridEventHandler = "@Url.Action("SearchPaging", "Search")";
+    function prepareOutboundDraftSearchGrid() {
+        pageGrids.OutboundDraftSearch = undefined;
+        var filterData = $("#frmSearch").serializeArray();
+
+        if (!pageGrids.OutboundDraftSearch) {
+            $("div[data-gridname='OutboundDraftSearch']").gridmvc();
+        }
+        //if (!pageGrids.OutboundDraftSearch) {
+        //    $(".grid-mvc").gridmvc();
+        //
+        pageGrids.OutboundDraftSearch.ajaxify({ getPagedData: myOutboundDraftSearchGridEventHandler, requestType: "POST", getData: myOutboundDraftSearchGridEventHandler, optionalData: filterData });
+
+    }
+
+
+
+
+
+    $(document).ready(function () {
+        prepareOutboundDraftSearchGrid();
+    });
+
+
+    function ShowPrintDialog(id) {
+        var params = { transactionId: id };
+
+        ShowDialogAjaxPrintingBarcodes('@Url.Action("PrinttingBarcodes","Shared")' + "?" + $.param(params), {}, 'OpenPrintDialogSuccess', 'dialogbox col-md-12 ');
+    }
+    function OpenPrintDialogSuccess(data, $obj) {
+        if (data.MessageType != 2) {
+            $obj.setContent(data.Html);
+        }
+        else {
+            __dialog.close();
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function ShowVisitTickect(id) {
+        var actionUrl = '@Url.Action("PrintTicket", "Shared")' + "?transactionId=" + id;
+
+        PrintButton(actionUrl);
+
+    }
+
+
+
+    function Open(Id) {
+        var url = "";
+        var isFromDraft = $('#EncryptedTrue').val();
+        var isHubEditable = $('#EncryptedFalse').val();
+        url = '@Url.Action("Edit", "OutboundExternal")' + "?id=-1&" + 'IsFromDraft=' + isFromDraft + '&isHubEditable=' + isHubEditable;
+        url = url.replace("-1", Id);
+        window.location.href = url;
+    }
+
+    function Reactivate(Id) {
+        var data = { transactionId: Id };
+        $.ajax({
+            url: '@Url.Action("Reactivate","Search")',
+            type: 'POST',
+            data: data,
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    ShowSuccesMessage(data.MessageText);
+                    window.location.href = '@Url.Action("Index", "Search")';
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            },
+            error: function (a) {
+            }
+        });
+    }
+</script>

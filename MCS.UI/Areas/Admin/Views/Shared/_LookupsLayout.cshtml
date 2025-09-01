@@ -1,0 +1,187 @@
+﻿
+@using MCS.Framework.Localization
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_BaseLayout.cshtml";
+    var controllerName = HttpContext.Current.Request.RequestContext.RouteData.Values["controller"].ToString();
+    var actionName = ViewContext.RouteData.GetRequiredString("action").ToString();
+}
+
+@section Menu
+{
+    <div class="align-self-start main_sidebar">
+        @*<div class="my-3 mx-3 d-flex logo_div">
+                <a class="main_logo" href="#">
+                    <img src="../../Content/Admin/lib/images/logo.png" title="" alt="" class="logo">
+                    <img src="../../Content/Admin/lib/images/GAMI_Logo_Color-01.svg" title="" class="GAMI_Logo_Color-01.svg">
+                </a>
+            </div>*@
+        <div class="d-none d-md-block mr-auto">
+                <a class="nav-link nav-menu-main menu-toggle hidden-xs is-active" href="#"><img src="../../Content/Admin/lib/images/menu/menu.svg" style="width:22px"></a>
+            </div>
+        <div class=" main-menu menu-fixed menu-light menu-accordion menu-icon-left" data-scroll-to-active="true" style="direction:ltr;">
+            <div class="main-menu-content">
+                <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
+                    <li class="@(controllerName == "Lookups" && actionName == "AttachmentType" ? "nav-item active" : "nav-item")">
+                        <a href="@Url.Action("AttachmentType", "Lookups")">
+                            <i>
+                                <img src="../../Content/Admin/Lib/images/menu/attachment.svg">
+                            </i>
+                            <span class="menu-title">@DbRes.TResource("Admin.Lookups.AttachmentType.Title")</span>
+                        </a>
+                    </li>
+                    @*<li class="@(controllerName == "Lookups" && actionName == "GetAttachmentExtentions" ? "nav-item active" : "nav-item")">
+            <a href="@Url.Action("GetAttachmentExtentions", "Lookups")">
+                <i>
+                    <img src="../../Content/Admin/Lib/images/menu/attachment-speech.svg">
+                </i>
+                <span class="menu-title">@DbRes.TResource("Admin.Lookups.AttachmentEctension.Title")</span>
+            </a>
+        </li>*@
+                    <li class="@(controllerName == "Lookups" && actionName == "Priority" ? "nav-item active" : "nav-item")">
+                        <a href="@Url.Action("Priority", "Lookups")">
+                            <i>
+                                <img src="../../Content/Admin/lib/images/menu/numbered-information.svg">
+                            </i>
+                            <span class="menu-title">@DbRes.TResource("Admin.Lookups.Priority.Title")</span>
+                        </a>
+                    </li>
+                    <li class="@(controllerName == "Lookups" && actionName == "ConfidentialityLevel" ? "nav-item active" : "nav-item")">
+                        <a href="@Url.Action("ConfidentialityLevel", "Lookups")">
+                            <i>
+                                <img src="../../Content/Admin/lib/images/menu/lock.svg">
+                            </i>
+                            <span class="menu-title">@DbRes.TResource("Admin.Lookups.ConfidentialityLevel.Title")</span>
+                        </a>
+                    </li>
+                    <li class="@(controllerName == "Lookups" && actionName == "TransactionType" ? "nav-item active" : "nav-item")">
+                        <a href="@Url.Action("TransactionType", "Lookups")">
+                            <i>
+                                <img src="../../Content/Admin/lib/images/menu/type-of-speech.svg">
+                            </i>
+                            <span class="menu-title">@DbRes.TResource("Admin.Lookups.TransactionType.Title")</span>
+                        </a>
+                    </li>
+                    <li class="@(controllerName == "Lookups" && actionName == "LetterType" ? "nav-item active" : "nav-item")">
+                        <a href="@Url.Action("LetterType", "Lookups")">
+                            <i>
+                                <img src="../../Content/Admin/lib/images/menu/classification.svg">
+                            </i>
+                            <span class="menu-title">@DbRes.TResource("Admin.LetterType.LetterType")</span>
+                        </a>
+                    </li>
+                    <li class="@(controllerName == "Lookups" && actionName == "SpecificLevel" ? "nav-item active" : "nav-item")">
+                        <a href="@Url.Action("SpecificLevel", "Lookups")">
+                            <i>
+                                <img src="../../Content/Admin/lib/images/menu/classification.svg">
+                            </i>
+                            <span class="menu-title">@DbRes.TResource("Admin.Lookups.PrivecyLevel.Title")</span>
+                        </a>
+                    </li>
+                    <li class="@(controllerName == "Lookups" && actionName == "Link" ? "nav-item active" : "nav-item")">
+                        <a href="@Url.Action("Link", "Lookups")">
+                            <i>
+                                <img src="../../Content/Admin/lib/images/menu/types-of-binding.svg">
+                            </i>
+                            <span class="menu-title">@DbRes.TResource("Admin.Layout.TransactionLinkLookup")</span>
+                        </a>
+                    </li>
+                    <li class="@(controllerName == "Lookups" && actionName == "Actions" ? "nav-item active" : "nav-item")">
+                        <a href="@Url.Action("Actions", "Actions")">
+                            <i>
+                                <img src="../../Content/Admin/lib/images/menu/settings-gears.svg">
+                            </i>
+                            <span class="menu-title">@DbRes.TResource("Admin.Actions.Actions")</span>
+                        </a>
+                    </li>
+                    <li class="@(controllerName == "Lookups" && actionName == "Form" ? "nav-item active" : "nav-item")">
+                        <a href="@Url.Action("Form", "Lookups")">
+                            <i>
+                                <img src="../../Content/Admin/lib/images/menu/document.svg">
+                            </i>
+                            <span class="menu-title">@DbRes.TResource("Admin.Layout.FormsLookup")</span>
+                        </a>
+                    </li>
+                    <li class="@(controllerName == "Lookups" && actionName == "GeneralSettings" ? "nav-item active" : "nav-item")">
+
+                        <a href="@Url.Action("GetCities", "Lookups")">
+                            <i>
+                                <img src="../../Content/Admin/lib/images/menu/third-party.svg">
+                            </i>
+                            <span class="menu-title">@DbRes.TResource("Admin.Lookups.City.Title")</span>
+                        </a>
+                    </li>
+                    <li class="@(controllerName == "Lookups" && actionName == "Correspondent" ? "nav-item active" : "nav-item")">
+                        <a href="@Url.Action("Correspondent", "Lookups")">
+                            <i>
+                                <img src="../../Content/Admin/Lib/images/menu/correspondents.svg">
+                            </i>
+                            <span class="menu-title">@DbRes.TResource("Admin.Lookups.Correspondent.Title")</span>
+                        </a>
+                    </li>
+                    @*<li class="@(controllerName == "Lookups" && actionName == "SubjectClassifications" ? "nav-item active" : "nav-item")">
+            <a href="@Url.Action("SubjectClassifications", "Lookups")">
+                <i>
+                    <img src="../../Content/Admin/Lib/images/menu/transfer-of-departments.svg">
+                </i>
+                <span class="menu-title">@DbRes.TResource("التصنيف الموضوعي")</span>
+            </a>
+        </li>*@
+                    <li class="@(controllerName == "Lookups" && actionName == "FollowUpPriorityType" ? "nav-item active" : "nav-item")">
+                        <a href="@Url.Action("FollowUpPriorityType", "Lookups")">
+                            <i>
+                                <img src="../../Content/Admin/Lib/images/menu/transfer-of-departments.svg">
+                            </i>
+                            <span class="menu-title">@DbRes.TResource("أولوية المتابعة")</span>
+                        </a>
+                    </li>
+                    <li class="@(controllerName == "Lookups" && actionName == "FollowUpMethod" ? "nav-item active" : "nav-item")">
+                        <a href="@Url.Action("FollowUpMethod", "Lookups")">
+                            <i>
+                                <img src="../../Content/Admin/Lib/images/menu/transfer-of-departments.svg">
+                            </i>
+                            <span class="menu-title">@DbRes.TResource("وسيلة المتابعة")</span>
+                        </a>
+                    </li>
+                    <li class="@(controllerName == "Lookups" && actionName == "FollowUpSource" ? "nav-item active" : "nav-item")">
+                        <a href="@Url.Action("FollowUpSource", "Lookups")">
+                            <i>
+                                <img src="../../Content/Admin/Lib/images/menu/transfer-of-departments.svg">
+                            </i>
+                            <span class="menu-title">@DbRes.TResource("مصدر المتابعة")</span>
+                        </a>
+                    </li>
+                    <li class="@(controllerName == "Lookups" && actionName == "FollowUpProccess." ? "nav-item active" : "nav-item")">
+                        <a href="@Url.Action("FollowUpProccess", "Lookups")">
+                            <i>
+                                <img src="../../Content/Admin/Lib/images/menu/transfer-of-departments.svg">
+                            </i>
+                            <span class="menu-title">@DbRes.TResource("أجراءات المتابعة")</span>
+                        </a>
+                    </li>
+                    <li class="@(controllerName == "Lookups" && actionName == "ConfidentialityAcknowledgments" ? "nav-item active" : "nav-item")">
+                        <a href="@Url.Action("ConfidentialityAcknowledgments", "Lookups")">
+                            <i>
+                                <img src="../../Content/Admin/Lib/images/menu/transfer-of-departments.svg">
+                            </i>
+                            <span class="menu-title">@DbRes.TResource("إقرارات السرية")</span>
+                        </a>
+                    </li>
+                    <li class="@(controllerName == "Lookups" && actionName == "SaveReason" ? "nav-item active" : "nav-item")">
+                        <a href="@Url.Action("SaveReason", "Lookups")">
+                            <i>
+                                <img src="../../Content/Admin/Lib/images/menu/transfer-of-departments.svg">
+                            </i>
+                            <span class="menu-title">@DbRes.TResource("سبب الحفظ")</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- END: Vertical Menu -->
+    </div>
+}
+@section Body
+{
+    @RenderBody()
+}

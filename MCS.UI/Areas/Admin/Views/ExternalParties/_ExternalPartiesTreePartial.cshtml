@@ -1,0 +1,52 @@
+﻿@using MCS.Framework.Localization
+@model MCS.Common.TreeViewModel
+
+<div class="panel panel-tree">
+    <div class="panel-body">
+        <div class="tree-control">
+            <div class="row">
+                <span class="control-add"><a onclick="AddUnit(1)" data-bs-toggle="tooltip" data-placement="top" title="@DbRes.TResource("Admin.ExternalParty.AddUnit")" href="#"></a></span>
+                <span class="control-add_in"><a onclick="AddUnit(0)" data-bs-toggle="tooltip" data-placement="top" title="@DbRes.TResource("Admin.ExternalParty.AddSubUnit")" href="#"></a></span>
+                <span class="control-remove"><a onclick="DeleteNode()" data-bs-toggle="tooltip" data-placement="top" title="@DbRes.TResource("Admin.ExternalParty.Delete")" href="#"></a></span>
+                @*<span class="control-close"><a data-bs-toggle="tooltip" data-placement="top" title="@DbRes.TResource("Admin.ExternalParty.Close")" href="#"></a></span>*@
+            </div>
+        </div>
+        <div class="form-group">
+
+            <div class="col-md-12">
+                <div class="">
+                    <input id="treeSearch" class="form-control" type="text" value="">
+                </div>
+                <span class="help-block"></span>
+            </div>
+        </div>
+        <div class="clear"></div>
+        @Html.ExternalNativeTree(Model, "jstree_default")
+    </div>
+</div>
+@*<script>
+    $(function () {
+
+        $("#treeSearch").keyup(function () {
+            var searchString = $(this).val();
+            console.log(searchString);
+            $('#jstree_default').jstree('search', searchString);
+        });
+
+
+        $('#jstree_default').jstree({
+   
+            "search": {
+
+                "case_insensitive": true,
+                "show_only_matches": true
+
+
+            },
+
+            "plugins": ["search"]
+
+
+        });
+    });
+</script>*@

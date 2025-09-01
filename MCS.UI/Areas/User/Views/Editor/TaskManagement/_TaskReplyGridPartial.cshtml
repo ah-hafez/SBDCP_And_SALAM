@@ -1,0 +1,19 @@
+﻿@model AjaxGrid<MCS.UI.Areas.User.Models.Transaction.ReceivedTaskVM>
+
+@{string controller = ViewData["ControllerName"] != null ? ViewData["ControllerName"].ToString() : ViewContext.RouteData.Values["controller"].ToString();}
+
+@Html.Grid(Model).CollectionName("TasksReplyGrid").Named("grdTasksReply").Columns(columns =>
+{
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Key, new { id = "Key_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Id, new { id = "grdTasksId_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+
+    columns.Add(model => model.FromOrgUnit).Titled(DbRes.TResource("User.Task.TaskAdd.ToOrgUnit"));
+    columns.Add(model => model.FromUser).Titled(DbRes.TResource("User.Task.TaskAdd.ToUser"));
+    columns.Add(model => model.TaskDescription).Titled(DbRes.TResource("User.Task.TaskAdd.TaskDescription"));
+
+    columns.Add(model => model.DelayedDaysCount).Titled(DbRes.TResource("عدد أيام التأخير"));
+
+    columns.Add().Encoded(false).Sanitized(false).Css("fixed_col text-right site-danger action-icon").RenderValueAs(model => @Html.ClientLinkTag("", cssClass: "edit_link", title: DbRes.TResource("ملاحظات"), clientFunctionToCall: "ShowNotes('" + model.Notes.Replace("\n", "").Replace("\r", "") + "')", permissionCode: UserClaims.Tasks.DisplayLink, innerHtml: "ملاحظات"));
+    columns.Add().Encoded(false).Sanitized(false).Css("fixed_col text-right site-danger action-icon").RenderValueAs(model => @Html.ClientLinkTag("", cssClass: "edit_link", title: DbRes.TResource("الرد"), clientFunctionToCall: "ShowAttachments(" + model.Id + ")", permissionCode: UserClaims.Tasks.Replay, innerHtml: "الرد"));
+
+})

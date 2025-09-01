@@ -1,0 +1,42 @@
+﻿@using MCS.UI.Areas.Admin.Models
+@using MCS.Framework.Localization
+@model UserProfileVM
+
+
+<div class="box-grid">
+    <div class="box no_sorting animated zoomIn buttons-action">
+
+        <div class="correspondence-b d-flex flex-wrap">
+            <div class="correspondence-h">
+                <div class="title">
+
+                    @Model.MainOrgUnitName
+
+                </div>
+            </div>
+            <div class="f-line w-full contact">
+                <div class="heading">@DbRes.TResource("User.Copy.UserName") </div>
+                <div class="ml-2">@Model.LocalName</div>
+                <div class="ml-2"><i class="la la-user pr-1"></i>@Model.UserName</div>
+                <div class="ml-2"><i class="la la-briefcase pr-1"></i>@Model.RoleName</div>
+                <div class="ml-2"><i class="la la-envelope-o pr-1"></i><a href="mailto:@(Model.Email)">@Model.Email</a></div>
+                <div class="ml-2"><i class="la la-phone-square pr-1"></i>@Model.PhoneNumber</div>
+            </div>
+
+            <div class="correspondence-icon d-flex" style="width:100%">
+                <div>
+                    @if (Model.IsDeleted != true)
+                    {
+                    <a class="btn btn-site p-1 pr-2 pl-2" title="قبول" onclick="ShowCustomConfirmMessage('@DbRes.TValidation("Admin.Confirm.Activation")', 'ApproveRequestedUser', '@Model.Id')">
+                        قبول
+                    </a>
+                        <a class="btn btn-site p-1 pr-2 pl-2" title="قبول" onclick="ShowCustomConfirmMessage('@DbRes.TValidation("Admin.Confirm.Activation")', 'RejectRequestedUser', '@Model.Id')">
+                            رفض
+                        </a>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

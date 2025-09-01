@@ -1,0 +1,1678 @@
+﻿@model TransactionAssignmentVM
+
+@using MCS.Framework.Localization
+@using MCS.Common;
+@using MCS.UI.Areas.User.Models.Assignment
+@using MCS.UI.Areas.User.Models.Transaction;
+@using MCS.Framework.Controls
+@using MCS.Common
+@using MCS.UI.Helpers
+
+<style>
+    body {
+        background: white;
+    }
+</style>
+@{
+
+    Model.DeliveryMethodId = DeliveryMethodType.Electronic.LookupIdentity(LookupCategory.DeliveryMethod, SessionInfo.CultureShortName);
+    int i = 1;
+
+    if ((ViewData["FollowUpOrgId"] as int?).HasValue)
+    {
+        Model.FollowupEntityId = (ViewData["FollowUpOrgId"] as int?).Value;
+    }
+
+    if ((ViewData["FollowUpUserId"] as int?).HasValue)
+    {
+        Model.FollowupUserId = (ViewData["FollowUpUserId"] as int?).Value;
+    }
+}
+@{
+    var base64 = Convert.ToBase64String(Session["BarcodeImgByteWithDate"] as byte[]);
+    var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
+}
+<div id="">
+    @{
+        var list2 = ViewData["AssignmentPaperDatawithExternalParty"] as List<TransactionAssignmentVM> ?? new List<TransactionAssignmentVM>();
+    }
+    @foreach (var group in list2.GroupBy(a => a.GroupName))
+    {
+        <label>
+            <input type="checkbox" id="check_@group.Key" onclick="myFunction('@group.Key')">
+            <label>@group.Key</label>
+        </label>
+    }
+    <label>
+        <input type="checkbox" id="checke" onclick="func()">
+        <label>قائمة1</label>
+    </label>
+    <label>
+        <input type="checkbox" id="checka" onclick="func1()">
+        <label>قائمة 2</label>
+    </label>
+
+
+
+
+</div>
+
+<div id="frmAddTemporary">
+
+    <div>
+        <div id="dvEditorTreeAssignmentPaper">
+
+            @using (Html.BeginForm("AddTemporaryEntity", "Inbound", FormMethod.Post, new { id = "frmAddTemporaryEntity", @class = "container" }))
+            {
+
+                <style>
+                    .RedBorder {
+                        border: 1px solid #fe0000 !important
+                    }
+
+                    #CurrentDate {
+                        direction: ltr;
+                    }
+
+                    .explanationDiv {
+                        min-height: 70px;
+                        height: auto;
+                    }
+
+                    .modal-lg {
+                        min-width: 65vw !important;
+                    }
+
+                    .normal {
+                        color: #19AEEF !important;
+                        font-size: 20px !important;
+                        font-weight: bold !important;
+                        font-family: arial, sans-serif;
+                    }
+
+                    .important {
+                        color: #167e48 !important;
+                        font-size: 20px !important;
+                        font-weight: bold !important;
+                        font-family: arial, sans-serif;
+                    }
+
+                    .confiden {
+                        color: #EE2130 !important;
+                        font-size: 20px !important;
+                        font-weight: bold !important;
+                        font-family: arial, sans-serif;
+                    }
+
+                    .title {
+                        font-weight: bold;
+                        font-size: 17px;
+                        font-family: arial, sans-serif;
+                    }
+
+                    .subject {
+                        font-weight: normal;
+                        font-size: 20px;
+                        font-family: arial, sans-serif;
+                    }
+
+                    .cardP {
+                        position: relative;
+                        max-width: 350px;
+                        word-wrap: break-word;
+                        border: none;
+                        display: grid;
+                        place-content: center;
+                    }
+
+                    .cardP-body {
+                        border: 1px solid #696969;
+                        border-radius: 15px;
+                        margin-top: 8px;
+                        padding: 1.25rem;
+                        max-width: 365px;
+                        min-height: 450px;
+                    }
+
+                    .cardP-title {
+                        border: 1px solid #c8c4c2;
+                        min-width: 330px;
+                        border-radius: 32px;
+                        max-height: 40px;
+                        text-align: center;
+                        background: #c7ad52;
+                        color: white;
+                    }
+
+                    .subP-title {
+                        margin-top: 15px;
+                    }
+
+                    .notes {
+                        background-image: -webkit-linear-gradient(left, white 10px, transparent 10px), -webkit-linear-gradient(right, white 10px, transparent 10px), -webkit-linear-gradient(white 30px, #ccc 30px, #ccc 31px, white 31px);
+                        background-size: 100% 100%, 100% 100%, 100% 31px;
+                        border: none;
+                        border-radius: 8px;
+                        line-height: 31px;
+                        padding: 8px;
+                        font-size: 16px;
+                        font-weight: bold;
+                        height: 85px;
+                        width: 98%;
+                    }
+
+                        .notes:focus {
+                            outline: none;
+                        }
+
+                    .thanksLable {
+                        font-size: 16px;
+                        font-weight: bold;
+                    }
+
+                    .topleft {
+                        position: absolute;
+                        top: 8px;
+                        left: 16px;
+                        font-size: 18px;
+                    }
+
+                    .topright {
+                        position: absolute;
+                        top: 8px;
+                        right: 16px;
+                        font-size: 18px;
+                    }
+
+                    .center {
+                        padding-top: 100%;
+                    }
+
+                    @@media (max-width: 1633px) {
+                        .cardP-title {
+                            min-width: 245px;
+                        }
+                    }
+
+                    @@media (max-width: 928px) {
+                        .cardP-title {
+                            min-width: 200px;
+                        }
+                    }
+
+                    @@media (max-width: 765px) {
+                        .cardP-title {
+                            min-width: 350px;
+                        }
+                    }
+
+                    @@media (max-width: 1480px) {
+                        .checkbox label {
+                            font-size: 9px;
+                        }
+                    }
+
+
+                    table tr td .choose {
+                        text-align: center;
+                    }
+
+                    .ss label {
+                        font-family: arial, sans-serif;
+                        font-weight: bolder !important;
+                        font-size: 19px;
+                        color: black;
+                    }
+
+                    .ssr label {
+                        font-family: arial, sans-serif;
+                        font-weight: bolder !important;
+                        font-size: 17px;
+                        color: black;
+                    }
+
+                    .ss {
+                        font-family: arial, sans-serif;
+                        font-weight: bolder !important;
+                        font-size: 19px;
+                        color: black;
+                    }
+
+                        .ss .la {
+                            font-family: arial, sans-serif;
+                            font-weight: bolder !important;
+                            font-size: 16px;
+                            color: black;
+                        }
+
+                    div.checkbox {
+                        margin-left: 0px;
+                    }
+
+
+
+                    .date-value {
+                        display: grid;
+                        text-align: center;
+                    }
+
+                    .title4 {
+                        font-family: "GE SS Two Medium" !important;
+                        font-size: 20px;
+                    }
+
+                    .ToOrgUnitName {
+                        margin-top: 0px;
+                    }
+
+                    label {
+                        color: black
+                    }
+                </style>
+                @Html.AntiForgeryToken()
+                <br />
+                <div style="border:3px solid green; border-radius:15px; min-width:100%;">
+                    <table style="width:100%">
+
+                        <tr>
+                            <th colspan="5">
+
+                                <img src="https://burag.mewa.gov.sa/MCS.UI.Preprod/Content/User/lib/images/BClogo.png" style="width: 300px; max-height: 67px;">
+
+                                <div style="display:grid; text-align:center;">@SessionInfo.OrgUnitInfo.LoclizationName.Where(t => t.CultureName == "ar").FirstOrDefault().Text</div>
+
+                            </th>
+
+
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th colspan="2">
+                                <img src="@imgSrc" class="mt-4" style="padding-right:40%" />
+                            </th>
+                        </tr>
+                    </table>
+
+                    <table style="width:100%">
+                        <tr>
+                            <td colspan="7">
+                                <div class="mt-4 mr-5 choose">
+                                    <div @*style="display:flex; gap:100px"*@>
+                                        <span class="confiden">(&nbsp &nbsp) سري للغاية </span>&nbsp&nbsp&nbsp&nbsp
+                                        <span class="confiden">(&nbsp &nbsp) سري  </span>&nbsp &nbsp&nbsp&nbsp
+                                        <span class="normal">(&nbsp &nbsp) حالا  </span>&nbsp &nbsp&nbsp&nbsp
+                                        <span class="normal">(&nbsp &nbsp) موعد محدد  </span>&nbsp &nbsp&nbsp&nbsp
+                                        <span class="normal">(&nbsp &nbsp) عاجل  </span>&nbsp &nbsp&nbsp&nbsp
+                                        <span class="normal">(&nbsp &nbsp) عاجل جدا  </span>&nbsp &nbsp&nbsp&nbsp
+                                        <span class="important">(&nbsp &nbsp) هام  </span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+
+                            <td colspan="5" style="padding-right:22px;">
+                                <div class="title">واردة من : <span>@ViewData["ExternalPartiesName"].ToString() </span></div>
+
+                            </td>
+                            <td>
+                                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+
+                            </td>
+                            <td class="choose">
+                                <div class="title">رقم الوارد  : <span> @ViewData["TransactionsNumber"].ToString()</span></div>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="7" style="padding-right:22px;">
+                                <div class="title">الموضوع: <span class="subject"> @ViewData["TransactionsSubject"].ToString()</span></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <br />
+                            </td>
+                        </tr>
+
+
+
+
+
+
+
+                        <tr>
+                            <td colspan="7">
+                                <div id="AddedEntities">
+                                    @{
+                                        var list = ViewData["AssignmentPaperDatawithExternalParty"] as List<TransactionAssignmentVM> ?? new List<TransactionAssignmentVM>();
+                                    }
+                                    @foreach (var group in list.GroupBy(a => a.GroupName))
+                                    {
+                                        <div id="div_@group.Key" class="col-lg-4 col-md-4 col-sm-4" style="display:none; float: right; width: 30%; padding-right:20px;">
+
+
+                                            <div class="cardP mt-2">
+                                                <div class="cardP-title pr-3 pl-3">
+                                                    <h3 class="title4 subP-title sub-title-margin d-inline-block">@group.Key</h3>
+                                                </div>
+                                                <div class="cardP-body col-lg-12">
+                                                    @foreach (var item in group)
+                                                    {
+                                                        item.Key = i;
+                                                        Html.RenderPartial("~/Areas/User/Views/Editor/AssignmentPaper/_AddedPaperAssignmentEntities.cshtml", item, Html.ViewData);
+                                                        i++;
+                                                    }
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr style="display:none;" id="more">
+                            <td colspan="12" style="padding-right:17px; padding-left:17px;">
+                                <div class="mt-3" style="border: 1px solid #696969; border-radius: 20px; padding-right: 10px;">
+                                    <table>
+                                        <tr>
+                                            <td colspan="3">
+                                                <div id="items" class="ss">
+                                                    <label>
+                                                        <input type="checkbox">
+
+                                                        <label>مؤسسة ريف الاهلية</label>
+                                                    </label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                                            </td>
+                                            <td>
+                                                <div id="items" class="ss ">
+                                                    <label>
+                                                        <input type="checkbox">
+
+                                                        <label> مؤسسة مروج الأهلية</label>
+                                                    </label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                                            </td>
+                                            <td>
+                                                <div id="items" class="ss">
+                                                    <label>
+                                                        <input type="checkbox">
+
+                                                        <label>مؤسسة سقاية الأهلية</label>
+                                                    </label>
+                                                </div>
+                                            </td>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+
+
+
+                        <tr id="more1" style="display:none">
+                            <td colspan="12" style="padding-right:17px; padding-left:17px;">
+                                <div class="mt-3" style="border: 1px solid #696969; border-radius: 20px; padding-right: 10px; ">
+                                    <table>
+                                        <tr>
+                                            <td colspan="3">
+                                                <div id="items" class="ss ">
+                                                    <label>
+
+                                                        <label>
+                                                            <input type="checkbox">
+                                                            مركز الخدمات المشتركة للمراكزالبيئية
+                                                        </label>
+                                                    </label>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <div id="items" class="ss ">
+                                                    <label>
+
+                                                        <label>
+                                                            <input type="checkbox">
+                                                            المركز الوطني للنخيل والتمور بالرياض
+                                                        </label>
+                                                    </label>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <div id="items" class="ss">
+                                                    <label>
+
+                                                        <label>
+                                                            <input type="checkbox">
+                                                            مركز الملك عبد العزيز للخيل العربية الاصيل
+                                                        </label>
+                                                    </label>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <div id="items" class="ss ">
+                                                    <label>
+
+                                                        <label>
+                                                            <input type="checkbox">
+                                                            المركز الوطني لتنمية الحياة الفطرية
+                                                        </label>
+                                                    </label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="3">
+                                                <div id="items" class="ss ">
+                                                    <label>
+
+                                                        <label>
+                                                            <input type="checkbox">
+                                                            المركز الوطني للارصاد
+                                                        </label>
+                                                    </label>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <div id="items" class="ss">
+                                                    <label>
+
+                                                        <label>
+                                                            <input type="checkbox">
+                                                            المركز الوطني لكفاءة وترشيد المياه
+                                                        </label>
+                                                    </label>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <div id="items" class="ss">
+                                                    <label>
+
+                                                        <label>
+                                                            <input type="checkbox">
+                                                            صندوق البيئة
+                                                        </label>
+                                                    </label>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <div id="items" class="ss">
+                                                    <label>
+
+                                                        <label>
+                                                            <input type="checkbox">
+                                                            المركز الوطني لتنمية الغطاء النباتي ومكافحة التصحر
+                                                        </label>
+                                                    </label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="3">
+                                                <div id="items" class="ss">
+                                                    <label>
+
+                                                        <label>
+                                                            <input type="checkbox">
+                                                            المركز الوطني لإدارة النفايات
+                                                        </label>
+                                                    </label>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <div id="items" class="ss ">
+                                                    <label>
+
+                                                        <label>
+                                                            <input type="checkbox">
+                                                            المركز الوطني للوقاية من الآفات النباتية والامراض الحيوتنية ومكافحتها
+                                                        </label>
+                                                    </label>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <div id="items" class="ss ">
+                                                    <label>
+
+                                                        <label>
+                                                            <input type="checkbox">
+                                                            المركز الوطني للرقابة على الالتزام البيئي
+                                                        </label>
+                                                    </label>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <div id="items" class="ss ">
+                                                    <label>
+                                                        <label>
+                                                            <input type="checkbox">
+                                                            المركز الوطني لابحاث وتطوير الزراعة المستدامة
+                                                        </label>
+                                                    </label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            @{
+                                var list1 = ViewData["AssignmentPaperDatawithExternalParty1"] as List<TransactionAssignmentVM> ?? new List<TransactionAssignmentVM>();
+                            }
+                            @foreach (var group1 in list1.GroupBy(a => a.GroupName))
+                            {
+                                <td colspan="2" style="padding-right:17px;">
+                                    <div class="cardP-title pr-3 pl-3">
+                                        <h3 class="title4 sub-title sub-title-margin d-inline-block" style="margin-top:2px">@group1.Key</h3>
+                                    </div>
+                                </td>
+
+                                <td colspan="6" style="padding-left: 17px;">
+                                    <div style="border: 1px solid #696969; border-radius: 20px; padding-right: 10px; min-height: 40px; padding-top: 5px;">
+                                        <table>
+                                            <tr>
+                                                @foreach (var item in group1)
+                                                {
+                                                    <td colspan="2">
+                                                        <div id="items" class="ss">
+                                                            <label>
+                                                                @*<input onchange="" type="radio" class="rValue" name="Radio" id="Radio_@Html.IdFor(a => a.IsAssigned).ToString()" />&nbsp*@
+                                                                @if (@item.AliceName != null && @item.AliceName != "")
+                                                                {
+                                                                    <label><input type="checkbox">@item.AliceName</label>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <label><input type="checkbox">@item.ToOrgUnitName</label>
+                                                                }
+
+
+                                                            </label>
+                                                        </div>
+
+                                                    </td>
+                                                    <td>
+                                                        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+
+                                                    </td>
+                                                }
+
+
+
+                                                @*<td>
+                                                        <div class="checkbox ">
+                                                            <label>
+                                                                <input type="checkbox">
+
+                                                                <label>السكرتار ية</label>
+                                                            </label>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                                                    </td>
+                                                    <td>
+                                                        <div class="checkbox ">
+                                                            <label>
+                                                                <input type="checkbox">
+
+                                                                <label>المتابعة بالمكتب</label>
+                                                            </label>
+                                                        </div>
+                                                    </td>*@
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </td>
+                            }
+                        </tr>
+
+
+                        <br />
+                        <tr>
+
+                            <td colspan="12" style="padding-right:17px; padding-left:17px;">
+                                <div class="mt-3" style="border: 1px solid #696969; border-radius: 20px; padding-right: 10px; ">
+                                    <table>
+                                        <tr>
+                                            <td colspan="3">
+                                                <div id="items" class="ssr ">
+                                                    <label>
+                                                        <input type="checkbox">
+
+                                                        <label>لإكمال اللازم</label>
+                                                    </label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                                            </td>
+                                            <td>
+                                                <div id="items" class="ssr ">
+                                                    <label>
+                                                        <input type="checkbox">
+
+                                                        <label>للمفاهمة هاتفيا</label>
+                                                    </label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                                            </td>
+                                            <td>
+                                                <div id="items" class="ssr">
+                                                    <label>
+                                                        <input type="checkbox">
+
+                                                        <label>للتعميم</label>
+                                                    </label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                                            </td>
+                                            <td>
+                                                <div id="items" class="ssr ">
+                                                    <label>
+                                                        <input type="checkbox">
+
+                                                        <label>لإعداد الرد</label>
+                                                    </label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="3">
+                                                <div id="items" class="ssr ">
+                                                    <label>
+                                                        <input type="checkbox">
+
+                                                        <label> لإكمال اللازم حسب المفاهمة</label>
+                                                    </label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                                            </td>
+                                            <td>
+                                                <div id="items" class="ssr">
+                                                    <label>
+                                                        <input type="checkbox">
+
+                                                        <label>للمفاهمة </label>
+                                                    </label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                                            </td>
+                                            <td>
+                                                <div id="items" class="ssr ">
+                                                    <label>
+                                                        <input type="checkbox">
+
+                                                        <label>للإفادة</label>
+                                                    </label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                                            </td>
+                                            <td>
+                                                <div id="items" class="ssr">
+                                                    <label>
+                                                        <input type="checkbox">
+
+                                                        <label> للمتابعة</label>
+                                                    </label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="3">
+                                                <div id="items" class="ssr">
+                                                    <label>
+                                                        <input type="checkbox">
+
+                                                        <label> لإبداء الرأي</label>
+                                                    </label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                                            </td>
+                                            <td>
+                                                <div id="items" class="ssr ">
+                                                    <label>
+                                                        <input type="checkbox">
+
+                                                        <label>للدراسة والإفادة  </label>
+                                                    </label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                                            </td>
+                                            <td>
+                                                <div id="items" class="ssr ">
+                                                    <label>
+                                                        <input type="checkbox">
+
+                                                        <label>للاختصاص</label>
+                                                    </label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                                            </td>
+                                            <td>
+                                                <div id="items" class="ssr">
+                                                    <label>
+                                                        <input type="checkbox">
+
+                                                        <label> لإعادة الطباعة</label>
+                                                    </label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div style="margin-top:6px;"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="7" style="padding-right:17px; padding-left:17px;">
+                                <div style="border: 1px solid #696969; border-radius: 20px; padding-right: 10px;">
+                                    <table>
+                                        <tr style=" display: flex; flex-direction: row; place-content:space-between">
+                                            <td>
+                                                <div class="ss">
+                                                    <label class="la">
+                                                        <input type="checkbox">
+
+                                                        <label class="la" id="asd1">عرضت على معالي وتم</label>
+                                                    </label>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <div class="ss">
+                                                    <label class="la">
+                                                        <input type="checkbox">
+
+                                                        <label class="la">التوجيه</label>
+                                                    </label>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <div class="ss">
+                                                    <label class="la">
+                                                        <input type="checkbox">
+
+                                                        <label class="la">التوقيع</label>
+                                                    </label>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <div class="ss">
+                                                    <label class="la">
+                                                        <input type="checkbox">
+
+                                                        <label class="la">الموافقة</label>
+                                                    </label>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <div class="ss">
+                                                    <label class="la">
+                                                        <input type="checkbox">
+
+                                                        <label class="la" id="asd">امل العرض لمعالي بما لديكم حول الموضوع مع المرئيات</label>
+                                                    </label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="7">
+                                <textarea class="notes mb-3">
+                                </textarea>
+                            </td>
+                        </tr>
+                    </table>
+                    @*<hr style="margin-top:-53px;" />*@
+                </div>
+                <br />
+                <table>
+                    <tr style="font-weight:bold;">
+                        <td colspan="12">
+                            <label style="margin-top:10px">ملاحظة هامة:</label> <span>أرجو إعادة المعاملة بكامل الأساسات</span>
+                        </td>
+                        <td>
+                            &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                        </td>
+                        <td>
+                            &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                        </td>
+
+                        <td>
+                            <label> اسم المرسل : @SessionInfo.CurrentUser.LoclizationName.Where(t => t.CultureId == 1).FirstOrDefault().Text</label>
+
+
+                        </td>
+                    </tr>
+                </table>
+            }
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<i id="CalMessageOrg" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+<span id="dateMessageOrg" style="color:red"></span>
+
+
+
+
+
+
+<div class="form-group">
+    <div class="form-group col-lg-3 col-md-6 col-sm-12 col-xs-12" id="divRadioAssignment">
+        <label></label>
+        <div>
+            <input onchange="" type="radio" class="rValue" name="RadioAssignment" id="ra1" value="true" />
+            <label> سعادة</label>
+            <input onchange="" type="radio" class="rValue" name="RadioAssignment" id="ra2" value="false" />
+            <label> معالي</label>
+
+        </div>
+    </div>
+    <label class="w-100"></label>
+    <input id="printdiv" type="submit" class="btn-site" value="طباعة" onclick="printContent1('frmAddTemporary')" />
+</div>
+
+
+
+
+
+
+
+<script>
+
+
+
+    function printContent(el) {
+        var restorepage = document.body.innerHTML;
+        var printcontent = document.getElementById(el).innerHTML;
+        document.body.innerHTML = printcontent;
+        window.print();
+        document.body.innerHTML = restorepage;
+    }
+    function InboundType() {
+
+        $('#divRadioAssignment input[type=radio]').on('change', function () {
+            switch ($(this).val()) {
+                case 'true':
+                    debugger
+                    var fieldNameElement = document.getElementById('asd');
+                    fieldNameElement.innerHTML = "امل العرض لسعادة..............................بما لديكم حول الموضوع مع المرئيات";
+                    var fieldNameElement = document.getElementById('asd1');
+                    fieldNameElement.innerHTML = "عرضت على سعادة..............................وتم";
+
+
+                    break;
+                case 'false':
+                    var fieldNameElement = document.getElementById('asd');
+                    fieldNameElement.innerHTML = "امل العرض لمعالي..............................بما لديكم حول الموضوع مع المرئيات";
+                    var fieldNameElement = document.getElementById('asd1');
+                    fieldNameElement.innerHTML = "عرضت على معالي..............................وتم";
+
+                    break;
+            }
+        });
+
+        $('#ddlConfedentiality').on('change', function () {
+            var Items = $.parseJSON($('#ConfidentialityItems').val());
+            var SourceTypeItems = $.parseJSON($('#SourceTypeItems').val());
+            if (Items[0].label == $("#ddlConfedentiality").val()) {
+                $("#ddlTransactionSourceType").val(SourceTypeItems[0].label);
+                $("#hdnTransactionSourceType").val(SourceTypeItems[0].value);
+            } else {
+                $("#ddlTransactionSourceType").val(SourceTypeItems[1].label);
+                $("#hdnTransactionSourceType").val(SourceTypeItems[1].value);
+            }
+
+        });
+    }
+
+    function myFunction(key) {
+        debugger
+            var checkBox = document.getElementById("check_" + key);
+            var text = document.getElementById("div_" + key);
+        if (checkBox.checked == true){
+            text.style.display = "block";
+  } else {
+            text.style.display = "none";
+  }
+    }
+
+    function func() {
+        debugger
+        var checkBox = document.getElementById("checke");
+        var text = document.getElementById("more");
+        if (checkBox.checked == true) {
+            text.style.display = "revert";
+        } else {
+            text.style.display = "none";
+        }
+    }
+    function func1() {
+        debugger
+        var checkBox = document.getElementById("checka");
+        var text = document.getElementById("more1");
+		var label = document.querySelector(".ss") ;
+
+        if (checkBox.checked == true) {
+            text.style.display = "revert";
+        } else {
+            text.style.display = "none";
+
+        }
+    }
+
+
+      function printContent1(el) {
+        //var Number = $('#hdnNumber').val();
+        //var Number = $('#hdnNumber').val();
+        //var Number = $('#hdnNumber').val();
+        debugger;
+       @*var url= '@Url.Action("GetTransactionExplanationsForPrint", "Editor")' + '?transactionId=' + TransactionId
+
+        ShowDialog(url, 'dialogbox col-md-12 ');*@
+
+        //var data = { transactionId: TransactionId  ,__RequestVerificationToken: token };
+        event.preventDefault();
+        $.ajax({
+            type: "post",
+            url: '@Url.Action("PrintAssignment", "Shared")' ,
+            //data: data,
+            data: {
+                div:document.getElementById(el).innerHTML
+            },
+            cache: false,
+            success:
+
+                function (data) {
+                    if (data.MessageType != 2) {
+                        var TransactionWindow = window.open('', '_blank', 'width=900,height=500');
+
+                        TransactionWindow.document.write(data);
+                        TransactionWindow.document.close();
+                        TransactionWindow.focus();
+                           var url = '@Url.Action("Download", "Shared")';
+                        window.location.href = url + '?fileGuid=' + data.FileGuid + '&filename=' + data.FileName;
+
+                        //window.print();
+                        //setTimeout(function () {
+                        //    TransactionExplanationsWindow.print();
+                        //    TransactionExplanationsWindow.close();
+                        //}, 2000);
+                    }
+                    else {
+                        ShowErrorMessage(data.MessageText);
+                    }
+                }
+        });
+    }
+    function GetUserDelegationsById() {
+
+
+             var errorCount = 0;
+        if (localStorage.getItem("selectedEntity") == null) {
+            $("#CalMessageOrg").removeClass("hidden_");
+            $("#CalMessageorg").show();
+            $("#dateMessageOrg").html('@Html.Raw(DbRes.TValidation("User.Transaction.AssignedToEntityValidation"))');
+            errorCount++;
+        }
+        if ($('#hdnDeliveryMethodForAssignmentPaper').val() == null || $('#hdnDeliveryMethodForAssignmentPaper').val() == "") {
+            $("#CalMessageDeliveryMethod").removeClass("hidden_");
+            $("#CalMessageDeliveryMethod").show();
+            $("#dateMessageDeliveryMethod").html('@Html.Raw(DbRes.TValidation("User.Transaction.AssignmentPaper.DeliveryMethodValidation"))');
+            errorCount++
+        }
+        if (($('#explanation').text() != null && $('#explanation').text().trim() != "") && ($('#hdnExplanationConfedentialityForAssignmentPaper').val() == null || $('#hdnExplanationConfedentialityForAssignmentPaper').val() == "")) {
+            $("#CalMessageConfidentiality").removeClass("hidden_");
+            $("#CalMessageConfidentiality").show();
+            $("#dateMessageConfidentiality").html('@Html.Raw(DbRes.TValidation("User.Explanation.ConfidentialityRequired"))');
+            errorCount++
+        }
+        if (errorCount > 0) {
+            return false;
+        }
+
+        var AssginmentIndividualToUserId = '';
+        var AssginmentIndividualToUserName = '';
+        $('input.isAssigned').each(function () {
+            if ($(this).attr('value')) {
+                AssginmentIndividualToUserId = $(this).parent().find('.ToUserId').val();
+                AssginmentIndividualToUserName = $(this).parent().parent().find("#ToUserNamelabel").text();
+            }
+
+        });
+
+        var del = "{0} مفوض بالعمل عن {1} من تاريخ {2} الى تاريخ {3}."
+        var DelegationsList = '';
+        $("ul#UserDelegationsList").html('');
+        if (AssginmentIndividualToUserId != '') {
+            $.ajax({
+                url: "@Url.Action("GetUserDelegationsById", "Inbound")",
+                type: 'GET',
+                data: { UserId: AssginmentIndividualToUserId },
+                success: function (data) {
+                    if (data.result != null) {
+                        if (data.result.length > 0) {
+
+                            data.result.forEach(element => {
+                                var Msg = del;
+                                Msg = Msg.replace('{0}', AssginmentIndividualToUserName);
+                                Msg = Msg.replace('{1}', element.UserPreferenceName);
+                                Msg = Msg.replace('{2}', new Date(parseInt(element.FromDate.replace('/Date(', '').replace(')/', ''))).toLocaleDateString());
+                                Msg = Msg.replace('{3}', new Date(parseInt(element.ToDate.replace('/Date(', '').replace(')/', ''))).toLocaleDateString());
+
+                                DelegationsList = DelegationsList + '<li>' + Msg + '</li>'
+                            });
+
+                            $("ul#UserDelegationsList").append(DelegationsList);
+                            $("#UserDelegationsModal").modal();
+                        }
+                        else {
+                            $("#UserDelegationsList").hide();
+                            $("#UserDelegationsModal").modal('hide');
+                            SendAssignmentPaper();
+                        }
+
+
+                    } else {
+                        $("#UserDelegationsModal").modal('hide');
+                        SendAssignmentPaper();
+                    }
+
+
+
+                },
+                error: function (a) {
+                }
+            });
+        } else {
+            $("#UserDelegationsModal").modal('hide');
+            SendAssignmentPaper();
+        }
+    }
+
+    $(document).ready(function () {
+
+
+        $("#btnsConfirmSendEditorAssignments").click(function () {
+
+            $("#UserDelegationsModal").modal('hide');
+            SendAssignmentPaper();
+
+        });
+        InboundType();
+    });
+</script>
+
+<script>
+    function openPrintModal() {
+        var PrintHtml = '<div class="col-xl-12">' + $(".DepartmentsTitle").find('.col-xs-12').html()+'<hr></div>'
+        $('#AddedEntities').find('div.row').each(function () {
+
+            var ToOrgUnitName =  $(this).find('.ToOrgUnitName').find('div label').html()
+            var ToUserId = $(this).find('.ToUserId').find('div label').html()
+            var Actiontext = $(this).find('.ActionId').find('.AutPosition .DDLClass').val()
+            var isAssigned = $(this).find('.divRadio').find('.isAssigned').val()
+            var IsCopy = $(this).find('.divRadio').find('.IsCopy').val()
+
+            PrintHtml = PrintHtml + '<div class="row">';
+            PrintHtml = PrintHtml + '<div class="form-group col-lg-3 col-md-3 col-sm-3 col-xs-3 mb-2">';
+            PrintHtml = PrintHtml + '<label class="control-label">اسم الادارة :</label>';
+            PrintHtml = PrintHtml + '<div><label>' + ToOrgUnitName + '</label></div>';
+            PrintHtml = PrintHtml + '</div>';
+
+            PrintHtml = PrintHtml + '<div class="form-group col-lg-3 col-md-3 col-sm-3 col-xs-3 mb-2">';
+            PrintHtml = PrintHtml + '<label class="control-label">الموظف  :</label>';
+            PrintHtml = PrintHtml + '<div><label>' + ToUserId + '</label></div>';
+            PrintHtml = PrintHtml + '</div>';
+
+            PrintHtml = PrintHtml + '<div class="form-group col-lg-3 col-md-3 col-sm-3 col-xs-3 mb-2">';
+            PrintHtml = PrintHtml + '<label class="control-label"> النوع :</label>';
+            PrintHtml = PrintHtml + '<div class="inline-radio mr-3 ml-3">';
+
+
+
+            if (isAssigned == 'true') {
+                PrintHtml = PrintHtml + '<div class="radio">  <input class="form-check-input" disabled type="radio" checked >  <label class="form-check-label"> إحالة </label> ';
+            }
+            else {
+                PrintHtml = PrintHtml + '<div class="radio">  <input class="form-check-input" disabled type="radio"   >   <label class="form-check-label"> إحالة </label> ';
+            }
+
+            PrintHtml = PrintHtml + '</div>';
+
+            if (IsCopy == 'true') {
+                PrintHtml = PrintHtml + '<div class="checkbox  mr-3 ml-3">  <input disabled class="form-check-input" type="checkbox"   checked ><label class="form-check-label"> صورة </label></div> ';
+            }
+            else {
+                PrintHtml = PrintHtml + '<div class="checkbox  mr-3 ml-3">  <input disabled class="form-check-input" type="checkbox"    ><label class="form-check-label"> صورة </label></div>';
+            }
+
+            PrintHtml = PrintHtml + '</div>';
+            PrintHtml = PrintHtml + '</div>';
+            PrintHtml = PrintHtml + '<div class="form-group col-lg-3 col-md-3 col-sm-3 col-xs-3 mb-2">';
+            PrintHtml = PrintHtml + '<label class="control-label">الإجراء  :</label>';
+            PrintHtml = PrintHtml + '<div><label>' + Actiontext + '</label></div>';
+            PrintHtml = PrintHtml + '</div>';
+            PrintHtml = PrintHtml + '</div>';
+        });
+
+        $("#PrintBody").html(PrintHtml);
+        $('#PrintDepartments').modal();
+    }
+
+
+    function PrintDepartment() {
+        var cssUrl = '<link href="../../../Content/Admin/lib/bootstrap/css/bootstrap.min.rtl.css" rel="stylesheet">';
+        var cssUrl = cssUrl + '<link href="../../../Content/Admin/lib/bootstrap/css/bootstrap.form.rtl.css" rel="stylesheet">';
+        var cssUrl = cssUrl + '<link href="../../../Content/Admin/lib/bootstrap/css/bootstrap.grid.rtl.css" rel="stylesheet">';
+        var cssUrl = cssUrl + '<link href="../../../Content/Admin/lib/css/main.css" rel="stylesheet">';
+        var cssUrl = cssUrl + '<link href="../../../Content/Admin/lib/css/jquery-ui.css" rel="stylesheet">';
+        var cssUrl = cssUrl + '<link href="../../../Content/Admin/lib/css/style.css" rel="stylesheet">';
+
+
+        var contents = $("#dvContents").html();
+        var frame1 = $('<iframe />');
+        frame1[0].name = "frame1";
+        frame1.css({ "position": "absolute", "top": "-1000000px" });
+        $("body").append(frame1);
+        var frameDoc = frame1[0].contentWindow ? frame1[0].contentWindow : frame1[0].contentDocument.document ? frame1[0].contentDocument.document : frame1[0].contentDocument;
+        frameDoc.document.open();
+        //Create a new HTML document.
+        frameDoc.document.write('<html><head><title>DIV Contents</title>');
+        frameDoc.document.write('</head><body>');
+        //Append the external CSS file.
+        frameDoc.document.write(cssUrl);
+        //Append the DIV contents.
+        frameDoc.document.write($("#PrintBody").html());
+        frameDoc.document.write('</body></html>');
+        frameDoc.document.close();
+        setTimeout(function () {
+            window.frames["frame1"].focus();
+            window.frames["frame1"].print();
+            frame1.remove();
+        }, 500);
+
+
+
+    }
+    $(document).ready(function () {
+        onChangeAssinmentPaperMethod();
+    });
+
+    function onChangeAssinmentPaperMethod() {
+        var value = $('#hdnDeliveryMethodForAssignmentPaper').val();
+        switch (parseInt(value)) {
+            case DeliveryMethodType.Paper:
+                ShowHideAssinmentPaperReporterContent(true);
+                break;
+            case DeliveryMethodType.Electronic:
+                ShowHideAssinmentPaperReporterContent(false);
+                break;
+            case DeliveryMethodType.ElectronicPaper:
+                ShowHideAssinmentPaperReporterContent(true);
+                break;
+            default:
+        }
+    }
+
+    function ShowHideAssinmentPaperReporterContent(isShow) {
+        if (isShow) {
+            $('#ReporterContentAssignmentPaper').removeClass('hide');
+        } else {
+            $('#ReporterContentAssignmentPaper').addClass('hide');
+        }
+    }
+
+    function ActionChanged() {
+        var divrValue = $(".rValue:checked").closest(".divRadio").next(".divDDl").find(".AutPosition");
+        if (divrValue && divrValue.length > 0) {
+            var ddlControl = $(divrValue).find(".DDLClass");
+            if (ddlControl && ddlControl.length > 0) {
+                $('#explanation > .tag').remove();
+                $("#explanation").html('<span class="tag" contenteditable="false" style="display:inline-block;"><a class="d-flex flex-nowrap" data-editable="True"><span class="align-self-center">' + ddlControl.val() + '</span><span class="align-self-center removing_tag uicon icon_close" title="حذف"></span> </a> </span>' + ' ' + $("#explanation").html().trim() + '&nbsp;');
+            }
+        }
+    }
+
+    var urlAccordingToTransactionType;
+    var errorCount = 0;
+    function SendAssignmentPaper() {
+        errorCount = 0;
+        if (localStorage.getItem("selectedEntity") == null) {
+            $("#CalMessageOrg").removeClass("hidden_");
+            $("#CalMessageorg").show();
+            $("#dateMessageOrg").html('@Html.Raw(DbRes.TValidation("User.Transaction.AssignedToEntityValidation"))');
+            errorCount++;
+        }
+        if ($('#hdnDeliveryMethodForAssignmentPaper').val() == null || $('#hdnDeliveryMethodForAssignmentPaper').val() == "") {
+            $("#CalMessageDeliveryMethod").removeClass("hidden_");
+            $("#CalMessageDeliveryMethod").show();
+            $("#dateMessageDeliveryMethod").html('@Html.Raw(DbRes.TValidation("User.Transaction.AssignmentPaper.DeliveryMethodValidation"))');
+            errorCount++
+        }
+        if (($('#explanation').text() != null && $('#explanation').text().trim() != "") && ($('#hdnExplanationConfedentialityForAssignmentPaper').val() == null || $('#hdnExplanationConfedentialityForAssignmentPaper').val() == "")) {
+            $("#CalMessageConfidentiality").removeClass("hidden_");
+            $("#CalMessageConfidentiality").show();
+            $("#dateMessageConfidentiality").html('@Html.Raw(DbRes.TValidation("User.Explanation.ConfidentialityRequired"))');
+            errorCount++
+        }
+
+        if (followUpCheck.checked == true) {
+
+            AssignPaperCheckFollowUpDate();
+
+        }
+        else {
+
+             $('#hdnAssignPaperFolloupDateGreg').val(null);
+             $('#hdnAssignPaperFollowUpDateUm').val(null);
+            $('#hdnAssignPaperFollowUpToOrgUnitIdFollowUp').val(null);
+              $('#hdnAssignPaperFollowUpToUserIdFollowUp').val(null);
+        }
+        if (errorCount > 0) {
+            return false;
+        }
+
+
+        //var divrValue= $(".rValue:checked").closest(".divRadio").next(".divDDl").find(".AutPosition");
+        //$("#explanation").text($(divrValue).find(".DDLClass").val() + '\n' + $("#explanation").text().trim());
+        var token = $("#frmAddTemporaryEntity").find("input[name='__RequestVerificationToken']").val();
+        var AddedEntities = $("#AddedEntities :input").serialize();
+        var explanation = $("#explanation").text().trim();
+        var Confedentiality = $('#hdnExplanationConfedentialityForAssignmentPaper').val();
+        var deliveryMethodId = $('#hdnDeliveryMethodForAssignmentPaper').val();
+        var TransactionId = $('#hdnAssignmentsTransactionId').val();
+        var reporterId = $('#hdnAssignmentPaperReporter').val();
+        var FolloupDateTo = $('#hdnAssignPaperFolloupDateGreg').val();
+        var FolloupDateH = $('#hdnAssignPaperFollowUpDateUm').val();
+        var FromEntityIdFollowUp = $('#hdnAssignPaperFollowUpToOrgUnitIdFollowUp').val();
+        var FollowUpToUserIdFollowUp = $('#hdnAssignPaperFollowUpToUserIdFollowUp').val();
+
+
+        var requestData = "__RequestVerificationToken=" + token + "&" + AddedEntities + "&explanationTxt=" + explanation + "&ConfedentialityId=" + Confedentiality +
+            "&TransactionId=" + TransactionId + "&deliveryMethodId=" + deliveryMethodId + "&reporterId=" + reporterId +
+            "&FolloupDateTo=" + FolloupDateTo +
+                "&FolloupDateH=" + FolloupDateH + "&FromEntityIdFollowUp=" + FromEntityIdFollowUp + "&FollowUpToUserIdFollowUp=" + FollowUpToUserIdFollowUp;
+
+
+        if (AddedEntities != "") {
+            $.ajax({
+                type: 'post',
+                cache: false,
+                url: '@Url.Action("SendAssignmentPaper")',
+                data: requestData,
+                success:
+                    function (data) {
+                        if (data.MessageType != 2) {
+                            urlAccordingToTransactionType = data.returnUrl;
+                            if (parseInt($('#hdnDeliveryMethodForAssignmentPaper').val()) == DeliveryMethodType.ElectronicPaper) {
+                                $.ajax({
+                                    type: 'post',
+                                    url: '@Url.Action("GetDeliveryReportByTransactionIds", "Inbound")',
+                                    data: { transactionIds: $('#hdnTransactionID').val(), __RequestVerificationToken: token },
+                                    success: function (data) {
+                                        if (data.MessageType != 2) {
+                                            PrintAssignmentPaperDeliveryReport(data.TransactionDeliveryReports);
+                                        }
+                                        else {
+                                            RedirectToTargetPage();
+                                            //ShowErrorMessage(data.MessageText);
+                                        }
+                                    }
+                                });
+                            }
+                            else {
+                                RedirectToTargetPage();
+                            }
+                        }
+                        else {
+                            RedirectToTargetPage();
+                            //ShowErrorMessage(data.MessageText);
+                        }
+                    }
+            });
+        }
+    }
+    function AssignPaperCheckFollowUpDate() {
+        var FollowUpToOrgUnitId = $("#hdnAssignPaperFollowUpToOrgUnitIdFollowUp").val()
+        var FollowUpToUserId = $("#hdnAssignPaperFollowUpToUserIdFollowUp").val()
+        if (FollowUpToOrgUnitId.val <= 0 || FollowUpToUserId.length <= 0) {
+            $("#FollowCalMessageOrg").removeClass("hidden_");
+            $("#FollowCalMessageorg").show();
+            $("#FollowdateMessageOrg").html('@Html.Raw(DbRes.TValidation("User.Transaction.AssignedFollowUpToEntityValidation"))');
+            errorCount++
+            return false;
+        }
+        else {
+            $("#FollowCalMessageOrg").addClass("hidden_");
+            $("#FollowCalMessageorg").hide();
+
+        }
+        var dateNow = $.datepicker.formatDate('dd/mm/yy', new Date($.now()));
+        var currentDate = convertdate(dateNow);
+    if ($("#AssignPaperFollowUpDateCal").val() != "") {
+        if ($("#hdnAssignPaperFolloupDateGreg").val() != undefined  ) {
+            var selectedDate = convertdate($("#hdnAssignPaperFolloupDateGreg").val());
+
+                if (selectedDate < currentDate) {
+                    $("#AssignPaperFollowUpMessage").removeClass("hidden_");
+                    $("#AssignPaperFollowUpMessage").show();
+                    $('#AssignPaperFollowUpDateCal').addClass('RedBorder');
+                    $("#AssignPaperFollowUpdateMessagee").html(' @Html.Raw(DbRes.TValidation("User.FollowUp.RemindDateCompare"))');
+                    errorCount++
+                    return false;
+                }
+                else {
+                    $('#AssignPaperFollowUpDateCal').removeClass('RedBorder');
+                    $("#AssignPaperFollowUpMessage").hide()
+                    $("#AssignPaperFollowUpdateMessagee").html('');
+
+
+                }
+            }
+        }
+        else {
+        $("#AssignPaperFollowUpMessage").removeClass("hidden_");
+        $("#AssignPaperFollowUpMessage").show();
+        $('#AssignPaperFollowUpDateCal').addClass('RedBorder');
+        $("#AssignPaperFollowUpdateMessagee").html(' @Html.Raw(DbRes.TValidation("User.Report.TransactionsDeliveryReport.DateToRequired"))');
+        errorCount++
+        return false;
+        }
+    }
+    function PrintAssignment() {
+        var TransactionId = $('#hdnAssignmentsTransactionId').val();
+        var url = '@Url.Action("GetTransactionAssignmentHistoryWithContent", "TransactionLog")' + '?transactionId=' + TransactionId;
+        ShowDialog(url, 'dialogbox col-md-12 ');
+    }
+
+    function PrintAssignmentPaperDeliveryReport(data) {
+        var reporterName = $('#ddlAssignmentPaperReporter').val();
+        var deliveryReportArray = [];
+        for (var i = 0; i < data.length; i++) {
+            var tranDeliveryReport = data[i];
+            deliveryReportArray.push({ TransactionId: tranDeliveryReport.TransactionId, ReportsIds: [] });
+            deliveryReportArray[i].ReportsIds.push(tranDeliveryReport.Id);
+        }
+        var reportType = @((int)DeliveryReportType.DeliveryReport);
+        var parameters = '?transactionReportInfo=' + JSON.stringify(deliveryReportArray) + '&isPerTransaction=true&group=false&reportType=' + reportType + '&reporterName=' + reporterName;
+        urlDeliveryReport = '@Url.Action("PrintDeliveryReportsByIds", "Reports")' + parameters
+        PrintReport(urlDeliveryReport, '', RedirectToTargetPage);
+    }
+
+    function RedirectToTargetPage() {
+        setTimeout(function () {
+            window.location.href = urlAccordingToTransactionType;
+        }, 3000);
+    }
+
+    function AddNewEntity() {
+        var token = $("#frmAddTemporaryEntity").find("input[name='__RequestVerificationToken']").val();
+        var AddedEntities = $("#AddedEntities :input").serialize();
+        var NewEntity = $("#dvAddTemporaryEntity :input").serialize();
+        var requestData = "__RequestVerificationToken=" + token + "&" + NewEntity + '&' + AddedEntities;
+        $.ajax({
+            type: 'post',
+            cache: false,
+            url: '@Url.Action("AddTemporaryEntity")',
+            data: requestData,
+            success:
+                function (data) {
+                    if (data.MessageType == @((int)MessageType.Error)) {
+                        ShowErrorMessage(data.MessageText);
+                    } else {
+                        addEntitySuccess(data, "");
+                    }
+                }
+        });
+    }
+
+    function UpdateAssignedToEntity(obj) {
+        $(".isAssigned").each(function () {
+            $(this).val(false);
+        });
+
+        var objId = obj.id;
+        var hdnId = objId.replace("Radio_", "hdn_");
+        $('#' + hdnId).val(true);
+        localStorage.setItem('selectedEntity', objId);
+    }
+
+    function UpdateIsCopy(obj) {
+        var objId = obj.id;
+        var hdnId = objId.replace("ch_", "hdn_");
+        if (obj.checked) {
+            $('#' + hdnId).val(true);
+        } else {
+            $('#' + hdnId).val(false);
+        }
+    }
+
+    function addEntitySuccess(data, div) {
+        var includeCopy = [];
+        $('input[type = "checkbox"]:checked').each(function (index, obj) {
+            includeCopy.push(obj.id);
+        });
+
+        if (data != "") {
+            $('#AddedEntities').append(data.html);
+            $('#' + localStorage.getItem("selectedEntity")).attr("checked", true);
+
+            $.each(includeCopy, function (i, val) {
+                $('#' + val).attr("checked", true);
+            });
+        }
+    }
+
+    function Clear(){
+        ClearInputs('dvAddTemporaryEntity');
+    }
+
+    function checkIfAnEntitySelected() {
+
+        var ToOrgUnitId = GetSelectedItemId("ToOrgUnitId");
+        if  (ToOrgUnitId == "") {
+            $("#dvAddTemporaryEntity .InboundDepName, #dvAddTemporaryEntity .InboundDepNum").addClass('RedBorder');
+        }
+        else {
+            $("#dvAddTemporaryEntity .InboundDepName, #dvAddTemporaryEntity .InboundDepNum").removeClass('RedBorder');
+        }
+
+        if (ToOrgUnitId.length == 0) {
+            $("#CalMessageIcon").removeClass("hidden_");
+            $("#CalMessageIcon").show();
+            $('#DepartmentValidateMessage').html('@DbRes.TValidation("User.UserDelegation.OrgUnitRequired")');
+            return false;
+        } else {
+            $('#DepartmentValidateMessage').html('');
+            $("#CalMessageIcon").addClass("hidden_");
+            return ChecktAllowedUserAssignment();
+        }
+
+    }
+
+    function DoCheckUserr() {
+
+       AutoCompleteChangeSourceParameters("dddlAssignmentPaperUsers", '@Url.Action("AutoComplete_SearchUsersByOrgUnit", "Inbound")', "");
+    }
+    function DoCheckUser() {
+
+        var rbSearchByUser = $("#EditorAssignmentPaper_rbSearchByUser");
+
+        if (rbSearchByUser.is(':checked')) {
+            ClearInputs('divOrgUnit')
+        }
+    }
+    function DoCheckOrgUnit() {
+        var rbSearchByOrgUnit = $("#EditorAssignmentPaper_rbSearchByOrgUnit");
+        $('#ddlAssignmentPaperUsers').removeAttr('disabled');
+        if (rbSearchByOrgUnit.is(':checked')) {
+            ClearInputs('divUser')
+        }
+    }
+
+    $(document).ready(function () {
+        ClearInputs('dvEditorTreeAssignmentPaper');
+        $("#ddlAssignmentPaperUsers").prop('disabled', false);
+        localStorage.removeItem("selectedEntity");
+    });
+
+    function AddAssignmentPaperOnSuccess(data, div) {
+        if (data.MessageType != 2) {
+            $("#" + div).html("");
+            $("#" + div).html(data.Html);
+            //ShowSuccesMessage(data.MessageText)
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    $("#ddlAssignmentPaperUsers").change(function () {
+        $("#hdnAssignmentPaperUserName").val($(this).val());
+    })
+
+    $("#ddlAssignmentPaperAction").change( function () {
+        $("#hdnAssignmentPaperActionName").val($(this).val());
+    })
+
+    function OnSelectAssignmentPaperOrgUnit(selectedParty) {
+        @*var token = $("#frmAddTemporaryEntity").find("input[name='__RequestVerificationToken']").val();
+
+        if (selectedParty) {
+            $.ajax({
+                type: 'post',
+                cache: false,
+                url: '@Url.Action("GetUsersByOrgUnitId")',
+                data: { id:selectedParty, __RequestVerificationToken: token},
+                success:
+                    function (data) {
+                        $("#ddlAssignmentPaperUsers").val("");
+                        $("#hdnAssignmentPaperUserId").val("");
+                        AutoCompleteChangeList("ddlAssignmentPaperUsers", data);
+                        $("#ddlAssignmentPaperUsers").prop('disabled', false);
+                    }
+            });
+        }
+        else {
+            $("#ddlAssignmentPaperUsers").val("");
+            $("#hdnAssignmentPaperUserId").val("");
+            AutoCompleteChangeList("ddlAssignmentPaperUsers", "[]");
+            $("#ddlAssignmentPaperUsers").prop('disabled', true);
+        }
+        // maybe ToOrgUnitName nested ToOrgUnitName
+        $("#hdnAssignmentPaperToOrgUnitName").val($("#divForm__treeAssignmentPaper").find(".txtDepartmentName").val());*@
+
+    }
+
+    function toggleSearchMethod() {
+        var rbSearchByUser = $("#EditorAssignmentPaper_rbSearchByUser");
+        var rbSearchByOrgUnit = $("#EditorAssignmentPaper_rbSearchByOrgUnit");
+        var divUser = $("#divUser");
+        var divOrgUnit = $("#divOrgUnit");
+
+        if (rbSearchByUser.is(':checked')) {
+            divOrgUnit.insertAfter(divUser);
+            AutoCompleteChangeSourceParameters("ddlAssignmentPaperUsers", '@Url.Action("AutoComplete_SearchUsersByOrgUnit", "Inbound")', "");
+            TreeChangeGetChildrenParameters("ToOrgUnitId", { UserId: "##ddlAssignmentPaperUsers_hdnIdToSaveValue" });
+            ResetAutoComplete("ddlAssignmentPaperUsers");
+            ResetTree("ToOrgUnitId");
+        }
+        else {
+            divUser.insertAfter(divOrgUnit);
+            AutoCompleteChangeSourceParameters("ddlAssignmentPaperUsers", '@Url.Action("AutoComplete_SearchUsersByOrgUnit", "Inbound")', { orgUnitId: "#input[name ='EditorAssignmentPaper.ToOrgUnitId']" });
+            TreeChangeGetChildrenParameters("ToOrgUnitId", "");
+            ResetAutoComplete("ddlAssignmentPaperUsers");
+            ResetTree("ToOrgUnitId");
+            ClearInputs('divUser');
+            $('#ddlAssignmentPaperUsers').attr('disabled', 'disabled');
+        }
+    }
+    d = Date.now();
+    d = new Date(d);
+    d = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' ' + (d.getHours() > 12 ? d.getHours() - 12 : d.getHours()) + ':' + d.getMinutes() + ' ' + (d.getHours() >= 12 ? "PM" : "AM");
+
+    $('#CurrentDate').append(d);
+</script>
+
+<script>
+     function ChecktAllowedUserAssignment() {
+         var UserId = $("#ddlAssignmentPaperUsers_hdnIdToSaveValue").val();
+         if (!UserId) {
+             AddNewEntity();
+             return;
+         }
+          $.ajax({
+            type: 'get',
+            data: { FromUserId: UserId },
+            url: '@Url.Action("GetAllowedUserAssignment", "Inbound")',
+              success: function (data) {
+                  if (data.selectedUserAllowedAssignmentCount == 0) {
+                      AddNewEntity();
+                }
+                else {
+                    if (data.isUserAllowAssignment) {
+                        AddNewEntity();
+                    }
+                    else {
+                        ShowInformationMessage(data.MessageText);
+                    }
+                }
+
+
+            }
+        });
+    }
+
+</script>

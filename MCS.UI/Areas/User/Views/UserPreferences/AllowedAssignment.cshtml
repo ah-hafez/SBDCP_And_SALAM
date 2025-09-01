@@ -1,0 +1,252 @@
+﻿@using MCS.UI.Areas.User.Models
+@using MCS.UI.Areas.User.Models.UserPreferences
+@using MCS.Framework.Localization
+@using MCS.Common
+@model AllowedAssignmentVM
+@{
+    string controller = ViewData["ControllerName"] != null ? ViewData["ControllerName"].ToString() : ViewContext.RouteData.Values["controller"].ToString();
+}
+
+@{
+    /**/
+
+    ViewBag.Title = DbRes.TResource("User.UserPreferences.AllowedAssignment");
+    Layout = "~/Areas/User/Views/Shared/_SearchLayout.cshtml";
+}
+<script src="~/Scripts/jSignature/jSignature.js"></script>
+<script src="~/Scripts/jSignature/plugins/jSignature.UndoButton.js"></script>
+
+<div class="d-flex flex-column flex-sm-row mx-5 mx-xs-3 mb-3 header-container mt-5">
+    <h3 class="site-color">@DbRes.TResource("User.UserPreferences.AllowedAssignment")</h3>
+</div>
+<div class="white-container mx-5 mx-xs-3">
+    <div class="tab-content">
+        <div class=" white-bg">
+            <div>
+                @using (Html.BeginForm("SendAssignmentsByEditor", "File", FormMethod.Post, new { id = "frmEditorAssignment" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="form-group " id="divOrgUnit">
+                                <div class="TreeHeight" id="dvEditorTreeAssignment">
+                                    @*@Html.EditorFor(model => model.EntityId, "OrgHierarchyCaller", additionalViewData: new { treeId = "treeEditorAssignment", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Shared"), onClickfunction = "DoCheckOrgUnit", ValidationGroup = "AssignmentIndividual", ShowAddPartyButton = false, GetChildrenActionParameters = Newtonsoft.Json.JsonConvert.SerializeObject(new { UserId = "##ddlEditorAssginmentIndividualToUserId_hdnIdToSaveValue" }) })*@
+                                    @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.EntityId, TreeMode.Single, "treeEditorAssignment", true, "GetDirectedToUsersByOrgUnitId", "AssignmentIndividual", "dvEditorTreeAssignment")
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+
+                            <div class="form-group " id="divUser">
+                                <label>الموظف<span class="stark">*</span></label>                            @*@Html.EditorFor(model => model.ToUserId, "AutoComplete", additionalViewData: new { autoCompleteControlid = "ddlEditorAssginmentIndividualToUserId", hdnIdToSaveValue = "hdnEditorAssginmentIndividualToUserId", items = "", selectedId = Model != null ? Model.ToUserId.ToString() : null, matchAnywhere = true, hdnExtraParametersId = "", selectFirstIndex = false, validationGroup = "AssignmentIndividual", onChangeCallback = "DoCheckUser", sourceMethod = Url.Action("AutoComplete_SearchUsersByOrgUnit", "Inbound"), sourceParameters = "" })*@
+                                @Html.EditorFor(model => model.ToUserId, "AutoComplete", additionalViewData: new { autoCompleteControlid = "ddlEditorAssginmentIndividualToUserId", hdnIdToSaveValue = "hdnEditorAssginmentIndividualToUserId", items = "", selectedId = Model != null ? Model.ToUserId.ToString() : null, matchAnywhere = true, hdnExtraParametersId = "", selectFirstIndex = false, validationGroup = "AssignmentIndividual" })
+                                @Html.HiddenFor(model => model.ToUserId, new { id = "hdnEditorAssginmentIndividualToUserId" })
+                               
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    @Html.ConfirmAction(OperationType.Save, "btnSendEditorAssignments", "اضافة", Url.Action("AddAllowedAssignment", controller), null, null, null, "addResult", null, "هل انت متأكد ؟", "post", "frmEditorAssignment", "AssignmentIndividual", " btn-site", "CheckAssignment", UserClaims.Assignments.Assign, null)
+
+                }
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<div class="white-container mx-5 mx-xs-3">
+    <div class="tab-content">
+        <div class=" white-bg">
+            <div class="row">
+                <div class="col-lg-12">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    الأدارة
+                                </th>
+                                <th>
+                                    الموظف
+                                </th>
+                                <th>
+                                    الأجرائات
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @foreach (var item in Model.AllowedAssignmentList)
+                            {
+                                <tr>
+                                    <td>
+                                        @item.Entity.Name
+                                    </td>
+                                    <td>
+                                        @item.ToUser.LocalName
+                                    </td>
+                                    <td>
+                                        <a onclick="ShowCustomConfirmMessage('هل أنت متأكد ؟', 'RemoveAllowUser',@item.Id)" title="حذف"><i class="la la-trash text-danger"></i></a>
+                                    </td>
+                                </tr>
+                            }
+                            <tr>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+
+    function RemoveAllowUser(Id) {
+        $.ajax({
+            type: 'get',
+            data: { id: Id },
+            url: '@Url.Action("RemoveAllowedAssignment", "UserPreferences")',
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    ShowInformationMessage("تم ازالة السماح بالأحالة بنجاح", redirect());
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            }
+        });
+    }
+</script>
+<script>
+    function addResult() {
+        ShowInformationMessage("تم اضافة السماح بالأحالة بنجاح", redirect());
+
+    }
+    function redirect() {
+        setTimeout(function () {
+            window.location.href = '@Url.Action("AllowedAssignment", "UserPreferences", new { Area = "user" })';
+        }, 2000);
+    }
+</script>
+
+<script>
+
+    function GetDirectedToUsersByOrgUnitId() {
+        $("#ddlDirectedToId_hdnIdToSaveValue").val('')
+        var token = $("input[name='__RequestVerificationToken']").val();
+        if ($("#EntityId").val() != "") {
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("GetUsersByOrgUnitId")',
+                data: { id: $("#EntityId").val(), __RequestVerificationToken: token  },
+                success:
+               function (data) {
+                   debugger
+                   $("#ddlEditorAssginmentIndividualToUserId").val("");
+                   $("#hdnEditorAssginmentIndividualToUserId").val("");
+                   AutoCompleteChangeList("ddlEditorAssginmentIndividualToUserId", data);
+                   $("#ddlEditorAssginmentIndividualToUserId").prop('disabled', false);
+               }
+            });
+            return false;
+        }
+        else {
+            $("#ddlEditorAssginmentIndividualToUserId").prop('disabled', true);
+            $("#ddlEditorAssginmentIndividualToUserId").val("");
+            $("#hdnEditorAssginmentIndividualToUserId").val("");
+            AutoCompleteChangeList("ddlEditorAssginmentIndividualToUserId", "[]");
+        }
+    }
+
+
+        $(document).on("click", "span[data-node-id]", function () {
+     
+        var elemnt = $(this);
+
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('LoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetExternalPartyNodes")',
+                data: { parentId: $(this).data("node-id"), letterId: $("#hdnInboundDocumentType").val(), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+                success:
+               function (data) {
+                
+                   $(elemnt).closest('li').children('ul').last().empty()
+
+                   $(elemnt).closest('li').children('ul').last().append(data);
+
+                   if ($(elemnt).attr('data-isRefreshEnabled').toLowerCase() == 'false') {
+
+                       $(elemnt).removeClass("LoadedData")
+
+                   }
+
+               }
+            });
+        }
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('InternalLoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetOrgUnitsNodes")',
+                data: { parentId: $(this).data("node-id"), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+                success:
+               function (data) {
+                
+                   $(elemnt).closest('li').children('ul').last().empty()
+
+                   $(elemnt).closest('li').children('ul').last().append(data);
+
+                   $(elemnt).removeClass("InternalLoadedData");
+               }
+            });
+        }
+    });
+
+
+    @*function DoCheckOrgUnit() {
+     
+           $("#ddlEditorAssginmentIndividualToUserId_hdnIdToSaveValue").val('')
+        var token = $("#frmEditorAssignment").find("input[name='__RequestVerificationToken']").val();
+        var EntityId = $('[name=EntityId]').val()
+        if (EntityId != "") {
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("GetUsersByOrgUnitId" , "File")',
+                data: { id: EntityId, __RequestVerificationToken: token  },
+                success:
+               function (data) {
+                
+                   $("#ddlEditorAssginmentIndividualToUserId").val("");
+                   AutoCompleteChangeList("ddlEditorAssginmentIndividualToUserId", data);
+                   $("#ddlEditorAssginmentIndividualToUserId").prop('disabled', false);
+               }
+            });
+            return false;
+        }
+        else {
+            $("#ddlEditorAssginmentIndividualToUserId").prop('disabled', true);
+            $("#ddlEditorAssginmentIndividualToUserId").val("");
+            AutoCompleteChangeList("ddlEditorAssginmentIndividualToUserId", "[]");
+        }
+    }*@
+
+
+    function CheckAssignment() {
+        if ($('[name=EntityId]').val()) {
+            $('[name=EntityId]').addClass("RedBorder");
+        }
+        else {
+            $('[name=EntityId]').removeClass("RedBorder");
+        }
+        return true;
+    }
+
+
+</script>

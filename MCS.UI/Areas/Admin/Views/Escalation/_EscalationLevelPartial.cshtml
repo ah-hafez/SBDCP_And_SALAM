@@ -1,0 +1,165 @@
+﻿@using MCS.UI.Areas.Admin.Models.Escalation
+@using MCS.Common
+@using MCS.Framework.Localization
+@{
+    Layout = null;
+}
+
+@model EscalationVM
+
+@using (Html.BeginForm())
+{
+    <div id="dvEscalationBody_@Model.PriorityId">
+        @Html.AntiForgeryToken()
+        <div class="card-header">
+            <h3 class="m-0"> @DbRes.TResource("Admin.Escalation.Title") (@Model.Priority) </h3>
+        </div>
+        <div class="card-body form-row " id="dvEscalationForm_@Model.PriorityId">
+
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-group col-lg-4 col-md-6  col-sm-6 col-xs-12">
+                <label class="w-100">@DbRes.TResource("Admin.Escalation.NumberofDays") (@DbRes.TResource("Admin.User.Day")) <span class="red-color ml-1">*</span></label>
+                @Html.NumericTextBoxFor(model => model.EscalationAfterDays, new { @class = "form-control", Value = "", id = "EscalationAfterDays_" + Model.PriorityId }, validationGroup: "Escalation_" + Model.PriorityId)
+            </div>
+
+            <div class="form-group col-lg-4 col-md-6 col-sm-6 col-xs-12">
+                <label class="w-100">@DbRes.TResource("User.Transaction.Assignment.ActionId") <span class="red-color ml-1">*</span></label>
+                @Html.AutoCompleteBuilder("ddlActionId_" + Model.PriorityId, "hdnActionId_" + Model.PriorityId, ViewData["EscalationAction"].ToString(), Model != null ? Model.EscalationActionId.ToString() : null, true, "form-control")
+                @Html.HiddenFor(model => model.EscalationAction, new { id = "hdnActionName_" + Model.PriorityId })
+                @Html.HiddenGroupFor(model => model.EscalationActionId, new { id = "hdnActionId_" + Model.PriorityId }, "Escalation_" + Model.PriorityId)
+            </div>
+            <div class="form-group col-lg-4 col-md-6 col-sm-6 col-xs-12">
+                <label class="w-100">@DbRes.TResource("Admin.Setting.EscalationTo") <span class="red-color ml-1">*</span></label>
+                @Html.AutoCompleteBuilder("ddlEscalationToId_" + Model.PriorityId, "hdnEscalationToId_" + Model.PriorityId, ViewData["EscalationTo"].ToString(), Model != null ? Model.EscalationToId.ToString() : null, true, "form-control")
+                @Html.HiddenFor(model => model.EscalationTo, new { id = "hdnEscalationToName_" + Model.PriorityId })
+                @Html.HiddenGroupFor(model => model.EscalationToId, new { id = "hdnEscalationToId_" + Model.PriorityId }, "Escalation_" + Model.PriorityId)
+            </div>
+            <div class="form-group col-lg-12 col-md-12 col-xs-12 col-sm-12 ">
+                <div class="mt-2 text-danger pull-left">
+                    <p class="stark">@DbRes.TResource("Admin.User.MustFill") * </p>
+                </div>
+            </div>
+        </div>
+        <div class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12 align-self-end  text-right">
+            @Html.StickyHiddenFor(model => model.Id, new { id = "hdnEditId_" + Model.PriorityId })
+            @Html.ClientActionButton(DbRes.TResource("User.Transaction.Copies.Add"), Url.Action("AddEscalation", "Escalation"), "dvEscalationsGrid_" + Model.PriorityId, "EscalationAddOnSuccess", null, "Escalation_" + Model.PriorityId, "btnAddEscalation_" + Model.PriorityId, "dvEscalationBody_" + Model.PriorityId, "btn-site ", null, "", "", "<i class='glyphicon glyphicon-plus'></i>")
+            @Html.ClientActionButton(DbRes.TResource("User.Transaction.Copies.Edit"), Url.Action("EditEscalation", "Escalation"), "dvEscalationsGrid_" + Model.PriorityId, "EscalationOnEditSuccess", null, "Escalation_" + Model.PriorityId, "btnEditEscalation_" + Model.PriorityId, "dvEscalationBody_" + Model.PriorityId, "btn-site hidden_", "", null, "")
+         
+            <a class="btn-site" style="display:none" id="CancelEscalation_@Model.PriorityId" , onclick="CancelEscalationEdit(@Model.PriorityId); return false;">@DbRes.TResource("User.Transaction.Name.Cancel")</a>
+        </div>
+        <hr />
+        <div class="w-100 d-flex align-items-center mt-2 mb-2 ">
+            <h3 class="white-c-title">@DbRes.TResource("Admin.Escalation.Grid") (@Model.Priority)</h3>
+        </div>
+        <hr />
+        <div class="panel-body">
+            <div id="dvEscalationsGrid_@Model.PriorityId">
+                @Html.Partial("~/Areas/Admin/Views/Escalation/_EscalationsGridPartial.cshtml", Model.EscalationsGrid)
+            </div>
+        </div>
+        @Html.StickyHidden("PriorityId", Model.PriorityId.ToString(), new { id = "PriorityId_" + Model.PriorityId })
+        @Html.StickyHidden("CategoryId", Model.TransactionCategory.ToString(), new { id = "CategoryId" })
+        @Html.StickyHidden("Priority", Model.Priority, new { id = "PriorityName_" + Model.PriorityId })
+        @Html.StickyHidden("TransactionCategory", Model.TransactionCategory.ToString(), new { id = "CategoryId_" + Model.PriorityId })
+    </div>
+}
+
+<script>
+    function DeleteEscalation(Id)
+    {
+       ShowCustomConfirmMessage('@DbRes.TValidation("Admin.Escalation.ConfirmDelete")', 'DeleteEscalationCallBack', Id);
+    }
+    function DeleteEscalationCallBack(Id) {
+        var token = $("input[name='__RequestVerificationToken']").val();
+         $.ajax({
+            type: 'post',
+            url: '@Url.Action("DeleteEscalation", "Escalation")',
+             data: { ids: Id, __RequestVerificationToken: token },
+            success:
+                function (data) {
+                    if (data.MessageType != 2) {
+                        $("#dvEscalationsGrid_" + data.priorityId).html("");
+                        $("#dvEscalationsGrid_" + data.priorityId).append(data.Html);
+                        $('#grid-table-grdEscalations').find('#Id_' + $("#hdnEditId_" + data.priorityId).val()).closest('tr').removeClass("grid-row-selected");
+                        $("#btnEditEscalation_" + data.priorityId).hide();
+                        $("#btnAddEscalation_" + data.priorityId).show();
+                        $("#CancelEscalation_" + data.priorityId).hide();
+                        ClearInputs("dvEscalationForm_" + data.priorityId);
+                        ShowSuccesMessage(data.MessageText);
+
+                    } else {
+                        ShowErrorMessage(data.MessageText);
+                    }
+                }
+        });
+    }
+
+    function CancelEscalationEdit(PriorityId) {
+        $("#btnEditEscalation_" + PriorityId).hide();
+        $("#btnAddEscalation_" + PriorityId).show();
+        $("#CancelEscalation_" + PriorityId).hide();
+        $('#grid-table-grdEscalations').find('#Id_' + $("#hdnEditId_" + PriorityId).val()).closest('tr').removeClass("grid-row-selected");
+
+        ClearInputs("dvEscalationForm_" + PriorityId);
+    }
+    function EscalationOnDeleteSuccess(data) {
+        if (data.MessageType != 2) {
+            $("#dvEscalationsGrid_" + data.priorityId).html("");
+            $("#dvEscalationsGrid_" + data.priorityId).append(data.Html);
+            $('#grid-table-grdEscalations').find('#Id_' + $("#hdnEditId_" + data.priorityId).val()).closest('tr').removeClass("grid-row-selected");
+
+            ShowSuccesMessage(data.MessageText);
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+    function EscalationOnEditSuccess(data) {
+        if (data.MessageType != 2) {
+            if (data.Id != "") {
+                //$('#grid-table-grdEscalations').find('#Id_' + data.Id).closest('tr').replaceWith(data.Html);
+                $("#dvEscalationsGrid_" + data.priorityId).html("");
+                $("#dvEscalationsGrid_" + data.priorityId).append(data.Html);
+            }
+            ClearInputs("dvEscalationForm_" + data.priorityId);
+            $("#btnAddEscalation_" + data.priorityId).show();
+            $("#btnEditEscalation_" + data.priorityId).hide();
+            ShowSuccesMessage(data.MessageText);
+            $("#CancelEscalation_" + data.priorityId).hide();
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+    function EscalationAddOnSuccess(data) {
+        if (data.MessageType != 2) {
+            $("#grid-table-grdEscalations > tbody > .grid-empty-text").remove();
+            $("#dvEscalationsGrid_" + data.priorityId).html("");
+            $("#dvEscalationsGrid_" + data.priorityId).append(data.Html);
+            ShowSuccesMessage(data.MessageText);
+            ClearInputs("dvEscalationForm_" + data.priorityId);
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+    function GetEscalationById(Id, PriorityId) {
+        $("#EscalationAfterDays_" + PriorityId).val($("#EscalationAfterDays_" + Id).val());
+        $("#ddlActionId_" + PriorityId).val('');
+        $("#hdnActionId_" + PriorityId).val($("#EscalationActionId_" + Id).val());
+        $("#ddlActionId_" + PriorityId).val($("#EscalationActionName_" + Id).val());
+        $("#hdnActionName_" + PriorityId).val($("#EscalationActionName_" + Id ).val());
+
+        $("#ddlEscalationToId_" + PriorityId).val('');
+        $("#hdnEscalationToId_" + PriorityId).val($("#EscalationToId_" + Id ).val());
+        $("#ddlEscalationToId_" + PriorityId).val($("#EscalationToName_" + Id ).val());
+        $("#hdnEscalationToName_" + PriorityId).val($("#EscalationToName_" + Id).val());
+
+        $("#hdnEditId_" + PriorityId).val(Id);
+        $("#btnEditEscalation_" + PriorityId).removeClass("hidden_");
+        $("#btnAddEscalation_" + PriorityId).hide();
+        $("#btnEditEscalation_" + PriorityId).show();
+        $("#CancelEscalation_" + PriorityId).show();
+        return false;
+    }
+</script>

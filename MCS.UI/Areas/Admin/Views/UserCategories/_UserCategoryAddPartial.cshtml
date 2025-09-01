@@ -1,0 +1,52 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.UserCategories
+@using MCS.UI.Areas.User.Models.Lookups
+
+@model AddUserCategoryVM
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmAddUserCategory", @class = "form-horizontal form-row" }))
+{
+    @Html.AntiForgeryToken()
+    <div id="AddUserCategoryContent" class="panel-body">
+        <p>@DbRes.TResource("Global.Forms.MandatoryFields")</p>
+
+        <div class="row">
+            <div class="col-md-6">
+
+                @{List<CultureVM> cultureVMs = ViewData["Culture"] as List<CultureVM>;}
+
+                @if (cultureVMs != null)
+                {
+                    for (int i = 0; i < cultureVMs.Count; i++)
+                    {
+                        <div class="form-group">
+                            @Html.CustomLabelFor(model => model.Categories[i].CultureName, new { @class = "col-md-4 control-label" }, DbRes.TResource("Admin.UserCategory.Categories." + cultureVMs[i].ShortName))
+                            @Html.StickyHiddenFor(model => model.Categories[i].CultureId, new { Value = cultureVMs[i].Id })
+                            <div class="col-md-8">
+                                <div class="">
+                                    @Html.TextBoxGroupFor(model => model.Categories[i].Text, null, new { @class = "form-control" }, DbRes.TValidation("Admin.UserCategory.NameRequired." + cultureVMs[i].ShortName))
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.CustomLabelFor(model => model.PermissionId, new { @class = "col-md-4 control-label" })
+                    <div class="col-md-8">
+                        <div class="">
+                            @Html.AutoCompleteBuilder("ddlAddPermissionId", "hdnAddPermissionId", ViewData["UserCategories"].ToString(), null, true, "form-control")
+                            @Html.HiddenGroupFor(model => model.PermissionId, new { id = "hdnAddPermissionId", @Value = "" })
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel-footer middle">
+        @Html.ActionButton(DbRes.TResource("Admin.UserCategory.Save"), "AddUserCategory", "dvGrid", null, null, "OnAddSuccess", null, "post", null, "btnAddUserCategory", "frmAddUserCategory", "btn btn-site pull-right")
+        @Html.ResetButton("ClearInputs('AddUserCategoryContent')")
+    </div>
+}

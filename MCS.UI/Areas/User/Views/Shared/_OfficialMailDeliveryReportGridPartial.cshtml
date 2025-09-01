@@ -1,0 +1,71 @@
+﻿@using MCS.UI.Areas.User.Models.Transaction;
+@model List<DeliveryReportTransactionVM>
+    <style type="text/css">
+        table.rprtGrid {
+            width: 100%;
+            border: 1px solid #000000;
+        }
+
+            table.rprtGrid td {
+                padding: 5px;
+                border-bottom: 1px dashed #CCCCCC;
+            }
+
+        table.rprtGridInternal {
+            border: 0px solid #000000;
+            width: 100%;
+        }
+
+            table.rprtGridInternal td {
+                padding: 5px;
+                border: 0px;
+            }
+
+        table.rprtGridSubInternal {
+            border: 1px solid #000000;
+            width: 100%;
+            font-size: 11px;
+        }
+
+            table.rprtGridSubInternal td {
+                padding: 0px;
+                border: 1px solid;
+            }
+
+        .rowReport {
+            line-height: 30px;
+            text-align: right;
+        }
+    </style>
+    <table class="rprtGrid">
+        <tr>
+            <td style="text-align: right">أ</td>
+            <td colspan="3">بيانات تعبأ بمعرفة مندوب الجهة المرسلة</td>
+            <td colspan="5">البيانات الرسمية</td>
+        </tr>
+        <tr>
+            <td width="1%"></td>
+            <td width="14%"><b>@DbRes.TResource("User.File.TransactionNumber")</b></td>
+            <td width="15%"><b>@DbRes.TResource("User.Editor.BasicInfo.Inbound.Date")</b></td>
+            <td width="40%"><b>@DbRes.TResource("User.Transaction.ToEntity")</b></td>
+            <td width="5%"><b>@DbRes.TResource("User.Transaction.Weight")</b></td>
+            <td width="5%"><b>@DbRes.TResource("User.Transaction.Category")</b></td>
+            <td width="5%"><b>@DbRes.TResource("User.Transaction.Local")</b></td>
+            <td width="5%"><b>@DbRes.TResource("User.Transaction.Arabian")</b></td>
+            <td width="5%"><b>@DbRes.TResource("User.Transaction.Foreign")</b></td>
+        </tr>
+        @foreach (DeliveryReportTransactionVM m in Model)
+        {
+        <tr>
+            <td width="1%"></td>
+            <td width="14%">@m.TransactionNumberString</td>
+            <td width="15%">@m.DateH</td>
+            <td width="40%">@m.ToEntity</td>
+            <td width="5%"></td>
+            <td width="5%"></td>
+            <td width="5%"></td>
+            <td width="5%"></td>
+            <td width="5%"></td>
+        </tr>
+        }
+    </table>

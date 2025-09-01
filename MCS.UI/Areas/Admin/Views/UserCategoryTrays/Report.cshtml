@@ -1,0 +1,138 @@
+﻿@using MCS.UI.Areas.User.Models.Shared
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.UserCategories
+@using MCS.Common
+@using MCS.UI.Areas.Admin.Models.Permission
+@using MCS.UI.Areas.Admin.Models.Tray
+@using MCS.UI.Areas.Admin.Models
+
+@model UsersTraysAndPermissionsViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="ar" style="background:none;">
+<head>
+    <title>مراسلات</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="stylesheet" type="text/css" href="@Server.MapPath(Url.Content("~/Content/Admin/lib/fonts/fonts.css"))" />
+    <link rel="stylesheet" type="text/css" href="@Server.MapPath(Url.Content("~/Content/Admin/lib/css/style_"+SessionInfo.CultureShortName+".css"))" />
+    <link rel="stylesheet" type="text/css" href="@Server.MapPath(Url.Content("~/Content/Admin/lib/css/theme_" + SessionInfo.CultureShortName + ".css"))" />
+    <link rel="stylesheet" type="text/css" href="@Server.MapPath(Url.Content("~/Content/Admin/lib/css/admin_" + SessionInfo.CultureShortName + ".css"))" />
+
+</head>
+<body style="background:none;">
+
+    <div class="content-rtl panel panel-default dialogbox_panel">
+
+        <div class="modal-body">
+            <div class="report">
+                <div class="scroll light_white">
+
+                    <div class="header_report">
+                        <div class="report_logo">
+                            <img src="@Server.MapPath(Url.Content("~/Content/Admin/lib/img/morasalat/logo_morasalat.png"))">
+                        </div>
+                        <div class="report_main_info first">
+                            <div class="group">
+                                <div class="style_a">@DbRes.TResource("Admin.UsersTraysPermissionsReport.Title") </div>
+                                @{UserVM userVM = SessionInfo.GetObjectFromSession(Constants.LoggedInUserKey) as UserVM;}
+                                <div class="style_b">@userVM.BaseOrgUnitName</div>
+                            </div>
+                            <div class="group">
+                                <div class="">@DbRes.TResource("Admin.UsersTraysPermissionsReport.DateAndTime")  : <span>@(DateTimeUtility.ConvertToUmAlQuraCalendar(DateTime.Now) + " " + DateTime.Now.ToShortTimeString())</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content_report">
+                        <div class="panel-body">
+                            @{ UsersAndTraysReportType usersAndTraysReportType = (UsersAndTraysReportType)(int)ViewData["Type"];}
+                            @switch (usersAndTraysReportType)
+                            {
+                                case UsersAndTraysReportType.User:
+                                    <div class="row report_all">
+                                        <p class="title_report_all">@DbRes.TResource("Admin.UsersTraysPermissionsReport.Users")</p>
+                                        <ul class="list_report_all">
+                                            <li class=""><span>@Model.Users[0].LocalName</span></li>
+                                        </ul>
+                                    </div>
+                                    <div class="row report_all">
+                                        <p class="title_report_all">@DbRes.TResource("Admin.UsersTraysPermissionsReport.Permissions")</p>
+                                        <ul class="list_report_all">
+                                            @foreach (PermissionVM permissionDTOVM in Model.Permissions)
+                                            {
+                                                <li class=""><span>@permissionDTOVM.Text</span></li>
+                                            }
+                                        </ul>
+                                    </div>
+                                    <div class="row report_all">
+                                        <p class="title_report_all">@DbRes.TResource("Admin.UsersTraysPermissionsReport.Trays")</p>
+                                        <ul class="list_report_all">
+                                            @if (Model.Trays != null && Model.Trays.Count > 0)
+                                            {
+                                                foreach (TrayVM trayVM in Model.Trays)
+                                                {
+                                                    <li class=""><span>@trayVM.LocalName</span></li>
+                                                }
+                                            }
+                                        </ul>
+                                    </div>
+                                    break;
+                                case UsersAndTraysReportType.Permission:
+                                    <div class="row report_all">
+                                        <p class="title_report_all">@DbRes.TResource("Admin.UsersTraysPermissionsReport.Permissions")</p>
+                                        <ul class="list_report_all">
+                                            <li class=""><span>@Model.Permissions[0].Text</span></li>
+                                        </ul>
+                                    </div>
+                                    <div class="row report_all">
+                                        <p class="title_report_all">@DbRes.TResource("Admin.UsersTraysPermissionsReport.Users")</p>
+                                        <ul class="list_report_all">
+                                            @foreach (UserProfileVM userProfileVM in Model.Users)
+                                            {
+                                                <li class=""><span>@userProfileVM.LocalName</span></li>
+                                            }
+                                        </ul>
+                                    </div>
+                                    break;
+                                case UsersAndTraysReportType.Tray:
+                                    <div class="row report_all">
+                                        <p class="title_report_all">@DbRes.TResource("Admin.UsersTraysPermissionsReport.Trays")</p>
+                                        <ul class="list_report_all">
+                                            <li class=""><span>@Model.Trays[0].LocalName</span></li>
+                                        </ul>
+                                    </div>
+                                    <div class="row report_all">
+                                        <p class="title_report_all">@DbRes.TResource("Admin.UsersTraysPermissionsReport.Users")</p>
+                                        <ul class="list_report_all">
+                                            @foreach (UserProfileVM userProfileVM in Model.Users)
+                                            {
+                                                <li class=""><span>@userProfileVM.LocalName</span></li>
+                                            }
+                                        </ul>
+                                    </div>
+                                    break;
+                            }
+                        </div>
+
+
+                    </div>
+
+
+
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+</body>
+</html>

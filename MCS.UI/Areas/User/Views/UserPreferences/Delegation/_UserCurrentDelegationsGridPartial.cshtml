@@ -1,0 +1,101 @@
+﻿@using MCS.UI.Areas.User.Models.UserPreferences.UserDelegation;
+@model AjaxGrid<UserDelegationVM>
+@using MCS.UI.Helpers
+
+@{
+    Layout = null;
+}
+
+@Html.Grid(Model).CollectionName("DelegationListGrid").Named("grdCurrentDelegations").Columns(columns =>
+{
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Id, new { id = "Id_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Key, new { id = "Key_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.FromDate, new { id = "FromDate_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.FromDateG, new { id = "FromDateG_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.ToDate, new { id = "ToDate_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.ToDateG, new { id = "ToDateG_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.FromDateH, new { id = "FromDateH_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.ToDateH, new { id = "ToDateH_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.OrgUnitId, new { id = "OrgUnitId_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.OrgUnit, new { id = "OrgUnit_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.DirectedToId, new { id = "DirectedToId_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.DirectedTo, new { id = "DirectedTo_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Status, new { id = "Status_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.StatusId, new { id = "StatusId_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.ReceiveCopy, new { id = "ReceiveCopy_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.ShowTransaction, new { id = "ShowTransaction_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.SelectedTransactionCategoriesIdList, new { id = "SelectedTransactionCategoriesIdList_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.SelectedConfidentialityLevelsIdList, new { id = "SelectedConfidentialityLevelsIdList_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+
+
+    columns.Add(model => model.DirectedTo).Titled(DbRes.TResource("User.UserDelegation.EmployeeName"));
+    columns.Add(model => model.OrgUnit).Titled(DbRes.TResource("User.UserDelegation.Unit"));
+    columns.Add(model => model.Status).Titled(DbRes.TResource("User.UserDelegation.Status"));
+    columns.Add(false).RenderValueAs(model => @DateHelper.GetDate(model.FromDateH)).Titled(DbRes.TResource("User.UserDelegation.FromDate"));
+    columns.Add(false).RenderValueAs(model => @DateHelper.GetDate(model.ToDateH)).Titled(DbRes.TResource("User.UserDelegation.ToDate"));
+    columns.Add().Encoded(false).Sanitized(false).Titled(DbRes.TResource("User.UserDelegation.ReceiveCopy")).RenderValueAs(model => Html.CheckBox("checked", model.ReceiveCopy, new { value = model.ReceiveCopy, @disabled = "disabled"  }));
+    columns.Add().Encoded(false).Sanitized(false).Titled(DbRes.TResource("User.UserDelegation.ShowTransaction")).RenderValueAs(model => Html.CheckBox("checked", model.ShowTransaction, new { value = model.ShowTransaction, @disabled = "disabled" }));
+
+    columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => @Html.ClientLinkTag("", cssClass: "edit_link", title: DbRes.TResource("User.UserDelegation.RejectionReason"), clientFunctionToCall: "DisplayRejectReason('" + model.RejectionReason + "')", innerHtml: "<i class='fa fa-eye'></i>")).Titled(DbRes.TResource("User.UserDelegation.RejectionReason"));
+    columns.Add(model => model.SelectedTransactionCategoriesText).Titled(DbRes.TResource("نوع المعاملة"));
+    columns.Add(model => model.SelectedConfidentialityLevelsText).Titled(DbRes.TResource("درجة السرية"));
+
+    //columns.Add(model => model.FromDateH).Encoded(false).Sanitized(false).Titled(DbRes.TResource("User.UserDelegation.FromTo")).RenderValueAs(m => @<label> @m.FromDateH - @m.ToDateH</label>);
+    //columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(m => @<a class="edit_link" onclick="GetDelegationByIndex(@(index++))" title="@DbRes.TResource("Grid.Edit")"><i class='fa fa-edit'></i></a>).Titled(DbRes.TResource("Grid.Edit"));
+    //columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => @Html.ConfirmImageButton(Url.Action("DeleteDelegation", "UserPreferences"), "grdCurrentDelegations", 0, "dvCurrentGrid", "footer :input", null, "OnDeleteDelegationSuccess", null, "post", DbRes.TResource("Grid.DeleteMassage"), "")).Titled(DbRes.TResource("Grid.Delete")); 
+    columns.Add().Titled("حذف").Encoded(false).Sanitized(false).Css("fixed_col text-right site-danger action-icon").RenderValueAs(model => @Html.ClientLinkTag("", cssClass: "edit_link", title: DbRes.TResource("Grid.Delete"), clientFunctionToCall: "DeleteDelegation(" + model.Id + "," + model.Key + ")", innerHtml: "<i class='fa fa-ban btn btn-st6'>"));
+    columns.Add().Titled("تعديل").Encoded(false).Sanitized(false).Css("fixed_col text-right site-danger action-icon").RenderValueAs(model => @Html.ClientLinkTag("", cssClass: "edit_link", title: DbRes.TResource("Grid.Edit"), clientFunctionToCall: "GetDelegationByKey(" + model.Key + ")", innerHtml: "<i class='fa fa-edit'></i>"));
+    //columns.Add().Encoded(false).Sanitized(false).Css("fixed_col text-right site-danger action-icon").RenderValueAs(model => @Html.ClientLinkTag("", cssClass: "edit_link", title: DbRes.TResource("Grid.Delete"), clientFunctionToCall: "DeleteDelegation(" + model.Id +","+model.Key+ ")" , innerHtml: "<i class='glyphicon glyphicon-trash color-danger'></i>"));
+
+})
+
+<script>
+
+    var DelegationId;
+    function DeleteDelegation(delegateId, keyId) {
+         
+        if (delegateId == 0) {
+            DeleteActionGrid('grdCurrentDelegations', keyId, "@DbRes.TResource("User.UserDelegation.ConfirmDisable")", 'dvAddDelegation', 'CancelDelegationEdit');
+        }
+        else {
+            DelegationId = delegateId;
+            ShowConfirmMessage("@DbRes.TResource("User.UserDelegation.ConfirmDisable")", "ConfirmDeleteDelegation");
+        }
+    }
+
+    function ConfirmDeleteDelegation() {
+        
+        var token = $("#frmUserDelegation").find("input[name='__RequestVerificationToken']").val();
+        var data = { delegateId: DelegationId, __RequestVerificationToken: token};
+        $.ajax({
+            url: '@Url.Action("DeleteDelegationById", "UserPreferences")',
+            type: 'POST',
+            cache: false,
+            //contentType: "application/json",
+            data: data,
+            success: function (data) {
+                if (data.MessageType == 2) {
+                    ShowErrorMessage(data.MessageText);
+                    return;
+                }
+                window.location.reload();
+            },
+            error: function (a, b, c, d) {
+                ShowErrorMessage('حدث خطأ');
+            }
+        });
+    }
+    @*$(document).ready(function () {
+        userDelegation();
+    })
+    function userDelegation() {
+        $(".grid-mvc").gridmvc();
+        pageGrids.grdCurrentDelegations.ajaxify(
+            {
+                getPagedData: '@Html.Raw(Url.Action("UpdateGridDelegations", "UserPreferences"))',
+                getData: '@Html.Raw(Url.Action("UpdateGridDelegations", "UserPreferences"))',
+                requestType: "POST"
+            });
+    }*@
+</script>

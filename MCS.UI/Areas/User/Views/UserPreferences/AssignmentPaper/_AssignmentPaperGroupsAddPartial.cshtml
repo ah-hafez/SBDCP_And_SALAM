@@ -1,0 +1,50 @@
+﻿@using MCS.Framework.Localization;
+@using MCS.UI.Areas.Admin.Models.Lookups
+@using MCS.UI.Areas.User.Models.OrgUnit
+@model AssignmentPaperGroupVM
+@{
+    ViewBag.Title = "_AssignmentPaperGroupAddPartial";
+    Layout = null;
+}
+
+<div class="d-flex flex-column flex-md-row align-items-md-center flex-grow-1">
+    <h3 class="site-color mb-4">إضافة مجموعة</h3>
+</div>
+<div class="row">
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmAddAssignmentPaperGroup" }))
+    {
+        @Html.AntiForgeryToken()
+        <div id="AddAssignmentPaperGroupContent" class="form-row">
+
+
+
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                @Html.CustomLabelFor(model => model.Name, new { @class = "" }, DbRes.TResource("اسم المجموعة"))
+                @*@Html.StickyHiddenFor(model => model.Name, new { Value = Model.Name })*@
+                @Html.TextBoxGroupFor(model => model.Name, "", new { @class = "form-control" }, DbRes.TValidation("الحقل مطلوب"))
+            </div>
+
+
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <label class="w-100">@DbRes.TResource("User.Transaction.Assignment.ActionId") <span class="stark">*</span></label>
+                @Html.AutoCompleteBuilder("ddlActionId", "hdnDefaultActionId", ViewData["ActionData"].ToString(), Model != null ? Model.DefaultActionId.ToString() : null, true, "form-control", "hdnActionTypeId")
+                @Html.HiddenGroupFor(model => model.DefaultActionId, new { @Value = Model.DefaultActionId, id = "hdnDefaultActionId" }, "AssignmentIndividual")
+                @Html.Hidden("descriptionText", null, new { id = "hdnDefaultActionText" })
+                <span class="help-block"></span>
+            </div>
+
+
+
+
+
+
+            <div class="form-group col-lg-3 col-md-6 col-sm-12 col-xs-12 mb-3">
+                <label class="w-100"></label>
+                @Html.ActionButton(DbRes.TResource("اضافة"), "AddAssignmentPaperGroup", "dvGrid", null, null, "OnAddSuccess", null, "post", null, "btnAdd", "frmAddAssignmentPaperGroup", "btn btn-lg btn-st3 mx-1")
+                @*@Html.ResetButton("ClearInputs('AddAssignmentPaperGroupContent')")*@
+            </div>
+        </div>
+
+
+    }
+</div>

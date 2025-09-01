@@ -1,0 +1,169 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models
+@using MCS.GridMvc.Ajax.GridExtensions
+
+
+@model List<UserPendingRequest>
+@{
+    ViewBag.Title = DbRes.TResource("Admin.UserManagement.UserManagement");
+    Layout = "~/Areas/User/Views/Shared/_SearchLayout.cshtml";
+}
+
+<div class="content_container site_border">
+    <div class="mx-3 mx-md-5 header-container d-flex flex-row align-items-center ">
+        <div class="d-flex flex-column flex-lg-row align-items-lg-center flex-grow-1 mb-3 mb-lg-0">
+            <h4 class="site-color mb-2 mb-lg-4 mt-4">@DbRes.TResource("Global.admin.RoleRequest") </h4>
+            <a href='@Url.Action("RequestRole","UserPreferences",new { area="User"})'>
+                <i class="fa fa-arrow-left" style="font-size:25px; position:absolute; left:27px;" title="@DbRes.TResource("User.Internalinbound.Back")"></i>
+            </a>
+        </div>
+
+    </div>
+
+
+
+    <div class="boxes px-md-1 mx-aut">
+        <div class="flex-wrap mx-auto mx-md-4">
+            <div style="margin-bottom:50px;">
+                <div class="boxes px-md-2 grid-mvc" data-lang="ar" data-gridname="UsersGrid" data-selectable="true" data-multiplefilters="false">
+                    <div class="tbody">
+                        <div class="d-flex flex-wrap mx-auto mx-md-4">
+                            <input type="hidden" name="UserProfileVMs.index" autocomplete="off" value="50ffa560-adca-48a0-a1ed-b7bf653afd8e">
+                            @foreach (var item in Model)
+                            {
+                                <div class="box-grid">
+
+                                    <div class="box no_sorting animated zoomIn buttons-action">
+                                        <div class="correspondence-b d-flex flex-wrap">
+                                            <div class="correspondence-h">
+                                                <div class="title">
+
+                                                    @item.GroupName
+                                                </div>
+                                            </div>
+                                            <div class="f-line w-full contact d-flex">
+                                                <div class="heading">المستخدم : </div>
+                                                <div class="ml-2">@item.UserName</div>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="correspondence-icon d-flex" style="gap:5px">
+                                            <a class="" title="قبول" onclick="ShowCustomConfirmMessage('@DbRes.TValidation("Admin.Confirm.Activation")', 'ApproveRoleRequested',  @item.Id)">
+                                                <img src="~/Content/User/lib/images/SystemIcon/accepted.svg" width="35" />
+
+                                                قبول
+                                            </a>
+
+                                            <div style="  margin-right:4px"></div>
+
+                                            <a class="" title="قبول" onclick="ShowCustomConfirmMessage('@DbRes.TValidation("Admin.Confirm.Activation")', 'RejectRoleRequested',  @item.Id)">
+                                                <img src="~/Content/User/lib/images/SystemIcon/cross.svg" width="25" />
+
+                                                رفض
+                                            </a>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            }
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    function ApproveRoleRequested(id) {
+     
+        var token = $("input[name='__RequestVerificationToken']").val();
+        $.ajax({
+            type: 'Post',
+            data: { id: id, __RequestVerificationToken: token  },
+            url: '@Url.Action("ApproveManagerRoleRequest", "UserPreferences")',
+            success: function (data) {
+                if (data.MessageType != 2) {
+                     ShowInformationMessage(data.MessageText, redirect());
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            }
+        });
+    }
+
+    function RejectRoleRequested(id) {
+     
+        var token = $("input[name='__RequestVerificationToken']").val();
+        $.ajax({
+            type: 'Post',
+            data: { id: id, __RequestVerificationToken: token  },
+            url: '@Url.Action("RejectManagerRoleRequest", "UserPreferences")',
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    ShowInformationMessage(data.MessageText, redirect());
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            }
+        });
+    }
+
+
+
+    function redirect() {
+        setTimeout(location.reload(), 3000);
+
+    }
+
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

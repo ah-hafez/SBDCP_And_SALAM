@@ -1,0 +1,25 @@
+﻿@using MCS.UI.Areas.User.Models.Assignment;
+@model AjaxGrid<TransactionAssignmentVM>
+
+@{int index = 0;}
+@{string controller = TempData.Peek("ControllerName") != null ? TempData.Peek("ControllerName").ToString() : ViewContext.RouteData.Values["controller"].ToString();}
+
+@Html.Grid(Model).Named("grdAssignmentIndividual").Columns(columns =>
+    {
+        columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").Titled("", "<input type='checkbox' id='chkall'></input>")
+                                          .RenderValueAs(o =>
+                                            @<div class="chkCol" id="spanCheckBox">
+                                                <input id="AssigneeSelectorcheckbox" type="checkbox" />
+                                            </div>);
+
+                columns.Add(true).RenderValueAs(m => (index++).ToString());
+                columns.Add(model => model.ToOrgUnitName).Titled(DbRes.TResource("User.Transaction.Assignment.ToOrgUnitId"));
+                columns.Add(model => model.ToUserName).Titled(DbRes.TResource("User.Transaction.Assignment.ToUserId"));
+                columns.Add(model => model.ActionName).Titled(DbRes.TResource("User.Transaction.Assignment.ActionId"));
+                columns.Add(model => model.DeliveryMethod).Titled("طريقة التسليم");
+
+                columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => @Html.GridImageButton(Url.Action("GetAssignmentIndividual", controller), "grdAssignmentIndividual", 1, OperationType.Update, "dvAssignmentIndividualBody", "dvAssignmentIndividual :input", null, "OnGetIndividualSuccess", "", "post")).Titled(DbRes.TResource("Grid.Edit"));
+                columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => Html.ConfirmImageButton(Url.Action("DeleteAssignmentIndividuals", controller), "grdAssignmentIndividual", 1, "dvAssignmentIndividualGrid", "dvAssignmentIndividual :input", null, "OnDeleteIndividualSuccess", null, "post", DbRes.TResource("Grid.DeleteMassage"))).Titled(DbRes.TResource("Grid.Delete"));
+            }).WithPaging(GridHelper.PageSize).Sortable().Filterable().WithMultipleFilters().UpdateActionUrl(Url.Action("UpdateGridAssignmentIndividual", controller)).RenderDeleteButton(Url.Action("DeleteAssignmentIndividuals", controller), 1, "dvAssignmentIndividual :input", "dvAssignmentIndividualGrid", "OnDeleteIndividualSuccess")
+
+

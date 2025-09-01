@@ -1,0 +1,229 @@
+﻿@using MCS.UI.Areas.Admin.Models.Actions
+@using MCS.Framework.Localization
+@using MCS.Common
+@model MergeDepartmentsVM
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_TransfersActionLayout.cshtml";
+    ViewBag.Title = @DbRes.TResource("Admin.Actions.MergeDepartments");
+}
+<div class="mx-3 mx-md-5 header-container d-flex flex-row align-items-center">
+    <div class="d-flex flex-column flex-lg-row align-items-lg-center flex-grow-1 mb-3 mb-lg-0">
+        <h3 class="site-color mb-2 mb-lg-4">@DbRes.TResource("Admin.Actions.MergeDepartments")</h3>
+        <div class="ml-lg-auto d-flex flex-column flex-md-row">
+        </div>
+    </div>
+</div>
+
+<div class="white-container mx-3 mx-md-5">
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmMergeDepartments" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="alert alert-danger w-100 hidden_" role="alert" id="dvValidationMessage">
+           
+        </div>
+        <div class="form-row" id="dvDepatrmentsContainer">
+            <div class="form-group col-lg-6 col-md-8 col-sm-12 col-xs-12" >
+                <fieldset class="field-set" id="dvEntityFrom">
+                    @Html.DepartmentsTree(ViewData["orgUnitDataInfo"] as TreeViewModel, model => model.MergedEntityId, TreeMode.Single, "treeMergedEntity", true, "GetUsersForBothOrgUnits", "BasicInformation", "dvEntityFrom")
+                </fieldset>
+                @*<label>@Html.DisplayNameFor(model => model.MergedEntityId)<span class="stark">*</span></label>
+                @Html.EditorFor(model => model.MergedEntityId, "OrgHierarchyCaller", additionalViewData: new { treeId = "treeMergedEntity", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Common"), GetNodeInfoByIdActionURL = @Url.Action("GetInternalPartyInfoById", "Common"), GetNodeInfoByNumActionURL = @Url.Action("GetInternalPartyInfoByNumber", "Common"), onClickfunction = "GetUsersForBothOrgUnits", ValidationGroup = "", ShowAddPartyButton = false })*@
+                
+                @Html.HiddenGroupFor(model => model.MergedEntityId, null, "")
+                <div id="dvEntityFromValidationMessage" class="hidden_">
+                    <i id="FromGlyphicon" style="color:red" class="glyphicon glyphicon-exclamation-sign"></i>
+                    <span id="MergedEntityMessage" style="color:red">@DbRes.TValidation("Admin.Actions.MergeEntities.MergedEntityValidation")</span>
+                </div>
+            </div>
+            <div class="form-group col-lg-6 col-md-8 col-sm-12 col-xs-12" id="dvEntityTo">
+                <fieldset class="field-set">
+                    @Html.DepartmentsTree(ViewData["orgUnitDataInfo"] as TreeViewModel, model => model.BaseEntityId, TreeMode.Single, "treeBaseEntity", true, "GetUsersForBothOrgUnits", "BasicInformation", "dvEntityTo")
+                </fieldset>
+                @*<label>@Html.DisplayNameFor(model => model.BaseEntityId)<span class="stark">*</span></label>
+                @Html.EditorFor(model => model.BaseEntityId, "OrgHierarchyCaller", additionalViewData: new { treeId = "treeBaseEntity", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Common"), GetNodeInfoByIdActionURL = @Url.Action("GetInternalPartyInfoById", "Common"), GetNodeInfoByNumActionURL = @Url.Action("GetInternalPartyInfoByNumber", "Common"), onClickfunction = "GetUsersForBothOrgUnits", ValidationGroup = "", ShowAddPartyButton = false })*@
+                @*@Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.BaseEntityId, TreeMode.Single, "treeBaseEntity", true, "GetUsersForBothOrgUnits", "BasicInformation", "dvEntityTo")*@
+                @Html.HiddenGroupFor(model => model.BaseEntityId, null, "")
+                <div id="dvEntityToValidationMessage" class="hidden_">
+                    <i id="ToGlyphicon" style="color:red" class="glyphicon glyphicon-exclamation-sign"></i>
+                    <span id="BaseEntityMessage" style="color:red">@DbRes.TValidation("Admin.Actions.MergeEntities.BaseEntityValidation")</span>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix w-100"></div>
+        <div class="form-group col-lg-4 col-md-6 col-sm-6 col-xs-12">
+            <label for="">
+                المدير
+                <span class="red-color ml-1">*</span>
+            </label>
+            @Html.AutoCompleteBuilder("ddlUsers", "hdnManagerId", "", Model.ManagerId.ToString(), true, "form-control")
+            @Html.StickyHiddenFor(model => model.ManagerId, new { id = "hdnManagerId" })
+            <div id="dvManagerValidationMessage" class="hidden_">
+                <i id="ToGlyphicon" style="color:red" class="glyphicon glyphicon-exclamation-sign"></i>
+                <span id="ManagerMessage" style="color:red">@DbRes.TValidation("Admin.Actions.MergeEntities.ManagerValidation")</span>
+            </div>
+        </div>
+        <div class="form-group col-lg-4 col-md-6  col-sm-6 col-xs-12">
+            <label for="">@DbRes.TResource("Admin.Actions.MergeEntities.NewEntityNameAr")</label>
+            @Html.TextBoxFor(model => model.NewEntityNames[0].Text, new { id = "NewEntityNameAr", @class = "form-control" })
+            @Html.StickyHiddenFor(model => model.NewEntityNames[0].CultureId, new { @Value = (int)CultureType.Arabic })
+            <div id="dvNewEntityNameArValidationMessage" class="hidden_">
+                <i id="ToGlyphicon" style="color:red" class="glyphicon glyphicon-exclamation-sign"></i>
+                <span id="NewEntityNameArMessage" style="color:red">@DbRes.TValidation("Admin.Actions.MergeEntities.NewEntityNameArValidation")</span>
+            </div>
+        </div>
+        <div class="form-group col-lg-4 col-md-6  col-sm-6 col-xs-12">
+            <label for="">@DbRes.TResource("Admin.Actions.MergeEntities.NewEntityNameEn")</label>
+            @Html.TextBoxFor(model => model.NewEntityNames[1].Text, new { id = "NewEntityNameEn", @class = "form-control" })
+            @Html.StickyHiddenFor(model => model.NewEntityNames[1].CultureId, new { @Value = (int)CultureType.English })
+            <div id="dvNewEntityNameEnValidationMessage" class="hidden_">
+                <i id="ToGlyphicon" style="color:red" class="glyphicon glyphicon-exclamation-sign"></i>
+                <span id="NewEntityNameEnMessage" style="color:red">@DbRes.TValidation("Admin.Actions.MergeEntities.NewEntityNameEnValidation")</span>
+            </div>
+        </div>
+        <div class="form-group col-lg-12 col-md-12 col-xs-12 col-sm-12 d-flex">
+            <small class="text-danger ml-auto">
+                يرجى تعبئة الحقول التي تحتوي على إشارة *
+            </small>
+        </div>
+    }
+</div>
+<div id="ChangeNamesDialog">
+
+</div>
+<div class="mx-3 mx-md-5 mb-4 d-flex">
+    <div class="ml-auto">
+        <button class="btn btn-lg btn-st3 mx-1" onclick="checkInputs()">@DbRes.TResource("Admin.Actions.MergeEntities.Merge")</button>
+        @Html.ActionButton(DbRes.TResource("Admin.Actions.MergeEntities.Merge"),Url.Action("MergeDepartments", "Actions"),"", null,"", "onMergeSuccess", "","Post",
+       null, "btnMergeDepartments", "frmMergeDepartments", "btn btn-st1 btn-lg mx-1 mb-2 hidden_")
+        @Html.ResetButton("ResetForm()","", "btn btn-lg btn-st3 mx-1")
+    </div>
+</div>
+
+
+<script>
+    function ResetForm() {
+        ClearInputs('frmMergeDepartments');
+    }
+
+    $(document).ready(function () {
+        $("#ddlUsers").prop('disabled', true);
+
+        $("#dvEntityFrom .txtDepartmentNumber").on("keyup", function () {
+            GetUsersForBothOrgUnits();
+        });
+
+        $("#dvEntityTo .txtDepartmentNumber").on("keyup", function () {
+            GetUsersForBothOrgUnits();
+        });
+    });
+
+  function GetUsersForBothOrgUnits() {
+      var MergedEntityId = $('#MergedEntityId').val();
+      var BaseEntityId = $('#BaseEntityId').val();
+      if (MergedEntityId != "" && BaseEntityId != "" && $("#dvMergedEntity .txtDepartmentNumber").val() != "" && $("#dvBaseEntity .txtDepartmentNumber").val() != "") {
+          var token = $('#frmMergeEntities').find("input[name='__RequestVerificationToken']").val();
+          $.ajax({
+              type: 'get',
+              url: '@Url.Action("GetUsersForBothOrgUnits", "Actions")',
+              data: { MergedEntityId: MergedEntityId, BaseEntityId: BaseEntityId, __RequestVerificationToken: token },
+              success: function (data) {
+                  if (data.MessageType != 2) {
+                      $("#ddlUsers").val("");
+                      $("#hdnManagerId").val("");
+                      AutoCompleteChangeList("ddlUsers", data.users);
+                      $("#ddlUsers").prop('disabled', false);
+                  }
+              },
+              error: function (jqXHR) {
+                  console.log(jqXHR.responseText);
+              }
+          });
+          return false;
+      }
+      else {
+          $("#ddlUsers").prop('disabled', true);
+          $("#ddlUsers").val("");
+          $("#hdnManagerId").val("");
+          AutoCompleteChangeList("ddlUsers", "[]");
+      }
+    }
+
+    function onMergeSuccess(data) {
+        if (data.MessageType == 2) {
+            //ShowErrorMessage(data.MessageText);
+            $("#dvValidationMessage").html("");
+            $("#dvValidationMessage").html(data.MessageText);
+            $("#dvValidationMessage").removeClass("hidden_");
+        }
+        else if (data.MessageType == 1) {
+            $("#ChangeNamesDialog").html(data.Html);
+            $("#errorMessage").html(data.MessageText);
+        }
+        else {
+            ShowSuccesMessage(data.MessageText, redirect());
+        }
+    }
+
+    function redirect() {
+        setTimeout(function () { window.location.reload(); }, 3000);
+    }
+
+    function UpdateDepartmentsTree() {
+        $("#dvEntityFrom .txtDepartmentNumber").trigger("keyup");
+        setTimeout(function () { $("#dvEntityTo .txtDepartmentNumber").trigger("keyup"); }, 1000);
+
+    }
+
+    function checkInputs() {
+
+        var count = 0;
+        if ($("#treeMergedEntity_hdnDepartmentId").val() == "" || $("#treeMergedEntity_hdnDepartmentId").val() == "-1") {
+            $("#dvEntityFromValidationMessage").removeClass("hidden_");
+            count++;
+        } else {
+            $("#dvEntityFromValidationMessage").addClass("hidden_");
+        }
+        if ($("#treeBaseEntity_hdnDepartmentId").val() == "" || $("#treeBaseEntity_hdnDepartmentId").val() == "-1") {
+            $("#dvEntityToValidationMessage").removeClass("hidden_");
+            count++;
+        } else {
+            $("#dvEntityToValidationMessage").addClass("hidden_");
+        }
+        if ($("#hdnManagerId").val() == "") {
+            $("#dvManagerValidationMessage").removeClass("hidden_");
+            count++;
+        } else {
+            $("#dvManagerValidationMessage").addClass("hidden_");
+        }
+
+        //if one of entity names enterd in ar Or en the other name be required
+        if ($("#NewEntityNameAr").val() != "") {
+            if ($("#NewEntityNameEn").val() == "") {
+                $("#dvNewEntityNameEnValidationMessage").removeClass("hidden_");
+                count++;
+            } else {
+                $("#dvNewEntityNameEnValidationMessage").addClass("hidden_");
+            }
+        } 
+
+         //if one of entity names enterd in ar Or en the other name be required
+        if ($("#NewEntityNameEn").val() != "") {
+            if ($("#NewEntityNameAr").val() == "") {
+                $("#dvNewEntityNameArValidationMessage").removeClass("hidden_");
+                count++;
+            } else {
+                $("#dvNewEntityNameArValidationMessage").addClass("hidden_");
+            }
+        }
+
+        if (count > 0) {
+            return false;
+        }
+        return ShowConfirmMessage('@DbRes.TValidation("Admin.Actions.MergeEntities.ConfirmMergeValidation")',"doMerge");
+    }
+
+    function doMerge() {
+        $("#btnMergeDepartments").click();
+    }
+</script>

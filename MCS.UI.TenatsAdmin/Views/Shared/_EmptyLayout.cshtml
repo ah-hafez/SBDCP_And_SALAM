@@ -1,0 +1,213 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Common
+
+<!DOCTYPE html>
+<html lang="ar" class="body-full-height">
+<head>
+    <!-- META SECTION -->
+    <title>مراسلات</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="icon" href="~/Content/User/lib/favicon.png" type="image/x-icon" />
+    <!-- END META SECTION -->
+    <!-- CSS INCLUDE -->
+    <link rel="stylesheet" type="text/css" id="theme" href=@Url.Content("~/Content/User/lib/css/theme_" + SessionInfo.CultureShortName + ".css") />
+    @if (SessionInfo.CultureShortName == Constants.Languages.Arabic)
+    {
+        <link rel="stylesheet" type="text/css" id="theme" href="~/Content/User/lib/css/rtl.css" />
+    }
+    <!-- EOF CSS INCLUDE -->
+    <!-- Theme -->
+    <link rel="stylesheet" type="text/css" href="~/Content/User/lib/fonts/fonts.css" />
+    <link rel="stylesheet" type="text/css" href=@Url.Content("~/Content/User/lib/css/style_" + SessionInfo.CultureShortName + ".css") />
+    <link rel="stylesheet" type="text/css" href=@Url.Content("~/Content/User/lib/css/responsive_table_" + SessionInfo.CultureShortName + ".css") />
+    <!-- END Theme-->
+    <!-- jquery-confirm -->
+    <link rel="stylesheet" type="text/css" href="~/Content/User/lib/js/theme/jquery-confirm/css/jquery-confirm.css" />
+    <!--END jquery-confirm -->
+    <!-- Slidebars CSS -->
+    <link rel="stylesheet" href=@Url.Content("~/Content/User/lib/js/theme/pushslide/css/slidebars.min_" + SessionInfo.CultureShortName + ".css")>
+    <link rel="stylesheet" href=@Url.Content("~/Content/User/lib/js/theme/pushslide/css/slidebars-theme_" + SessionInfo.CultureShortName + ".css")>
+
+    <!-- Owl Carousel -->
+
+    <link rel="stylesheet" href="~/Content/User/lib/js/theme/owlcarousel/docs.theme.min.css">
+    <link rel="stylesheet" href="~/Content/User/lib/js/theme/owlcarousel/owl.carousel.min.css">
+    <link rel="stylesheet" href="~/Content/User/lib/js/theme/owlcarousel/owl.theme.default.min.css">
+
+    <link href="~/Content/User/Site.css" rel="stylesheet" />
+    <script src="@Url.Content("~/Scripts/jquery.min.js")"></script>
+    <script src="~/Scripts/jquery.plugin.js"></script>
+    <script src="~/Scripts/jquery-ui-1.9.2.min.js"></script>
+    <script src="@Url.Content("~/Scripts/jquery.tooltip.js")"></script>
+    <script src="~/Scripts/jquery.navgoco.js"></script>
+    <script src="~/Scripts/CustomValidation/jquery.validate.js"></script>
+    <script src="~/Scripts/CustomValidation/jquery.validate.unobtrusive.js"></script>
+    <script src="~/Scripts/CustomValidation/CustomValidation.js"></script>
+    <script src="~/Scripts/HtmlHelper.js"></script>
+    <script src="~/Scripts/ActionButtonsHelper.js"></script>
+    <script src="~/Scripts/jquery-ui.min.js"></script>
+
+    @*<script src="~/Scripts/jquery.signalR-2.1.2.js"></script>
+        <script src="~/signalr/hubs"></script>*@
+
+
+    <!--[if lt IE 9]>
+      <script src="~/Content/User/lib/js/theme/ie9/html5shiv.js"></script>
+      <script src="~/Content/User/lib/js/theme/ie9/respond.min.js"></script>
+    <![endif]-->
+    <!-- Script OWL Carousel -->
+    @*<script src="~/Content/User/lib/js/theme/owlcarousel/jquery.min.js"></script>*@
+    <script src="~/Content/User/lib/js/theme/owlcarousel/owl.carousel.js"></script>
+
+    <!-- ToastMessage -->
+    <link type="text/css" href=@Url.Content("~/Content/User/lib/js/theme/toastmessage/jquery.toastmessage-min_" + SessionInfo.CultureShortName + ".css") rel="stylesheet" />
+    <!--<script type="text/javascript" src="~/Content/User/lib/js/theme/toastmessage/jquery-1.5.min.js"></script>-->
+    <script type="text/javascript" src="~/Content/User/lib/js/theme/toastmessage/jquery.toastmessage-min.js"></script>
+    <!-- END JS Tree -->
+
+    <script type="text/javascript" src="@Url.Content("~/Scripts/Common.js")"></script>
+    <script type="text/javascript" src="~/Content/User/lib/js/theme/jquery-confirm/js/jquery-confirm.js"></script>
+
+
+
+    <script type="text/javascript">
+        var __dateformat = '@System.Web.Configuration.WebConfigurationManager.AppSettings["JSDateFormat"]';
+        var __dialogNoText = '@Html.Raw(DbRes.TResource("Global.Dialog.No"))';
+        var __dialogYesText = '@Html.Raw(DbRes.TResource("Global.Dialog.Yes"))';
+        var __dialogCloseText = '@Html.Raw(DbRes.TResource("Global.Dialog.Close"))';
+        var __cultureName = '@SessionInfo.CultureShortName';
+        $.validator.setDefaults({ ignore: null });
+
+        $(document).ajaxStart(function () {
+            $("#Loader").show();
+
+        });
+        $(document).ajaxComplete(function () {
+            $("#Loader").hide();
+
+        });
+
+    </script>
+
+    <!--rendering framework scripts -->
+
+</head>
+<body>
+    <div class="spinner" style="display:none;">
+        <div class="bounce1"></div>
+        <div class="bounce2"></div>
+        <div class="bounce3"></div>
+    </div>
+    @RenderBody()
+
+    <!-- jQuery
+    <script src="theme/pushslide/js/jquery.min.js"></script> -->
+    <!-- Slidebars -->
+
+    <script src='~/Content/User/lib/js/theme/autosize-textarea/autosize.js'></script>
+    <script>
+        autosize(document.querySelectorAll('textarea'));
+    </script>
+
+    <!-- jQuery
+    <script src="~/Content/User/~/Content/User/lib/js/theme/pushslide/js/jquery.min.js"></script> -->
+    <!-- Slidebars -->
+    <script src="~/Content/User/lib/js/theme/pushslide/js/slidebars.min.js"></script>
+    <!--<script src="~/Content/User/~/Content/User/lib/js/theme/pushslide/js/slidebars-theme.js"></script> -->
+    <script>
+        (function ($) {
+            $(document).ready(function () {
+                $.slidebars();
+            });
+        })(jQuery);
+    </script>
+
+    <!-- START SCRIPTS -->
+    <!-- START PLUGINS
+        <script type="text/javascript" src="~/Content/User/~/Content/User/lib/js/plugins/jquery/jquery.min.js"></script> -->
+    @*<script type="text/javascript" src="~/Content/User/lib/js/plugins/jquery/jquery-ui.min.js"></script>*@
+    <script type="text/javascript" src="~/Content/User/lib/js/plugins/bootstrap/bootstrap.min.js"></script>
+    <!-- END PLUGINS -->
+    <!-- THIS PAGE PLUGINS -->
+    <script type='text/javascript' src='~/Content/User/lib/js/plugins/icheck/icheck.min.js'></script>
+    <script type="text/javascript" src="~/Content/User/lib/js/plugins/mcustomscrollbar/jquery.mCustomScrollbar.min.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/js/plugins/bootstrap/bootstrap-datepicker.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/js/plugins/bootstrap/bootstrap-file-input.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/js/plugins/bootstrap/bootstrap-select.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/js/plugins/tagsinput/jquery.tagsinput.min.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/js/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/js/plugins/bootstrap/bootstrap-timepicker.min.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/js/plugins/bootstrap/bootstrap-colorpicker.js"></script>
+
+    <!-- JS Tree -->
+    <script type="text/javascript" src="~/Content/User/lib/js/plugins/dropzone/dropzone.min.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/js/plugins/fileinput/fileinput.min.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/js/plugins/filetree/jqueryFileTree.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/js/plugins/cropper/cropper.min.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/js/plugins/jstree/jstree.min.js"></script>
+    <!-- END JS Tree -->
+    <!-- NOTY -->
+    <script type='text/javascript' src='~/Content/User/lib/js/plugins/noty/jquery.noty.js'></script>
+    <script type='text/javascript' src='~/Content/User/lib/js/plugins/noty/layouts/topCenter.js'></script>
+    <script type='text/javascript' src='~/Content/User/lib/js/plugins/noty/layouts/topLeft.js'></script>
+    <script type='text/javascript' src='~/Content/User/lib/js/plugins/noty/layouts/topRight.js'></script>
+    <script type='text/javascript' src='~/Content/User/lib/js/plugins/noty/themes/default.js'></script>
+    <script type="text/javascript">
+
+        function notyConfirm() {
+            noty({
+                text: 'Do you want to continue?',
+                layout: 'topRight',
+                buttons: [
+                    {
+                        addClass: 'btn btn-success btn-clean', text: 'Ok', onClick: function ($noty) {
+                            $noty.close();
+                            noty({ text: 'You clicked "Ok" button', layout: 'topRight', type: 'success' });
+                        }
+                    },
+                    {
+                        addClass: 'btn btn-danger btn-clean', text: 'Cancel', onClick: function ($noty) {
+                            $noty.close();
+                            noty({ text: 'You clicked "Cancel" button', layout: 'topRight', type: 'error' });
+                        }
+                    }
+                ]
+            })
+        }
+    </script>
+    <!-- END NOTY -->
+    <!-- END THIS PAGE PLUGINS -->
+    <!-- START TEMPLATE -->
+    <script type="text/javascript" src="~/Content/User/lib/js/plugins.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/js/actions.js"></script>
+    <!-- END TEMPLATE -->
+
+    <script type="text/javascript" src="~/Content/User/lib/js/demo_file_handling.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/js/plugins/scrolltotop/scrolltopcontrol.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/js/plugins/morris/raphael-min.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/js/plugins/rickshaw/d3.v3.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/js/plugins/rickshaw/rickshaw.min.js"></script>
+    <script type='text/javascript' src='~/Content/User/lib/js/plugins/jvectormap/jquery-jvectormap-1.2.2.min.js'></script>
+    <script type='text/javascript' src='~/Content/User/lib/js/plugins/jvectormap/jquery-jvectormap-world-mill-en.js'></script>
+    <!--<script type="text/javascript" src="~/Content/User/~/Content/User/lib/js/plugins/owl/owl.carousel.min.js"></script>-->
+    <script type="text/javascript" src="~/Content/User/lib/js/plugins/moment.min.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/js/plugins/daterangepicker/daterangepicker.js"></script>
+
+    @*<script type="text/javascript" src="~/Content/User/lib/js/plugins/slidingmenu/jquery-sliding-menu.js"></script>*@
+    <!--<script type="text/javascript" src="~/Content/User/~/Content/User/lib/js/plugins/morris/morris.min.js"></script>
+    <script type="text/javascript" src="~/Content/User/~/Content/User/lib/js/demo_dashboard.js"></script>-->
+
+    <script type="text/javascript" src="~/Content/User/lib/js/plugins/highlight/jquery.highlight-4.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/js/faq.js"></script>
+
+    <script type='text/javascript' src='~/Content/User/lib/js/plugins/validationengine/languages/jquery.validationEngine-en.js'></script>
+    <script type='text/javascript' src='~/Content/User/lib/js/plugins/validationengine/jquery.validationEngine.js'></script>
+    @*<script type='text/javascript' src='~/Content/User/lib/js/plugins/jquery-validation/jquery.validate.js'></script>*@
+    <script type='text/javascript' src='~/Content/User/lib/js/plugins/maskedinput/jquery.maskedinput.min.js'></script>
+
+
+</body>
+</html>

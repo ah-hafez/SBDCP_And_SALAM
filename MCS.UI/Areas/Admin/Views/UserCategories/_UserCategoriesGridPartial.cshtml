@@ -1,0 +1,25 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Framework.Controls.Mvc
+
+@model  AjaxGrid<MCS.UI.Areas.Admin.Models.UserCategories.UserCategoryVM>
+
+@{
+    ViewBag.Title = "_TransactionSourceLookupGridPartial";
+}
+
+@Html.Grid(Model, "_Grid").Named("UserCategories").Columns(columns =>
+    {
+        columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").Titled("", "<input type='checkbox' id='chkall'></input>")
+                                                  .RenderValueAs(o =>
+                                                    @<div class="chkCol" id="spanCheckBox">
+                                                        <input id="AssigneeSelectorcheckbox" type="checkbox" />
+                                                    </div>);
+
+                columns.Add(model => model.Id).Titled(DbRes.TResource("Admin.UserCategory.Id"));
+                columns.Add(model => model.CategoryText, "CategoryName").Titled(DbRes.TResource("Admin.UserCategory.Categories"));
+                columns.Add(model => model.PermissionText, "Permission").Titled(DbRes.TResource("Admin.UserCategory.PermissionText"));
+
+                columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => @Html.GridImageButton("GetUserCategory", "UserCategories", 1, OperationType.Update, "dvEdit", null, null, "ShowEditDiv", "", "get"));
+                columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => @Html.GridImageButton("DeleteUserCategories", "UserCategories", 1, OperationType.Delete, "dvGrid", "", null, "OnDeleteSuccess"));
+
+            }).WithPaging(GridHelper.PageSize).Sortable().Filterable().WithMultipleFilters().UpdateActionUrl(Url.Action("UpdateUserCategoriesGrid", "UserCategories")).RenderDeleteButton("DeleteUserCategories", 1, "", "dvGrid", "OnDeleteSuccess")

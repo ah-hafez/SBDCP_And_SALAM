@@ -1,0 +1,14 @@
+﻿
+@model AjaxGrid<MCS.UI.Areas.User.Models.Shared.DocumentVM>
+
+@{string controller = ViewData["ControllerName"] != null ? ViewData["ControllerName"].ToString() : ViewContext.RouteData.Values["controller"].ToString();}
+
+@Html.Grid(Model).CollectionName("TaskAttachmentsGrid").Named("grdTaskAttachments").Columns(columns =>
+{
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Id, new { id = "Id_" + model.Id }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Content, new { id = "grdContent_" + model.Content }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+
+columns.Add(model => model.Name).Titled(DbRes.TResource("Task.Attachment")).Css("control-label");
+columns.Add().Encoded(false).Sanitized(false).Css("fixed_col text-right site-danger action-icon").RenderValueAs(model => @Html.ClientLinkTag("", cssClass: "edit_link", title: DbRes.TResource("تحميل"), clientFunctionToCall: "DownloadFile('" + model.EncryptedId +"')", innerHtml: "تحميل"));
+
+})

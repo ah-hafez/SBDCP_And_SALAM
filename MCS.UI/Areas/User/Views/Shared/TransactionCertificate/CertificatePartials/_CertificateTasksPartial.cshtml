@@ -1,0 +1,61 @@
+﻿@model TaskAddVM
+@using MCS.UI.Areas.User.Models.Transaction;
+
+
+@{
+    string GUID = Guid.NewGuid().ToString();
+}
+
+<div id="dvCerTasks" class="tabscontent">
+    <ul class="nav nav-tabs custom-sub-nav-tabs mb-3" role="tablist">
+        @Html.StickyHidden("hdnGUID", GUID, new { @class = "hdnGUID" })
+        <li role="presentation" class="active">
+            <a href="@("#" + GUID + "_sub-tab-1")" aria-controls="@(GUID + "_sub-tab-1")" role="tab" data-toggle="tab">
+                @DbRes.TResource("User.Audit.TransactionLog.CurrentTasks")
+            </a>
+        </li>
+        <li role="presentation" class="hidden_">
+            <a href="@("#" + GUID + "_sub-tab-2")" aria-controls="@(GUID + "_sub-tab-2")" role="tab" data-toggle="tab">
+                @DbRes.TResource("User.Audit.TransactionLog.Edits")
+            </a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="@(GUID + "_sub-tab-1")">
+            <div class="row">
+                <div class="col-md-12">
+                    <label>@DbRes.TResource("User.Tasks.TasksTable")</label>
+                    <div id="dvGridContainer">
+                        @Html.Partial("~/Areas/User/Views/Shared/TransactionCertificate/CertificatePartials/_TasksCertificateGridPartial.cshtml", Model.TasksGrid)
+                    </div>
+                    @*<hr />*@
+                    <label>@DbRes.TResource("User.Tasks.TasksReplay")</label>
+                    <div id="dvReplyGridContainer">
+                        @Html.Partial("~/Areas/User/Views/Editor/TaskManagement/_TaskReplyGridPartial.cshtml", Model.TasksReplyGrid)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="@(GUID + "_sub-tab-2")">
+            <div id="Audits">
+                @Html.Partial("~/Areas/User/Views/Shared/TransactionCertificate/_TransationAuditPartial.cshtml", ViewData["TransactionAudits"])
+            </div>
+        </div>
+    </div>
+</div>
+@Html.StickyHidden("TransactionId", ViewData["TransactionId"].ToString())
+
+<script>
+    function ShowNotes(notes) {
+        debugger;
+
+        ShowInformationMessage(notes);
+    }
+
+    function ShowAttachments(taskId)
+    {
+         
+        var url = '@Url.Action("GetTaskAttachments", "File")?TransactionId=' + @ViewData["TransactionId"].ToString() + "&TaskId=" + taskId;
+        ShowDialog(url);
+    }
+</script>

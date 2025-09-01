@@ -1,0 +1,122 @@
+﻿@using MCS.Framework.Localization;
+@using MCS.UI.Areas.User.Models.Lookups
+@using MCS.UI.Areas.Admin.Models.OrgUnit;
+@using MCS.UI.Areas.Admin.Controllers;
+
+@model CounterVM
+@using MCS.UI
+@{
+    ViewBag.Title = "_CounterAddEditPartial";
+    Layout = null;
+}
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmCounterAddEdit", @class = "form-horizontal form-row" }))
+{
+    @Html.AntiForgeryToken()
+    <div id="CounterContent" class="panel-body">
+        @Html.HiddenFor(model => model.CounterId)
+        @Html.HiddenFor(model => model.OwnerEntityId)
+        @Html.HiddenFor(model => model.Count)
+        @Html.HiddenFor(model => model.IsGeneral)
+        @Html.HiddenFor(model => model.Year)
+        @Html.HiddenFor(model => model.CounterDetailId)
+        @Html.HiddenFor(model => model.JoinToGeneralCounter)
+        <p>@DbRes.TResource("Global.Forms.MandatoryFields")</p>
+        @if (Model.IsRoot == false)
+        {
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <div class="radio">
+                            <label>
+                                @Html.RadioButtonFor(model => model.IsGeneral, true, new { @class = "CounterGeneral", onchange = "GeneralRadioChanged(this)" })@DbRes.TResource("Admin.Counter.GeneralCounter")
+                            </label>
+                        </div>
+                        <div class="radio">
+                            <label>
+                                @Html.RadioButtonFor(model => model.IsGeneral, false, new { @class = "CounterGeneral", onchange = "GeneralRadioChanged(this)" })@DbRes.TResource("Admin.Counter.SpecificCounter")
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        <div id="CounterForm" class="row">
+            <div class="row">
+                <div class="col-md-6">
+                    @{List<CultureVM> cultureVMs = ViewData["Culture"] as List<CultureVM>;}
+
+                    @if (cultureVMs != null)
+                    {
+                        for (int m = 0; m < cultureVMs.Count; m++)
+                        {
+                            <div class="form-group">
+                                @Html.CustomLabelFor(model => model.Description[m].CultureName, new { @class = "col-md-3 control-label" }, DbRes.TResource(string.Format("Admin.AttachmentType.Description.{0}", cultureVMs[m].ShortName)))
+                                @Html.StickyHiddenFor(model => model.Description[m].CultureId, new { Value = cultureVMs[m].Id })
+                                <div class="col-md-9">
+                                    <div class="">
+                                        @Html.TextBoxGroupFor(model => model.Description[m].Text, "ValidationGroupEditAdd",
+                                       new { @class = "form-control CounterDescription" }, DbRes.TValidation("Admin.AttachmentType.DescriptionRequired." + cultureVMs[m].ShortName))
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.CustomLabelFor(model => Model.TransactionCategories, new { @class = "col-md-3 control-label" }, DbRes.TResource("Admin.LetterType.TransactionCategories"))
+                        <div class="col-md-9">
+                            @Html.Partial("~/Areas/Admin/Views/Lookups/_TransactionSourcePartial.cshtml", Model.TransactionCategories,
+                                     new ViewDataDictionary { TemplateInfo = new TemplateInfo { HtmlFieldPrefix = Html.NameFor(model => model.TransactionCategories).ToString() } })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.CustomLabelFor(model => model.InitialValue, new { @class = "col-md-3 control-label" })
+                        <div class="col-md-9">
+                            <div class="">
+                                @if (Model.InitialValue == Model.Count)
+                                {
+                                    @Html.NumericTextBoxFor(model => model.InitialValue, new { @class = "form-control", maxlength = "9" }, "ValidationGroupEditAdd")
+
+                                }
+                                else
+                                {
+                                    @Html.NumericTextBoxFor(model => model.InitialValue, new { @class = "form-control", maxlength = "9", @disabled = "disabled" })
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.CustomLabelFor(model => model.Year, new { @class = "col-md-3 control-label" })
+                        <div class="col-md-9">
+                            <div class="">
+                                @Html.TextBoxFor(model => model.Year, new { @class = "form-control", @disabled = "disabled" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer middle">
+            @Html.ActionButton(DbRes.TResource("Admin.Counter.Save"),"AddEditCounter", null, null, null, "OnSuccess", null, "post", "ValidationGroupEditAdd", "btnAddEditCounterDetail",
+                                     "frmCounterAddEdit", "btn btn-st1 btn-lg mr-2 pull-right")
+            @Html.ResetButton("CustomClearInputs('CounterForm')")
+            @*<button type="button" class="btn btn-default" id="btnClose" onclick="__dialog.close(); return false;">@DbRes.TResource("Admin.Counter.Close")</button>*@
+        </div>
+    </div>
+}
+<script>
+    $('#InitialValue').off().on('input propertychange paste', function (e) {
+        var that = this;
+        if (that.value <= 0) {
+            that.value = 1;
+        }
+    });
+</script>

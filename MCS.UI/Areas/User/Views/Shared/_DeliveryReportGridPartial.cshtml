@@ -1,0 +1,97 @@
+﻿@using MCS.UI.Helpers;
+@using MCS.UI.Areas.User.Models.Transaction;
+@model List<DeliveryReportTransactionVM>
+<style type="text/css">
+    table.rprtGrid {
+        width: 100%;
+        border: 1px solid #000000;
+    }
+
+        table.rprtGrid td {
+            padding: 5px;
+            border-bottom: 1px dashed #CCCCCC;
+        }
+
+    .customMargin {
+        padding-left: 50px;
+    }
+
+    .customWidth {
+        min-width: 250px;
+    }
+</style>
+<table class="rprtGrid">
+    <thead>
+        <tr>
+            <td><b>@DbRes.TResource("User.Transaction.TransactionNumber")</b></td>
+            @*<td><b>الجهة</b></td>
+            <td><b>@DbRes.TResource("User.Transaction.FromEntity")</b></td>*@
+            
+            <td><b>@DbRes.TResource("User.TransactionCertificate.ReceiverDepartmentName")</b></td>
+            <td><b>@DbRes.TResource("User.OutboundDraft.TransactionCreatedDate")</b></td>
+            <td><b>@DbRes.TResource("User.Report.TransactionsDeliveryReport.TransactionType")</b></td>
+            <td><b>@DbRes.TResource("User.Transaction.AttachmentCount")</b></td>
+            <td><b>@DbRes.TResource("User.Report.TransactionsDeliveryReport.PrintDate")</b></td>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (DeliveryReportTransactionVM m in Model)
+        {
+        <tr>
+            <td>
+                @m.TransactionNumberString
+                @if (m.TransactionTypeId == TransactionCategory.ExternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName))
+                {
+                    @MCS.Common.Utility.ArabicDigitConverter.ConvertToArabic(" ");
+                }
+            </td>
+            @*<td>
+                @if (m.TransactionTypeId == TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName))
+                {
+                    @m.ExternalParty
+                }
+                else
+                {
+                    @m.FromEntity
+                }
+            </td>
+            <td>@m.FromEntity</td>*@
+
+            <td>@m.ToEntity</td>
+            <td>@DateHelper.GetDate(m.DateH)</td>
+
+            <td>
+                @if (m.IsCopy)
+                {
+
+                    @(m.TransactionType + " - " + DbRes.TResource("User.Transaction.ExternalOutbound.Copy"))
+                }
+                else
+                {
+                    @(m.TransactionType + " - " + DbRes.TResource("User.Transaction.ExternalOutbound.Origin"))
+                }
+            </td> 
+            <td>@m.AttachmentTotal</td>
+            <td>@m.DateTime</td>
+
+        </tr>
+            
+        }
+    </tbody>
+</table>
+<br/>
+<table class="rprtGrid">
+    <tbody>
+        <tr style="min-width:300px">
+            <td class="customWidth" colspan="3"><b class="customMargin">@DbRes.TResource("User.Transaction.Receiver")</b> <br /></td>
+            <td class="customWidth" colspan="2"><b class="customMargin">@DbRes.TResource("التاريخ والوقت")</b></td>
+            <td class="customWidth" colspan="2"><b class="customMargin">@DbRes.TResource("التوقيع")</b></td>
+        </tr>
+        <tr>
+            <td class="customMargin" colspan="3">&nbsp</td>
+            <td class="customMargin" colspan="2">&nbsp</td>
+            <td class="customMargin" colspan="2">&nbsp</td>
+        </tr>
+    </tbody>
+</table>

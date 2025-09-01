@@ -1,0 +1,508 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models
+@using MCS.GridMvc.Ajax.GridExtensions
+
+
+@model AjaxGrid<UserProfileVM>
+@{
+    ViewBag.Title = DbRes.TResource("Admin.UserManagement.UserManagement");
+    Layout = "~/Areas/Admin/Views/Shared/_UsersTraysLayout.cshtml";
+}
+
+<div class="content_container site_border">
+    <div class="mx-3 mx-md-5 header-container d-flex flex-row align-items-center ">
+        <div class="d-flex flex-column flex-lg-row align-items-lg-center flex-grow-1 mb-3 mb-lg-0 mt-3">
+            <h3 class="site-color mb-2 mb-lg-4">@DbRes.TResource("Admin.UsersTraysPermissionsReport.Users") </h3>
+            <div class="ml-lg-auto d-flex flex-column flex-md-row">
+                <div class="filter-link ml-lg-auto mr-lg-3 my-2 mt-lg-auto ">
+                    <a class="dashed-circle search-target" href="#">
+                        <i class="fas fa-search"></i>
+                        @DbRes.TResource("User.File.Search")
+                    </a>
+                    <div class="toggling-menu">
+                        <a href="#" class="active system_1"><i class="icon-grid"></i></a>
+                        <a href="#" class="grid_system"><i class="icon-list"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <button type="button" class="btn btn-st1 btn-lg" onclick="AddUser()" data-target="">
+                        <i class="icon-buttons-add pr-3"></i>@DbRes.TResource("Admin.OrgUnitUsers.CreateUser")
+                    </button>
+                    <a type="button" class="btn btn-st1 btn-lg" href="@Url.Action("PendingRegestration" , "User")" data-target="" style="display:none">
+                        عرض طلبات التسجيل
+                    </a>
+
+                    <a type="button" class="btn btn-st1 btn-lg" href="@Url.Action("PendingRoleRequest" , "User")" data-target="" >
+                        عرض طلبات الصلاحية
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- close
+            <div class="close-icon pl-2 mt-0 ml-auto">
+                <a class="circle-icon color-white" href="#" data-bs-toggle="tooltip" data-placement="bottom" title="إغلاق"><i class="la la-close"></i></a>
+            </div>
+        -->
+    </div>
+
+
+
+    <div class="filter-box search mx-3 mx-md-5 white-container mt-2">
+        <form id="frmUsersSearch">
+            @Html.AntiForgeryToken()
+            <div class="form-row">
+                <div class="form-group col-lg-3 col-sm-6 col-xs-12">
+                    <label for="">@DbRes.TResource("Admin.User.UserName")</label>
+                    @Html.TextBox("hdnUserName", "", new { id = "hdnUserName", @class = "form-control" })
+
+                </div>
+                <div class="form-group col-lg-3 col-sm-6 col-xs-12">
+                    <label for="">@DbRes.TResource("Admin.User.Email") </label>
+                    <input type="Email" class="form-control" id="hdnEmail" , maxlength="150">
+
+                </div>
+                <div class="form-group col-lg-3 col-sm-6 col-xs-12">
+                    <label for="">@DbRes.TResource("Admin.ExternalParty.Phone")</label>
+                    <input type="text" class="form-control" id="hdnPhoneNumber" onkeypress="return IsNumeric(event);" maxlength="15">
+
+                </div>
+
+                <div class="form-group col-lg-3 col-sm-6 col-xs-12">
+                    <label for="">المستخدمين المحذوفين</label>
+                    <div class="form-check form-check-inline w-100 ">
+                        <input id="IsdeleteUsers" type="checkbox"  name="IsdeleteUsers" class="form-check-input" />
+                    </div>
+                </div>
+
+
+
+                <div class="form-group col-lg-3 col-md-4 col-sm-4 col-xs-12 align-self-end">
+                    <div class="form-group col-lg-3 col-md-4 col-sm-4 col-xs-12 align-self-end">
+
+                        @Html.ClientButton(@DbRes.TResource("User.File.Search"), "btnSearch", "btn btn-st1 w-xs-100", "UsersProfileSearch")
+                    </div>
+                </div>
+
+            </div>
+        </form>
+    </div>
+
+
+    <div class="boxes px-md-1 mx-aut">
+        <div class="flex-wrap mx-auto mx-md-4" id="dvUsersGrid">
+            @Html.Partial("~/Areas/Admin/Views/User/UsersGridPartial.cshtml", Model)
+        </div>
+    </div>
+</div>
+<script>
+
+    function UsersProfileSearch() {
+        var filter = "";
+        var token = $("#frmUsersSearch input[name='__RequestVerificationToken']").val();
+
+        if ($("#hdnPhoneNumber").val() != "" && $("#hdnPhoneNumber").val() != null) {
+
+            if (filter.length > 0) {
+                filter += "&";
+            }
+            filter += "PhoneNumber__1__" + $("#hdnPhoneNumber").val();
+        }
+
+        if ($("#hdnUserName").val() != "" && $("#hdnUserName").val() != null) {
+
+            filter += "UserName__1__" + $("#hdnUserName").val();
+        }
+
+        if ($("#hdnEmail").val() != "" && $("#hdnEmail").val() != null) {
+
+            if (filter.length > 0) {
+                filter += "&";
+            }
+            filter += "Email__1__" + $("#hdnEmail").val();
+        }
+        $("#filterData").val(filter);
+        
+        var isDeleted =$('#IsdeleteUsers').is(":checked")
+        $.ajax({
+            type: 'post',
+            data: { filter: filter, __RequestVerificationToken: token, isDeleted: isDeleted },
+            url: '@Url.Action("UsersProfileSearch", "User")',
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    $("#dvUsersGrid").html("");
+                    $("#dvUsersGrid").html(data.Html);
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            }
+        });
+    }
+
+    function AddUser() {
+        window.location.href = '@Url.Action("AddUserProfile", "User")';
+    }
+    function ActivateDeactivateUser(UserId) {
+        $.ajax({
+            type: 'get',
+            data: { id: UserId },
+            url: '@Url.Action("ActivateDeactivateUser", "User")',
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    ShowInformationMessage(data.MessageText, redirect());
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            }
+        });
+    }
+
+    function ActivateDeleteUser(UserId) {
+        $.ajax({
+            type: 'get',
+            data: { id: UserId },
+            url: '@Url.Action("ActivateDeleteUser", "User")',
+            success: function (data) {
+                if (data.MessageType != 2) {
+                    ShowInformationMessage(data.MessageText, redirect());
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            }
+        });
+    }
+
+
+
+    $(function () {
+        $(".grid_system").click(function () {
+            $(".boxes").addClass("full");
+                        });
+        $(".system_1").click(function () {
+            $(".boxes").removeClass("full");
+                        });
+    });
+
+    function OnAddSuccess(data, div) {
+                        if (data.MessageType != 2) {
+            $("#" + div).html("");
+            $("#" + div).html(data.Html);
+                            jQuery.validator.unobtrusive.parse('#' + div);
+                            ShowSuccesMessage(data.MessageText)
+                            Clear('dvAddTreeContainer');
+                        }
+                        else {
+                            ShowErrorMessage(data.MessageText);
+                        }
+                    }
+
+                    function Clear(formId) {
+        $(".removeTag").trigger("click");
+        $(".removeDepartmentTag").trigger("click");
+                        ClearInputs(formId);
+        $("#" + formId).formReset();
+                    }
+
+                    function redirect() {
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("Index", "User", new { area="Admin"})';
+                        }, 2000);
+                    }
+    function DeleteUserProfile(UserId) {
+        $.ajax({
+            type: 'Post',
+            data: { ids: UserId, __RequestVerificationToken: token},
+            url: '@Url.Action("CheckIfUserCanDeleted", "User")',
+            success: function (data) {
+                if (data.MessageType != 2)//good
+                {
+                    $.ajax({
+                        type: 'Post',
+                        data: { ids: data.id, __RequestVerificationToken: token},
+                        url: '@Url.Action("DeleteUsers", "User")',
+                        success: function (data) {
+                            if (data.MessageType != 2) {
+                                ShowSuccesMessage(data.MessageText, redirect());
+                            }
+                            else {
+                                ShowErrorMessage(data.MessageText);
+                            }
+                        }
+                    });
+                }
+
+                else {
+                    ShowCustomConfirmMessage(data.MessageText, 'DeleteUserAndMoveTransaction', data.id);
+                }
+            }
+        });
+    }    function redirect() {
+        setTimeout(function () {
+            window.location.href = '@Url.Action("Index", "User", new { area="Admin"})';
+        }, 2000);
+
+    }
+    function DeleteUserAndMoveTransaction(UserId) {
+        
+        $.ajax({
+            type: 'Post',
+            data: { ids: UserId },
+            url: '@Url.Action("DeleteUserAndMoveTransaction", "User")',
+            success: function (data) {
+
+                if (data.MessageType != 2) {
+                    ShowSuccesMessage(data.MessageText, redirect());
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            }
+
+        });
+    }
+
+    $(document).ready(function () {
+
+        $('.search-target').click(function () {
+            $('.filter-box.search').slideToggle('fast');
+            $('.sort-target').removeClass("active");
+            $('.filter-target').removeClass("active");
+            $(this).toggleClass("active");
+            $('.filter-box.filter').hide();
+            $('.filter-box.sort').hide();
+
+                        });
+                    });
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+@*<div class="page-title">
+        <h2><span class="fa fa-arrow-circle-o-left"></span>@DbRes.TResource("Admin.UserCategory.UsersAndTrays")</h2>
+    </div>
+    <div class="page-content-wrap">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-horizontal form-row">
+                    <div class="panel panel-default">
+                        <div id="divAddUser">
+                            <div id="toggleAdd">
+                                @Html.Partial("_UserManagementAddPartial", Model.UserProfileAddVM)
+                            </div>
+                        </div>
+                        <div id="divEditUser" style="" class="heddin_">
+                            <div id="toggleEdit">
+                                @Html.Partial("_UserManagementEditPartial", Model.UserProfileEditVM)
+                            </div>
+                        </div>
+
+                        <div id="divGridContainer">
+                            <div class="panel-body">
+                                <div class="row">
+                                    @Html.Partial("~/Areas/Admin/Views/User/_UserManagementGridPartial.cshtml", ViewData["GridData"])
+                                    <input type="hidden" id="hdnPermissionId" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+
+        //function ShowEditDiv() {
+        //    $("#divEditUser").css("display", "block");
+        //    $("#divAddUser").css("display", "none");
+        //}
+
+        //function HideEditDiv() {
+        //    $("#divEditUser").css("display", "none");
+        //    $("#divAddUser").css("display", "block");
+        //}
+
+        function OnDeleteSuccess(data, divUpdatData, deletedList) {
+
+            if (data.UsersUsedList.length == 0) {
+
+                ShowSuccesMessage(data.MessageText);
+            }
+            else {
+
+                var msg = '';
+
+                for (var i = 0; i < data.UsersUsedList.length; i++) {
+
+                    if (msg == '')
+                        msg = data.UsersUsedList[i];
+                    else
+                        msg = msg + '</br>' + data.UsersUsedList[i];
+                }
+
+                msg = '@DbRes.TResource("Admin.User.DeleteUsersErrorMsg")' + '</br>' + msg;
+
+                ShowErrorMessage(msg);
+            }
+
+            var deletedArray = deletedList.split(',');
+
+            for (var i = 0; i < deletedArray.length; i++) {
+
+                var deleted = true;
+
+                for (var y = 0; y < data.UsersUsedList.length; y++) {
+
+                    if (deletedArray[i] == data.UsersUsedList[y]) {
+
+                        deleted = false;
+                    }
+                }
+
+                if (deleted)
+                    if (deletedArray[i] == $('#hdnEditId').val())
+                        HideEditDiv();
+            }
+        }
+    </script>
+    <script type="text/javascript">
+        function OpenDialog(Id) {
+            ShowDialogAjax('@Url.Action("RenderAddPermissionDialog", "Permissions" )', { groupId: Id }, 'OpenDialogSuccess');
+
+        }
+        function OpenDialogSuccess(data, $obj) {
+            $obj.setContent(data.Html);
+            jQuery.validator.unobtrusive.parse('#frmAddPermission');
+        }
+
+        function OnSuccess(data, div) {
+            if (data.MessageType != 2) {
+                $("#" + div).html("");
+                $("#" + div).html(data.Html);
+                jQuery.validator.unobtrusive.parse('#' + div);
+
+                ShowSuccesMessage(data.MessageText);
+                __dialog.close();
+            }
+            else {
+
+                ShowErrorMessage(data.MessageText);
+            }
+        }
+
+        function EditPermission(Id) {
+            ShowDialogAjax('@Url.Action("RenderEditPermissionDialog", "Permissions" )', { PermissionId: Id }, 'OpenDialogSuccess');
+        }
+        function DeletePermission(Id) {
+            ShowConfirmMessage('@(DbRes.TResource("Admin.Permissions.DeleteConfirm"))', "ConfirmDeletePermission");
+            $("#hdnPermissionId").val(Id);
+        }
+        function ConfirmDeletePermission() {
+            var id = $("#hdnPermissionId").val();
+            $.ajax({
+                type: 'post',
+                data: { permissionId: id },
+                url: '@Url.Action("DeletePermission")',
+                success: function (data) {
+                    if (data.MessageType != 2) {
+                        $("#AddTree").html("");
+                        $("#AddTree").html(data.Html);
+                        jQuery.validator.unobtrusive.parse('#AddTree');
+
+                        ShowSuccesMessage(data.MessageText);
+                    }
+                    else {
+                        ShowErrorMessage(data.MessageText);
+                    }
+                }
+            });
+        }
+        function SendEmail(id) {
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("ResendEmail")',
+                data: { userId: id },
+                success:
+               function (data) {
+                   if (data.MessageType != 2) {
+                       ShowSuccesMessage(data.MessageText);
+                   }
+
+                   else {
+                       ShowErrorMessage(data.MessageText);
+                   }
+               }
+            });
+        }
+        $(document).ready(function () {
+            $(".switch").click(function () {
+                var token = $('form:first').find("input[name='__RequestVerificationToken']").val();
+                var id = $(this).children(':first').data("id");
+                var checked = $(this).children(':first').is(':checked');
+                $.ajax({
+                    type: 'post',
+                    url: '@Url.Action("ActivateUser")',
+                    data: { userId: id, isActive: checked, __RequestVerificationToken: token },
+                    success:
+                   function (data) {
+
+                   }
+                });
+            });
+
+            $('#divEditUser').hide();
+        });
+    </script>
+
+*@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

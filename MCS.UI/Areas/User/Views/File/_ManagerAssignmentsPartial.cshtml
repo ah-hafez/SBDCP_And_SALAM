@@ -1,0 +1,294 @@
+﻿@model TransactionAssignmentVM
+@using MCS.Common
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Assignment
+
+
+@{
+    Layout = "~/Views/Shared/_DialogLayout.cshtml";
+}
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmFileAssignment" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="content-rtl panel panel-default dialogbox_panel" id="dvTransactionAssignmentCotainer">
+        @Html.Partial("_AssignmentsContentPartial", Model)
+        @Html.Hidden("hdnAssignmentId", ViewData["AssignmentId"])
+        <div class="panel-footer">
+            @Html.ConfirmAction(OperationType.Save, "btnSendAssignments", DbRes.TResource("User.Transaction.Assignment.Send"), "SendManagerAssignments", null, null, null, "SendAssignmentSuceeded", null, DbRes.TResource("User.Transaction.Assignment.SendMessage"), "post", "frmFileAssignment", null, "btn btn-save pull-right", "CheckIfHasAssignments", UserClaims.Assignments.Assign)
+        </div>
+    </div>
+
+}
+<script src="~/Scripts/Transaction.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#btnEditIndividual").hide();
+        $("#aCancelIndividual").hide();
+    })
+
+    @if (!Convert.ToBoolean(ViewData["HasAssignmentPaper"]) || !Convert.ToBoolean(ViewData["HasActions"]))
+    {
+        <text>
+    $("#btnSendAssignments").prop('disabled', true)
+        </text>
+    }
+
+    @if (!Convert.ToBoolean(ViewData["IsAllowedToCreateGroup"]))
+    {
+          <text>
+    $("#dvAssignmentGroupInputs :input").each(function () {
+        $(this).attr("disabled", true);
+    });
+          </text>
+    }
+
+    $('.opnDialog').click(function () {
+            ShowDialog('@Url.Action("AssignmentGroupAdd","File")');
+        });
+
+    $('#btnPrintDeliveryReportDialog').click( function () {
+
+            ShowDialog('@Url.Action("OpenDeliveryReport", "Report")' + '?transactionReportInfo=' + $('#hdnTransactionReportInfo').val());
+        });
+
+    $(document).on("change", "#ddlToUserId",function () {
+        $("#hdnToUserName").val($(this).val());
+        })
+
+    $(document).on("change","#ddlActionId",function () {
+        $("#hdnActionName").val($(this).val());
+        })
+
+    $("#ddlGroupId").change(function () {
+        $("#hdnGroupName").val($(this).val());
+        })
+
+    $("#ddlActionForAllId").change( function () {
+        $("#hdnActionNameForAll").val($(this).val());
+        })
+
+    function GetAllUsersAssignment() {
+
+            if ($("#divForm__treeAssignment").find("#ToOrgUnitId").val() != "") {
+
+            $.ajax({
+                type: 'post',
+                cache: false,
+                url: '@Url.Action("GetUsersByOrgUnitId","File")',
+                data: { id: $("#divForm__treeAssignment").find("#ToOrgUnitId").val() },
+                success:
+                function (data) {
+                    AutoCompleteChangeList("ddlToUserId", data);
+                }
+            });
+        }
+        else {
+            $("#ddlToUserId").val("");
+            $("#hdnToUserId").val("");
+            AutoCompleteChangeList("ddlToUserId", "[]");
+        }
+
+        $("#hdnToOrgUnitName").val($("#divForm__treeAssignment").find(".txtDepartmentName").val());
+    }
+
+    function DeliveryReport() {
+
+        var url = '@Url.Action("InboundCertificate","File")' + '?transactionId=' + transactionId;
+
+        ShowDialog(url);
+    }
+
+    function CancelIndividual() {
+        ClearInputs('dvAssignmentIndividualBody');
+        $("#btnEditIndividual").hide();
+        $("#btnAddIndividual").show();
+        $("#aCancelIndividual").hide();
+    }
+
+    function EmptyFields()
+    {
+        $("#ddlToUserId").val("");
+        $("#hdnToUserId").val("");
+        $("#ddlActionId").val("");
+        $("#hdnActionId").val("");
+        $("#hdnToOrgUnitName").val("");
+        $("#hdnIndexIndividual").val("");
+        $("#Remarks").val("");
+        $(".txtDepartmentName").val("");
+        $(".txtDepartmentNumber").val("");
+        $(".hdnDepartmentId").val("");
+        $("#divDir__treeAssignment .selected").removeClass('selected')
+    }
+
+    function IndividualOnSuccess(data, div) {
+        $("#" + div).html("");
+        $("#" + div).html(data.Html);
+        $("#dvTransactionAssignmentCotainer #hdnAssignmentIndividualData").val(data.hdnValue);
+        EmptyFields();
+    }
+
+    function IndividualOnEditSuccess(data, div) {
+        $("#btnEditIndividual").hide();
+        $("#btnAddIndividual").show();
+        $("#aCancelIndividual").hide();
+        $("#" + div).html("");
+        $("#" + div).html(data.Html);
+        $("#dvTransactionAssignmentCotainer #hdnAssignmentIndividualData").val(data.hdnValue);
+        ClearInputs('dvAssignmentIndividualBody');
+    }
+
+    function OnDeleteIndividualSuccess(data, div) {
+        $("#dvTransactionAssignmentCotainer #hdnAssignmentIndividualData").val(data.hdnValue);
+        if (data.Ids.indexOf($("#dvTransactionAssignmentCotainer #hdnIndexIndividual").val()) >= 0) {
+            $("#btnEditIndividual").hide();
+            $("#btnAddIndividual").show();
+            $("#aCancelIndividual").hide();
+            ClearInputs('dvAssignmentIndividualBody');
+        }
+    }
+
+    function OnGetIndividualSuccess(data, div) {
+        $("#btnEditIndividual").show();
+        $("#aCancelIndividual").show();
+        $("#btnAddIndividual").hide();
+        $("#" + div).html("");
+        $("#" + div).html(data.Html);
+        $("#dvTransactionAssignmentCotainer #hdnIndexIndividual").val(data.Index);
+        jQuery.validator.unobtrusive.parse('#' + div);
+    }
+
+    function GroupOnSuccess(data, div) {
+        $("#" + div).html("");
+        $("#" + div).html(data.Html);
+        $("#dvTransactionAssignmentCotainer #hdnAssignmentGroupData").val(data.hdnValue);
+        $("#dvTransactionAssignmentCotainer #hdnDetailAssignmentGroupData").val(data.hdnDetailData);
+    }
+
+    function OnDeleteGroupSuccess(data, div) {
+        $("#dvTransactionAssignmentCotainer #hdnAssignmentGroupData").val(data.hdnValue);
+        $("#dvTransactionAssignmentCotainer #hdnDetailAssignmentGroupData").val(data.hdnDetailData);
+    }
+
+    function CheckIfHasAssignments() {
+        if ($("#dvTransactionAssignmentCotainer #hdnDetailAssignmentGroupData").val() != "[]" || $("#dvTransactionAssignmentCotainer #hdnAssignmentIndividualData").val() != "[]") {
+            var check = true;
+            if ($("#dvTransactionAssignmentCotainer #hdnDetailAssignmentGroupData").val() != "[]") {
+                var data = jQuery.parseJSON($("#dvTransactionAssignmentCotainer #hdnDetailAssignmentGroupData").val());
+                $.each(data, function (i, item) {
+                    if (item.ActionId == -1 || item.ActionId == "") {
+                        check = false;
+                    }
+                })
+            }
+            if ($("#dvTransactionAssignmentCotainer #hdnAssignmentIndividualData").val() != "[]") {
+                var data = jQuery.parseJSON($("#dvTransactionAssignmentCotainer #hdnAssignmentIndividualData").val());
+                $.each(data, function (i, item) {
+                    if (item.ActionId == -1 || item.ActionId == "") {
+                        check = false;
+                    }
+                })
+            }
+            if (check) {
+                return true;
+            }
+            else {
+                ShowErrorMessage('@Html.Raw(DbRes.TValidation("User.Transaction.Assignment.ActionsRequired"))');
+                return false;
+            }
+        }
+        else {
+            ShowErrorMessage('@Html.Raw(DbRes.TValidation("User.Transaction.Assignment.AssignmentRequired"))');
+            return false;
+        }
+    }
+
+    var _url = null;
+    var urlDeliveryReport;
+    function SendAssignmentSuceeded(data) {
+        if (data.MessageType != 2) {
+
+            $("#dvTransactionsContainer").html("");
+            $("#dvTransactionsContainer").html(data.Html);
+            $("#txtCurrentPage").val($("#page").val());
+            $("#hdnCurrentPage").val($("#page").val());
+
+            $("li#_UserFileMenu").html("");
+            $("li#_UserFileMenu").html(data.FileMenuHtml);
+            $("#editor_transaction").html("");
+
+            _url = data.url;
+
+            ShowSuccesMessage(data.MessageText,"CloseDialog")
+
+            $("#btnSendAssignments").hide();
+
+            $('#hdnTransactionReportInfo').val(data.TransactionReportInfo);
+
+            if (data.PrintDeliveryReport) {
+
+                if (data.OneDeliveryReport) {
+
+                    $.ajax({
+                        type: 'Post',
+                        url: '@Url.Action("DeliveryReport", "Report")',
+                        data: { transactionReportInfo: data.TransactionReportInfo }
+                    });
+
+                    urlDeliveryReport = '@Url.Action("PrintDeliveryReport", "Report")';
+
+                    $("#btnPrintDeliveryReport").show();
+                }
+                else {
+
+                    $("#btnPrintDeliveryReportDialog").show();
+                }
+            }
+
+
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+
+    }
+
+    function CloseDialog() {
+        UpdateMenuFileInformation('@Url.Action("GetMenuFile", "Shared")');
+        __dialog.close();
+    }
+
+    function RedirectToHomePage() {
+        window.location.href = _url;
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        $("#dvTransactionAssignmentCotainer #trayId").val($("#hdnTrayId").val());
+        $("#dvTransactionAssignmentCotainer #page").val($("#hdnCurrentPage").val());
+        $("#dvTransactionAssignmentCotainer #gridColumn").val($("#hdnOrderBy").val());
+        $("#dvTransactionAssignmentCotainer #dir").val($("#hdnDirection").val());
+        $("#dvTransactionAssignmentCotainer #filter").val($("#hdnFilter").val());
+        $("#dvTransactionAssignmentCotainer #fromDate").val($("#hdnFromDateValue").val());
+        $("#dvTransactionAssignmentCotainer #toDate").val($("#hdnToDateValue").val());
+        $("#dvTransactionAssignmentCotainer #number").val($("#hdnSearchTransactionNumberValue").val());
+        $("#dvTransactionAssignmentCotainer #dateType").val($("#hdnFilterDateType").val());
+        $("#dvTransactionAssignmentCotainer #pageSize").val($("#ddlPaging").val());
+
+    })
+</script>
+<script>
+    $(".group_content").click(function () {
+
+        var id = $(this).data("groupid");
+        var text = $(this).html();
+        var groupData = $("#dvAssignmentGroupBody #hdnDetailAssignmentGroupData").val();
+
+        ShowDialogAjax('@Url.Action("AssignmentGroupDetailsEdit","File")', { groupId: $(this).data("groupid"), groupName: $(this).html(), groupData: $("#dvTransactionAssignmentCotainer #hdnDetailAssignmentGroupData").val() }, 'OpenGroupDetailsDialog');
+    })
+
+
+    function OpenGroupDetailsDialog(data, $obj) {
+
+        $obj.setContent(data.View);
+    }
+</script>

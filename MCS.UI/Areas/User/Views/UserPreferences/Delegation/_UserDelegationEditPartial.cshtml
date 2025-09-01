@@ -1,0 +1,82 @@
+﻿@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.UI.Areas.User.Models.UserPreferences.UserDelegation
+@using MCS.Common
+@using MCS.Framework.Localization
+@model EditUserDelegationVM
+@{Layout = null;}
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmEditUserDelegation", @class = "form-horizontal form-row" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="col-md-4 control-label">@DbRes.TResource("User.UserDelegation.DateBetween")</label>
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            @Html.HiddenGroupFor(model => model.FromDateH, new { id = "hdnFromDateUmEdit" })
+                            @Html.Calendar("FromDateCalEdit", "hdnFromDateGregEdit", "hdnFromDateUmEdit", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), Model.FromDateH, "form-control")
+                            <span class="input-group-addon add-on"> - </span>
+                            @Html.HiddenGroupFor(model => model.ToDateH, new { id = "hdnToDateUmEdit" })
+                            @Html.Calendar("toDateCalEdit", "hdnToDateGregEdit", "hdnToDateUmEdit", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), Model.ToDateH, "form-control")
+                        </div>
+                        @Html.HiddenGroupFor(model => model.ToDate, new { id = "hdnToDateGregEdit" }, "EditDelegation")
+                        @Html.HiddenGroupFor(model => model.FromDate, new { id = "hdnFromDateGregEdit" }, "EditDelegation")
+                    </div>
+                </div>
+                @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.OrgUnitId, TreeMode.Single, "treeToOrgUnitEdit", true, "GetDirectedToUsersByOrgUnitId", "EditDelegation")
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label">@DbRes.TResource("User.UserDelegation.EmployeeName")</label>
+                    <div class="col-md-8">
+                        <div class="">
+                            @Html.AutoCompleteBuilder("ddlDirectedToIdEdit", "hdnDirectedToIdEdit", ViewData["OrgUnitsUsersData"] != null ? ViewData["OrgUnitsUsersData"].ToString() : null, Model != null ? Model.DirectedToId.ToString() : null, true, "form-control")
+                            @Html.HiddenGroupFor(model => model.DirectedToId, new { id = "hdnDirectedToIdEdit" }, "EditDelegation")
+                        </div>
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="col-md-4 control-label">@DbRes.TResource("User.UserDelegation.Priority")</label>
+                    <div class="col-md-8">
+                        <div class="">
+                            @Html.AutoCompleteBuilder("ddlPriorityEdit", "hdnPriorityIdEdit", ViewData["PrioritiesData"].ToString(), Model != null ? Model.PriorityId.ToString() : null, true, "form-control")
+                            @Html.HiddenGroupFor(model => model.PriorityId, new { id = "hdnPriorityIdEdit" }, "EditDelegation")
+                        </div>
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label">@DbRes.TResource("User.UserDelegation.SourceType")</label>
+                    <div class="col-md-8">
+                        <div class="">
+                            @Html.AutoCompleteBuilder("ddlSourceTypesEdit", "hdnSourceTypesIdEdit", ViewData["TransactionCategoryData"].ToString(), Model != null ? Model.SourceTypesId.ToString() : null, true, "form-control")
+                            @Html.HiddenGroupFor(model => model.SourceTypesId, new { id = "hdnSourceTypesIdEdit" }, "EditDelegation")
+                        </div>
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label">@DbRes.TResource("User.UserDelegation.Confidentiality")</label>
+                    <div class="col-md-8">
+                        <div class="">
+                            @Html.AutoCompleteBuilder("ddlConfidentialityEdit", "hdnConfidentialityIdEdit", ViewData["ConfidentialityData"].ToString(), Model != null ? Model.ConfidentialityId.ToString() : null, true, "form-control")
+                            @Html.HiddenGroupFor(model => model.ConfidentialityId, new { id = "hdnConfidentialityIdEdit" }, "EditDelegation")
+                        </div>
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel-footer middle">
+        @Html.StickyHiddenFor(model => model.Id, new { id = "hdnUserDelegationId" })
+        @Html.StickyHiddenFor(model => model.PreferenceId)
+        @Html.ActionButton(DbRes.TResource("User.UserDelegation.Edit"), "EditUserDelegate", "dvCurrentGrid", null, null, "OnEditSuccess", null, "post", "EditDelegation", "btnEditDelegate", "frmEditUserDelegation", "btn btn-save pull-right")
+        <a class="btn-link pull-right" id="btnCancel" onclick="HideEditDiv()">@DbRes.TResource("User.UserDelegation.Cancel")</a>
+    </div>
+
+}

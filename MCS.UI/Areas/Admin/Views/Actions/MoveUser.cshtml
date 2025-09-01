@@ -1,0 +1,304 @@
+﻿@using MCS.Framework.Localization;
+@using MCS.Common
+@using MCS.UI.Areas.Admin.Models.Actions;
+@model MoveTransactionVM
+@{
+    ViewBag.Title = DbRes.TResource("Admin.Actions.MoveUser");
+    Layout = "~/Areas/Admin/Views/Shared/_TransfersActionLayout.cshtml";
+}
+
+<div class="mx-3 mx-md-5 header-container d-flex flex-row align-items-center">
+    <div class="d-flex flex-column flex-md-row align-items-md-center flex-grow-1">
+        <h3 class="site-color mb-4">@DbRes.TResource("Admin.Actions.MoveUser")</h3>
+    </div>
+</div>
+<div class="white-container mx-3 mx-md-5">
+    <div id="dvValidationSummery"></div>
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { @class = "form-horizontal form-row", id = "frmMoveUser" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="form-row col-lg-12">
+            <div class="form-group col-lg-6 col-md-8 col-sm-12 col-xs-12" >
+                <fieldset class="field-set" id="dvDepartmentsTree">
+                    @Html.DepartmentsTree(ViewData["orgUnitDataInfo"] as TreeViewModel, model => model.EntityFromId, TreeMode.Single, "treeDirectedToOrgUnit", false, "GetDirectedToUsersByOrgUnitId", "", "dvDepartmentsTree")
+                </fieldset>
+                @*<label>@DbRes.TResource("Admin.Actions.MoveUser.FromEntity")<span class="stark">*</span></label>*@
+                @*@Html.EditorFor(model => model.EntityFromId, "OrgHierarchyCaller", additionalViewData: new { treeId = "treeDirectedToOrgUnit", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Common"), GetNodeInfoByIdActionURL = @Url.Action("GetInternalPartyInfoById", "Common"), GetNodeInfoByNumActionURL = @Url.Action("GetInternalPartyInfoByNumber", "Common"), onClickfunction = "GetDirectedToUsersByOrgUnitId", ValidationGroup = "BasicInformation", ShowAddPartyButton = false })*@
+                @*@Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.EntityFromId, TreeMode.Single, "treeDirectedToOrgUnit", true, "GetDirectedToUsersByOrgUnitId", "BasicInformation", "dvDepartmentsTree")*@
+                @Html.HiddenGroupFor(model => model.EntityFromId, null, "moveUser")
+                <label class="hidden_" style="color:red" id="DepartmentNotSelectedValidation">* @DbRes.TValidation("Admin.Actions.MoveUser.FromEntityValidation")</label>
+            </div>
+
+            <div class="form-group col-lg-6 col-md-8 col-sm-12 col-xs-12" >
+
+                <fieldset class="field-set" id="dvDepartmentsTree02">
+                @Html.DepartmentsTree(ViewData["orgUnitDataInfo"] as TreeViewModel, model => model.EntityToId, TreeMode.Single, "treeDirectedToOrgUnit02", false, "", "", "dvDepartmentsTree02")
+                </fieldset>
+                @*<label>@DbRes.TResource("Admin.Actions.MoveUser.ToEntity")<span class="stark">*</span></label>
+
+        @Html.EditorFor(model => model.EntityToId, "OrgHierarchyCaller", additionalViewData: new { treeId = "treeDirectedToOrgUnit02", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Common"), GetNodeInfoByIdActionURL = @Url.Action("GetInternalPartyInfoById", "Common"), GetNodeInfoByNumActionURL = @Url.Action("GetInternalPartyInfoByNumber", "Common"), onClickfunction = "GetDirectedToUsersByOrgUnitId02", ValidationGroup = "BasicInformation", ShowAddPartyButton = false })*@
+
+
+
+                @*@Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.EntityToId, TreeMode.Single, "treeDirectedToOrgUnit02", true, "GetDirectedToUsersByOrgUnitId02", "BasicInformation", "dvDepartmentsTree02")*@
+                @Html.HiddenGroupFor(model => model.EntityToId, null, "moveUser")
+                <label class="hidden_" style="color:red" id="Department02NotSelectedValidation">* @DbRes.TValidation("Admin.Actions.MoveUser.ToEntityValidation")</label>
+            </div>
+            <div class="form-group col-lg-12 col-md-12 col-xs-12 col-sm-12 d-flex">
+                <small class="text-danger ml-auto">
+                    @*يرجى تعبئة الحقول التي تحتوي على إشارة **@
+                </small>
+            </div>
+        </div>
+        <hr class="mb-4">
+        <div id="usersContent" >
+            <div class="w-100 d-flex align-items-center mt-2 mb-2">
+                <h3 class="white-c-title">@DbRes.TResource("Admin.Actions.MoveUser.EmployeesGrid")</h3>
+                <span class="roundedred ml-3" id="GridUsersCount"></span>
+                <span class="pl-2 gray4">@DbRes.TResource("Admin.Actions.MoveUser.Employee")</span>
+            </div>
+
+            <div id="dvUsersGrid"></div>
+            @Html.StickyHiddenFor(model => model.UsersFromIds, new { id = "SelectedUsersToMove" })
+            <div>
+                <div>
+                    <div class="w-100 d-flex align-items-center mt-2 mb-2">
+                        <a class="purple-collapse mr-2" data-toggle="collapse" href="#collapseExample" aria-expanded="true" aria-controls="collapseExample">
+                            <div class="">
+                                <div class="title"><i class="fas fa-chevron-down"></i></div>
+                            </div>
+                        </a>
+                        <h3 class="white-c-title">@DbRes.TResource("Admin.Actions.MoveUser.EmployeesList")</h3>
+                        <span class="roundedred ml-3" id="SelectedUsersCount"></span>
+                        <span class="pl-2 gray4">@DbRes.TResource("Admin.Actions.MoveUser.Employee")</span>
+                    </div>
+                </div>
+
+                <div class="collapse in" id="collapseExample" aria-expanded="true" style="">
+                    <div class="card card-body">
+                        <div class="added_departments d-flex flex-wrap" id="selectedUsers">
+
+                        </div>
+                    </div>
+                    <label class="hidden_" style="color:red" id="NoUsersSelectedValidation">* @DbRes.TValidation("Admin.Actions.MoveUser.EmployeeValidation")</label>
+                </div>
+            </div>
+        </div>
+    }
+    @Html.StickyHidden("SelectedOrgUnitId")
+</div>
+<div class="mx-3 mx-md-5 mb-4 d-flex">
+    <div class="ml-auto">
+        <button onclick="checkIfEntitiesSelected()" class="btn btn-lg btn-st3 mx-1">@DbRes.TResource("Admin.Actions.MoveUser.Move")</button>
+        @Html.ActionButton(DbRes.TResource("Admin.Actions.MoveUser.Move"),Url.Action("MoveUserPost", "Actions"),"", null,"", "onUserSuccess", "","Post",
+       "moveUser","btnMoveUser", "frmMoveUser", "btn btn-lg btn-st3 mx-1 hidden_")
+        @Html.ResetButton("ResetForm()", "", "btn btn-lg btn-st3 mx-1")
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var selectedUsers = [];
+
+    $("#dvDepartmentsTree .hdnDepartmentId").on("change", function () {
+        if ($(this).val() == "" || $("#dvDepartmentsTree .txtDepartmentName").val() == "") {
+            $("#dvUsersGrid").html("");
+            $("#usersContent").add("hidden_");
+        }
+    });
+    function deleteUserItem(id) {
+        if (id != "") {
+
+            var index = selectedUsers.indexOf(id + "");
+            if (index > -1) {
+                selectedUsers.splice(index, 1);
+            }
+            $("#SelectedUsersCount").html(selectedUsers.length);
+            $("#dvUsersGrid #" + id).prop("checked", false);
+            $("#userItem_" + id).remove();
+        }
+    }
+
+
+
+    function onUserSuccess(data) {
+        var errors = [];
+        if (data.errors.length > 0) {
+            for (var counter = 0; counter < data.errors.length; counter++) {
+                switch (data.errors[counter].Key) {
+                    case "EntityFromId":
+                        errors.push('<li>' + '@DbRes.TResource("Admin.Actions.MoveUser.FromEntity")' + '</li>');
+                        break;
+                    case "EntityToId":
+                        errors.push('<li>' + '@DbRes.TResource("Admin.Actions.MoveUser.ToEntity")' + '</li>');
+                        break;
+                    case "DirectedFromId":
+                        errors.push('<li>' + '@DbRes.TResource("Admin.MoveTransactions.DirectedFromId")' + '</li>');
+                        break;
+                }
+            }
+            var listOfErrors = '<ul style="list-style:none;">';
+            for (var counter = 0; counter < errors.length; counter++) {
+                listOfErrors += errors[counter];
+            }
+            listOfErrors += '</ul>';
+            ShowErrorMessage(listOfErrors);
+        }
+        else {
+            if (data.Users != undefined) {
+                ShowErrorMessage(data.MessageText + " : <br/>" + data.Users);
+            } else {
+                ShowSuccesMessage('@DbRes.TResource("Admin.Actions.MoveUser.MoveSuccess")', redirect());
+            }
+        }
+    }
+
+    function redirect() {
+          setTimeout(function () {
+            window.location.href = '@Url.Action("MoveUser", "Actions",new { area="Admin"})';
+        }, 3000);
+
+    }
+
+    function GetDirectedToUsersByOrgUnitId02()
+    {
+        debugger;
+        var EntityToId = $('#EntityToId').val();
+        if (EntityToId != "") {
+            var token = $('#frmMoveUser').find("input[name='__RequestVerificationToken']").val();
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("GetUsersByOrgUnitId","Actions")',
+                data: { id: EntityToId, __RequestVerificationToken: token},
+                success: function (data)
+                {
+                    debugger;
+                    $("#ddlDirectedToId").val("");
+                    $("#hdnDirectedToId").val("");
+                    AutoCompleteChangeList("ddlDirectedToId", data);
+                    $("#ddlDirectedToId").prop('disabled', false);
+                },
+                error: function (jqXHR) {
+                    console.log(jqXHR.responseText);
+                }
+            });
+            return false;
+        }
+        else {
+            $("#ddlDirectedToId").prop('disabled', true);
+            $("#ddlDirectedToId").val("");
+            $("#hdnDirectedToId").val("");
+            AutoCompleteChangeList("ddlDirectedToId", "[]");
+        }
+
+    }
+    function GetDirectedToUsersByOrgUnitId()
+    {
+        debugger;
+        var EntityFromId = $('#EntityFromId').val();
+        if (EntityFromId != "") {
+            var token = $('#frmMoveUser').find("input[name='__RequestVerificationToken']").val();
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetUsersGridByOrgUnitId", "Actions")',
+                data: { id: EntityFromId, __RequestVerificationToken: token },
+                success: function (data) {
+                    if (data.MessageType != 2)
+                    {
+                        debugger;
+                        $("#SelectedOrgUnitId").val(EntityFromId);
+                        $("#dvUsersGrid").html("");
+                        $("#dvUsersGrid").html(data.Html);
+                        $("#usersContent").removeClass("hidden_");
+                        $("#GridUsersCount").html(data.ItemsCount);
+                        selectedUsers = []; selectedUsers
+                        $("#selectedUsers").html("");
+                        $("#SelectedUsersCount").html(0);
+                    }
+                },
+                error: function (jqXHR) {
+                    console.log(jqXHR.responseText);
+                }
+            });
+            return false;
+        }
+        else {
+            $("#ddlDirectedFromId").prop('disabled', true);
+            $("#ddlDirectedFromId").val("");
+            $("#hdnDirectedFromId").val("");
+            AutoCompleteChangeList("ddlDirectedFromId", "[]");
+        }
+
+    }
+
+    function checkIfEntitiesSelected() {
+        var errorCount = 0;
+        if ($("#treeDirectedToOrgUnit_hdnDepartmentId").val() == "") {
+            $("#DepartmentNotSelectedValidation").removeClass("hidden_");
+            errorCount++;
+        }
+        if ($("#treeDirectedToOrgUnit02_hdnDepartmentId").val() == "") {
+            $("#Department02NotSelectedValidation").removeClass("hidden_");
+            errorCount++;
+        }
+        if (selectedUsers.length == 0) {
+            $("#NoUsersSelectedValidation").removeClass("hidden_");
+            errorCount++;
+        }
+
+        if (errorCount == 0) {
+            $("#DepartmentNotSelectedValidation").addClass("hidden_");
+            $("#Department02NotSelectedValidation").addClass("hidden_");
+            $("#SelectedUsersToMove").val(selectedUsers);
+            $("#NoUsersSelectedValidation").addClass("hidden_");
+            checkUserClearance();
+        }
+        return false;
+    }
+
+    function checkUserClearance() {
+        $.ajax({
+            type: 'get',
+            url: '@Url.Action("CheckUserClearance")',
+            data: { Ids: selectedUsers.join(",") },
+            success: function (data) {
+                if (data.MessageType == 1) {
+                    $("#dvValidationSummery").html("");
+                    $("#dvValidationSummery").html(data.Html);
+                } else if (data.MessageType == 0) {
+                    if (data.UsersHasTransactions != "") {
+                        ShowConfirmMessage("@DbRes.TValidation("Admin.Actions.MoveUser.UserHasTrnsactoinsValidation")".replace("{0}", data.UsersHasTransactions + " &nbsp; "), "ConfirmMove");
+                    } else {
+                        ShowConfirmMessage("@DbRes.TValidation("Admin.Actions.MoveUser.MoveUsersValidation")", "ConfirmMove");
+                    }
+                } else {
+                    ShowErrorMessage(data.MessageText);
+                }
+            }
+        });
+    }
+
+    function ConfirmMove() {
+        $("#btnMoveUser").click();
+    }
+
+    function checkIfAtLeastOneUserSelected() {
+        if (selectedUsers.length == 0) {
+            $("#NoUsersSelectedValidation").removeClass("hidden_");
+            return false;
+        }
+        $("#SelectedUsersToMove").val(selectedUsers);
+        $("#NoUsersSelectedValidation").addClass("hidden_");
+
+        return true;
+    }
+
+    function ResetForm() {
+        ClearInputs('frmMoveUser');
+        $("#dvUsersGrid").html("");
+        $("#selectedUsers").html("");
+        $("#SelectedUsersCount").html(0);
+        $("#usersContent").addClass("hidden_");
+        selectedUsers = [];
+    }
+</script>

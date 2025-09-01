@@ -1,0 +1,20 @@
+﻿@using MCS.DoconutMVC.Helpers;
+<nav class="nav-toolbar-bottom text-center">
+    <button type="button" class="btn btn-default"   data-placement="bottom"
+            title=@Html.GlobalResource("TheNext") onclick="objctlDoc.Next(true);">
+        <i class="fas fa-angle-right"></i>
+    </button>
+    <button type="button" class="btn btn-default"   data-placement="bottom"
+            title=@Html.GlobalResource("TheLast") onclick="objctlDoc.GotoPage(parseInt(objctlDoc.TotalPages()));">
+        <i class="fas fa-angle-double-right" ></i>
+    </button>
+
+    <button type="button" class="btn btn-default"   data-placement="bottom"
+            title=@Html.GlobalResource("TheFirst") onclick="objctlDoc.GotoPage(1);">
+        <i class="fas fa-angle-double-left"></i>
+    </button>
+    <button type="button" class="btn btn-default"   data-placement="bottom"
+            title=@Html.GlobalResource("ThePrevious") onclick="objctlDoc.Next(false);">
+        <i class="fas fa-angle-left"></i>
+    </button>
+</nav>

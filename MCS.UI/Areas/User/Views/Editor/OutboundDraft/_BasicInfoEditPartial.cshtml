@@ -1,0 +1,170 @@
+﻿@model MCS.UI.Areas.User.Models.Transaction.Outbound.Draft.EditOutboundDraftBasicInfoVM
+@using MCS.Common;
+@using MCS.Framework.Localization
+@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+
+<div class="panel-heading">
+    <h3 class="panel-title">@DbRes.TResource("User.OutboundDraft.EditDraft") </h3>
+    @Html.Partial("~/Areas/User/Views/Transaction/_TransactionHeaderPartial.cshtml")
+</div>
+<div class="panel-body">
+    <p>@DbRes.TResource("Global.Forms.MandatoryFields")</p>
+    <div class="row">
+        <div class="panel-group accordion accordion-dc">
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TransactionTypeId, new { @class = "col-md-4 control-label" }) 
+                    <div class="col-md-8">
+                        @Html.AutoCompleteBuilder("ddlTransactionSourceType", "hdnTransactionSourceType", ViewData["TransactionTypesData"].ToString(), Model.TransactionTypeId.ToString(), true, "form-control")
+                        @Html.HiddenGroupFor(model => model.TransactionTypeId, new { @Value = "", id = "hdnTransactionSourceType" }, "OutboundDraft")
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    @Html.LabelFor(model => model.LetterTypeId, new { @class = "col-md-4 control-label" })
+                    <div class="col-md-8">
+                        @Html.AutoCompleteBuilder("ddlTypeId", "hdnTypeId", ViewData["LetterTypeData"].ToString(), Model.LetterTypeId.ToString(), true, "form-control")
+                        @Html.HiddenGroupFor(model => model.LetterTypeId, new { @Value = "", id = "hdnTypeId" }, "OutboundDraft")
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PriorityLevelId, new { @class = "col-md-4 control-label" })
+                    <div class="col-md-8">
+                        @Html.AutoCompleteBuilder("ddlPriorityLevel", "hdnPriorityLevel", ViewData["PrioritiesData"].ToString(), Model.PriorityLevelId.ToString(), true, "form-control", "hdnPriorityHasDate")
+                        @Html.HiddenGroupFor(model => model.PriorityLevelId, new { @Value = "", id = "hdnPriorityLevel" }, "OutboundDraft")
+                        @Html.Hidden("hdnPriorityHasDate", null, new { id = "hdnPriorityHasDate" })
+                    </div>
+                </div>
+                <div class="form-group" style="display:none;" id="dvHasDateContainer">
+                    <label class="col-md-4 control-label"></label>
+                    <div class="col-md-4" style="direction:ltr;">
+                        @Html.HiddenGroupFor(model => model.RemindDateH, new { id = "hdnHasDateUm" }, "BasicInformation")
+                        @Html.Calendar("HasDateCal", "hdnHasDateGreg", "hdnHasDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), Model.RemindDateH, "form-control")
+                        @Html.HiddenGroupFor(model => model.RemindDate, new { id = "hdnHasDateGreg" }, "BasicInformation")
+                    </div>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            @Html.AutoCompleteBuilder("ddlMinute", "hdnMinuteId", LookupCategory.Minute, null, true, "form-control time", null, null, false, null, DbRes.TResource("Global.MinuteSymbole"))
+                            @Html.HiddenGroupFor(model => model.Minute, new { id = "hdnMinute" }, "")
+                            @Html.Hidden("hdnMinuteId", new { @Value = "", id = "hdnMinuteId" }, "")
+                            <span class="input-group-addon anchored">:</span>
+                            @Html.AutoCompleteBuilder("ddlHour", "hdnHourId", LookupCategory.Hour, null, true, "form-control time", null, null, false, null, DbRes.TResource("Global.HourSymbole"))
+                            @Html.HiddenGroupFor(model => model.Hour, new { id = "hdnHour" }, "")
+                            @Html.Hidden("hdnHourId", new { @Value = "", id = "hdnHourId" }, "")
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="panel-body">
+    <div class="row">
+
+        <div class="col-md-6">
+            <div>
+                <div id="divContainerDraftExternalParties">
+                    @Html.Partial("~/Areas/User/Views/OutboundDraft/_ExternalPartiesPartial.cshtml", new ViewDataDictionary { { "ExternalPartiesData", ViewData["ExternalPartiesData"] } })
+                </div>
+                <div class="form-group" id="dvDestinationTree">
+                    @Html.LabelFor(model => model.DirectedToId, new { @class = "col-md-4 control-label" })
+                    <div class="col-md-8">
+                        @Html.AutoCompleteBuilder("ddlDirectedToId", "hdnDirectedToId", ViewData["ExternalPartiesManagers"].ToString(), Model.DirectedToId.ToString(), true, "form-control")
+                        @Html.HiddenGroupFor(model => model.DirectedToId, new { @Value = "", id = "hdnDirectedToId" }, "OutboundDraft")
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.ConfidentialityLevelId, new { @class = "col-md-4 control-label" })
+                <div class="col-md-8">
+                    @Html.AutoCompleteBuilder("ddlConfedentiality", "hdnConfedentiality", ViewData["ConfidentialityData"].ToString(), Model.ConfidentialityLevelId.ToString(), true, "form-control")
+                    @Html.HiddenGroupFor(model => model.ConfidentialityLevelId, new { @Value = "", id = "hdnConfedentiality" }, "OutboundDraft")
+                </div>
+            </div>
+            @*@Html.DepartmentsTree(ViewData["SuggestedTopicsData"] as TreeViewModel, model => model.SuggestedTopicId, TreeMode.Single, "dvSuggestedTopicTree", true, "SetSuggestedTopic", "BasicInformation")*@
+        </div>
+
+    </div>
+</div>
+<div class="panel-body">
+    <div class="row">
+   
+        @*<div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.SignedById, new { @class = "col-md-4 control-label" })
+                <div class="col-md-8">
+                    @Html.AutoCompleteBuilder("ddlSignedById", "hdnSignedById", ViewData["OrgUnitsManagers"].ToString(), Model.SignedById.ToString(), true, "form-control")
+                    @Html.HiddenGroupFor(model => model.SignedById, new { @Value = "", id = "hdnSignedById" }, "OutboundDraft")
+                </div>
+            </div>
+        </div>*@
+        <div class="col-md-6">
+            <div class="form-group top_space">
+                @Html.LabelFor(model => model.Subject, new { @class = "col-md-4 control-label" })
+                <div class="col-md-8">
+                    <div class="">
+                        @Html.TextAreaGroupFor(model => model.Subject, new { id = "txtAreaSubject", @class = "form-control", @rows = "3" }, "OutboundDraft")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*<div class="panel-body">
+    @Html.DepartmentsTree(ViewData["SubjectClassificationsData"] as TreeViewModel, model => model.SubjectClassifications, TreeMode.Multiple, "treeSubjectClassifications", true, null, "BasicInformation")
+</div>*@
+
+<script>
+    $(document).ready(function () {
+        if ($('#hdnPriorityHasDate').val() === "true") {
+            $("#dvHasDateContainer").show();
+            $('#ddlHour').val($('#hdnHour').val());
+            $('#ddlHour').trigger("focusout");
+            if ($('#hdnMinute').val().length == 1) {
+
+                $('#ddlMinute').val("0" + $('#hdnMinute').val());
+                $('#ddlMinute').trigger("focusout");
+            }
+            else {
+                $('#ddlMinute').val($('#hdnMinute').val());
+                $('#ddlMinute').trigger("focusout");
+            }
+        }
+    });
+
+    $(document).on("change", "#ddlHour", function () {
+
+        $('#hdnHour').val($('#ddlHour').val());
+    });
+
+    $(document).on("change", "#ddlMinute", function () {
+
+        $('#hdnMinute').val($('#ddlMinute').val());
+    });
+
+    $(document).on("change", "#ddlPriorityLevel", function () {
+        if ($('#hdnPriorityHasDate').val() === "true") {
+            $("#dvHasDateContainer").show();
+        }
+        else {
+            $("#dvHasDateContainer").hide();
+            $("#hdnHasDateGreg").val("");
+            $("#hdnMinute").val("");
+            $("#hdnHour").val("");
+            $("#HasDateCal").val("");
+            $("#ddlHour").val("");
+            $("#ddlMinute").val("");
+        }
+
+    })
+
+</script>

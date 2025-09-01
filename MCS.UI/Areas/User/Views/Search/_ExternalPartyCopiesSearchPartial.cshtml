@@ -1,0 +1,27 @@
+﻿@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.Common
+@using MCS.Framework.Localization
+@model MCS.UI.Areas.User.Models.Search.SearchCriteriaByExternalPartyCopiesVM
+
+<div class="panel-body panel_dark">
+
+    <div class="form-group col-lg-6 col-md-6 col-sm-12 col-xs-12 readonlyByPrivilege">
+        <fieldset class="field-set">
+            <div id="divContainerExternalParties1">
+                @Html.Partial("~/Areas/User/Views/Search/_ExternalPartiesPartial.cshtml", new ViewDataDictionary { { "ExternalPartiesData", ViewData["ExternalPartiesData"] } })
+            </div>
+            @Html.HiddenFor(model => model.ExternalPartyId, new { id = "hdnExternalPartyId" })
+        </fieldset>
+    </div>
+    @Html.EncryptedStickyHidden("EncryptedFalse", "false", new { id = "EncryptedFalse" })
+    @Html.EncryptedStickyHidden("EncryptedTrue", "true", new { id = "EncryptedTrue" })
+</div>
+
+<script>
+    function FillExternalPartyId() {
+
+        $("#hdnExternalPartyId").val($("#DestinationId").val());
+
+    }
+</script>

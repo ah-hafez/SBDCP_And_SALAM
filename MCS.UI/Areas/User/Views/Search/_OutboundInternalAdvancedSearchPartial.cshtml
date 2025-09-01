@@ -1,0 +1,134 @@
+﻿
+@using MCS.Common
+@using MCS.Framework.Localization
+@model MCS.UI.Areas.User.Models.Search.OutboundInternalAdvancedVM
+
+<div class="panel-body">
+    <div class="panel-group accordion accordion-dc">
+        <div class="row">
+
+            <div class="col-md-4">
+                @Html.LabelFor(model => model.ConfidentialityId, new { @class = "control-label" })
+                <div class="form-group">
+                    @Html.AutoCompleteBuilder("ddlConfiLevel", "hdnConfiLevel", ViewData["ConfidentialityData"].ToString(), null, true, "form-control")
+                    @Html.HiddenGroupFor(model => model.ConfidentialityId, new { @Value = "", id = "hdnConfiLevel" }, "")
+                    <div class="clear"></div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.DepartmentsTreeOnDemand(ViewData["ExternalParties"] as TreeViewModel, model => model.FromPartyId, TreeMode.Single, "dvPartyFromTree", Request.IsAjaxRequest(), "GetManagersByPartyId")
+                </div>
+            </div>
+            <div class="col-md-4" style="display:none">
+                @Html.LabelFor(model => model.SignedById, new { @class = "control-label" })
+                <div class="form-group">
+                    @Html.AutoCompleteBuilder("ddlSignedBy", "hdnSignedBy", null, null, true, "form-control")
+                    @Html.HiddenGroupFor(model => model.SignedById, new { @Value = "", id = "hdnSignedBy" }, "")
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                @Html.LabelFor(model => model.PriorityId, new { @class = "control-label" })
+                <div class="form-group">
+                    @Html.AutoCompleteBuilder("ddlPriority", "hdnPriority", ViewData["Priorities"].ToString(), null, true, "form-control")
+                    @Html.HiddenGroupFor(model => model.PriorityId, new { @Value = "", id = "hdnPriority" }, "")
+                    <div class="clear"></div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                @Html.LabelFor(model => model.StatusId, new { @class = "control-label" })
+                <div class="form-group">
+                    @Html.AutoCompleteBuilder("ddlStatus", "hdnStatus", LookupCategory.TransactionStatus, null, true, "form-control")
+                    @Html.HiddenGroupFor(model => model.StatusId, new { @Value = "", id = "hdnStatus" }, "")
+                </div>
+                <div class="clear"></div>
+            </div>
+            @*<div class="col-md-4">
+                @Html.DepartmentsTree(ViewData["SubjectClassificationsData"] as TreeViewModel, model => model.SubjectClassifications, TreeMode.Multiple, "treeSubjectClassifications", true, null, null)
+            </div>*@
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(document).on("click", "span[data-node-id]", function () {
+
+        var elemnt = $(this);
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('LoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetExternalPartyNodes")',
+                data: { parentId: $(this).data("node-id"), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+                success:
+                    function (data) {
+
+                        $(elemnt).closest('li').children('ul').last().empty()
+
+                        $(elemnt).closest('li').children('ul').last().append(data);
+
+                        if ($(elemnt).attr('data-isRefreshEnabled').toLowerCase() == 'false') {
+
+                            $(elemnt).removeClass("LoadedData")
+                        }
+                    }
+            });
+        }
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('InternalLoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetOrgUnitsNodes")',
+                data: { parentId: $(this).data("node-id"), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+                success:
+                    function (data) {
+
+                        $(elemnt).closest('li').children('ul').last().empty()
+
+                        $(elemnt).closest('li').children('ul').last().append(data);
+
+                        $(elemnt).removeClass("InternalLoadedData");
+                    }
+            });
+        }
+    });
+
+
+    $(document).ready(function () {
+
+        $("#ddlSignedBy").prop('disabled', true);
+        $('#btnSearch').show();
+
+    });
+
+    function GetManagersByPartyId() {
+        if ($('input[data-container="dvPartyFromTree"]').val() != "") {
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetManagersByPartyId")',
+                data: { id: $('input[data-container="dvPartyFromTree"]').val() },
+                success:
+               function (data) {
+
+                   AutoCompleteChangeList("ddlSignedBy", data);
+                   $("#ddlSignedBy").val('');
+                   $("#hdnSignedBy").val('');
+
+                   $("#ddlSignedBy").prop('disabled', false);
+               }
+            });
+            return false;
+        }
+        else {
+
+            AutoCompleteChangeList("ddlDirectedTo", "[]");
+
+            $("#ddlSignedBy").val('');
+            $("#hdnSignedBy").val('');
+
+            $("#ddlSignedBy").prop('disabled', true);
+        }
+    }
+</script>

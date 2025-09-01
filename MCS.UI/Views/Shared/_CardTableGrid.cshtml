@@ -1,0 +1,91 @@
+﻿@using MCS.GridMvc.Columns
+@using MCS.UI.Helpers
+@using MCS.Common
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.File
+@model MCS.GridMvc.IGrid
+
+@if (Model == null) { return; }
+@if (Model.RenderOptions.RenderRowsOnly)
+{
+    @RenderGridBody();
+}
+else
+{
+    <div class="boxes px-md-2 grid-mvc table-view" data-lang="@Model.Language" data-gridname="@Model.RenderOptions.GridName" data-selectable="@Model.RenderOptions.Selectable.ToString().ToLower()" data-multiplefilters="@Model.RenderOptions.AllowMultipleFilters.ToString().ToLower()">
+        <div class="tbody">
+            @RenderGridBody()
+        </div>
+        @RenderGridPager()
+    </div>
+}
+@helper RenderGridBody()
+{
+    if (!Model.ItemsToDisplay.Any())
+    {
+        <div class="grid-empty-text text-center">
+            <span><img src="~/Content/User/lib/images/explaniation.svg" /></span>
+            <h3>@Model.EmptyGridText</h3>
+        </div>
+    }
+    else
+    {
+        switch ((string)Session["viewType"])
+        {
+            case "MyTransactions":
+                Html.RenderPartial("~/Views/Shared/TableViews/MyTransactions_Table.cshtml");
+                break;
+            case "Outbound":
+                Html.RenderPartial("~/Views/Shared/TableViews/DraftOutbound_Table.cshtml");
+                break;
+            case "Sent":
+                Html.RenderPartial("~/Views/Shared/TableViews/Sent_Table.cshtml");
+                break;
+            case "Saved":
+                Html.RenderPartial("~/Views/Shared/TableViews/Saved_Table.cshtml");
+                break;
+            case "Manager":
+                Html.RenderPartial("~/Views/Shared/TableViews/Manager_Table.cshtml");
+                break;
+            case "Copies":
+                Html.RenderPartial("~/Views/Shared/TableViews/Copies_Table.cshtml");
+                break;
+            case "Tasks":
+                Html.RenderPartial("~/Views/Shared/TableViews/Tasks_Table.cshtml");
+                break;
+            case "Followup":
+                Html.RenderPartial("~/Views/Shared/TableViews/Followups_Table.cshtml");
+                break;
+            case "Reservation":
+                Html.RenderPartial("~/Views/Shared/TableViews/Reservations_Table.cshtml");
+                break;
+            case "OrgUnit":
+                Html.RenderPartial("~/Views/Shared/TableViews/OrgUnits_Table.cshtml");
+                break;
+            case "Withdrawal":
+                Html.RenderPartial("~/Views/Shared/TableViews/Withdrawals_Table.cshtml");
+                break;
+            case "ElcOutbound":
+                Html.RenderPartial("~/Views/Shared/TableViews/_ElcOutbound_Table.cshtml");
+                break;
+            case "OutBoundExternal":
+                Html.RenderPartial("~/Views/Shared/TableViews/_OutBoundExternal_Table.cshtml");
+                break;
+            default:
+                break;
+        }
+    }
+}
+@helper RenderGridHeader()
+{
+}
+@helper RenderGridPager()
+{
+    if (Model.EnablePaging && Model.Pager != null)
+    {
+        <div class="row">
+            @Html.Partial(Model.Pager.TemplateName, Model.Pager)
+        </div>
+    }
+}
+

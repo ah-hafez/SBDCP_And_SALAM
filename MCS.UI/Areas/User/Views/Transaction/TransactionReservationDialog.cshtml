@@ -1,0 +1,21 @@
+﻿@using MCS.UI.Areas.User.Models
+@using MCS.UI.Areas.User.Models.Transaction
+@using MCS.Framework.Localization
+@using MCS.Common
+@using MCS.UI.Areas.User.Models.OrgUnit
+@model TransactionReservedVM
+
+@{
+    string controller = "Reservation";
+    ViewBag.Title = DbRes.TResource("User.Transaction.ReservedTransaction");
+    Layout = null;
+}
+
+<div id="ReservationContainer">
+    @Html.Partial("~/Areas/User/Views/Transaction/_TransactionReservationDialogGridPartial.cshtml", Model.Transactions, ViewData)
+</div>
+
+
+<script type="text/javascript">
+
+</script>

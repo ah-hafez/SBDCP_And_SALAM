@@ -1,0 +1,14 @@
+﻿@model AjaxGrid<MCS.UI.Areas.User.Models.Transaction.FollowUpDetailsVM>
+
+
+@Html.Grid(Model).CollectionName("Followups").Named("grdFollowupsDetails").Columns(columns =>
+{
+    //columns.Add(model => model.EntityName).Titled(@DbRes.TResource("User.Transaction.FollowUp.Entity"));
+    columns.Add(model => model.UserName).Titled(@DbRes.TResource("User.Transaction.FollowUp.Employee"));
+    columns.Add(model => model.CreatedOn).Titled(@DbRes.TResource("User.Transaction.FollowUp.NoteCreatedOn"));
+    columns.Add().Titled(@DbRes.TResource("User.Transaction.FollowUp.Note")).Encoded(false).Sanitized(false).Css("").RenderValueAs(model => @Html.ClientLinkTag(@DbRes.TResource("User.Transaction.FollowUp.ShowNote"),
+         cssClass: "",
+         permissionCode: "",
+         innerHtml: "",
+         clientFunctionToCall: "ShowFollowUpNote('" + model.Notes + "');"));
+}) 

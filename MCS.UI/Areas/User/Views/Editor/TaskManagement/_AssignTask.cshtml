@@ -1,0 +1,189 @@
+﻿@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.Framework.Localization
+@model MCS.UI.Areas.User.Models.Transaction.SentTaskVM
+@using MCS.Common;
+@{
+    Layout = null;
+}
+
+
+@{string controller = "Editor";
+    MCS.UI.Areas.Admin.Models.Shared.SettingVM dateType = SessionInfo.GetObjectFromSession(Constants.SettingDate) as MCS.UI.Areas.Admin.Models.Shared.SettingVM;
+    var settingDateType = Convert.ToInt32(dateType.Value);
+    var DateValue = (int)DateType.Gregorian;
+}
+
+
+<div class="modal-header">
+    <div class="title">
+        تعيين مهمة
+    </div>
+</div>
+<div class="modal-body">
+
+    @using (Html.BeginForm("", "", FormMethod.Post, new { id = "dvTasksBody" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class=" form-row col-lg-12">
+            @*@Html.StickyHiddenFor(model => model.Key, new { id = "hdnEditTaskKey" })*@
+            @Html.StickyHiddenFor(model => model.Id, new { id = "hdnTaskId" })
+            @Html.StickyHidden("TransactionIdForTask", ViewData["transactionId"].ToString(), new { id = "TransactionIdForTask" })
+            <div class="form-group col-lg-8 col-md-6 col-sm-6 col-12 mb-3" >
+                <div id="dvOrgUnitName">
+                    @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.ToOrgUnitId, TreeMode.Single, "treeDirectedToOrgUnit", true, "GetUsersByOrgUnitId", "BasicInformation", "dvOrgUnitName")
+                </div>
+
+                @*@Html.EditorFor(model => model.ToOrgUnitId, "OrgHierarchyCaller", additionalViewData: new { treeId = "SentToOrgUnitId", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Shared"), GetNodeInfoByIdActionURL = @Url.Action("GetInternalPartyInfoById", "Shared"), GetNodeInfoByNumActionURL = @Url.Action("GetInternalPartyInfoByNumber", "Shared"), onClickfunction = "GetUsersByOrgUnitId", ValidationGroup = "AssignTask", ShowAddPartyButton = false })*@
+
+                <i id="ToOrgUnitValidateCallMessage" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                <span id="ToOrgUnitValidateMessage" class="hidden_" style="color:red;">@DbRes.TValidation("User.Task.TaskAdd.OrgUnitValidate")</span>
+                @*@Html.HiddenFor(model => model.ToOrgUnitId, new { id = "hdnTaskToOrgUnitId" })*@
+
+            </div>
+            <div class="">
+                <label class="w-100">@DbRes.TResource("User.Task.TaskAdd.ToUser")<span class="stark ">*</span></label>
+                @Html.AutoCompleteBuilder("ddlTaskToUser", "hdnTaskToUser", null, null, true, "form-control", "", "", "", false, "AssignTask", onChangeCallback: "")
+                @Html.HiddenFor(model => model.ToUserId, new { @Value = "", id = "hdnTaskToUser" })
+                
+                @*@Html.HiddenFor(model => model.SentToUserName, new { @Value = "", id = "hdnTaskToUserName" })*@
+                <i id="TaskToUserValidateCallMessage" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                <span id="TaskToUserValidateMessage" class="hidden_" style="color:red;">@DbRes.TValidation("User.Task.TaskAdd.UserValidate")</span>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="modal-footer actions-buttons">
+    @Html.ActionLink(DbRes.TResource("User.Task.TaskAdd.Edit"), Url.Action("AssignTask", "Editor"), "",
+                     null, null, "OnSuccess", null, "post", "AssignTask", "btnEditTask",
+                     "dvTasksBody", "btn btn-st1 btn-lg pull-right", "CheckValidation")
+</div>
+
+
+<script>
+
+    function OnSuccess(data, div) {
+
+        if (data.MessageType != 2) {
+            window.location.href = '@Url.Action("Tasks", "File")';
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+    function CheckValidation() {
+
+        if ($("#SentToOrgUnitId_hdnDepartmentId").val() == '') {
+            $("#ToOrgUnitValidateMessage").removeClass("hidden_");
+            return false;
+        }
+        else {
+            $("#ToOrgUnitValidateMessage").addClass("hidden_");
+        }
+        if ($("#ddlTaskToUser").val() == '') {
+            $("#TaskToUserValidateMessage").removeClass("hidden_");
+            return false;
+        }
+        else {
+            $("#TaskToUserValidateMessage").addClass("hidden_");
+        }
+        return true;
+    }
+
+        $(document).on("click", "span[data-node-id]", function () {
+        var elemnt = $(this);
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('LoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetExternalPartyNodes")',
+                data: { parentId: $(this).data("node-id"), letterId: $("#hdnInboundDocumentType").val(), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+                success:
+                    function (data) {
+
+                        $(elemnt).closest('li').children('ul').last().empty()
+
+                        $(elemnt).closest('li').children('ul').last().append(data);
+
+                        if ($(elemnt).attr('data-isRefreshEnabled').toLowerCase() == 'false') {
+
+                            $(elemnt).removeClass("LoadedData")
+                        }
+                    }
+            });
+        }
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('InternalLoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetOrgUnitsNodes")',
+                data: { parentId: $(this).data("node-id"), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+                success:
+                    function (data) {
+
+                        $(elemnt).closest('li').children('ul').last().empty()
+
+                        $(elemnt).closest('li').children('ul').last().append(data);
+
+                        $(elemnt).removeClass("InternalLoadedData");
+                    }
+            });
+        }
+    });
+
+
+    function GetUsersByOrgUnitId() {
+     
+        if ($("#ToOrgUnitId").val() != '' && $("#ToOrgUnitId").val() != undefined) {
+                $("#hdnTaskToUser").val('');
+                $("#ddlTaskToUser").val('');
+                $("#hdnTaskToUserName").val('');
+            $("#hdnTaskToOrgUnitName").val($("#ToOrgUnitId").val());
+            $("#hdnTaskToOrgUnitId").val($("#ToOrgUnitId").val());
+                // $('#hdnOrgUnitName').val($('#dvAddtaskBodyContainer .txtDepartmentName').val());
+                $.ajax({
+                    type: 'get',
+                    url: '@Url.Action("GetUnitUsers", "Editor")',
+                    data: { id: $("#ToOrgUnitId").val() },
+                    success:
+                        function (data) {
+                            AutoCompleteChangeList("ddlTaskToUser", data);
+                            $("#ddlTaskToUser").trigger('change');
+                            $("#hdnTaskToUser").trigger('change');
+                            $("#ddlTaskToUser").prop('disabled', false);
+                        }
+                });
+                return false;
+            }
+            else {
+                AutoCompleteChangeList("ddlTaskToUser", "[]");
+                $("#hdnTaskToUser").val('');
+                $("#ddlTaskToUser").trigger('change');
+                $("#hdnTaskToUser").trigger('change');
+                $("#ddlTaskToUser").prop('disabled', true);
+            }
+        }
+     $(document).ready(function () {
+            $('#EndDateCal').attr('autocomplete', 'off');
+        });
+        $(document).on("change", "#ddlTaskActionId", function () {
+            $("#hdnTaskActionName").val($(this).val());
+        })
+        $(document).on("change", ".txtDepartmentNumber ", function () {
+            if ($("#ddlToUser").hasClass("invalid-input")) {
+                $("#TaskToUserValidateMessage").addClass("hidden_");
+                $('#ddlToUser').removeClass('RedBorder');
+                $("#TaskToUserValidateCallMessage").hide();
+            }
+            else {
+
+                $("#TaskToUserValidateMessage").removeClass("hidden_");
+                $('#ddlToUser').addClass('RedBorder');
+                $("#TaskToUserValidateCallMessage").show();
+            }
+
+            $('#dvAddtaskBodyContainer  .txtDepartmentNumber  ,  #dvAddtaskBodyContainer  .txtDepartmentName ').removeClass('RedBorder');
+            $("#ToOrgUnitValidateCallMessage").hide();
+            $("#ToOrgUnitValidateMessage").addClass("hidden_");
+        })
+</script>
+

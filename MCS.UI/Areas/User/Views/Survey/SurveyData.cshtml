@@ -1,0 +1,220 @@
+﻿@model  MCS.UI.Areas.User.Models.Survey.SurveyQuestionVM
+@{
+
+
+    Model.SurveyAnswer.UserId = SessionInfo.CurrentUser.Id;
+    Model.SurveyAnswer.OrgUnitId = SessionInfo.OrgUnitId;
+}
+
+@using (Html.BeginCollectionItem("SurveyQuestion"))
+{
+    <style>
+        .reviews {
+            width: 500px;
+            margin: 0 auto;
+            background: #F7F8FA;
+            height: auto;
+            padding: 20px;
+            text-align: right;
+            direction: rtl;
+        }
+
+        .reviews-list {
+            border: 1px solid #29504D;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .review-group {
+            padding-right: 10px;
+        }
+
+        .reviews-question {
+            font-size: 15pt;
+            padding-bottom: 10px;
+        }
+
+        .review-number {
+            padding: 10px;
+            font-weight: bold;
+            font-size: 22pt;
+            padding: 20px;
+            margin-top: 10px;
+        }
+
+        .form-check-custom {
+            display: block;
+            position: relative;
+        }
+
+        /* The container */
+        .custom-radio {
+            display: block;
+            position: relative;
+            padding-right: 35px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            font-size: 13pt;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+            /* Hide the browser's default radio button */
+            .custom-radio input {
+                position: absolute;
+                opacity: 0;
+                cursor: pointer;
+            }
+
+        /* Create a custom radio button */
+        .checkmark {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 25px;
+            width: 25px;
+            background-color: #eee;
+            border-radius: 50%;
+        }
+
+        .checkname {
+            color: #989899;
+        }
+
+
+        /* On mouse-over, add a grey background color */
+        .custom-radio:hover input ~ .checkmark {
+            background-color: #ccc;
+        }
+
+        .custom-radio:hover input ~ .checkname {
+            color: #444 !important;
+        }
+
+
+
+        /* When the radio button is checked, add a blue background */
+
+
+        .custom-radio input:checked ~ .checkname {
+            color: #444;
+        }
+
+        /* Create the indicator (the dot/circle - hidden when not checked) */
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+
+        /* Show the indicator (dot/circle) when checked */
+        .custom-radio input:checked ~ .checkmark:after {
+            display: block;
+        }
+
+        /* Style the indicator (dot/circle) */
+        .custom-radio .checkmark:after {
+            top: 9px;
+            right: 9px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: white;
+        }
+    </style>
+
+    <div class="reviews">
+
+        <div class="reviews-list d-flex">
+            <div class="review-number">
+                <label id="lblSurveyQuestionNumber">@Model.Number</label>
+            </div>
+
+            <div class="review-group">
+                <div class="reviews-question">
+                    <label id="lblSurveyQuestion"> @Model.QuestionsDesc</label>
+                </div>
+                <div class="reviews-answer">
+                    <div class="form-check-custom">
+                        <label class="custom-radio">
+                            <input onchange="UpdateAnswar(this,@((int)SurveyAnswers.VeryBad));" type="radio" id="rdo_@Html.IdFor(a => a.SurveyAnswer.AnswerId).ToString()_@Model.Id" name="rdo_@Html.IdFor(a => a.SurveyAnswer.AnswerId).ToString()_@Model.Id" value="@((int)SurveyAnswers.VeryBad)">
+                            <span class="checkmark"></span>
+                            <span class="checkname">
+                                <label id="Label1">@DbRes.TResource("User.Survey.VeryBad")</label>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+                <div class="reviews-answer">
+                    <div class="form-check-custom">
+                        <label class="custom-radio">
+                            <input onchange="UpdateAnswar(this,@((int)SurveyAnswers.Bad));" type="radio" id="rdo_@Html.IdFor(a => a.SurveyAnswer.AnswerId).ToString()_@Model.Id" name="rdo_@Html.IdFor(a => a.SurveyAnswer.AnswerId).ToString()_@Model.Id" value="@((int)SurveyAnswers.Bad)">
+                            <span class="checkmark"></span>
+                            <span class="checkname">
+                                <label id="Label1">@DbRes.TResource("User.Survey.Bad") </label>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+                <div class="reviews-answer">
+                    <div class="form-check-custom">
+                        <label class="custom-radio">
+                            <input onchange="UpdateAnswar(this,@((int)SurveyAnswers.Good));" type="radio" id="rdo_@Html.IdFor(a => a.SurveyAnswer.AnswerId).ToString()_@Model.Id" name="rdo_@Html.IdFor(a => a.SurveyAnswer.AnswerId).ToString()_@Model.Id" value="@((int)SurveyAnswers.Good)">
+                            <span class="checkmark"></span>
+                            <span class="checkname">
+                                <label id="Label1">@DbRes.TResource("User.Survey.Good") </label>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+                <div class="reviews-answer">
+                    <div class="form-check-custom">
+                        <label class="custom-radio">
+                            <input onchange="UpdateAnswar(this,@((int)SurveyAnswers.VeryGood));" type="radio" id="rdo_@Html.IdFor(a => a.SurveyAnswer.AnswerId).ToString()_@Model.Id" name="rdo_@Html.IdFor(a => a.SurveyAnswer.AnswerId).ToString()_@Model.Id" value="@((int)SurveyAnswers.VeryGood)">
+                            <span class="checkmark"></span>
+                            <span class="checkname">
+                                <label id="Label1">@DbRes.TResource("User.Survey.VeryGood")</label>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+                <div class="reviews-answer">
+                    <div class="form-check-custom">
+                        <label class="custom-radio">
+                            <input onchange="UpdateAnswar(this,@((int)SurveyAnswers.Excellent));" type="radio" id="rdo_@Html.IdFor(a => a.SurveyAnswer.AnswerId).ToString()_@Model.Id" name="rdo_@Html.IdFor(a => a.SurveyAnswer.AnswerId).ToString()_@Model.Id" value="@((int)SurveyAnswers.Excellent)">
+                            <span class="checkmark"></span>
+                            <span class="checkname">
+                                <label id="Label1">@DbRes.TResource("User.Survey.Excellent") </label>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        @Html.HiddenFor(a => a.SurveyAnswer.AnswerId, new { id = "hdn_" + Html.IdFor(a => a.SurveyAnswer.AnswerId).ToString() + "_" + @Model.Id, @class = "AnswerId", @Value = "" })
+        @Html.HiddenFor(a => a.SurveyAnswer.QuestionId, new { id = "hdn_" + Html.IdFor(a => a.SurveyAnswer.QuestionId).ToString() + "_" + @Model.Id, @class = "QuestionId", @Value = Model.Id })
+        @Html.HiddenFor(a => a.SurveyAnswer.OrgUnitId)
+        @Html.HiddenFor(a => a.SurveyAnswer.UserId)
+    </div>
+}
+<script>
+
+    function UpdateAnswar(obj, val)
+    {
+        debugger;
+        var objId = obj.id;
+        var hdnId = objId.replace("rdo_", "hdn_");
+        if (obj.checked)
+        {
+            $('#' + hdnId).val(val);
+        } else
+        {
+            $('#' + hdnId).val(0);
+        }
+    }
+</script>

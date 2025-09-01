@@ -1,0 +1,76 @@
+﻿<div class="btn-options d-flex flex-wrap">
+
+
+    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Outbound.CreateInternalOutbound))
+    {
+        <a class="btn btn-site mr-3" href="@Url.Action("Add","OutboundInternal")">
+
+            <i class="icon-create-3"></i>
+            @DbRes.TResource("User.File.CreateInternal")
+        </a>
+    }
+
+    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Inbound.CreateInbound))
+    {
+        <a class="btn btn-site mr-3" href="@Url.Action("Add","Inbound")">
+            <i class="icon-create-4"></i>
+            @DbRes.TResource("User.File.CreateInbound")
+        </a>
+    }
+
+    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Outbound.CreateExternalOutbound))
+    {
+        <a class="btn btn-site mr-3" href="@Url.Action("Add","OutboundExternal")">
+            <i class="icon-create-1"></i>
+            @DbRes.TResource("User.File.CreateOutbound")
+        </a>
+    }
+
+    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Outbound.CreateOutboundDraft))
+    {
+        <a class="btn btn-site mr-3" href="@Url.Action("Add","OutboundExternal")?isDraft=True&isInternal=False">
+            <i class="icon-create-1"></i>
+            @*@DbRes.TResource("User.OutboundDraftExternal")*@
+            @DbRes.TResource("User.LetterDraft")
+
+        </a>
+    }
+
+    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Outbound.CreateOutboundDraftPresentation))
+    {
+        <a class="btn btn-site mr-3" href="@Url.Action("Add","OutboundExternal")?isDraft=True&isInternal=False&IsPresentationDraft=True">
+            <i class="icon-create-1"></i>
+            @*@DbRes.TResource("User.OutboundDraftExternal")*@
+            @DbRes.TResource("User.PresentationDraft")
+
+        </a>
+    }
+
+    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Outbound.CreateDecisionDraft))
+    {
+        <a class="btn btn-site mr-3" href="@Url.Action("Add","OutboundExternal")?isDraft=True&isInternal=False&IsDecisionDraft=True">
+            <i class="icon-create-1"></i>
+            @*@DbRes.TResource("User.OutboundDraftExternal")*@
+            @DbRes.TResource("User.CreateDecisionDraft")
+
+        </a>
+    }
+    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Outbound.CreateMultiOutbound))
+    {
+        <a class="btn btn-site mr-3" href="@Url.Action("Add","OutboundExternal")?isDraft=False&isInternal=False&IsDecisionDraft=False&IsMultiExternal=True">
+            <i class="icon-create-1"></i>
+            @DbRes.TResource("User.MultiOutboundExternal")
+
+
+        </a>
+    } 
+    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Outbound.CreateMultiInternalOutbound))
+    {
+        <a class="btn btn-site mr-3" href="@Url.Action("Add","OutboundInternal")?IsMulti=True">
+            <i class="icon-create-1"></i>
+            @DbRes.TResource("User.MultiInteranlOutbound")
+
+
+        </a>
+    }
+</div>

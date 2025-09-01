@@ -1,0 +1,397 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Common
+@using MCS.UI.Common
+@using MCS.UI.Areas.User.Models.Transaction;
+@using MCS.UI.Helpers;
+@model MCS.UI.Areas.User.Models.Transaction.TransactionArchiveVM
+
+<script src="~/Scripts/html2canvas.js"></script>
+@{
+    string isWaterMark = Model.ReadOnly ? "true" : "false";
+    string controller = TempData.Peek("ControllerName") != null ? TempData.Peek("ControllerName").ToString() : ViewContext.RouteData.Values["controller"].ToString();
+
+    string doconutPermissions = string.Format("signaturePermission={0}&stampPermission={1}&annotationsPermission={2}&colorPermission={3}",
+                                        Model.SignaturePermission.ToString(), Model.StampPermission.ToString(), Model.AnnotationsPermission.ToString(), Model.ColorScanningPermission.ToString());
+
+    Model.ShowBarcode = true;
+
+    var doconutIframeUrl = UIConfigurations.GetFullURl() + string.Format("{0}?showwatermark={2}&{1}", SystemConfigurations.DoconutIframeUrl, doconutPermissions, isWaterMark);
+
+    if (!Model.ShowBarcode)
+    {
+        doconutIframeUrl = UIConfigurations.GetFullURl() + string.Format("{0}?sIncludedItemDoc=true&showbarcode=false&{1}&showwatermark={2}", SystemConfigurations.DoconutIframeUrl, doconutPermissions, isWaterMark);
+    }
+    else if (Model.ReadOnly)
+    {
+        doconutIframeUrl = UIConfigurations.GetFullURl() + string.Format("{0}?sIncludedItemDoc=true&hidecontrols=true&{1}&showwatermark={2}", SystemConfigurations.DoconutIframeUrl, doconutPermissions, "true");
+    }
+
+
+
+    bool isVipUser = (bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser);
+    var links = (List<TransactionLinkVM>)ViewData["LinkTransactions"];
+    var archives = (List<TransactionArchiveVM>)ViewData["ArchiveListData"];
+    var explanations = (List<ExplanationVM>)ViewData["ExplanationsData"];
+    //var expData = explanations != null && explanations.Count > 0 ? explanations.Where(x => x.EditorType == EditorType.Scanning).ToList() : null;
+
+
+}
+<div id="doconutViewer">
+
+    <div id="IncludeArchivingSection" class="row enter_through d-flex" style="margin-right:10px;">
+        <div class="dv activate" onclick="ShowScannerForArchiving()">
+            <h5 style="padding-left:20px" id="UserTransactionEditorSelectScannerForArchiving">@DbRes.TResource("User.TransactionCertificate.LetterOfOrigin")</h5>
+        </div>
+        @if (archives != null && archives.Count > 0)
+        {
+            <div class="dv" onclick="ShowTransactionEditorArchiving()">
+                <h5>@DbRes.TResource("المرفقات")</h5>
+
+                <sapn class="Archivebadget">
+                    @archives.Count
+                </sapn>
+
+
+            </div>
+        }
+        @if (links != null && links.Count > 0)
+        {
+            <div class="dv" onclick="ShowTransactionEditorLink()">
+                <h5 id="UserTransactionEditorLink">@DbRes.TResource("الربط")</h5>
+                <span class="Archivebadget">@links.Count</span>
+            </div>
+        }
+
+    </div>
+
+
+    @if (explanations != null && explanations.Count > 0)
+    {
+        int count = 0;
+        int rowCount = 20;
+        int groupNumber = explanations.Count / rowCount;
+        for (int i = 0; i <= groupNumber; i++)
+        {
+            var listGroup = explanations.OrderBy(x => x.Id).ToList().Skip((i * rowCount)).Take(rowCount).ToList();
+            if (listGroup != null && listGroup.Count > 0)
+            {
+                <div id="IncludeExpSection_@i" class="row enter_through d-flex" style="margin-right:10px;">
+                    @*<div>
+            <img src="~/Content/User/lib/images/SystemIcon/document.png" />
+        </div>*@
+                    @foreach (var explain in listGroup)
+                    {
+                        count++;
+                        if (explain.EditorType == EditorType.Scanning)
+                        {
+                            <div onclick="ShowArchiviableData('@explain.DocumentId', '@explain.DocumentVM.Id', '@explain.Key')" class="dvExp d-flex">
+                                @if (explain.CanBeDeleted)
+                                {
+                                    <span class="align-self-center removing_tag uicon icon_close" data-id="@explain.Id" title="حذف المرفق"></span>
+                                }
+                                <h5>  @DbRes.TResource("شرح") @explain.RowNumber  </h5>
+
+                            </div>
+                        }
+                        else if (explain.EditorType == EditorType.Text)
+                        {
+                           
+                               
+                           
+                <div onclick="ShowTextData('@explain.DocumentId', '@explain.DocumentVM.Id', '@explain.Key')" class="dvExp d-flex">
+                    @if (explain.CanBeDeleted)
+                    {
+                        <span class="align-self-center removing_tag uicon icon_close" data-id="@explain.Id" title="حذف المرفق"></span>
+                    }
+                    <h5>  @DbRes.TResource("شرح") @explain.RowNumber</h5>
+
+                </div>
+                        }
+                        else if (explain.EditorType == EditorType.File)
+                        {
+
+                <div onclick="ViewGridRow(@explain.DocumentVM.Id, @explain.DocumentVM.Id, @explain.DocumentVM.Id)" class="dvExp d-flex" >
+                    @if (explain.CanBeDeleted)
+                    {
+                        <span class="align-self-center removing_tag uicon icon_close" data-id="@explain.Id" title="حذف المرفق"></span>
+                    }
+                    <h5>  @DbRes.TResource("شرح") @explain.RowNumber</h5>
+                </div>
+                        }
+
+                    }
+                </div>
+            }
+
+        }
+    }
+
+
+
+
+
+
+
+    <div id="IncludeArchivingSection2">
+        <div id="dvUserTransactionEditorArchiving" style="display:none">
+            @if (archives != null && archives.Count > 0)
+            {
+                foreach (var archive in archives.Where(x => !x.IsMainDocument).ToList())
+
+                {
+                    <div onclick="ViewGridRow('@archive.Id','@archive.DocumentId','@archive.Key')" class="dv">
+                        <h5> @archive.ArcivingTypeName </h5>
+                    </div>
+                }
+
+            }
+        </div>
+        <div id="dvUserTransactionEditorLink" style="display:none">
+            @if (links != null && links.Count > 0)
+            {
+                foreach (var link in links)
+
+                {
+                    string headerText = " ربط برقم" + link.TransactionNumber;
+                    if (link.HasPermission)
+                    {
+                        <div onclick="return PreviewTransactionDocumentForLink(@link.TransactionId)" class="dv"><h5>  @headerText  </h5></div>
+
+                    }
+                    else
+                    {
+
+                        <div class="dv"><h5> @headerText </h5></div>
+
+                    }
+
+                }
+
+            }
+        </div>
+
+    </div>
+
+
+    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.UserPreferences.Signature) || SessionInfo.CurrentUser.Claims.Contains(UserClaims.UserPreferences.Mark))
+    {
+        @*<div style="border-left: 2px solid; height: 95px; margin-top:5px;"></div>*@
+
+        <div class="form-group mt-2" style="direction: rtl;" id="DivSigBtn">
+            @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.UserPreferences.Signature))
+            {
+                <div id="btnAddSig">
+                    <a onclick="InsertSignature('@(((int)SigntureType.Electronic).ToString())');"
+                       class="btn btn-st1 btn-sm pull-left" style="margin-right:5px">
+                        إضافة توقيع
+                    </a>
+                </div>
+
+            }
+
+            @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.UserPreferences.Mark))
+            {
+                <div style="margin-right:5px" id="btnAddMark">
+
+                    <a onclick="InsertSignature('@(((int)SigntureType.Marking).ToString())');" class="btn btn-st1 btn-sm pull-left" style="margin-right:5px">
+                        إضافة تأشيرة/ تركين
+                    </a>
+                </div>
+
+            }
+
+        </div>
+
+    }
+
+</div>
+
+
+<div id="doconutContainer" class="doconutContainerForArchiving">
+    <iframe src="@doconutIframeUrl" style="height:1430px; width:100%" id="frameViewer" sandbox="allow-modals allow-same-origin allow-scripts allow-popups allow-forms allow-downloads"></iframe>
+
+</div>
+<div id="dvexplanationsText" style="display:none">
+    <div class="panel-body">
+        <div class="row">
+            <div class="BasicInfo">
+                <div class="d-flex">
+                    <div class="pl-5 Editor-div">
+                        <div class="gray3">@DbRes.TResource("اسم الموظف") </div>
+                        <div class="date-value Editor-lable">
+                            <div id="explinationFromUser"></div>
+                        </div>
+                    </div>
+                    <div class="pl-5 Editor-div">
+                        <div class="gray3"> @DbRes.TResource("تاريخ الشرح") </div>
+                        <div class="date-value Editor-lable">
+                            <div id="explinationDateTime"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="col-md-12">
+                        @Html.TextAreaGroupFor(model => model.Empty, new { id = "archivetxtDescription", @class = "form-control readonlyByPrivilege", @rows = "30", style = "background: #FFFA9E;height:120px;", maxlength = "500" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="form-horizontal form-row" id="dvArchivingMainDocumentBody">
+    @Html.HiddenFor(model => model.TransactionAttachmentType)
+    @Html.HiddenFor(model => model.IsMainDocument)
+    @Html.HiddenFor(model => model.ReadOnly, new { id = "hdnDocumentReadOnly" })
+    @Html.Hidden("hdnTransactionNumber", ViewData["TransactionNumber"])
+    @Html.Hidden("hdnArchiveMainDocumentId", ViewData["MainDocumentId"])
+    @Html.Hidden("hdnMainDocumentSessionKey", ViewData["SessionArchiveMainDocumentKey"], new { id = "hdnMainDocumentSessionKey" })
+    @Html.StickyHidden("hdnMainDocToken", "")
+</div>
+
+<br />
+<i id="CalMessage2" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+<span id="CalMessageForMainDoc" style="color:red"></span>
+<canvas id="barcodeCanvas" style="z-index: -2; position: absolute; background-color: rgba(0, 0, 0, 0);"></canvas>
+<div id="divBarcodeCanvas" style="z-index: -1; position: absolute; display: none"></div>
+
+<script>
+    $(document).ready(function ()
+    {
+        var dvContainer = document.getElementById("IncludeArchivingSection");
+        var dvs = dvContainer.getElementsByClassName("dv");
+
+        for (var i = 0; i < dvs.length; i++)
+        {
+            dvs[i].addEventListener("click", function ()
+            {
+                var current = document.getElementsByClassName("activate");
+                current[0].className = current[0].className.replace(" activate", "");
+                this.className += " activate";
+            });
+        }
+
+        $('.dvExp').on('click', function ()
+        {
+            $('.activate').removeClass('activate')
+            $(this).addClass('activate');
+        });
+
+        var dvContainer2 = document.getElementById("IncludeArchivingSection2");
+        var dvs2 = dvContainer2.getElementsByClassName("dv");
+
+        for (var i = 0; i < dvs2.length; i++)
+        {
+            dvs2[i].addEventListener("click", function ()
+            {
+                var current = document.getElementsByClassName("activate");
+                current[0].className = current[0].className.replace(" activate", "");
+                this.className += " activate";
+            });
+        }
+    });
+    function ShowTransactionEditorEplain()
+    {
+        $("#dvUserTransactionEditorArchiving").removeClass('d-flex');
+        $("#dvUserTransactionEditorLink").removeClass('d-flex');
+        $("#dvUserTransactionEditorExplain").addClass('d-flex');
+    }
+
+    function ShowTransactionEditorArchiving()
+    {
+        $("#dvUserTransactionEditorArchiving").addClass('d-flex');
+        $("#dvUserTransactionEditorLink").removeClass('d-flex');
+        $("#dvUserTransactionEditorExplain").removeClass('d-flex');
+        $('#dvexplanationsText').hide();
+
+    }
+
+    function ShowScannerForArchiving()
+    {
+        debugger
+        $("#dvUserTransactionEditorArchiving").removeClass('d-flex');
+        $("#dvUserTransactionEditorLink").removeClass('d-flex');
+        $("#dvUserTransactionEditorExplain").removeClass('d-flex');
+        $('#dvexplanationsText').hide();
+
+    }
+
+    var prevScrollpos = window.pageYOffset;
+    window.onscroll = function ()
+    {
+        var currentScrollPos = window.pageYOffset;
+        if (prevScrollpos > currentScrollPos)
+        {
+            $(".navbar-second").show();
+        } else
+        {
+            /*$(".navbar-second").hide();*/
+        }
+        prevScrollpos = currentScrollPos;
+    }
+</script>
+<script>
+
+
+
+    function refreshDoconut()
+    {
+        document.getElementById('frameViewer').contentWindow.location.reload();
+    }
+
+
+    function InsertSignature(sig)
+    {
+        OpenCloseEditModeDoconut(true);
+        debugger;
+             if (sig =='@(((int)SigntureType.Electronic).ToString())')
+        {
+                 
+                 setTimeout(function ()
+                 {
+                     document.getElementById('frameViewer').contentWindow.ImageSignature();
+                 }, 400);
+
+        }
+        else
+        {
+                 setTimeout(function ()
+                 {
+                     document.getElementById('frameViewer').contentWindow.ImageStamp();
+                 }, 400);
+        }
+
+
+        setTimeout(function ()
+        {
+            OpenCloseEditModeDoconut(true);
+        }, 200);
+
+
+
+    }
+
+        $(document).on('click', ".removing_tag", function () {
+            var token = $('form:first').find("input[name='__RequestVerificationToken']").val();
+            var id = $(this).data("id");
+            var element = $(this);
+            $.ajax({
+                type: 'post',
+                cache: false,
+                url: '@Url.Action("DeleteExplanationById","Editor")',
+                data: { id: id, __RequestVerificationToken: token },
+                success: function (data) {
+                    if (data.MessageType == 2) {
+                        ShowErrorMessage(data.MessageText);
+                    }
+                    else { 
+                        element.parent().remove();
+                        window.location.reload();
+                    }
+                }
+            });
+    });
+
+</script>

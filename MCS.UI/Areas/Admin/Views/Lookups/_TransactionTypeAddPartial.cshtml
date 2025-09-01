@@ -1,0 +1,72 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.Lookups
+@using UserLookups = MCS.UI.Areas.User.Models.Lookups
+@using MCS.Common
+@model TransactionTypeAddVM
+@{
+    ViewBag.Title = "_TransactionSourceLookupAddPartial";
+}
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmAddTransactionType", @class = "form-horizontal form-row" }))
+{
+    @Html.AntiForgeryToken()
+    <div id="AddTransactionTypeContent" class="panel-body">
+        <p>@DbRes.TResource("Global.Forms.MandatoryFields")</p>
+
+        <div class="row">
+            <div class="col-md-4">
+
+                @{List<UserLookups.CultureVM> cultureVMs = ViewData["Culture"] as List<UserLookups.CultureVM>;}
+
+                @if (cultureVMs != null)
+                {
+                    for (int i = 0; i < cultureVMs.Count; i++)
+                    {
+                        <div class="form-group">
+                            @Html.CustomLabelFor(model => model.Description[i].CultureName, new { @class = "col-md-4 control-label" }, DbRes.TResource("Admin.TransactionType.Description." + cultureVMs[i].ShortName))
+                            @Html.StickyHiddenFor(model => model.Description[i].CultureId, new { Value = cultureVMs[i].Id })
+                            <div class="col-md-8">
+                                <div class="">
+                                    @Html.TextBoxGroupFor(model => model.Description[i].Text, null, new { @class = "form-control" }, DbRes.TValidation("Admin.TransactionType.DescriptionRequired." + cultureVMs[i].ShortName))
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+
+            </div>
+            <div class="col-md-4">
+                @if (cultureVMs != null)
+                {
+                    for (int i = 0; i < cultureVMs.Count; i++)
+                    {
+                        <div class="form-group">
+                            @Html.CustomLabelFor(model => model.Abbreviation[i].CultureName, new { @class = "col-md-4 control-label" }, DbRes.TResource("Admin.TransactionType.Abbreviation." + cultureVMs[i].ShortName))
+                            @Html.StickyHiddenFor(model => model.Abbreviation[i].CultureId, new { Value = cultureVMs[i].Id })
+                            <div class="col-md-8">
+                                <div class="">
+                                    @Html.TextBoxGroupFor(model => model.Abbreviation[i].Text, null, new { @class = "form-control" }, DbRes.TValidation("Admin.TransactionType.AbbreviationRequired." + cultureVMs[i].ShortName))
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+
+            </div>
+
+            <div class="col-md-4" id="dvAddTreeContainer">
+                <div class="form-group">
+                    @Html.CustomLabelFor(model => model.ColorId, new { @class = "col-md-4 control-label" })
+                    <div class="col-md-8">
+                        @Html.AutoCompleteBuilder("ddlAddColor", "hdnAddColor", LookupCategory.Color, null, true, "form-control")
+                        @Html.HiddenGroupFor(model => model.ColorId, new { @Value = "", id = "hdnAddColor" })
+                    </div>
+                </div>
+                @Html.Partial("~/Areas/Admin/Views/Lookups/_TransactionTypeTreePartial.cshtml", Model, new ViewDataDictionary { { "PermissionsGroups", ViewData["PermissionsGroups"] } })  
+            </div>
+        </div>
+    </div>
+    <div class="panel-footer middle">
+        @Html.ActionButton(DbRes.TResource("Admin.TransactionType.Save"), "AddTransactionType", "dvGrid", null, null, "OnAddSuccess", null, "post", null, "btnAdd", "frmAddTransactionType", "btn btn-save pull-right")
+        @Html.ResetButton("ClearInputs('AddTransactionTypeContent')")
+    </div>
+}

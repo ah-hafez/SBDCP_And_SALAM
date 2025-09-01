@@ -1,0 +1,655 @@
+﻿
+@using MCS.Framework.Localization
+@using MCS.UI.Common
+@using MCS.Common
+@using MCS.Framework.Controls.Mvc;
+@using MCS.UI.Areas.User.Models.Shared;
+
+<!DOCTYPE html>
+<html lang="@SessionInfo.CultureShortName">
+<head>
+    <!-- META SECTION -->
+    <title>@ViewBag.Title</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="icon" href="~/Content/Admin/lib/favicon.ico" type="image/x-icon" />
+    <!-- END META SECTION -->
+    <!-- CSS INCLUDE -->
+    <link rel="stylesheet" type="text/css" id="theme" href=@Url.Content("~/Content/Admin/lib/css/theme_" + SessionInfo.CultureShortName + ".css") />
+    <!-- EOF CSS INCLUDE -->
+    @if (SessionInfo.CultureShortName == Constants.Languages.Arabic)
+    {
+        <link rel="stylesheet" type="text/css" id="theme" href="~/Content/Admin/lib/css/rtl.css" />
+    }
+
+    @{UserVM userVM = SessionInfo.GetObjectFromSession(Constants.LoggedInUserKey) as UserVM;}
+
+    <!-- Theme -->
+    <link rel="stylesheet" type="text/css" href="~/Content/Admin/lib/fonts/fonts.css" />
+    <link rel="stylesheet" type="text/css" href=@Url.Content("~/Content/Admin/lib/css/style_" + SessionInfo.CultureShortName + ".css") />
+    <link rel="stylesheet" type="text/css" href=@Url.Content("~/Content/Admin/lib/css/admin_" + SessionInfo.CultureShortName + ".css") />
+    <link rel="stylesheet" type="text/css" href=@Url.Content("~/Content/Admin/lib/css/responsive_table_" + SessionInfo.CultureShortName + ".css") />
+    <!-- END Theme-->
+    <!-- JS Tree -->
+    <link rel="stylesheet" type="text/css" href="~/Content/Admin/lib/css/cropper/cropper.min.css" />
+    @*<link rel="stylesheet" type="text/css" href="~/Content/Admin/lib/css/jstree/jstree.min.css" />*@
+    <link rel="stylesheet" type="text/css" href=@Url.Content("~/Content/Admin/lib/css/jstree/jstree.min_" + SessionInfo.CultureShortName + ".css") />
+
+    <!-- jquery-confirm -->
+    <link rel="stylesheet" type="text/css" href="~/Content/Admin/lib/js/theme/jquery-confirm/css/jquery-confirm.css" />
+    <!--END jquery-confirm -->
+    <!-- Slidebars CSS -->
+    <link rel="stylesheet" href=@Url.Content("~/Content/Admin/lib/js/theme/pushslide/css/slidebars.min_" + SessionInfo.CultureShortName + ".css")>
+    <link rel="stylesheet" href=@Url.Content("~/Content/Admin/lib/js/theme/pushslide/css/slidebars-theme_" + SessionInfo.CultureShortName + ".css")>
+
+    <!-- Owl Carousel -->
+    <link rel="stylesheet" href="~/Content/Admin/lib/js/theme/owlcarousel/docs.theme.min.css">
+    <link rel="stylesheet" href="~/Content/Admin/lib/js/theme/owlcarousel/owl.carousel.min.css">
+    <link rel="stylesheet" href="~/Content/Admin/lib/js/theme/owlcarousel/owl.theme.default.min.css">
+    <!--[if lt IE 9]>
+      <script src="~/Content/Admin/lib/js/theme/ie9/html5shiv.js"></script>
+      <script src="~/Content/Admin/lib/js/theme/ie9/respond.min.js"></script>
+    <![endif]-->
+    <!-- Script OWL Carousel -->
+    <!-- <script src="~/Content/Admin/lib/js/theme/owlcarousel/jquery.min.js"></script> -->
+    <!-- ToastMessage -->
+    <!--<script type="text/javascript" src="~/Content/Admin/lib/js/theme/toastmessage/jquery-1.5.min.js"></script>-->
+    <!--droppable-->
+    <link rel="stylesheet" href="~/Content/Admin/lib/js/theme/droppable/droppable_style.css">
+    @*
+        <link rel="stylesheet" href="~/Content/Admin/theme/droppable/jquery-ui.css">*@
+    <!---->
+    @*<link href="~/Content/Admin/Site.css" rel="stylesheet" />*@
+    <link type="text/css" href=@Url.Content("~/Content/Admin/Site_" + SessionInfo.CultureShortName + ".css") rel="stylesheet" />
+    <link href="~/Content/style/jquery.contextMenu.css" rel="stylesheet" />
+    <script src="@Url.Content("~/Content/Admin/Scripts/jquery.min.js")"></script>
+    <script src="~/Content/Admin/Scripts/jquery.plugin.js"></script>
+    <script src="@Url.Content("~/Content/Admin/Scripts/jquery.tooltip.js")"></script>
+    <script src="~/Content/Admin/Scripts/jquery.navgoco.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/js/plugins/bootstrap/bootstrap-datepicker.js"></script>
+    <script src="~/Content/Admin/lib/plugins/customValidation/jquery.validate.js"></script>
+    <script src="~/Content/Admin/Scripts/CustomValidation/jquery.validate.unobtrusive.js"></script>
+    <script src="~/Content/Admin/Scripts/CustomValidation/CustomValidation.js"></script>
+    <script src="~/Content/Admin/Scripts/HtmlHelper.js"></script>
+    <script src="~/Content/Admin/lib/js/ActionButtonsHelper.js"></script>
+    <script src="~/Content/Admin/Scripts/jquery-ui.min.js"></script>
+    <script src="~/Views/Shared/Scripts/GridViewActions.js"></script>
+    <script src="~/Views/Shared/Scripts/Tree.js"></script>
+    <script src="~/Content/Admin/Scripts/jquery.nestable-rtl.js"></script>
+    <script src="~/Content/Admin/Scripts/jquery.contextMenu.js"></script>
+    <!-- END JS Tree -->
+    <script src="~/Content/Admin/Scripts/jstree.js"></script>
+
+    <script type="text/javascript" src="@Url.Content("~/Content/Admin/Scripts/Common.js")"></script>
+
+    <script type="text/javascript" src="~/Content/Admin/lib/js/theme/jquery-confirm/js/jquery-confirm.js"></script>
+    <script src="~/Content/Admin/lib/js/theme/owlcarousel/owl.carousel.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/js/jquery.toastmessage-min.js"></script>
+
+
+    <script type="text/javascript">
+        var __OrgUnitsDataByIdsAction = '@Url.Action("GetOrgUnitsNodesByIds")';
+        var AllowSend = false;
+        var __dateformat = '@System.Web.Configuration.WebConfigurationManager.AppSettings["CalendarDateFormat"]';
+        var __dialogNoText = '@DbRes.TResource("Global.Dialog.No")';
+        var __dialogYesText = '@DbRes.TResource("Global.Dialog.Yes")';
+        var __dialogCloseText = '@Html.Raw(DbRes.TResource("Global.Dialog.Close"))';
+        var __cultureName = '@SessionInfo.CultureShortName';
+        var __OrgUnitsAutoCompleteAction = '@Url.Action("GetOrgUnitsAutoComplete")';
+        var ConnectionProtocolType = { Wrapper: @((int)ConnectionProtocolType.Wrapper), HTTP: @((int)ConnectionProtocolType.HTTP) };
+        $.validator.setDefaults({ ignore: null });
+
+        $(document).ajaxStart(function () {
+            $("#Loader").show();
+            AllowSend = false;
+        });
+        $(document).ajaxComplete(function () {
+            $("#Loader").hide();
+        });
+
+        var signalROptions = {
+            WebApiUrl: '@SystemConfigurations.WebApiUrl',
+            BaseUri: '@MCS.UI.UrlHelper.GetBaseUri()',
+            UserId: '@userVM.Id',
+            UserName: '@userVM.LoclizationName.Where(l => l.CultureName == SessionInfo.CultureShortName).FirstOrDefault().Text',
+            OrgUnitId: '@SessionInfo.OrgUnitId',
+            LocalDateTime: new Date().toLocaleString(),
+            MarkAsReadMessage: '@DbRes.TResource("User.Home.MarkAsRead")'
+        };
+    </script>
+
+    <!--rendering framework scripts -->
+    <script src="~/Content/Admin/lib/js/demo_file_handling.js"></script>
+    <script src="~/Content/Admin/lib/js/fileinput.min.js"></script>
+    <script src="~/Content/Admin/lib/js/jqueryFileTree.js"></script>
+    <script src="~/Content/Admin/lib/js/bootstrap-file-input.min.js"></script>
+    @*@System.Web.Optimization.Scripts.Render("~/bundles/plugin")
+        @System.Web.Optimization.Scripts.Render("~/bundles/lib")
+        @System.Web.Optimization.Scripts.Render("~/bundles/custom")*@
+    @Html.RenderCalendarResources()
+    @Html.RenderAutoCompleteResources()
+    @Html.RenderGridViewResources()
+    @Html.RenderOrgStructureResources(SessionInfo.CultureShortName)
+    @Html.RenderTextEditorResources()
+
+    <script src=@string.Format("{0}/signalr/hubs", SystemConfigurations.WebApiUrl)></script>
+    <script src="~/Content/Admin/Scripts/Collaboration.js"></script>
+    <script src="~/Content/Admin/Scripts/SignalRManager.js"></script>
+</head>
+<body>
+    <div id="Loader" style="display:none">
+        <div class="spinner"></div>
+    </div>
+   
+
+    <nav class="navbar navbar-default navbar-fixed-top sb-slide" role="navigation">
+        <ul class="x-navigation">
+            <li class="xn-logo">
+                <a href="#" class="xn-logo-area">Logo</a>
+                <a href="#" class="sb-toggle-right"></a>
+            </li>
+        </ul>
+    </nav>
+    <div id="sb-site">
+        <!-- START PAGE CONTAINER -->
+        <div class="page-container page-navigation-toggled page-navigation-top-fixed page-mode-rtl page-content-rtl">
+
+            <!-- START PAGE SIDEBAR -->
+            <div class="page-sidebar page-sidebar-fixed scroll">
+                <!-- START X-NAVIGATION -->
+                <ul class="x-navigation">
+                    <li class="xn-logo">
+                        <a id="navigation_minimize" class="x-navigation-minimize"><span class="fa fa-bars"></span></a>
+                        @*<a href="~/Admin/Home/Index" class="xn-logo-area">e-Morasalat</a>*@
+                    </li>
+                    @Html.Partial("~/Areas/Admin/Views/Shared/_UserMenuPartial.cshtml")
+                </ul>
+
+                <!-- END X-NAVIGATION -->
+            </div>
+            <!-- END PAGE SIDEBAR -->
+            <!-- PAGE CONTENT -->
+            <div class="page-content">
+
+                <!-- START X-NAVIGATION VERTICAL -->
+                <ul class="x-navigation x-navigation-horizontal x-navigation-panel">
+                    <!-- POWER OFF -->
+                    <li class="xn-icon-button pull-right last">
+                        <a data-bs-toggle="tooltip" data-placement="bottom" title="@DbRes.TResource("Global.Logout")" href="~/Admin/Login/Logout"><span class="fa fa-power-off"></span></a>
+                    </li>
+
+                    @*<li class="xn-icon-button pull-right">
+                            <a class="sb-toggle-left" data-bs-toggle="tooltip" data-placement="bottom" title="@DbRes.TResource("Global.Chat")" href="#"><span class="fa fa-comments"></span></a>
+                            <div class="informer informer-danger chat-Notification" style="display:none">0</div>
+                        </li>*@
+
+                    <!-- END MESSAGES -->
+                    <!-- LANG BAR -->
+                    @*<li class="xn-icon-button pull-right">
+                            <a data-bs-toggle="tooltip" data-placement="bottom" title="@DbRes.TResource("Global.Language")" href="#"><span class="fa fa-globe"></span></a>
+                            <ul class="xn-drop-white animated zoomIn">
+                                <li><a onclick="ChangeCulture('@Constants.Languages.English')">@DbRes.TResource("Global.English")</a></li>
+                                <li><a onclick="ChangeCulture('@Constants.Languages.Arabic')">@DbRes.TResource("Global.Arabic")</a></li>
+                            </ul>
+                        </li>*@
+                    @*<li class="xn-logo pull-left"><a href="#" class="xn-logo-area">e-Morasalat</a></li>*@
+                    <!-- END LANG BAR -->
+                </ul>
+
+                @*<ul class="breadcrumb">
+                        <li><a href="#">الرئيسة</a></li>
+                        <li class="active">الهيكل التنظيمي</li>
+                    </ul>*@
+                @*@Html.MvcSiteMap("AdminSiteMapProvider").Menu(false, true, true)*@
+
+
+                @*@Html.MvcSiteMap().Menu(new { @class = "MENUNAME",  })*@
+
+
+                <ul class="breadcrumb">
+                    @*@Html.MvcSiteMap().Menu(false, true, true)*@
+                    <div class="widget widget_clock">
+                        @{string date = SessionInfo.CultureShortName == Constants.Languages.Arabic ? DateTimeUtility.ConvertToUmAlQuraCalendar(DateTime.Now) : DateTime.Now.ToString("dd/MM/yyyy"); }
+
+                        <div class="widget-subtitle widget-big-int">@date</div>
+                        <div class="widget-subtitle widget-big-int timeplugin-clock"></div>
+                    </div>
+                </ul>
+
+
+                <div id="body">@RenderBody()</div>
+                <!-- Footer Page -->
+                <div class="footer_page">
+                    <div class="footer_page-content">
+                        @*<ul class="footer_page-links">
+                                <li><a href="#">الدعم</a></li>
+                                <li><a href="#">شروط الاستخدام</a></li>
+                                <li><a href="#">سياسة الخصوصية</a></li>
+                            </ul>*@
+
+                        @*<div class="logo_morasalat">
+                                <a href="#"><img src="~/Content/Admin/lib/img/morasalat/logo_morasalat.png"></a>
+                            </div>*@
+                        <div class="copyright">
+                            @DbRes.TResource("Admin.Layout.CopyRightFor")
+                        </div>
+                    </div>
+                </div>
+                <!-- END Footer Page -->
+
+            </div>
+            <!-- END PAGE CONTENT -->
+        </div>
+    </div>
+    <div class="page-sidebar_bg"></div>
+    <!-- Left Slidebar -->
+    <!-- Left Slidebar -->
+    <div class="sb-slidebar sb-chat sb-left sb-style-overlay scroll">
+        <div class="tabs ">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#tab1" data-toggle="tab"><i class="fa fa-comments-o"></i></a></li>
+                @*<li><a href="#tab2" data-toggle="tab"><i class="fa fa-cog"></i></a></li>*@
+            </ul>
+
+            <div class="tab-content ">
+                <div class="tab-pane active" id="tab1">
+                    <div class="row">
+                        <div class="col-md-12">
+                            Tenant
+                            <div class="chat-search">
+                                <form role="form">
+                                    <input type="text" name="search" id="ChatSearch" placeholder="">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" style="height:50%;">
+
+                        <div class="row">
+                            <div class="col-md-11">
+                                <div class="title_chat">
+                                    الموظفين
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+
+                            </div>
+                        </div>
+                        <div class="section_chat row">
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div><!-- /.sb-slidebar .sb-left -->
+    <!-- Right Slidebars -->
+    <div class="page-container page-content-rtl  page-mode-rtl sb-slidebar sb-right scroll " id="no_mini_wide">
+
+        <div class="shadow_sb-slidebar"></div>
+        <div class="page-sidebar sb ">
+            <!-- START X-NAVIGATION -->
+            <ul class="x-navigation">
+                @Html.Partial("~/Areas/Admin/Views/Shared/_UserMenuPartial.cshtml")
+            </ul>
+            <!-- END X-NAVIGATION -->
+        </div>
+    </div><!-- /.sb-slidebar .sb-right -->
+    <!-- Conversation -->
+    <div class="conversations">
+
+
+    </div>
+
+
+
+
+    <!-- jQuery
+    <script src="~/Content/Admin/lib/js/theme/pushslide/js/jquery.min.js"></script> -->
+    <!-- Slidebars -->
+    <script src="~/Content/Admin/lib/js/theme/pushslide/js/slidebars.min.js"></script>
+    <!--<script src="~/Content/Admin/lib/js/theme/pushslide/js/slidebars-theme.js"></script> -->
+    <script>
+        (function ($) {
+            $(document).ready(function () {
+                $.slidebars();
+            });
+        })(jQuery);
+    </script>
+
+
+    <!-- START SCRIPTS -->
+    <!-- START PLUGINS -->
+    <!--<script type="text/javascript" src="~/Content/Admin/lib/js/plugins/jquery/jquery.min.js"></script>-->
+    @*<script type="text/javascript" src="~/Content/Admin/lib/js/plugins/jquery/jquery-ui.min.js"></script>*@
+    <script type="text/javascript" src="~/Content/Admin/lib/js/plugins/bootstrap/bootstrap.min.js"></script>
+    <!-- END PLUGINS -->
+    <!-- THIS PAGE PLUGINS -->
+    <script type='text/javascript' src='~/Content/Admin/lib/js/plugins/icheck/icheck.min.js'></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/js/plugins/mcustomscrollbar/jquery.mCustomScrollbar.min.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/js/plugins/bootstrap/bootstrap-file-input.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/js/plugins/bootstrap/bootstrap-select.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/js/plugins/tagsinput/jquery.tagsinput.min.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/js/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/js/plugins/bootstrap/bootstrap-colorpicker.js"></script>
+
+    <!-- JS Tree -->
+    <script type="text/javascript" src="~/Content/Admin/lib/js/plugins/dropzone/dropzone.min.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/js/plugins/filetree/jqueryFileTree.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/js/plugins/cropper/cropper.min.js"></script>
+    @*<script type="text/javascript" src="~/Content/Admin/lib/js/plugins/jstree/jstree.min.js"></script>*@
+    <!-- END JS Tree -->
+    <!-- NOTY -->
+    <script type='text/javascript' src='~/Content/Admin/lib/js/plugins/noty/jquery.noty.min.js'></script>
+    <script type='text/javascript' src='~/Content/Admin/lib/js/plugins/noty/layouts/topCenter.min.js'></script>
+    <script type='text/javascript' src='~/Content/Admin/lib/js/plugins/noty/layouts/topLeft.min.js'></script>
+    <script type='text/javascript' src='~/Content/Admin/lib/js/plugins/noty/layouts/topRight.js'></script>
+    <script type='text/javascript' src='~/Content/Admin/lib/js/plugins/noty/themes/default.min.js'></script>
+    <script type="text/javascript">
+        function notyConfirm() {
+            noty({
+                text: 'Do you want to continue?',
+                layout: 'topRight',
+                buttons: [
+                    {
+                        addClass: 'btn btn-success btn-clean', text: 'Ok', onClick: function ($noty) {
+                            $noty.close();
+                            noty({ text: 'You clicked "Ok" button', layout: 'topRight', type: 'success' });
+                        }
+                    },
+                    {
+                        addClass: 'btn btn-danger btn-clean', text: 'Cancel', onClick: function ($noty) {
+                            $noty.close();
+                            noty({ text: 'You clicked "Cancel" button', layout: 'topRight', type: 'error' });
+                        }
+                    }
+                ]
+            })
+        }
+    </script>
+    <!-- END NOTY -->
+    <!-- END THIS PAGE PLUGINS -->
+    <!-- START TEMPLATE -->
+    <script type="text/javascript" src="~/Content/Admin/lib/js/plugins.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/js/actions.js"></script>
+    <!-- END TEMPLATE -->
+
+    <script type="text/javascript" src="~/Content/Admin/lib/js/demo_file_handling.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/js/plugins/scrolltotop/scrolltopcontrol.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/js/plugins/owl/owl.carousel.min.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/js/plugins/moment.min.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/js/plugins/daterangepicker/daterangepicker.js"></script>
+
+    <!-- <script type="text/javascript" src="~/Content/Admin/lib/js/demo_dashboard.js"></script>-->
+
+    <script type="text/javascript" src="~/Content/Admin/lib/js/plugins/highlight/jquery.highlight-4.js"></script>
+    <script type="text/javascript" src="~/Content/Admin/lib/js/faq.js"></script>
+    <script>
+        $(window).on('resize', function () {
+            if ($(window).width() < 1025) {
+                $("#no_mini_wide").removeClass('page-container-wide');
+                $("#no_mini").removeClass('x-navigation-minimized');
+            }
+        });
+    </script>
+    <script>
+
+
+        $("#navigation_minimize").click(function () {
+            if (localStorage.getItem('navigation') == undefined) {
+                localStorage.setItem('navigation', "1");
+            }
+            else {
+                if (localStorage.getItem('navigation') == "0")
+                    localStorage.setItem('navigation', "1");
+                else
+                    localStorage.setItem('navigation', "0");
+            }
+        });
+
+        $(function () {
+            if (localStorage.getItem('navigation') != undefined && localStorage.getItem('navigation') == "1") {
+                $(".page-container").removeClass("page-navigation-toggled");
+                x_navigation_minimize("open");
+
+            }
+            else {
+                $(".page-container").addClass("page-navigation-toggled");
+                //x_navigation_minimize("close");
+            }
+
+            if (!$(".page-container").hasClass("page-navigation-toggled")) {
+                $(".x-navigation").find('a.active_ok').parent().addClass('active_ok');
+                $(".x-navigation").find('li.active_ok').parents('li:first').addClass('active');
+            }
+
+        });
+        //$(".x-navigation").find('li.active').parents('li:first').addClass('active');
+    </script>
+
+
+
+</body>
+
+</html>
+<script>
+    $('.change_your_password').click(function () {
+
+        ShowDialogAjax('@Url.Action("RenderChangePasswordPartial","UserProfile")', {}, 'OpenChangePasswordDialogSuccess');
+    });
+
+    function OpenChangePasswordDialogSuccess(data, $obj) {
+
+        $obj.setContent(data.View);
+        jQuery.validator.unobtrusive.parse('#frmChangePassword');
+    }
+</script>
+<script>
+    function ChangeCulture(name) {
+        $.ajax({
+            url: '@Url.Action("SetCultureName", "Home")',
+            type: 'POST',
+            data: { 'cultureName': name },
+            success: function (data) {
+                window.location.href = '@(MCS.UI.UrlHelper.GetBaseUri() + "/Admin/OrgUnitStructure/Index")';
+            },
+            error: function (a) {
+            }
+        });
+    }
+
+    var custom_templatePlugins = function () {
+
+        var custom_tp_clock = function () {
+
+            function custom_tp_clock_time() {
+                var now = new Date();
+                var hour = now.getHours();
+                var minutes = now.getMinutes();
+                var suffix = (hour >= 12) ? '@DbRes.TResource("Global.Time.PM")' : '@DbRes.TResource("Global.Time.AM")';
+
+                hour = ((hour + 11) % 12 + 1);
+                hour = hour < 10 ? '0' + hour : hour;
+                minutes = minutes < 10 ? '0' + minutes : minutes;
+
+                $(".timeplugin-clock").html(hour + "<span>:</span>" + minutes + " " + suffix);
+            }
+            if ($(".timeplugin-clock").length > 0) {
+
+                custom_tp_clock_time();
+
+                window.setInterval(function () {
+                    custom_tp_clock_time();
+                }, 10000);
+
+            }
+        }
+
+        return {
+            init: function () {
+                custom_tp_clock();
+            }
+        }
+    }();
+
+    $(function () {
+        custom_templatePlugins.init();
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $("input.form-control:text,textarea").each(function () {
+            var attr = $(this).attr('maxlength');
+            if (typeof attr == typeof undefined) {
+                $(this).attr('maxlength', '100');
+            }
+        });
+        encodeForm();
+    });
+
+    function encodeForm() {
+        var potentialError = false;
+        $('form').submit(function (e) {
+            $("input.form-control:text,textarea").each(function () {
+                var txt = $(this).val();
+                if (txt != '' && (txt.indexOf('<') > -1 || txt.indexOf('>') > -1 || txt.indexOf('&') > -1 || txt.indexOf('\'') > -1 || txt.indexOf('\"') > -1)) {
+                    potentialError = true
+                    return;
+                }
+            });
+            if (potentialError) {
+                alert('A potentially dangerous form value was detected, please review your inputs');
+            }
+        });
+    }
+
+    //TODO: Notification  not completed ==> 1- read notificationPageSize and pageIndex from web Config
+    // 2- Remove NotificationCookies and store notification Flag  in server side instead of cookies
+    // 3- Code review after complete it
+    var selectedUserId
+    var notificationPageSize=5;
+    var pageIndex=1;
+    var UrlChatData= '@Url.Action("GetChatHistory")';
+    var UrlInitChatData= '@Url.Action("GetIntitialChatDataHistory")';
+    var pageSize=10;
+    var SelectedTransactionId=null;
+
+    var AllUsers =new Array();
+
+    GetChatNotifications();
+
+    GetAllUsers();
+
+    HideNotificationChat();
+
+    HideNotificationChat();
+
+    $(document).on("keyup","#ChatSearch",function(message) {
+
+        var searchedText=$(this).val();
+        ClearChatSection();
+
+        for(i=0; i < AllUsers.length ; i++){
+            var userName=$(AllUsers[i]).attr("data-online-userName");
+            if(userName.indexOf(searchedText) != -1){
+                AddToChatSection(AllUsers[i]);
+            }
+        }
+
+    });
+
+    function AppearOnlineUser(userId)
+    {
+        $('.appear[data-online-userid="' + userId + '"]').addClass("online").addClass("onlineUser");
+    }
+
+    function ResetChatBinding()
+    {
+        IsBindingWithTransaction= false;
+    }
+
+    function SetChatBinding(userId, transactionId)
+    {
+        var element=$('.messageRow[data-userid-chat-window="' + userId + '"]');
+        element.addClass("TransactionRowMessage");
+        element.removeClass("messageRow");
+        element.data("transactionId",transactionId)
+        element.attr('data-transactionId', transactionId);
+        $('.TransactionRowMessage[data-userid-chat-window="' + userId + '"]').data("transactionId",transactionId);
+        $('.TransactionRowMessage[data-userid-chat-window="' + userId + '"]').attr('data-transactionId', transactionId);
+    }
+
+    function GetChatNotifications()
+    {
+        if(pageIndex==0)
+            return false;
+
+        $.ajax({
+            type: 'get',
+            url: '@Url.Action("GetChatNotifications")',
+            data: { },
+            Async:true,
+            global: false,
+            success:
+               function (data)
+               {
+                   if (data.ChatNotifications && data.ChatNotifications.Result && data.ChatNotifications.Result.TotalChatNotifications) {
+                       if (data.ChatNotifications.Result.TotalChatNotifications > 0) {
+                           UpdateChatNotification(data.ChatNotifications.Result.TotalChatNotifications);
+                       }
+                   }
+                   return null;
+               }
+        });
+    }
+
+
+    function GetAllUsers() {
+        $.ajax({
+            type: 'get',
+            url: '@Url.Action("GetCollaborationUsers")',
+            data: {},
+            Async: true,
+            global: false,
+            success:
+                function (data) {
+                    if (data && data.Users && data.Users.Result) {
+                        data.Users.Result.forEach(function (entry) {
+                            var id = @userVM.Id;
+
+                            if (entry.UserId != id) {
+
+                                if ($("#User" + entry.UserId).length < 1) {
+                                    CreateNewUserOffline(entry.UserName, entry.UserId, entry.NotificationCount);
+
+                                    AllUsers.push($('.onlineUser[data-online-userid="' + entry.UserId + '"]'));
+
+                                }
+
+                                InitializeUserNotifysCount(entry.UserId, entry.NotificationCount);
+                            }
+
+                        });
+                    }
+                }
+        });
+
+    }
+    function showSuccessToast(message) {
+        $().toastmessage('showToast', {
+            text: message,
+            sticky: false,
+            stayTime: 10000,
+            position: 'top-right',
+            type: 'success',
+            closeText: '',
+            close: function () {
+                console.log("toast is closed ...");
+            }
+        });
+    }
+</script>

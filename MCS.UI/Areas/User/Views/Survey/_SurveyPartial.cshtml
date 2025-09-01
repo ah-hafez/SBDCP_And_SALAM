@@ -1,0 +1,73 @@
+﻿@model MCS.UI.Areas.User.Models.Survey.SurveyVM
+
+@{
+
+    ViewBag.Title = DbRes.TResource("User.Survey");
+    Layout = "~/Areas/User/Views/Shared/_SearchLayout.cshtml";
+
+}
+<div style="display:flex; place-content:space-between">
+
+    <div>
+        <h2 class="mt-5" style="margin-right:44px;">@DbRes.TResource("User.Survey.Survey")</h2>
+
+    </div>
+    <div class="mx-3 mx-sm-5 header-container d-flex  flex-column flex-lg-row align-items-md-center mt-5">
+        <div class="ml-lg-auto mr-auto mr-lg-3  d-sm-flex d-block ">
+            @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.SurveyReport.UserSuggestionsReport))
+            {
+                <div class="mb-3 mb-sm-auto">
+                    <a class="btn btn-st8 btn-lg mr-auto mr-sm-3" href="#">
+                        @DbRes.TResource("User.Survey.SuggestionsUser")
+                    </a>
+                </div>
+            }
+            @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.SurveyReport.UserReport))
+            {<div class="mb-3 mb-sm-auto">
+                    <a class="btn btn-st3 btn-lg" href="#"> </a>
+                </div>
+                @DbRes.TResource("User.Survey.OverallEvaluation")
+
+            }
+        </div>
+    </div>
+
+</div>
+@using (Html.BeginForm("AddSurvey", "Survey", FormMethod.Post, new { id = "frmAddSurvey", @class = "tab-content" }))
+{@Html.AntiForgeryToken();
+
+
+
+for (int i = 0; i < Model.SurveyQuestion.Count; i++)
+{
+    Model.SurveyQuestion[i].Number = i + 1;
+    <div class="mt-1">
+        @Html.Partial("~/Areas/User/Views/Survey/SurveyData.cshtml", Model.SurveyQuestion[i]);
+    </div>
+
+}
+
+<div class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12  mb-3" style="text-align:center;align-content:center">
+    <div class="input-group w-100">
+        <div class="form-group w-100">
+            <label class="w-100">@DbRes.TResource("User.Survey.Suggestions") <span class="stark">*</span></label>
+            @Html.TextAreaGroupFor(model => model.surveyNote.Note, new { id = "txtAreaSuggestions", @class = "form-control", @rows = "5" }, "BasicInformation")
+        </div>
+    </div>
+</div>
+
+
+<div class="row text-right mr-5 mt-4 ml-xs-3 mb-4">
+    @Html.ConfirmAction(OperationType.Save, "btnAddSurvey", DbRes.TResource("User.OutboundExternal.Save"), "AddSurvey", null, null, null, "OnSuccess", null, DbRes.TResource("User.Inbound.SaveMessage"), "post", "frmAddSurvey", "BasicInformation", "btn btn-st1 btn-lg pull-right")
+</div>
+}
+
+
+<script>
+
+    function OnSuccess() {
+
+        window.location.href = '@Url.Action("Index", "Survey")';
+
+        }
+</script>

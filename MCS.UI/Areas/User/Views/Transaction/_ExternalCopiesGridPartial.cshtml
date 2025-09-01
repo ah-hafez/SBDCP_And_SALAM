@@ -1,0 +1,75 @@
+﻿@model AjaxGrid<MCS.UI.Areas.User.Models.Transaction.TransactionExternalCopyVM>
+
+@{
+    var operationType = ViewData["IsEnableAction"] ?? true;
+    string controller = TempData.Peek("ControllerName") != null ? TempData.Peek("ControllerName").ToString() : ViewContext.RouteData.Values["controller"].ToString();
+    ViewData.TemplateInfo.HtmlFieldPrefix = "TransactionExtCopy";
+}
+
+
+@Html.Grid(Model).CollectionName("ExternalCopies").Named("grdExternalCopies").Columns(columns =>
+{
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(ExtCopycolumn => model.Id, new { id = "ExEditId_" + model.Key }).FixIDAndName("ExtCopycolumn.", "ExtCopycolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(ExtCopycolumn => model.Key, new { id = "Key_" + model.Key }).FixIDAndName("ExtCopycolumn.", "ExtCopycolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(ExtCopycolumn => model.OrgUnitId, new { id = "ExOrgUnitId_" + model.Key }).FixIDAndName("ExtCopycolumn.", "ExtCopycolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(ExtCopycolumn => model.OrgUnitName, new { id = "ExOrgUnitName_" + model.Key }).FixIDAndName("ExtCopycolumn.", "ExtCopycolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(ExtCopycolumn => model.UserId, new { id = "ExUserId_" + model.Key }).FixIDAndName("ExtCopycolumn.", "ExtCopycolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(ExtCopycolumn => model.UserName, new { id = "ExUserName_" + model.Key }).FixIDAndName("ExtCopycolumn.", "ExtCopycolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(ExtCopycolumn => model.ActionId, new { id = "ExActionId_" + model.Key }).FixIDAndName("ExtCopycolumn.", "ExtCopycolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(ExtCopycolumn => model.ActionName, new { id = "ExActionName_" + model.Key }).FixIDAndName("ExtCopycolumn.", "ExtCopycolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.SendEmail, new { id = "SendEmail_" + model.Key }).FixIDAndName("ExtCopycolumn.", "ExtCopycolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(ExtCopycolumn => model.AttachmentCount, new { id = "ExAttachment_" + model.Key }).FixIDAndName("ExtCopycolumn.", "ExtCopycolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(ExtCopycolumn => model.attachmentNames, new { id = "ExAttachmentsNames_" + model.Key }).FixIDAndName("ExtCopycolumn.", "ExtCopycolumn_")).Sanitized(false).Encoded(false);
+columns.Add(true).RenderValueAs(model => Html.HiddenFor(ExtCopycolumn => model.IsNewFile, new { id = "IsNewFile_" + model.Key }).FixIDAndName("ExtCopycolumn.", "ExtCopycolumn_")).Sanitized(false).Encoded(false);
+
+columns.Add(model => model.OrgUnitName).Titled(DbRes.TResource("User.Transaction.Copies.ExternalParty"));
+columns.Add(model => model.AttachmentCount).Titled(DbRes.TResource("User.Transaction.AttachmentCount"));
+string actionName = ViewContext.RouteData.Values["action"].ToString();
+columns.Add().Encoded(false).Sanitized(false).Titled(DbRes.TResource("User.Transaction.Assignment.ActionId"))
+.RenderValueAs(o => @<div class="row">
+    <span class="col-md-3"></span>
+    <span class="col-md-9">
+        @Html.AutoCompleteBuilder("ddExActionId" + o.Key, "ExActionId_" + o.Key, ViewData["AllActionsData"].ToString(), o.ActionId.ToString(), true, "form-control ddlActionIdGrid", "hdnActionType_" + o.Key)
+    </span>
+</div>);
+//if (actionName == "Edit")
+//{
+//  columns.Add().RenderValueAs(model => model.Status == (int)Status.Success ? "ارسلت" : model.Status == (int)Status.Sent ? "استلمت" : "<div class='correspondence-icon d-flex flex-column flex-sm-row'><div class='mr-auto d-flex'><a class='circle color-gray clsResendCopy' title='" + @DbRes.TResource("User.File.Resend") + "' " + " class='circle color-gray clsExternalCopyResend' data-id='" + model.Id + "' data-TransactionId='" + model.TransactionId + "' data-Partyid='" + model.OrgUnitId + "'><i class='la la-mail-reply-all'></i></a></div></div>").Sanitized(false).Encoded(false).Titled(DbRes.TResource("User.Transaction.Copies.Actions"));
+//}
+
+if ((bool)operationType)
+{
+  columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => @Html.ClientLinkTag("", null, "edit_link", null, DbRes.TResource("Grid.Edit"), "GetExternalCopyById(" + model.Key + "," + model.OrgUnitId + ")", UserClaims.CopiesExternal.Edit, "<i class='fa fa-edit'></i>"));
+  columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => @Html.ClientLinkTag("", cssClass: "edit_link", permissionCode: UserClaims.CopiesExternal.Delete, clientFunctionToCall: "DeleteActionGrid(" + "'grdExternalCopies'," + model.Key + ",'" + DbRes.TResource("Grid.DeleteMassage") + "','', 'ResetActionExternalCopy', '" + model.OrgUnitId + "')", innerHtml: "<i class='glyphicon glyphicon-trash color-danger'></i>"));
+}
+})
+
+<script>
+        $(document).ready(function () {
+            $('.clsResendCopy').click(function (e) {
+                var currentTarget = $(e.currentTarget);
+                var transactionId = currentTarget.data('transactionid');
+                var externalPartyId = currentTarget.data('partyid');
+                var externalCopyId = currentTarget.data('id');
+
+                $.ajax({
+                    /**/
+                    url: '@Url.Action("ResendExternalCopy", "Hub")',
+                    /**/
+                    data: { transactionId: transactionId, externalPartyId: externalPartyId, transactionsExternalCopyId: externalCopyId },
+                    success: function (data) {
+                        if (data == 'faild') {
+                            var message = "حدث خطأ رقم (" + data + ") الرجاء المحاولة لاحقاً";
+                            ShowInformationMessage(message);
+
+                            return;
+                        }
+                        window.location.reload();
+                    },
+                    error: function (a, b, c, d) {
+                        ShowErrorMessage('حدث خطأ');
+                    }
+                });
+            });
+        });
+</script>

@@ -1,0 +1,294 @@
+﻿@using MCS.UI.Helpers
+@model MCS.UI.Areas.User.Models.Report.TransactionDeliveryReportVM
+
+<div class="box-grid three grid-item">
+    <div class="box animated zoomIn buttons-action">
+        <div class="correspondence-t">
+            <div class="d-flex">
+                <div class="treaty-name">
+
+                    @if (!Model.IsCopy)
+                    {
+
+                        @(Model.TransactionCategoryName)
+
+                    }
+                    else if (Model.IsCopy && Model.ExternalPartyId > 0)
+                    {
+
+                        @(Model.TransactionCategoryName + " - " + DbRes.TResource("User.Transaction.ExternalOutbound.Copy"))
+
+                    }
+                    else if (Model.IsCopy && Model.InternalPartyId > 0)
+                    { @(Model.TransactionCategoryName + " - " + DbRes.TResource("User.Transaction.ExternalOutbound.Copy"))
+
+                    }
+
+
+
+                </div>
+                <div class="ml-auto d-flex">
+                    <div class="pr-1" id="Number_@Model.Id">
+                        @Model.Number
+                    </div>
+                    @if (!Model.IsCopy)
+                    {
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" value="" data-id="@Model.Id" onchange="checkNumber()" data-transId="@Model.TransactionId">
+                                <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                            </label>
+                        </div>
+                    }
+                    else if (Model.IsCopy && Model.ExternalPartyId > 0)
+                    {
+
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" value="" data-id="@Model.Id" onchange="checkNumber()"  data-transId="@Model.TransactionId">
+                                <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                            </label>
+                        </div>
+                    }
+                    else if (Model.IsCopy && Model.InternalPartyId > 0)
+                    {
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" value="" data-id="@Model.Id" onchange="checkNumber()" data-transId="@Model.TransactionId">
+                                <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                            </label>
+                        </div>
+
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="correspondence-h">
+            <div class="date">
+                @DateHelper.GetDate(@Model.DateH)
+                @Model.Date.ToShortTimeString()
+            </div>
+        </div>
+        <div class="correspondence-b d-flex flex-wrap">
+            <div class="f-line w-full w-f-50">
+                <div class="description">
+
+                    @if (Model.Subject != null && Model.Subject.Length > 24)
+                    {
+
+                        <div class="description" title="@Model.Subject">
+                            @Model.Subject.Substring(0,18) ...
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="description">
+                            @Model.Subject
+                        </div>
+                    }
+                </div>
+            </div>
+
+
+            <div class="f-line w-medium w-small">
+
+                <div class="heading">
+                    @DbRes.TResource("User.Transaction.TransactionNumber")
+                </div>
+                <div>
+                    @Model.TransactionNumber
+                </div>
+            </div>
+            <div class="f-line w-medium w-small">
+                <div class="heading">
+                    @DbRes.TResource("User.Transaction.PriorityLevel")
+                </div>
+                <div>
+                    @if (@Model.Priority != null && @Model.Priority.Length > 15)
+                    {
+                        <div class="ui-tooltip ui-corner-all ui-widget-shadow"  title="  @Model.Priority">
+                            @Model.Priority
+                        </div>
+                    }
+                    else
+                    {
+                        <div>
+                            @Model.Priority
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="f-line w-medium w-small">
+                <div class="heading">
+                    @DbRes.TResource("User.Transaction.ConfidentialityLevel")
+                </div>
+                <div>
+                    @if (Model.Confidentiality != null)
+                    {
+                        if (@Model.Confidentiality.Length > 15)
+                        {
+                            <div class="ui-tooltip ui-corner-all ui-widget-shadow"  title="  @Model.Confidentiality">
+                                @Model.Confidentiality
+                            </div>
+                        }
+                        else
+                        {
+                            <div>
+                                @Model.Confidentiality
+                            </div>
+                        }
+                    }
+
+                </div>
+            </div>
+            <div class="f-line w-medium w-small">
+                <div class="heading">
+                    @if (@Model.TransactionCategoryId == TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName) | @Model.TransactionCategoryId == TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName))
+                    {
+                        @*<div class="ui-tooltip ui-corner-all ui-widget-shadow" data-bs-toggle="tooltip" data-placement="bottom" title="@DbRes.TResource("User.Transaction.OwnerEntity")">*@
+                        @DbRes.TResource("User.Transaction.OwnerEntity").Substring(0, 8)
+                        @*...
+                            </div>*@
+                    }
+                    else
+                    {
+                        @DbRes.TResource("User.Transaction.DirectedDepartment")
+                    }
+                </div>
+                <div>
+                    @if (@Model.TransactionCategoryId != TransactionCategory.ExternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName))
+                    {
+                        if (@Model.ToEntity.Length > 15)
+                        {
+                            <div class="ui-tooltip ui-corner-all ui-widget-shadow"  title="@Model.ToEntity">
+                                @Model.ToEntity.Substring(0, 8) ...
+                            </div>
+                        }
+                        else
+                        {
+                            <div>
+                                @Model.ToEntity
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        if (@Model.ExternalPartyName != null)
+                        {
+                            if (@Model.ExternalPartyName.Length > 10)
+                            {
+                                <div class="ui-tooltip ui-corner-all ui-widget-shadow"  title="@Model.ExternalPartyName">
+                                    @Model.ExternalPartyName.Substring(0, 8) ...
+                                </div>
+                            }
+                            else
+                            {
+                                <div>
+                                    @Model.ExternalPartyName
+                                </div>
+                            }
+                        }
+
+                    }
+                </div>
+            </div>
+            <div class="f-line w-medium w-small">
+                <div class="heading">
+                    @DbRes.TResource("User.Transaction.Assignment.ToUserId")
+                </div>
+                <div>
+                    @if (@Model.User != null)
+                    {
+                        if (@Model.User.Length > 15)
+                        {
+                            <div class="ui-tooltip ui-corner-all ui-widget-shadow"  title="@Model.User">
+                                @Model.User
+                            </div>
+                        }
+                        else
+                        {
+                            <div>
+                                @Model.User
+                            </div>
+                        }
+                    }
+
+                </div>
+            </div>
+            <div class="f-line w-medium w-small">
+                <div class="heading">
+                    @DbRes.TResource("User.Inbound.BasicInfo.InboundType")
+                </div>
+                <div>
+                    @if (@Model.TransactionTypeName != null)
+                    {
+                        if (@Model.TransactionTypeName.Length > 15)
+                        {
+                            <div class="ui-tooltip ui-corner-all ui-widget-shadow" title="@Model.TransactionTypeName">
+                                @Model.TransactionTypeName
+                            </div>
+                        }
+                        else
+                        {
+                            <div>
+                                @Model.TransactionTypeName
+                            </div>
+                        }
+                    }
+
+                </div>
+            </div>
+            @if (Model.TransactionCategoryId == TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName))
+            {
+                <div class="f-line w-medium w-small">
+                    <div class="heading">
+                        @*<div class="ui-tooltip ui-corner-all ui-widget-shadow" data-bs-toggle="tooltip" data-placement="bottom" title="@DbRes.TResource("User.Inbound.BasicInfo.InboundDestination")">*@
+                        @DbRes.TResource("User.Inbound.BasicInfo.InboundDestination").Substring(0, 8)
+                        @*...
+                            </div>*@
+                    </div>
+                    <div>
+                        @if (@Model.IsForIndividual)
+                        {
+                            @DbRes.TResource("User.Inbound.BasicInfo.InboundDestination.Individual")
+
+                        }
+                        else
+                        {
+
+                            @DbRes.TResource("User.Inbound.BasicInfo.InboundDestination.Entities")
+                        }
+                    </div>
+                </div>
+            }
+            @if (Model.TransactionCategoryId == TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName) & !@Model.IsForIndividual)
+            {
+                <div class="f-line w-medium w-small">
+                    <div class="heading">
+                        @DbRes.TResource("User.Audit.TransactionLog.ExternalPartyId")
+                    </div>
+
+                    @if (!string.IsNullOrWhiteSpace(Model.ExternalPartyName))
+                    {
+                        if (@Model.ExternalPartyName.Length > 15)
+                        {
+                            <div class="ui-tooltip ui-corner-all ui-widget-shadow"  title="@Model.ExternalPartyName">
+                                @Model.ExternalPartyName
+                            </div>
+                        }
+                        else
+                        {
+                            <div>
+                                @Model.ExternalPartyName
+                            </div>
+                        }
+                    }
+
+
+                </div>
+            }
+        </div>
+    </div>
+    @Html.EncryptedStickyHidden("EncryptedFalse", "false", new { id = "EncryptedFalse" })
+    @Html.EncryptedStickyHidden("EncryptedTrue", "true", new { id = "EncryptedTrue" })
+</div>

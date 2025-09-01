@@ -1,0 +1,68 @@
+@model ArchivDirectory
+@using MCS.Common
+@using MCS.Framework.Controls.Mvc
+@using MCS.Framework.Controls
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Archives
+
+
+<!-- ******************************Content ************************* -->
+<div class="mt-5" style="margin-top: 3rem;">
+    <label style="font-size: 30px;text-align: center;display: grid;">@DbRes.TResource("User.Directory.Create") </label>
+</div>
+
+<div class="white-container mx-md-5 mx-3">
+
+    <div class="form-row center">
+
+        <div class="row col-lg-12 col-md-12 col-sm-9">
+            <div class="form-group col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">
+                <label> @DbRes.TResource("User.Archive.Directory.Number") <span class="stark">*</span></label>
+                @Html.TextBoxFor(Model => Model.DirectoryNum, new { @class = "form-control" })
+            </div>
+        </div>
+
+        <div class="row col-lg-12 col-md-12 col-sm-9">
+            <div class="form-group col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">
+                <label>@DbRes.TResource("User.Archive.Dirtctory.Code") <span class="stark">*</span></label>
+                @Html.TextBoxGroupFor(model => model.Code, "", new { @class = "form-control", maxlength = "5" })
+            </div>
+        </div>
+        <div class="row col-lg-12 col-md-12 col-sm-9">
+            <div class="form-group col-lg-6 col-md-12 col-sm-12 col-xs-12  mb-3">
+                <div class="input-group w-100">
+                    <div class="form-group w-100">
+                        <label class="w-100">@DbRes.TResource("User.Inbound.BasicInfo.Subject") <span class="stark">*</span></label>
+                        @Html.TextAreaGroupFor(model => model.Description, new { id = "txtAreaSubject", @class = "form-control", @rows = "5" }, "BasicInformation")
+                    </div>
+                </div>
+            </div>
+        </div>
+       
+        <div class="row col-lg-12 col-md-12 col-sm-9" id="DirectorySub" style="display:none;">
+            <div class="form-group col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">
+                <label> @DbRes.TResource("User.Archive.Classification") <span class="stark">*</span></label>
+                @Html.TextBoxFor(Model => Model.DirectoryNum, new { @class = "form-control" })
+            </div>
+        </div>
+
+        <div class="row col-lg-12 col-md-12 col-sm-9" style="direction:ltr">
+            <div class="form-group col-lg-6 col-md-12 col-sm-12 col-xs-12  mb-3">
+                <div class="input-group w-100">
+                    <div class="form-group w-100">
+                        <button type="button" class="btn btn-st1 btn-lg" id="saveNewIC" onclick="AddIC()">@DbRes.TResource("User.OutboundExternal.Save")</button>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ****************************** end Content ************************* -->
+
+
+
+

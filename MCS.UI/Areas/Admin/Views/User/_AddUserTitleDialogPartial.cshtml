@@ -1,0 +1,76 @@
+﻿@using MCS.Framework.Localization;
+@model MCS.UI.Areas.Admin.Models.Lookups.LookupVM
+
+@{
+    Layout = "~/Views/Shared/_AdminDialogLayout.cshtml";
+}
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmUserTitle" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.CategoryId)
+    @Html.HiddenFor(model => model.IsActive)
+    <div class="content-rtl panel panel-default dialogbox_panel" >
+        <div class="panel-heading">
+            <h3 class="panel-title">@DbRes.TResource("Admin.UserTitle.UserTitle")</h3>
+        </div>
+        <div class="modal-body">
+            <div class="panel-body">
+                <p>@DbRes.TResource("Global.Forms.MandatoryFields")</p>
+                <div class="row">
+                    <div class="col-md-8">
+                        @for (int m = 0; m < Model.Localizations.Count; m++)
+                        {
+                            <div class="form-group">
+                                @Html.CustomLabelFor(model => Model.Localizations[m].CultureName, new { @class = "col-md-4 control-label" }, DbRes.TResource(string.Format("Admin.UserTitle.Description.{0}", Model.Localizations[m].CultureName)))
+                                @Html.HiddenFor(model => Model.Localizations[m].CultureId, Model.Localizations[m].CultureId)
+                                @Html.HiddenFor(model => Model.Localizations[m].CultureName, Model.Localizations[m].CultureName)
+                                <div class="col-md-8">
+                                    <div class="">
+                                        @Html.TextBoxGroupFor(model => Model.Localizations[m].Text, "AddUserTitle", new { @class = "form-control" }, DbRes.TValidation(string.Format("Admin.UserTitle.DescriptionRequired.{0}", Model.Localizations[m].CultureName)))
+                                    </div>
+                                    <span class="help-block"></span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            @Html.ActionButton(DbRes.TResource("Admin.UserTitle.Save"), "AddUserTitle", null, null, null, "OnSuccess", null, "post", "AddUserTitle", "EditAdd", "frmUserTitle", "btn btn-save pull-right")
+            <button type="button" class="btn btn-default" id="btnClose" onclick="__dialog.close(); return false;">@DbRes.TResource("Admin.UserTitle.Close")</button>
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+    function OnSuccess(data) {
+
+        if (data.MessageType != 2) {
+
+            AutoCompleteChangeList('ddlAddTitle', data.Items);
+            AutoCompleteChangeList('ddlEditTitle', data.Items);
+
+            if ('@ViewData["Mode"].ToString()' == 'Add') {
+
+                $('#hdnAddTitleId').val(data.NewItem);
+                $('#hdnAddTitleId').trigger('change');
+            }
+            else {
+
+                $('#hdnEditTitleId').val(data.NewItem);
+                $('#hdnEditTitleId').trigger('change');
+            }
+
+            __dialog.close();
+
+            ShowSuccesMessage(data.MessageText);
+        }
+        else {
+
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+</script>
+

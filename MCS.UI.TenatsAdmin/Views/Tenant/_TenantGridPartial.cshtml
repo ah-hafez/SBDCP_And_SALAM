@@ -1,0 +1,69 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Framework.Controls.Mvc
+@using MCS.UI.TenantsAdmin.Models.Tenant;
+@model AjaxGrid<TenantVM>
+
+@{
+    ViewBag.Title = "_TenantLookupGridPartial";
+}
+
+@Html.Grid(Model, "_Grid").Named("Tenant").Columns(columns =>
+    {
+        columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").Titled("", "<input type='checkbox' id='chkall'></input>")
+                                                  .RenderValueAs(o =>
+                                                    @<div class="chkCol" id="spanCheckBox">
+                                                        <input id="AssigneeSelectorcheckbox" type="checkbox" />
+                                                    </div>);
+
+                columns.Add(model => model.Id, true);
+                columns.Add(model => model.LocalName, "Name").Titled(DbRes.TResource("Tenant.Name"));
+                columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => Html.GridImageButton(Url.Action("GetTenant", "Tenant"), "Tenant", 1, OperationType.Update, "dvEdit", null, null, "ShowEditDiv", "", "get"));
+                columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => Html.ConfirmImageButton(Url.Action("DeleteTenant", "Tenant"), "Tenant", 1, "dvGrid", "", null, "OnDeleteSuccess", null, "post", DbRes.TResource("Tenant.DeleteMessage")));
+                columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => "<a data-toggle='tooltip' id='email' data-placement='top' title='' data-original-title='" + DbRes.TResource("Tenant.SendResetEmail") + "' class='edit_link' onclick='SendResetEmail(" + model.Id + "); return false;'><i class='fa fa-reply'></i>");
+
+                columns.Add().Titled(DbRes.TResource("Tenant.Activate")).Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => model.IsActive ? "<label class='switch content_table'><input class='chkActivate' type='checkbox' data-id='" + model.Id + "' value='" + model.IsActive + "' name='autoCrop' checked /><span></span></label>" : "<label class='switch content_table'><input  class='chkActivate' type='checkbox' data-id='" + model.Id + "' value='" + model.IsActive + "' name='autoCrop'/><span></span></label>");
+
+            }).Sortable().Filterable().UpdateActionUrl("UpdateTenantGrid")
+
+<script>
+    function SendResetEmail(id) {
+        $.ajax({
+            type: 'post',
+            cache:false,
+            url: '@Url.Action("SendTanentResetPasswordEmail")',
+            data: { tenantId: id },
+            success:
+           function (data) {
+               if (data.MessageType != 2) {
+                   ShowSuccesMessage(data.MessageText);
+               }
+               else {
+                   ShowErrorMessage(data.MessageText);
+               }
+           }
+        });
+    }
+
+    $(".chkActivate").change(function () {
+        var id = $(this).data("id");
+        var checked = $(this).is(':checked');
+        $.ajax({
+            type: 'post',
+            cache:false,
+            url: '@Url.Action("ActivateTenant")',
+            data: { tenantId: id, isActive: checked },
+            success:
+           function (data) {
+
+               if (data.MessageType != 2) {
+                   $("#dvEdit").css("display", "none");
+                   $("#dvAdd").css("display", "block");
+               }
+               else {
+                   ShowErrorMessage(data.MessageText);
+               }
+
+           }
+        });
+    });
+</script>

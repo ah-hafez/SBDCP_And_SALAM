@@ -1,0 +1,48 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.File
+@using MCS.Common
+@using MCS.UI.Areas.User.Models.Transaction
+
+<div id="TransactionTable" class="d-flex flex-wrap mx-auto mx-md-4">
+    <table class="table tbody-shadow tables-view">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col" class="text-primary">الرقم</th>
+                <th class="text-primary" scope="col">الإدارة المنشأة/واردة من</th>
+                <th class="text-primary" style="width:150px">التاريخ</th>
+                <th class="text-primary" scope="col">المستخدم</th>
+                <th class="text-primary" scope="col">العنوان</th>
+                <th class="text-primary" scope="col">@DbRes.TResource("User.Task.TaskAdd.TaskDescription")</th>
+                <th class="text-primary" scope="col">@DbRes.TResource("User.Task.TaskAdd.EndDate")</th>
+                @*<th class="text-primary" scope="col">المرفقات</th>*@
+                <th class="text-primary" scope="col">اجراءات</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (ReceivedTaskVM receivedTaskVM in (List<ReceivedTaskVM>)Session["tableGridItems"])
+            {
+                @Html.Partial("~/Areas/User/Views/Shared/ListItems/_TransactionTasks_TableItem.cshtml", receivedTaskVM)
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $(document).ready(function () {
+     var isVIPUser = '@SessionInfo.GetObjectFromSession(Constants.IsVIPUser)';
+        if (isVIPUser.toLowerCase() == 'true') {
+            goTableView();
+        }
+        else {
+            var type = localStorage.getItem('CurrentTypeView');
+            if (type) {
+                if (type === "Table") {
+                    goTableView();
+                }
+                else if (type === "Card") {
+                    goCardsView();
+                }
+            }
+        }
+    });
+</script>

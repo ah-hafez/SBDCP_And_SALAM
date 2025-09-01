@@ -1,0 +1,509 @@
+﻿@model MCS.UI.Areas.User.Models.Transaction.Outbound.External.EditOutboundExternalBasicInfoVM
+@using MCS.Common;
+@using MCS.Framework.Localization
+@using MCS.Framework.Controls;
+@using MCS.UI.Helpers
+@using MCS.UI.Areas.User.Models.ExternalParties;
+
+<div class=" white-bg" id="EditDataInsertionPartial">
+    <div class="">
+        <div class="form-row">
+            <div class="form-row BasicInfo">
+                <div class="form-group col-lg-6 col-md-6 col-sm-12 col-xs-12  mb-3">
+                    <div class="input-group w-100">
+                        <div class="w-100">
+                            <label class="w-100">@DbRes.TResource("User.OutboundInternal.BasicInfo.Summary") </label>
+                            @Html.TextAreaGroupFor(model => model.Summary, new { @class = "form-control", @rows = "3" })
+                        </div>
+                    </div>
+                </div>
+                @*<div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+            <label class="w-100">@DbRes.TResource("User.Transaction.ConfidentialityLevel")</label>
+            <div class="BoldText"> @ViewData["ConfidentialityName"]</div>
+        </div>
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12  mb-3">
+            <label class="w-100">@DbRes.TResource("User.Transaction.PriorityLevel") </label>
+            <div class="BoldText"> @ViewData["PriorityLevel"]</div>
+        </div>
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+            <label class="w-100">@DbRes.TResource("User.Transaction.Link.TransactionNumber")</label>
+            <div class="BoldText"> @ViewData["TransactionsNumber"]</div>
+        </div>
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+            <div class="input-group w-100">
+                <div class="form-group w-100">
+                    <label class="w-100">@DbRes.TResource("User.Inbound.BasicInfo.Subject")</label>
+
+                    <div class="BoldText">  @Html.DisplayFor(model => model.Subject) </div>
+                </div>
+            </div>*@
+            </div>
+            @*<div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                    <div class="input-group w-100">
+                        <div class="form-group w-100">
+                            <label class="w-100">@DbRes.TResource("User.Inbound.BasicInfo.Subject")</label>
+
+                            <div class="BoldText">  @Html.DisplayFor(model => model.Subject) </div>
+                        </div>
+                    </div>
+                </div>*@
+            @*<div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                    <div class="input-group w-100">
+                        <div class="w-100">
+                            <label class="w-100">@DbRes.TResource("User.Inbound.BasicInfo.Remarks") </label>
+                            <div class="BoldText">  @Html.DisplayFor(model => model.Remarks) </div>
+                        </div>
+                    </div>
+                </div>*@
+            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                <div class="input-group w-100">
+                    <div class="w-100">
+                        <label class="w-100">@DbRes.TResource("User.Inbound.BasicInfo.Remarks") </label>
+                        <div class="BoldText">  @Html.DisplayFor(model => model.Remarks) </div>
+                    </div>
+                </div>
+            </div>
+
+            @if (!Model.IsDraft)
+            {
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                    <label>@DbRes.TResource("User.Transaction.BasicInfo.ProcessPeriodTransaction") </label>
+                    @Html.NumericTextBoxFor(model => model.ProcessPeriodTransaction, new { @class = "form-control", maxlength = "3" })
+                </div>
+            }
+
+        </div>
+    </div>
+    @Html.StickyHidden("hdnTransactionId", ViewData["TransactionId"].ToString(), new { id = "hdnDraftBasicInfoTransactionId", @class = "TransactionId" })
+
+    @if (ViewData["EditorViewModel"] != null)
+    {
+        <div class="col-xs-12">
+            @{Html.ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+            @Html.Partial("~/Areas/User/Views/Transaction/_EditorPartial.cshtml", ViewData["EditorViewModel"], Html.ViewData)
+        </div>
+    }
+    @if (ViewData["hdnDocumentId"] != null)
+    {
+        @Html.StickyHidden("hdnDocumentId", ViewData["hdnDocumentId"].ToString(), new { id = "hdnDocumentId" })
+    }
+    @Html.HiddenFor(model => model.IsPresentationDraft, new { id = "hdnIsPresentationDraft" })
+
+</div>
+
+
+
+<script>
+   
+    $(document).ready(function () {
+       
+
+        var frameViewerAttachmentUrl = $('#frameViewerAttachment').prop('src');
+
+        $("#frameViewerAttachmentForArchiving").attr("src", frameViewerAttachmentUrl);
+
+        $("input[id^='IdArchiving_']").each(function () {
+            let text = $(this).attr('id');
+            const myArray = text.split("_");
+            var IdArchiving = myArray[1];
+            var documentId = myArray[2];
+            var key = myArray[3]
+            var headerText = myArray[5];
+            var IsArchivalbe = myArray[4]
+            if (IsArchivalbe == "True" || IsArchivalbe == "true") {
+                debugger
+                $("#IncludeArchivingSections").append('<div onclick="return ShowArchiviableData(' + IdArchiving + ',' + documentId + ',' + key + ')"  class="dv"><h5>' + headerText + ' </h5></div>');
+            }
+        });
+
+        onChangeDeliveryMethod();
+        
+    });
+
+
+    $(document).on("click", "span[data-node-id]", function () {
+        var elemnt = $(this);
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('LoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetExternalPartyNodes")',
+                data: { parentId: $(this).data("node-id"), letterId: $("#hdnOutboundExternalDocumentType").val(), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+                success:
+                    function (data) {
+                        $(elemnt).closest('li').children('ul').last().empty()
+
+                        $(elemnt).closest('li').children('ul').last().append(data);
+
+                        if ($(elemnt).attr('data-isRefreshEnabled').toLowerCase() == 'false') {
+
+                            $(elemnt).removeClass("LoadedData")
+                        }
+
+                    }
+            });
+        }
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('InternalLoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetOrgUnitsNodes")',
+                data: { parentId: $(this).data("node-id"), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+                success:
+                    function (data) {
+
+                        $(elemnt).closest('li').children('ul').last().empty()
+
+                        $(elemnt).closest('li').children('ul').last().append(data);
+
+                        $(elemnt).removeClass("InternalLoadedData");
+                    }
+            });
+        }
+    });
+    $(document).on("click", "span[data-multi-node-id]", function () {
+        var elemnt = $(this);
+
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('LoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetExternalPartyMultyNodes")',
+                data: { parentId: $(this).data("multi-node-id"), letterId: $("#hdnInboundDocumentType").val(), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func'), checkboxFunction: "ExternalCheckboxChange" },
+                success:
+               function (data) {
+                   $(elemnt).closest('li').children('ul').last().empty()
+
+                   $(elemnt).closest('li').children('ul').last().append(data);
+
+                   if ($(elemnt).attr('data-isRefreshEnabled').toLowerCase() == 'false') {
+
+                       $(elemnt).removeClass("LoadedData")
+
+                   }
+
+               }
+            });
+        }
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('InternalLoadedData')) {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetOrgUnitsMultiNodes")',
+                data: { parentId: $(this).data("multi-node-id"), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+                success:
+               function (data) {
+                   $(elemnt).closest('li').children('ul').last().empty()
+
+                   $(elemnt).closest('li').children('ul').last().append(data);
+
+                   $(elemnt).removeClass("InternalLoadedData");
+               }
+            });
+        }
+    });
+
+    $(document).on("click", "#UserTransactionEditorSelectScannerForArchiving", function () {
+        $(".dvScanningDataForArchivingSection").show();
+        $('#dvScanningArchiving').hide();
+    });
+
+    function ShowHideReporterContent(isShow) {
+        if (isShow) {
+            $('#ReporterContent').removeClass('hide');
+        } else {
+            $('#ReporterContent').addClass('hide');
+        }
+    }
+
+    function AddExternalParty() {
+        $(document).ready(function () {
+            onChangeDeliveryMethod();
+        });
+    }
+
+    function onChangeDeliveryMethod() {
+        var value = $('#hdnBasicDeliveryMethod').val();
+        switch (parseInt(value)) {
+            case DeliveryMethodType.Paper:
+                ShowHideReporterContent(true);
+                break;
+            case DeliveryMethodType.Electronic:
+                ShowHideReporterContent(false);
+                break;
+            case DeliveryMethodType.ElectronicPaper:
+                ShowHideReporterContent(true);
+                break;
+            default:
+        }
+    }
+
+
+    function AddExternalParty() {
+        var token = $("#frmEditOutboundExternal").find("input[name='__RequestVerificationToken']").val();
+        ShowDialogAjax('@Url.Action("AddNewExternalPartyForTransaction")',
+            {
+                treeName: "dvDestinationTree",
+                onAddPartyfuntion: "GetExternalParties",
+                __RequestVerificationToken: token
+            }, 'OpenExternalPartyDialogSuccess', 'dialogbox col-md-12 ');
+    }
+
+    $(document).on("change", "#radio1", function () {
+        if ($(this).val() == 0) {
+            $('#hdnHasDateUm').val("");
+            $('#hdnHasDateGreg').val("");
+            $('#hdnMinute').val("");
+            $('#hdnHour').val("");
+            $('#datePicker').hide();
+            $("#CalMessage").html('');
+            $("#CalMessage1").addClass("hidden_");
+        } else {
+            $('#datePicker').show();
+            $('#hdnHasDateGreg').val('@Model.RemindDate')
+            $('#hdnHour').val('@Model.Hour')
+            $('#hdnMinute').val('@Model.Minute')
+            FillDateAndTime();
+        }
+    });
+    function SetSuggestedTopic() {
+        $("#txtAreaSubject").val($("#divForm__dvSuggestedTopicTree .txtDepartmentName").val());
+    }
+
+    function GetEditorUsersByPreparationEntityId() {
+     
+        if ($("#divForm__treeSignedByOrgUnitId").find(".hdnDepartmentId").val() != "" && $("#divForm__treeSignedByOrgUnitId").find(".hdnDepartmentId").val() !=undefined) {
+
+            $.ajax({
+                type: 'Get',
+                url: '@Url.Action("GetUnitUsers","Editor")',
+                data: { id: $("#divForm__treeSignedByOrgUnitId").find(".hdnDepartmentId").val() },
+                success:
+               function (data) {
+
+                   AutoCompleteChangeList("ddlEditorSignedByUserId", data);
+
+                   $("#ddlEditorSignedByUserId").val('');
+                   $("#hdnEditorSignedByUserId").val('');
+               }
+            });
+            return false;
+        }
+        else {
+
+            AutoCompleteChangeList("ddlEditorSignedByUserId", "[]");
+
+            $("#ddlEditorSignedByUserId").val('');
+            $("#hdnEditorSignedByUserId").val('');
+
+        }
+    }
+
+    //$(document).on('change', '#dllEditorLetterType', function () {
+
+    //        GetEditorExternalPartisByLetterId(-1);
+    //});
+
+
+
+    @*function GetEditorExternalPartisByLetterId(selectedParty) {
+
+        $.ajax({
+            cache: false,
+            type: 'get',
+            url: '@Url.Action("GetExternalPartiesbyLetterId")',
+            data: { LetterId: $("#hdnEditorLetterType").val(), selectedParty: selectedParty },
+            success:
+           function (data) {
+
+               if ($('#divContainer__ExternalPartyTree').css('display') == 'block') {
+
+                   ShowHideTree('#divContainer__ExternalPartyTree');
+               }
+
+               $('#divContainer__ExternalPartyTree').remove();
+
+               $("#divEditorDraftExternalParties").html("");
+
+               $("#divEditorDraftExternalParties").html(data);
+
+               GetEditorUsersByPartyId();
+           }
+        });
+        return false;
+    }*@
+
+    function GetEditorUsersByPartyId() {
+
+        if ($("#divForm__ExternalPartyTree").find(".hdnDepartmentId").val() != "") {
+
+            $.ajax({
+                type: 'Get',
+                url: '@Url.Action("GetManagersByPartyId","Editor")',
+                data: { id: $("#divForm__ExternalPartyTree").find(".hdnDepartmentId").val() },
+                success:
+               function (data) {
+
+                   AutoCompleteChangeList("ddlEditorExternalPartyManagerId", data);
+                   $("#ddlEditorExternalPartyManagerId").val('');
+                   $("#hdnEditorExternalPartyManagerId").val('');
+               },
+            });
+            return false;
+        }
+        else {
+
+            AutoCompleteChangeList("ddlEditorExternalPartyManagerId", "[]");
+
+            $("#ddlEditorExternalPartyManagerId").val('');
+            $("#hdnEditorExternalPartyManagerId").val('');
+
+            //$("#ddlSignedById").prop('disabled', false);
+        }
+    }
+
+    function OnSaveBasicInfoSuccess(data, div) {
+        if (data.MessageType != 2) {
+
+            ShowSuccesMessage(data.MessageText)
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        $('#HasDateCal').attr('autocomplete', 'off');
+
+        if ($('#hdnHasDateGreg').val() == "") {
+            $('.withoutAppointment').trigger('change');
+            $('.withoutAppointment').attr('checked', 'checked');
+        } else {
+            FillDateAndTime();
+        }
+
+        $('#ddlEditorDraftSourceType').attr("disabled", true);
+        $('.iradioOutboundType').attr("disabled", true);
+        $('#ddlTransactionSourceType').attr("disabled", true);
+
+        if ($("input[id='OutboundDraft']").is(':checked')) {
+            $('#ddlBasicDeliveryMethod').attr("disabled", 'disabled');
+            $('#ddlBasicReporter').attr("disabled", 'disabled');
+            $('#divPreparationEntityId').hide();
+        }
+        else {
+            $('#ddlBasicDeliveryMethod').removeAttr("disabled");
+            $('#ddlBasicReporter').removeAttr("disabled");
+            $('#divPreparationEntityId').show();
+        }
+
+        if ($('#hdnOutboundExternalUserId').val() != '@SessionInfo.CurrentUser.Id') {
+            $('#ddlTransactionPath').attr('disabled', true);
+        }
+    });
+
+    $(document).on("change", "#ddlHour", function () {
+
+        $('#hdnHour').val($('#ddlHour').val());
+    });
+
+    $(document).on("change", "#ddlMinute", function () {
+
+        $('#hdnMinute').val($('#ddlMinute').val());
+    });
+
+    function FillDateAndTime() {
+        $(".withAppointment").click();
+        $('#ddlHour').val($('#hdnHour').val());
+        if ($('#hdnMinute').val().length == 1) {
+
+            $('#ddlMinute').val("0" + $('#hdnMinute').val());
+        }
+        else {
+            $('#ddlMinute').val($('#hdnMinute').val());
+        }
+    }
+    @*function CheckPriorityIfHasDate() {
+        if ($('#datePicker').css('display') == 'block' && $("#hdnHasDateGreg").val() == "") {
+            $("#CalMessage1").removeClass("hidden_");
+                    $("#CalMessage1").show();
+             $("#CalMessage").html('@Html.Raw(DbRes.TValidation("User.Inbound.RemindDateRequired"))');
+            return false;
+        }
+        var dateNow = $.datepicker.formatDate('dd/mm/yy', new Date($.now()));
+        var currentDate = convertdate(dateNow);
+        if ($("#hdnHasDateGreg").val() != "") {
+
+            if ($("#hdnHasDateGreg").val() != undefined) {
+                 var selectedDate = convertdate($("#hdnHasDateGreg").val());
+
+                if (selectedDate < currentDate) {
+            $("#CalMessage1").removeClass("hidden_");
+                    $("#CalMessage1").show();
+                    $("#CalMessage").html('@Html.Raw(DbRes.TValidation("User.Inbound.RemindDateCompare"))');
+                return false;
+                }
+            }
+        }
+        if ($('#datePicker').css('display') == 'block' && ($('#ddlMinute').val() == "" || $('#ddlHour').val() == "")) {
+            $("#CalMessage1").removeClass("hidden_");
+                    $("#CalMessage1").show();
+              $("#CalMessage").html('@Html.Raw(DbRes.TValidation("User.Inbound.RemindTime"))');
+            return false;
+        }
+
+
+        if ($('#datePicker').css('display') == 'block' && ($('#ddlMinute').val() != "" && $('#ddlHour').val() != "")) {
+            var time = new Date();
+            if (convertdate($("#hdnHasDateGreg").val()) > currentDate) {
+                $("#CalMessage").html("")
+                return true;
+            }
+            else if ($("#hdnHasDateGreg").val() > convertdate($("#hdnHasDateGreg").val())) {
+                $("#CalMessage").html("")
+                return CheckIfHasInboundDate();
+            }
+            else if ($('#ddlHour').val() > time.getHours()) {
+                $("#CalMessage").html("")
+                return CheckIfHasInboundDate();
+            }
+            else if ($('#ddlHour').val() == time.getHours() && $('#ddlMinute').val() > time.getMinutes()) {
+                $("#CalMessage").html("")
+                return CheckIfHasInboundDate();
+            }
+            else {
+                 $("#CalMessage").html('@Html.Raw(DbRes.TValidation("User.Inbound.WrongRemindTime"))');
+                 return false;
+            }
+        }
+
+        return true;
+    }*@
+
+    function GetExternalParties(selectedNode) {
+        $("#divForm__dvDestinationTree").find(".hdnDepartmentId").val(selectedNode);
+
+        $.ajax({
+            cache: false,
+            type: 'get',
+            url: '@Url.Action("GetExternalParties")',
+            data: {
+                selectedParty: selectedNode },
+            success:
+                function (data) {
+
+                    if ($('#divContainer__dvDestinationTree').css('display') == 'block') {
+
+                        ShowHideTree('#divContainer__dvDestinationTree');
+                    }
+
+                    $('#divContainer__dvDestinationTree').remove();
+
+                    $("#divContainerExternalParties").html("");
+
+                    $("#divContainerExternalParties").html(data);
+
+                    GetUsersByPartyId();
+                }
+        });
+        return false;
+    }
+</script>
+

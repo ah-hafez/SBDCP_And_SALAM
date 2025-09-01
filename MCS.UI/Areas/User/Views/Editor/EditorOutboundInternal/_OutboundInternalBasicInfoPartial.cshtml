@@ -1,0 +1,95 @@
+﻿@model MCS.UI.Areas.User.Models.Transaction.TransactionBasicInfoVM
+@using MCS.Framework.Localization
+@{ 
+    bool isVipUser = (bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser);
+}
+<div class="content_container site_border ">
+    <div class="content_container content_container--header extra-padding">
+        <div class="row">
+            <div class="col-md-12">
+                <h3 class="title2"> @DbRes.TResource("User.Editor.BasicInfo")</h3>
+            </div>
+        </div>
+    </div>
+    <div class="content_container content_container--body white-bg">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="animated zoomIn">
+                    <div class="col-sm-2 labelShow">
+                        <div class="light-text">
+                            @DbRes.TResource("User.Editor.BasicInfo.OutboundInternal.DocumentNumber")
+                        </div>
+                        <div class="indent-text">
+                            @Html.DisplayFor(model => model.Number)
+                        </div>
+                    </div>
+
+                    <div class="col-sm-2 labelShow">
+                        <div class="light-text">
+                            @DbRes.TResource("User.Editor.BasicInfo.OutboundInternal.Date")
+                        </div>
+                        <div class="indent-text">
+                            @Html.DisplayFor(model => model.DateH)
+                        </div>
+                    </div>
+                    <div class="col-sm-2 labelShow">
+                        <div class="light-text">
+                            @DbRes.TResource("User.Editor.BasicInfo.OutboundInternal.Confidentiality")
+                        </div>
+                        <div class="indent-text">
+                            @Html.DisplayFor(model => model.ConfidentialityName)
+                        </div>
+                    </div>
+                    @if (!isVipUser)
+                    {
+                        <div class="col-sm-2 labelShow">
+                            <div class="light-text">
+                                @DbRes.TResource("User.Editor.BasicInfo.OutboundInternal.Priority")
+                            </div>
+                            <div class="indent-text">
+                                @Html.DisplayFor(model => model.PriorityName)
+                            </div>
+                        </div>
+                        <div class="col-sm-2 labelShow">
+                            <div class="light-text">
+                                @DbRes.TResource("User.Editor.BasicInfo.OutboundInternal.SourceType")
+                            </div>
+                            <div class="indent-text">
+                                @Html.DisplayFor(model => model.TransactionTypeName)
+                            </div>
+                        </div>
+                        <div class="col-sm-2 labelShow">
+                            <div class="light-text">
+                                @DbRes.TResource("User.Editor.BasicInfo.OutboundInternal.LetterType")
+                            </div>
+                            <div class="indent-text">
+                                @Html.DisplayFor(model => model.LetterTypeName)
+                            </div>
+                        </div>
+                    }
+
+                    <div class="col-sm-2 labelShow">
+                        <div class="light-text">
+                            @DbRes.TResource("User.Editor.BasicInfo.OutboundInternal.Subject")
+                        </div>
+                        <div class="indent-text">
+                            @Html.DisplayFor(model => model.Subject)
+                        </div>
+                    </div>
+
+                    @if (!isVipUser)
+                    {
+                        <div class="col-sm-2 labelShow">
+                            <div class="light-text">
+                                @DbRes.TResource("User.Editor.BasicInfo.OutboundInternal.Remarks")
+                            </div>
+                            <div class="indent-text">
+                                @Html.DisplayFor(model => model.Remarks)
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,244 @@
+﻿@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.Common
+@using MCS.Framework.Localization
+@model MCS.UI.Areas.User.Models.Search.SearchCriteriaByExternalOutBoundOrManifestNumberVM
+<div class="col-md-12">
+    <div class="col-md-4 col-xs-6">
+        <fieldset>
+            @Html.LabelFor(model => model.Number, new { @class = "control-label" })
+            <div class="form-group">
+                @Html.NumericTextBoxFor(model => model.Number, new { @Value = "", @class = "form-control" })
+            </div>
+        </fieldset>
+    </div>
+    <div class="col-md-4 col-xs-6">
+        <fieldset>
+            <div class="form-group">
+                @Html.LabelFor(model => model.TransactionTypeId, DbRes.TResource("User.Search.OutboundType"), new { @class = "control-label" }) <span class="stark"> *</span>
+                @Html.AutoCompleteBuilder("ddlInboudType", "hdnInboundTypeId", ViewData["TransactionTypes"].ToString(), null, true, "form-control", "", "", "", true)
+                @Html.HiddenGroupFor(model => model.TransactionTypeId, new { @Value = "", id = "hdnInboundTypeId" }, "Search")
+            </div>
+        </fieldset>
+    </div>
+    <div class="col-md-4 col-xs-6">
+        <fieldset>
+            @Html.LabelFor(model => model.Year, new { @class = "control-label" })
+            <div class="form-group">
+                @Html.AutoCompleteBuilder("ddlYear", "hdnYear", LookupCategory.Year, DateTimeUtility.GetHijriYear(DateTime.Now).ToString(), true, "form-control", null, null, false)
+                @Html.HiddenGroupFor(model => model.Year, new { @Value = "", id = "hdnYear" }, "")
+            </div>
+        </fieldset>
+    </div>
+    <div class="col-md-12 row">
+        <div class="col-md-4 col-xs-6">
+            <fieldset>
+                <label class="control-label">@DbRes.TResource("User.InboundSearch.DateBetween")</label>
+                @*<div class="form-group input-group">
+                        @Html.Hidden("hdnFromDateUm", "", new { id = "hdnFromDateUm" })
+                        @Html.CalendarCustom("fromDateCal", "hdnFromDateGreg", "hdnFromDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+                        <span class="input-group-addon add-on"> - </span>
+                        @Html.Hidden("hdnToDateUm", "", new { id = "hdnToDateUm" })
+                        @Html.CalendarCustom("toDateCal", "hdnToDateGreg", "hdnToDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+                    </div>*@
+
+                <div class="input-group">
+                    @Html.Hidden("hdnFromDateUm", "", new { id = "hdnFromDateUm" })
+                    @Html.CalendarCustom("fromDateCal", "hdnFromDateGreg", "hdnFromDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">-</span>
+                    </div>
+                    @Html.Hidden("hdnToDateUm", "", new { id = "hdnToDateUm" })
+                    @Html.CalendarCustom("toDateCal", "hdnToDateGreg", "hdnToDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+
+
+                </div>
+            </fieldset>
+            @Html.HiddenGroupFor(model => model.DateTo, new { id = "hdnToDateGreg" }, "Search")
+            @Html.HiddenGroupFor(model => model.DateFrom, new { id = "hdnFromDateGreg" }, "Search")
+        </div>
+
+
+        <!--<div class="input-group">
+                    @Html.AutoCompleteBuilder("ddlMinuteFrom", "hdnMinuteFromId", LookupCategory.Minute, null, true, "form-control time", null, null, false, null, DbRes.TResource("Global.MinuteSymbole"), 20)
+                    @Html.HiddenFor(model => model.MinuteFrom, new { @Value = "", id = "hdnMinuteFrom" })
+                    @Html.Hidden("hdnMinuteFromId", "", new { @Value = "", id = "hdnMinuteFromId" })
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">:</span>
+                    </div>
+                    @Html.AutoCompleteBuilder("ddlHourFrom", "hdnHourFromId", LookupCategory.Hour, null, true, "form-control time", null, null, false, null, DbRes.TResource("Global.HourSymbole"), 20)
+                    @Html.HiddenFor(model => model.HourFrom, new { @Value = "", id = "hdnHourFrom" })
+                    @Html.Hidden("hdnHourFromId", "", new { @Value = "", id = "hdnHourFromId" })
+                    <div class="input-group-append">
+                        <span class="input-group-text">:</span>
+                    </div>
+                    @Html.AutoCompleteBuilder("ddlMinuteTo", "hdnMinuteToId", LookupCategory.Minute, null, true, "form-control time", null, null, false, null, DbRes.TResource("Global.MinuteSymbole"), 20)
+                    @Html.HiddenFor(model => model.MinuteTo, new { @Value = "", id = "hdnMinuteTo" })
+                    @Html.Hidden("hdnMinuteToId", "", new { @Value = "", id = "hdnMinuteToId" })
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">:</span>
+                    </div>
+                    @Html.AutoCompleteBuilder("ddlHourTo", "hdnHourToId", LookupCategory.Hour, null, true, "form-control time", null, null, false, null, DbRes.TResource("Global.HourSymbole"), 20)
+                    @Html.HiddenFor(model => model.HourTo, new { @Value = "", id = "hdnHourTo" })
+                    @Html.Hidden("hdnHourToId", "", new { @Value = "", id = "hdnHourToId" })
+                </div>
+
+            </fieldset>
+            @Html.HiddenTimeSpanFor(model => model.TimeFrom, "ddlHourFrom", "ddlMinuteFrom", "Search")
+            @Html.HiddenTimeSpanFor(model => model.TimeTo, "ddlHourTo", "ddlMinuteTo", "Search")
+        </div>-->
+    </div>
+    @Html.EncryptedStickyHidden("EncryptedFalse", "false", new { id = "EncryptedFalse" })
+    @Html.EncryptedStickyHidden("EncryptedTrue", "true", new { id = "EncryptedTrue" })
+
+    <div class="col-lg-12 mt-3">
+        <h4>
+            <a role="button" style="display:flex" onclick="GetAdvancedSearch(@Convert.ToInt32(SearchType.SearchByExternalOutBoundOrManifestNumber))">
+                <span onclick="CollapseDiv('AdvancedDiv'); return false;" style="cursor: pointer;">
+                    <img src="~/Content/User/lib/images/plus-icon.svg" id="AdvancedDivPlusIcon" width="25" />
+                    <img src="~/Content/User/lib/images/Dash-icon.svg" id="AdvancedDivDashIcon" width="25" style="display: none;" />
+                </span>
+                <span class="ml-3 mt-1">@DbRes.TResource("User.Names.ExtraOptions")</span>
+            </a>
+        </h4>
+        <div role="tabpanel" class="tab-pane" id="AdvancedDiv" style="display:none">
+        </div>
+    </div>
+
+
+    @*<a class="btn btn-st2 btn-lg pull-right mr-1 " id="btnAdvancedSearch" onclick="GetAdvancedSearch(@Convert.ToInt32(SearchType.SearchByExternalOutBoundOrManifestNumber))">اضافية</a>
+    <a class="btn btn-st2 btn-lg pull-right mr-1 hidden" id="btnCloseAdvancedSearch" onclick="CloseAdvancedSearch()">أغلاق</a>*@
+
+</div>
+
+<script>
+    $(document).ready(function () {
+
+                $('#fromDateCal').attr('autocomplete', 'off');
+        $('#toDateCal').attr('autocomplete', 'off');
+        var year = @DateTimeUtility.GetHijriYear(DateTime.Now).ToString();
+        var type = '@CalenderType.Ummalqura.ToString().ToLower()';
+        SetStartEndDate(year, 'fromDateCal', 'toDateCal', type);
+ 
+    });
+
+    function CollapseDiv(divName) {
+        if ($('#' + divName).css('display') == 'block') {
+            $('#' + divName).css("display", "none");
+            $('#' + divName + 'PlusIcon').css("display", "inline-block");
+            $('#' + divName + 'DashIcon').css("display", "none");
+        }
+        else {
+            $('#' + divName).css("display", "block");
+            $('#' + divName + 'PlusIcon').css("display", "none");
+            $('#' + divName + 'DashIcon').css("display", "inline-block");
+        }
+    }
+
+    $(document).ready(function () {
+
+        $('#btnSearch').removeClass('hidden_');
+
+    });
+    var type = '@CalenderType.Ummalqura.ToString().ToLower()';
+    var year = parseInt($('#ddlYear').val());
+
+    SetStartEndDate(year, 'fromDateCal', 'toDateCal', type);
+
+    $('#ddlYear').change(function () {
+
+        if ($('#ddlYear').val() != '') {
+
+            var year = parseInt($('#ddlYear').val());
+
+            SetStartEndDate(year, 'fromDateCal', 'toDateCal', type);
+        } else {
+            $('#fromDateCal').val('');
+            $('#toDateCal').val('');
+        }
+    });
+
+    $(document).ready(function () {
+        $('#fromDateCal').attr('autocomplete', 'off');
+        $('#toDateCal').attr('autocomplete', 'off');
+    });
+
+    $(document).ready(function () {
+
+        
+
+        $("#ddlDirectedTo").prop('disabled', true);
+
+        $('#txtSelectedOrgUnit').val($('#divForm__dvRespectiveUnitTree .txtDepartmentName').val());
+        
+    });
+
+    $('#fromDateCal, #toDateCal').change(function () {
+
+        var dateFrom = $('#hdnFromDateUm').val();
+        var dateTo = $('#hdnToDateUm').val();
+
+        if (dateFrom != null && dateFrom != '' && dateTo != null && dateTo != '') {
+
+            var splitDateFrom = dateFrom.split("/");
+            var splitDateTo = dateTo.split("/");
+
+            if (splitDateTo[2] == splitDateFrom[2]) {
+
+                $('#ddlYear').val(splitDateTo[2]);
+            }
+            else {
+
+                $('#ddlYear').val('');
+            }
+        }
+        else {
+
+            $('#ddlYear').val('');
+        }
+    });
+
+    $('#ddlHourTo').change(function () {
+
+        $('#hdnHourTo').val($('#ddlHourTo').val());
+    });
+
+    $('#ddlMinuteTo').change(function () {
+
+        $('#hdnMinuteTo').val($('#ddlMinuteTo').val());
+    });
+
+    $('#ddlHourFrom').change(function () {
+
+        $('#hdnHourFrom').val($('#ddlHourFrom').val());
+    });
+
+    $('#ddlMinuteFrom').change(function () {
+
+        $('#hdnMinuteFrom').val($('#ddlMinuteFrom').val());
+    });
+
+       function CloseAdvancedSearch() {
+          $("#AdvancedDiv").html("");
+        $("#btnAdvancedSearch").removeClass("hidden");
+           $("#btnCloseAdvancedSearch").addClass("hidden");
+
+    }
+   function GetAdvancedSearch(id)
+       {
+      
+        $.ajax({
+            type: 'Get',
+            url: '@Url.Action("GetAdvancedSearchView")',
+            data: { SearchTypeId: id , TransactionCategoryId :  @Convert.ToInt32(TransactionCategory.ExternalOutbound)},
+            success:
+                function (response) { 
+                    $("#AdvancedDiv").html(response.html);
+                     $("#btnAdvancedSearch").addClass("hidden");
+                    $("#btnCloseAdvancedSearch").removeClass("hidden");
+               
+           }
+        });
+    }
+</script>
+

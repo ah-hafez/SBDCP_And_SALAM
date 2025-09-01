@@ -1,0 +1,300 @@
+﻿@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.Common
+@using MCS.Framework.Localization
+@model MCS.UI.Areas.User.Models.Search.SearchCriteriaByICVM
+
+@{
+
+    Model.OrgUnitId = SessionInfo.OrgUnitId;
+
+}
+
+<br />
+<br />
+<br />
+
+
+@if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.IC.ICClassification))
+{
+
+
+
+    <div id="icSerach">
+        <div class="col-md-12">
+
+
+            <div class="col-md-1 col-xs-6">
+                <fieldset>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TransactionTypeId, "رقم القيد", new { @class = " control-label" })
+                        <input checked="checked" id="icInboundType" name="Type" type="radio" />
+
+                    </div>
+                </fieldset>
+
+
+
+            </div>
+
+            <div class="col-md-1 col-xs-6">
+                <fieldset>
+                    <div class="form-group">
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.TransactionTypeId, "رقم الصادر", new { @class = " control-label" })
+                            <input id="icOutboundType" name="Type" type="radio" />
+
+                        </div>
+
+
+                    </div>
+                </fieldset>
+
+
+
+            </div>
+
+            <div class="col-md-3 col-xs-6">
+                <fieldset>
+                    @Html.LabelFor(model => model.Number, "رقم المعاملة", new { @class = " control-label" })
+                    <div class="form-group">
+                        @Html.NumericTextBoxFor(model => model.Number, new { @Value = "", @class = "form-control" })
+                    </div>
+                </fieldset>
+            </div>
+
+            <div class="col-md-3 col-xs-6">
+                <fieldset>
+                    @Html.LabelFor(model => model.Year, new { @class = "control-label" })
+                    <div class="form-group">
+                        @Html.AutoCompleteBuilder("ddlYear", "hdnYear", LookupCategory.Year, DateTimeUtility.GetHijriYear(DateTime.Now).ToString(), true, "form-control", null, null, false)
+                        @Html.HiddenGroupFor(model => model.Year, new { @Value = "", id = "hdnYear" }, "")
+                    </div>
+                </fieldset>
+            </div>
+
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-lg-6" style="display:@(SessionInfo.CurrentUser.Claims.Contains(UserClaims.Search.SearchAllTransactions) ? "block" : "none")">
+
+                        <div id="dvOrgUnitTrees">
+                            @Html.DepartmentsTree(ViewData["OrgUnits"] as TreeViewModel, model => model.OrgUnitId, TreeMode.Single, "ToOrgUnitId", true, "GetDirectedToUsersByOrgUnitId", null, "dvOrgUnitTrees")
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+            </div>
+
+
+            <a class="btn btn-st2 btn-lg pull-right mr-1 " id="btnICSearch" onclick="GetICSearch(@Convert.ToInt32(SearchType.SearchByOutboundInternalNumber))">بحث</a>
+            <a class="btn btn-st2 btn-lg pull-right mr-1 hidden" id="btnCloseAdvancedSearch" onclick="CloseAdvancedSearch()">أغلاق</a>
+
+        </div>
+
+
+    </div>
+
+
+    <div id="icEditItem" style="display:none">
+        تعديل
+
+        @Html.Partial("~/Areas/User/Views/IC/_EditeItem.cshtml")
+
+    </div>
+
+
+    <div id="icGrid">
+        نتائج البحث
+        <div id="icGridSerachResult">
+            @Html.Partial("~/Areas/User/Views/Search/_ICSearchGridPartial.cshtml", new MCS.GridMvc.Ajax.GridExtensions.AjaxGridFactory().CreateAjaxGrid(new List<MCS.UI.Areas.User.Models.Search.SearchICTransactionResultVM>(), 1, 1, false, UIHelper.PageSize))
+        </div>
+    </div>
+
+}
+else
+{
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <p style="margin: 50px">لا توجد صلاحية على التصنيف  </p>
+}
+
+
+<script>
+    var barcodeValue = "";
+    var reading = false;
+    var IcSelectecdTransactionId = 0;
+
+    function CancleICItem() {
+
+        $("#icEditItem").hide();
+
+        $("#icSerach").show();
+    }
+
+    function UpdateICItem() {
+
+
+        var elmnt = $(".selectedDataItem")[0];
+        var IcId = $(elmnt).attr('data-storeID');
+
+        debugger;
+
+
+         $.ajax({
+            url: '@Url.Action("AddIC_SUBJECT_TRANSACTION", "IC")',
+            cache: false,
+             data: { transId: IcSelectecdTransactionId, ic_id: IcId, number: $("#IC_Number").val(), description: $("#IC_Description").val() },
+             success: function (data) {
+
+                 if (data.Id > 0) {
+
+                     ShowSuccesMessage("تمت عملية التعديل بنجاح")
+
+                     $("#Ic_Icon_" + IcSelectecdTransactionId).html($("#icSpanText_" + IcId).text());
+                     $("#Ic_OrderFileNumber_" + IcSelectecdTransactionId).text($("#IC_Number").val());
+                     $("#Ic_Description_" + IcSelectecdTransactionId).text($("#IC_Description").val());
+                     $("#IC_Number").val('');
+                     $("#IC_Description").val('');
+                     $("#icEditItem").hide();
+                     $("#icSerach").show();
+
+                 }
+
+
+
+            }
+        });
+
+    }
+
+    function RemoveIcItem(transId) {
+
+        ShowCustomCloseConfirmMessage('هل انت متأكد من عملية الاسترجاع ؟', 'ConfirmedRemoveIcItem', transId, 'closeDialog')
+
+    }
+
+    function closeDialog() {
+        window.location.reload();
+    }
+
+
+    function ConfirmedRemoveIcItem(transId) {
+
+       $.ajax({
+            url: '@Url.Action("DeleteIC_SUBJECT_TRANSACTION", "IC")',
+            cache: false,
+            data: { id: transId},
+             success: function (data) {
+
+                 ShowSuccesMessage(data.MessageText);
+                 $("#Ic_Icon_" + transId).html("---------")
+
+                 //$("#Ic_Icon_" + transId).removeClass("icon-assignment-new")
+                 //$("#Ic_Icon_" + transId).removeClass("color-red")
+            }
+        });
+
+    }
+
+
+
+
+    function ShowEditeIcItem(transId) {
+
+         $.ajax({
+             url: '@Url.Action("GetIC_TransactionById", "IC")',
+             cache: false,
+             data: { id: transId},
+           success: function (data) {
+               debugger;
+               if (data.Result != null)
+               {
+                   $("#IC_Number").val(data.Result.Number);
+                   $("#IC_Description").val(data.Result.Description);
+               }
+            
+               $("#icEditItem").show();
+
+               $("#icSerach").hide();
+
+               IcSelectecdTransactionId = transId;
+             }
+         });
+
+    }
+
+    function GetICSearch() {
+        var vYear = $("#ddlYear").val();
+        var vTransNumber = $("#Number").val();
+        var vOrgId = $("#OrgUnitId").val();
+        var vType = 1;
+
+        if ($("#icOutboundType").is(':checked')) {
+            vType = 2
+        }
+
+        if (vTransNumber == "")
+        {
+            ShowErrorMessage("ادخل رقم المعاملة");
+
+            return;
+        }
+
+         $.ajax({
+            url: '@Url.Action("Search", "IC")',
+            cache: false,
+             data: { year: vYear, transNumber: vTransNumber, orgId: vOrgId, type: vType},
+             success: function (data) {
+                 console.log(data);
+                 $("#icGridSerachResult").html("");
+                 $("#icGridSerachResult").html(data.Html);
+                 jQuery.validator.unobtrusive.parse("#icGridSerachResult");
+            }
+        });
+
+    }
+
+    $(document).ready(function () {
+
+    });
+
+
+
+    document.addEventListener('keypress', e =>
+    {
+        debugger;
+        //usually scanners throw an 'Enter' key at the end of read
+        if (e.keyCode === 13)
+        {
+            if (barcodeValue.length > 10)
+            {
+                $("#Number").val(barcodeValue);
+                /// code ready to use
+                barcodeValue = "";
+            }
+        } else
+        {
+            barcodeValue += ""+e.key; //while this is not an 'enter' it stores the every key
+        }
+
+        //run a timeout of 200ms at the first read and clear everything
+        //if (!reading)
+        //{
+        //    reading = true;
+        //    setTimeout(() =>
+        //    {
+        //        barcodeValue = "";
+        //        reading = false;
+        //    }, 10000);  //200 works fine for me but you can adjust it
+        //}
+    });
+
+</script>

@@ -1,0 +1,105 @@
+﻿@using MCS.UI.Areas.User.Models;
+@using MCS.UI.Areas.User.Models.Transaction;
+@using MCS.Framework.Localization;
+@using MCS.Common
+@model EditorViewModel
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+   
+}
+<script src="~/Scripts/grid/gridmvc.js"></script>
+<script src="~/Scripts/grid/gridmvc-ext.js"></script>
+
+<div class="expanded-container">
+
+    <div class="content_container content_container--body transparent-bg">
+        <div class="options-list row anchor">
+            <a class="close-box close-box--sticky" href=""><i class="uicon icon_close"></i></a>
+            <div class="col-xs-4 col-sm-2 text-center" id="basicInfor">
+                <a href="#" id="first" class="boardered-circle-transparent active" data-divid="first-tab"><i class="uicon icon_folder1"></i></a>
+                <a href="#" data-id="first" data-divid="first-tab">  @DbRes.TResource("User.Editor.BasicInfo")</a>
+            </div>
+        </div>
+    </div>
+    <div class="content_container content_container--body white-bg tabscontent" id="first-tab">
+        @Html.Partial("~/Areas/User/Views/Editor/EditorInbound/_InboundBasicInfoPartial.cshtml", Model.TransactionBasicInfoVM)
+        @{Html.ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+        <hr />
+        @Html.Partial("~/Areas/User/Views/Transaction/_ArchivingPartialMainDocument.cshtml", new TransactionArchiveVM(TransactionAttachmentType.Main, true, false, true, bReadOnly: true), Html.ViewData)
+    </div>
+</div>
+
+@*<script>
+   function ViewedTransaction()
+    {
+        var trayid = parseInt($("#hdnTrayId").val());
+        var transactionId = $(_this).data("id");
+        var transactionTypeId = $(_this).data("tray");
+        var trayActionType = $(_this).data("type");
+        var url2 = '@Url.Action("MoveTransaction","File")';
+        var copyType = 0;
+
+        if (transactionTypeId == 14 || transactionTypeId == 16) {
+            copyType = 9;
+        }
+        else if (transactionTypeId == 15 || transactionTypeId == 17) {
+            copyType = 16;
+        }
+
+        var data = {
+            trayId: trayid, transactionId: transactionId, trayActionType: trayActionType,
+        };
+
+        $.ajax({
+            url: url2,
+            type: 'post',
+            data: data,
+            success: function (data) {
+
+                if (data.MessageType != 2) {
+                    window.location.href = '@Url.Action("Copies", "File")';
+                }
+                else {
+                    ShowErrorMessage(data.MessageText);
+                }
+
+            },
+            error: function (a) {
+
+                alert(a)
+            }
+        });
+
+    }
+
+
+    $(".aMarkSeen").unbind('click').click(function (e)
+    {
+        e.preventDefault();
+
+        _this = this;
+
+        ShowConfirmMessage('@(DbRes.TResource("User.File.View"))', "ViewedTransaction");
+    })
+
+
+
+    $("div.anchor a").click(function () {
+        $("div.anchor a").removeClass("active");
+        $("div.anchor a").addClass("disabled");
+        $(this).addClass("active");
+        var id = $(this).data("id");
+        $("#" + id).addClass("active");
+        $(".tabscontent").addClass("hidden_");
+
+        var divId = $(this).data("divid");
+        $("#" + divId).removeClass("hidden_");
+    });
+
+    function OnSuccess(data) {
+        if (data.MessageType != 2) {
+            ShowSuccesMessage(data.MessageText);
+        }
+    }
+</script>*@

@@ -1,0 +1,446 @@
+﻿@model InboundCertificateVM
+@using Newtonsoft.Json
+@using MCS.Common
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Assignment
+@using MCS.UI.Areas.User.Models.Search.TransactionCertificate
+@{
+    Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
+}
+
+@*@Html.RenderGridViewResources()*@
+
+
+<div class="col-md-12">
+    <div class="content_container site_border">
+        <div class="content_container content_container--header extra-padding">
+            <div class="row">
+                <div class="col-xs-6">
+                    <h3 class="title2 title2-padding">بيانات المعاملة</h3>
+                </div>
+                <div class="col-xs-6 text-right">
+                    @if ((TrayType)ViewData["TrayType"] == TrayType.OrgUnit)
+                    {
+                        <a class="close-box hidden-xs" href="@Url.Action("Orgunit", "File")"><i class="uicon icon_close"></i></a>
+                    }
+                    else if ((TrayType)ViewData["TrayType"] == TrayType.SentTransactions)
+                    {
+                        <a class="close-box hidden-xs" href="@Url.Action("SentTransactions", "File")"><i class="uicon icon_close"></i></a>
+
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="content_container content_container--body transparent-bg">
+            <div class="options-list row anchor">
+                <div class="col-xs-4 col-sm-2 text-center">
+                    <a href="#" id="first" class="boardered-circle-transparent active" data-divid="first-tab"><i class="uicon icon_folder1"></i></a>
+                    <a href="#" data-id="first" data-divid="first-tab">  @DbRes.TResource("User.Editor.BasicInfo")</a>
+                </div>
+                <div class="col-xs-4 col-sm-2 text-center">
+                    <a href="#" id="second" class="boardered-circle-transparent " data-divid="second-tab"><i class="demo-icon icon-assignment"></i></a>
+                    <a href="#" data-id="second" data-divid="second-tab">  @DbRes.TResource("User.InboundCertificate.Assignments")</a>
+                </div>
+                <div class="col-xs-4 col-sm-2 text-center">
+                    <a href="#" id="third" class="boardered-circle-transparent " data-divid="third-tab"><i class="uicon icon_folder2"></i></a>
+                    <a href="#" data-id="third" data-divid="third-tab">@DbRes.TResource("User.InboundCertificate.Archiving")</a>
+                </div>
+                @if ((TrayType)ViewData["TrayType"] == TrayType.OrgUnit)
+                {
+                    <div class="col-sm-2 text-center" id="rejecttrans">
+                        <a href="#" id="fourth" class="boardered-circle-transparent" data-divid="fourth-tab"><i class="uicon icon_return"></i></a>
+                        <a href="#" data-id="fourth" data-divid="fourth-tab"> @DbRes.TResource("User.File.Reject")</a>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div id="first-tab" class="tabscontent ">
+            <div class="content_container content_container--header extra-padding">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h3 class="title2"> @DbRes.TResource("User.Editor.BasicInfo")</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="content_container content_container--body white-bg  extra-padding">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="animated zoomIn">
+
+                            <div class="col-md-4">
+                                <div class="light-text">
+                                    @DbRes.TResource("User.InboundCertificate.InboundNumber")
+                                </div>
+                                <div class="indent-text">
+                                    @Html.DisplayFor(model => model.InboundNumber)
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="light-text">
+                                    @DbRes.TResource("User.InboundCertificate.DateAndTime")
+                                </div>
+                                <div class="indent-text">
+                                    @(Model.HijriDate + " - " + Model.Date.ToShortTimeString())
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="light-text">
+                                    @DbRes.TResource("User.InboundCertificate.OrgUnit")
+                                </div>
+                                <div class="indent-text">
+                                    @Html.DisplayFor(model => model.OrgUnit)
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="light-text">
+                                    @DbRes.TResource("User.InboundCertificate.InboundDocumentNumber")
+                                </div>
+                                <div class="indent-text">
+                                    @Html.DisplayFor(model => model.InboundDocumentNumber)
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="light-text">
+                                    @DbRes.TResource("User.InboundCertificate.Destination")
+                                </div>
+                                <div class="indent-text">
+                                    @Html.DisplayFor(model => model.Destination)
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="light-text">
+                                    @DbRes.TResource("User.InboundCertificate.Source")
+                                </div>
+                                <div class="indent-text">
+                                    @Html.DisplayFor(model => model.Source)
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="light-text">
+                                    @DbRes.TResource("User.InboundCertificate.Type")
+                                </div>
+                                <div class="indent-text">
+                                    @Html.DisplayFor(model => model.Type)
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="light-text">
+                                    @DbRes.TResource("User.InboundCertificate.SignedBy")
+                                </div>
+                                <div class="indent-text">
+                                    @Html.DisplayFor(model => model.SignedBy)
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="light-text">
+                                    @DbRes.TResource("User.InboundCertificate.PriorityLevel")
+                                </div>
+                                <div class="indent-text">
+                                    @Html.DisplayFor(model => model.PriorityLevel)
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="light-text">
+                                    @DbRes.TResource("User.InboundCertificate.ConfidentialityLevel")
+                                </div>
+                                <div class="indent-text">
+                                    @Html.DisplayFor(model => model.ConfidentialityLevel)
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="light-text">
+                                    @DbRes.TResource("User.InboundCertificate.CreatedByOrgUnit")
+                                </div>
+                                <div class="indent-text">
+                                    @Html.DisplayFor(model => model.CreatedByOrgUnit)
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="light-text">
+                                    @DbRes.TResource("User.InboundCertificate.DirectedTo")
+                                </div>
+                                <div class="indent-text">
+                                    @Html.DisplayFor(model => model.DirectedTo)
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="light-text">
+                                    @DbRes.TResource("User.InboundCertificate.CreatedByUser")
+                                </div>
+                                <div class="indent-text">
+                                    @Html.DisplayFor(model => model.CreatedByUser)
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="light-text">
+                                    @DbRes.TResource("User.InboundCertificate.Status")
+                                </div>
+                                <div class="indent-text">
+                                    @Html.DisplayFor(model => model.Status)
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="light-text">
+                                    @DbRes.TResource("User.Inbound.BasicInfo.Subject")
+                                </div>
+                                <div class="indent-text">
+                                    @Html.DisplayFor(model => model.Subject)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="second-tab" class="tabscontent hidden_ ">
+            <div class="content_container content_container--header extra-padding">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h3 class="title2"> @DbRes.TResource("User.InboundCertificate.Assignments")</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="row  col-sm-12" style="margin-right:0">
+                <div class="where">
+                    <div class="group_where">
+                        <span class="col-sm-3">
+                            @DbRes.TResource("User.InboundCertificate.TransactionFound")
+                        </span>
+                        @if (Model.IsAssignToMoreThanOne)
+                        {
+                            <span class="">@DbRes.TResource("User.InboundCertificate.AssignToMoreThanOne")</span>
+
+
+                        }
+                        @if (Model.LatestAssignment != null)
+                        {<span class="col-sm-2">@Model.LatestAssignment.ToOrgUnitName</span>
+                        <span class="col-sm-2">@Model.LatestAssignment.DateH</span>
+                        <span class="col-sm-2">@Model.LatestAssignment.Date.ToShortTimeString()</span>
+
+                    }
+                    </div>
+                </div>
+            </div>
+            <div class="row ">
+                <div class="col-md-12">
+                    @Html.Partial("~/Areas/User/Views/Shared/TransactionCertificate/_AssignmentGridPartial.cshtml", ViewData["AssignmentsData"])
+                </div>
+            </div>
+        </div>
+        <div id="third-tab" class="tabscontent hidden_  archiving">
+            <div class="content_container content_container--header extra-padding">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h3 class="title2"> @DbRes.TResource("User.InboundCertificate.Archiving")</h3>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="col-md-12">
+                    @if (Model.DocumentVM != null)
+                    {
+                        <div class="archiving_group">
+                            @*<div class="archiving_group_title">
+                                @DbRes.TResource("User.InboundCertificate.MainDocument")
+                            </div>*@
+                            <div class="archiving_group_content">
+                                <a href="" onclick="ShowDocumentViewer('@Model.DocumentVM.Id','@ViewData["DocumentSessionKey"]'); return false;">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="col-md-4">
+                                                @Html.DisplayFor(model => model.InboundNumber)
+                                            </div>
+                                            <div class="col-md-4">
+                                                @Html.DisplayFor(model => model.Source)
+                                            </div>
+                                            <div class="col-md-4">
+                                                @Html.DisplayFor(model => model.HijriDate)
+                                                @Html.Display(@Model.Date.ToShortTimeString())
+                                            </div>
+                                        </div><br /><hr />
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    }
+                    @if (Model.Attachments.Count > 0)
+                    {
+                        <div class="archiving_group">
+                            <div class="archiving_group_title">
+                                @DbRes.TResource("User.InboundCertificate.Attachments")
+                            </div>
+                            <div class="archiving_group_content">
+                                @for (int i = 0; i < Model.Attachments.Count; i++)
+                                {
+                                    <span class=""><a href="@Url.Action("DownloadFile", "File")?DocumentId=@Model.Attachments[i].DocumentVM.EncryptedId" target="_blank"> @DbRes.TResource("User.InboundCertificate.AttachmentNumber") @(i + 1)</a></span>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div id="fourth-tab" class="tabscontent hidden_">
+            <div class="content_container content_container--header extra-padding">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h3 class="title2"> @DbRes.TResource("User.File.Reject")</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="content_container content_container--body white-bg ">
+                @*@{Html.ViewData.TemplateInfo.HtmlFieldPrefix = "EditorOutboundDraft";}
+                    @Html.Partial("~/Areas/User/Views/Transaction/_RejectTransactionPartial.cshtml", new TransactionRejectAssignmentVM(), Html.ViewData)*@
+
+
+
+                <div class="panel-body editor">
+                    <div class="row" id="dvRejectPartial">
+                        <div class="panel-group accordion accordion-dc">
+                            <div class="col-md-12">
+                                <fieldset>
+                                    @Html.Label(@DbRes.TResource("User.Transaction.Assignment.Reason"), new { @class = "control-label" })
+                                    <div class="form-group Reject">
+
+                                        @Html.TextArea("Remarks", "", new { id = "rejectnote", @class = "form-control", @rows = "3" })
+                                        @Html.Hidden("type", TrayActionType.RejectRevert, new { id = "type" })
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="">
+                        <div class=" text-right">
+                            @Html.ClientActionButton(@DbRes.TResource("User.File.Reject"), "", "", "", "", "Reject", "btnReject", "dvRejectPartial", "btn-site", null, "RejectTransaction", "")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $("div.anchor a").click(function () {
+        $("div.anchor a").removeClass("active");
+        $("div.anchor a").addClass("disabled");
+        $(this).addClass("active");
+        var id = $(this).data("id");
+        $("#" + id).addClass("active");
+        $(".tabscontent").addClass("hidden_");
+
+        var divId = $(this).data("divid");
+        $("#" + divId).removeClass("hidden_");
+
+    });
+
+    $('.tab_editor').click(function () {
+
+        var url;
+        var data = new Array();
+
+        $('.tab_editor').removeClass('select_but');
+        $(this).addClass('select_but');
+
+        $("._views").hide();
+
+        switch ($(this)[0].id) {
+
+            case "btnBasicInfo":
+                $('#dvEditorBasicInfo').removeClass('hidden_');
+                $('#dvEditorAssignments').addClass('hidden_');
+                $('#dvEditorArchiving').addClass('hidden_');
+                $('#dvRejecting').addClass('hidden_');
+                break;
+
+            case "btnAssignments":
+                $('#dvEditorAssignments').removeClass('hidden_');
+                $('#dvEditorBasicInfo').addClass('hidden_');
+                $('#dvEditorArchiving').addClass('hidden_');
+                $('#dvRejecting').addClass('hidden_');
+                break;
+
+            case "btnArchiving":
+                $('#dvEditorArchiving').removeClass('hidden_');
+                $('#dvEditorAssignments').addClass('hidden_');
+                $('#dvEditorBasicInfo').addClass('hidden_');
+                $('#dvRejecting').addClass('hidden_');
+                break;
+
+            case "btnRejecting":
+                $('#dvEditorAssignments').addClass('hidden_');
+                $('#dvEditorArchiving').addClass('hidden_');
+                $('#dvEditorBasicInfo').addClass('hidden_');
+                $('#dvRejecting').removeClass('hidden_');
+                break;
+
+        }
+    });
+</script>
+
+
+<script>
+    var urlPrintTicket = '@Url.Action("PrintTicket","Shared")' + '?transactionId=' + @Model.Id;
+
+
+
+
+    function ShowTransactionCertificate(id, transactionType) {
+        debugger
+        var url;
+
+        switch (transactionType) {
+            case '@TransactionCategory.Inbound.ToString()':
+                url = '@Url.Action("InboundCertificate", "Shared")' + '?transactionId=' + id;
+                break;
+
+            case '@TransactionCategory.InternalOutbound.ToString()':
+                url = '@Url.Action("InboundCertificate", "Shared")' + '?transactionId=' + id;
+                break;
+            case '@TransactionCategory.ExternalOutbound.ToString()':
+                url = '@Url.Action("OutboundCertificate", "Shared")' + '?transactionId=' + id;
+                break;
+        }
+
+        ShowDialog(url);
+    }
+
+    function ShowPrintDialog(id) {
+        var params = { transactionId: id };
+        ShowDialogAjaxPrintingBarcodes('@Url.Action("PrinttingBarcodes","Shared")' + "?" + $.param(params), {}, 'OpenPrintDialogSuccess', 'dialogbox col-md-12 ');
+    }
+
+    function OpenPrintDialogSuccess(data, $obj) {
+        if (data.MessageType != 2) {
+            $obj.setContent(data.Html);
+        }
+        else {
+            __dialog.close();
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+
+     function RejectTransaction() {
+		var trayid = 7;
+		var transactionId = @Model.Id;
+		var trayActionType = $("#type").val();
+        var remarks = $("#rejectnote").val();
+
+		var data = {
+			trayId: trayid,
+			 transactionId: transactionId, trayActionType: trayActionType
+			, Remarks: remarks
+         };
+		$.ajax({
+			url: '@Url.Action("MoveTransaction", "File")',
+			type: 'POST',
+			data: data,
+            success: function (data) {
+                window.location.href = '@Url.Action("Orgunit", "File" )';
+			}
+		});
+	}
+</script>

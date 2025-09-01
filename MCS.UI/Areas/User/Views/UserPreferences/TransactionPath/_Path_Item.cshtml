@@ -1,0 +1,43 @@
+﻿@using MCS.UI.Areas.User.Models.UserPreferences;
+@using MCS.Common
+@model TransactionPathVM
+
+<!-- #Start# BOX -->
+<div class="box-grid two" data-id="@Model.Id">
+    <div class="box animated zoomIn buttons-action">
+        <div class="correspondence-t">
+            <div class="d-flex">
+                <div class="">
+                    @Model.TransactionTypeName
+                </div>
+            </div>
+        </div>
+        <div class="correspondence-b d-flex flex-wrap">
+            <div class="f-line w-100">
+                <div class="heading">@DbRes.TResource("User.Transaction.Path.Name")</div>
+                <div>@Model.Name</div>
+            </div>
+        </div>
+        <div class="correspondence-icon w-100 d-inline-block">
+            <div class="d-inline-block">
+                @*Path defined from admin TO all entity*@
+                @if (Model.UserId != null)
+                {
+                    <a class="circle color-blue" title="@DbRes.TResource("Grid.Edit")" onclick="GetPathDetailsById(@Model.Id)">
+                        <i class="icon-outline-edit"></i>
+                    </a>
+                }
+                else
+                {
+                    <a class="circle color-gray" title="@DbRes.TResource("User.Copies.Show")" onclick="ViewPathDetailsById(@Model.Id)">
+                        <i class="la la-folder-open-o"></i>
+                    </a>
+
+                }
+                <a class="circle color-red" title="@DbRes.TResource("Grid.Delete")" onclick="ConfirmDeletePathById(@Model.Id)">
+                    <i class="icon-delete"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,307 @@
+﻿@model VIPEditOutboundInternalBasicInfoVM
+@using MCS.Common
+@using MCS.Framework.Controls.Mvc
+@using MCS.Framework.Controls
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Transaction.Outbound.Internal
+@using MCS.UI.Areas.User.Models.Transaction;
+@using MCS.UI.Areas.User.Models
+@using MCS.Common
+@using MCS.UI.Common
+@{
+    var doconutIncludeIframeUrl = UIConfigurations.GetFullURl() + string.Format("{0}?hidecontrols=true&sIncludedItemDoc=true&showwatermark={1}", SystemConfigurations.DoconutIframeUrl, "true");
+}
+<div class=" white-bg" id="BasicInfoPartial">
+
+    <div class="row" id="ArchivingPartial">
+        @{Html.ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+        @if (Html.ViewData["StatusId"] != null && (Html.ViewData["StatusId"].ToString() == Convert.ToString(TransactionStatus.Reserved.LookupIdentity(LookupCategory.TransactionStatus, SessionInfo.CultureShortName))))
+        {
+            @Html.Partial("~/Areas/User/Views/Vip/Archives/_ArchivingPartialMainDocument.cshtml", new TransactionArchiveVM(TransactionAttachmentType.Main, true, false, false), Html.ViewData)
+        }
+        else
+        {
+            @Html.Partial("~/Areas/User/Views/Vip/Archives/_ArchivingPartialMainDocument.cshtml", new TransactionArchiveVM(TransactionAttachmentType.Main, true, false, true, false, true, true, false), Html.ViewData)
+        }
+
+        <div id="dvScanningArchiving" style="display:none">
+
+            <div id="dvDocumentViewerEditorContainerArchiving" class="">
+
+                <iframe src="@doconutIncludeIframeUrl" class="col-md-12" style="height:1430px; width:100%" id="frameViewerAttachmentForArchiving"></iframe>
+
+            </div>
+
+
+        </div>
+
+
+
+
+
+    </div>
+
+    <div class="extraOption" hidden>
+
+        <div role="tabpanel" class="tab-pane" id="divArchiving" style="display:none">
+            <div>
+
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<script>
+    $(document).ready(function ()
+    {
+
+
+        $('#dvExplanation').hide();
+        if ($("#hdnInboundDocumentType").val() == '52') {
+            $('.RecordNumber').show();
+        }
+        $("#ddlInboundDocumentType").change(function () {
+
+            if ($("#hdnInboundDocumentType").val() == '52') {
+                $('.RecordNumber').show();
+            }
+            else {
+                $('.RecordNumber').hide();
+            }
+        });
+
+    });
+
+       function ShowArchiviableData(id, documentId, key) {
+
+
+        var token = $('form:first').find("input[name='__RequestVerificationToken']").val();
+
+            var url = "@Url.Action("VIPViewArchive", "OutboundInternal")";
+            var data = { key: id, documentId: documentId, __RequestVerificationToken: token };
+            $.ajax({
+                type: "POST",
+                url: url,
+                cache: false,
+                data: data,
+                success: function (data) {
+
+                    debugger;
+                    if (data.MessageType !== 2) {
+                        $('#dvexplanationsText').hide();
+                            $('#dvScanningArchiving').show();
+                            $('.doconutContainerForArchiving').hide();
+                            document.getElementById('frameViewerAttachmentForArchiving').contentWindow.location.reload();
+
+                    }
+                }
+            });
+
+    }
+
+    function ShowTextData(id, documentId, key) {
+        debugger;
+             $.ajax({
+            type: 'get',
+            cache: false,
+            url: '@Url.Action("GetExplanationByDocumentId", "VipOutboundInternal")',
+                 data: { id: documentId, hdnExplanationDocumentSessionKey: key },
+                 success: function (data) {                
+                if (data.Type == 3) {
+                    
+                    $("#archivetxtDescription").val(data.Content);
+                    document.getElementById('explinationDateTime').innerText = data.Date;
+                    document.getElementById('explinationFromUser').innerText = data.FromUser;
+                    $('#dvexplanationsText').show();
+                    $('.doconutContainerForArchiving').hide();
+                    $('#dvScanningArchiving').hide();
+                } 
+            }
+        });  
+    }
+     function PreviewTransactionDocumentForLink(transactionId) {
+        $.ajax({
+            type: 'get',
+            url: '@Url.Action("GetMainDocumentByTransactionId", "OutboundInternal")',
+            data: { transactionId: transactionId, __RequestVerificationToken: token },
+            success: function (data) {
+                debugger
+                if (data.MessageType != 2) {
+
+                    var documentId = EncryptionKey(data.DocumentDTOResult.Id).toString();
+
+                    ShowArchiviableData(transactionId, documentId, "");
+
+
+                }
+                else {
+                    RedirectToTargetPage();
+                }
+            }
+        });
+
+    }
+
+    $(document).on("click", "#UserTransactionEditorSelectScannerForArchiving", function () {
+        $(".doconutContainerForArchiving").show();
+        $('#dvScanningArchiving').hide();
+        $('#dvexplanationsText').hide();
+    });
+</script>
+
+<script>
+    $('#aArchive').click(function ()
+    {
+        $('#dvExplanation').hide();
+        $('#first-tab').show();
+
+    });
+    $('#aExplanation').click(function ()
+    {
+        $('#first-tab').hide();
+        $('#dvExplanation').show();
+
+    });
+    $(document).ready(function ()
+    {
+
+
+        $.validator.unobtrusive.parseDynamicContent = function (selector)
+        {
+            var $selector = $(selector),
+                $jqValUnob = $.validator.unobtrusive,
+                selectorsDataValAttr = $selector.attr('data-val'),
+                $validationInputs = $selector.find(':input[data-val=true]');
+
+            if ((selectorsDataValAttr !== 'true') &&
+                ($validationInputs.length === 0))
+            {
+                return;
+            }
+
+            if (selectorsDataValAttr === 'true')
+            {
+                $jqValUnob.parseElement(selector, true);
+            }
+
+            $validationInputs.each(function ()
+            {
+                $jqValUnob.parseElement(this, true);
+            });
+
+            //get the relevant form
+            var $form = $selector.first().closest('form');
+
+            $jqValUnob.syncValdators($form);
+        };
+
+        /* synchronizes the unobtrusive validation with jquery validator */
+        $.validator.unobtrusive.syncValdators = function ($form)
+        {
+            if ($.hasData($form[0]))
+            {
+                var unobtrusiveValidation = $form.data('unobtrusiveValidation'),
+                    validator = $form.validate();
+
+                // add validation rules from unobtrusive to jquery
+                $.each(unobtrusiveValidation.options.rules, function (elname, elrules)
+                {
+                    if (validator.settings.rules[elname] == undefined)
+                    {
+                        var args = {};
+                        $.extend(args, elrules);
+                        args.messages = unobtrusiveValidation.options.messages[elname];
+                        $("[name='" + elname + "']").rules("add", args);
+                    } else
+                    {
+                        $.each(elrules, function (rulename, data)
+                        {
+                            if (validator.settings.rules[elname][rulename] == undefined)
+                            {
+                                var args = {};
+                                args[rulename] = data;
+                                args.messages = unobtrusiveValidation.options.messages[elname][rulename];
+                                $("[name='" + elname + "']").rules("add", args);
+                            }
+                        });
+                    }
+                });
+                // remove all validation rules from jquery that arn't in unobtrusive
+                $.each(validator.settings.rules, function (elname, elrules)
+                {
+                    if (unobtrusiveValidation.options.rules[elname] === undefined)
+                    {
+                        delete validator.settings.rules[elname];
+                    } else
+                    {
+                        $.each(elrules, function (rulename, data)
+                        {
+                            if (rulename !== "messages" && unobtrusiveValidation.options.rules[elname][rulename] === undefined)
+                            {
+                                delete validator.settings.rules[elname][rulename];
+                            }
+                        });
+                    }
+                });
+            }
+        };
+
+        $.validator.unobtrusive.unparseContent = function (selector)
+        {
+            var $selector = $(selector);
+
+            // if its  a text node, then exit
+            if ($selector && $selector.length > 0 && $selector[0].nodeType === 3)
+            {
+                return;
+            }
+
+            var $form = $selector.first().closest('form'),
+                unobtrusiveValidation = $form.data('unobtrusiveValidation');
+
+            $selector.find(":input[data-val=true]").each(function ()
+            {
+                removeValidation($(this), unobtrusiveValidation);
+            });
+            if ($selector.attr('data-val') === 'true')
+            {
+                removeValidation($selector, unobtrusiveValidation);
+            }
+            $.validator.unobtrusive.syncValdators($form);
+        };
+
+        function removeValidation($element, unobtrusiveValidation)
+        {
+            var elname = $element.attr('name');
+            if (elname !== undefined)
+            {
+                $element.rules('remove');
+                if (unobtrusiveValidation)
+                {
+                    if (unobtrusiveValidation.options.rules[elname])
+                    {
+                        delete unobtrusiveValidation.options.rules[elname];
+                    }
+                    if (unobtrusiveValidation.options.messages[elname])
+                    {
+                        delete unobtrusiveValidation.options.messages[elname];
+                    }
+                }
+            }
+        }
+
+
+    });
+
+
+
+
+
+</script>
+<style>
+    .RedBorder {
+        border: 1px solid #fe0000 !important
+    }
+</style>

@@ -1,0 +1,104 @@
+﻿@using MCS.UI.Areas.User.Models
+@using MCS.UI.Areas.User.Models.Collaboration
+@using MCS.Framework.Localization
+@using MCS.Common
+@model List<MCS.UI.Areas.User.Models.Collaboration.ConversationVM>
+
+
+@{
+    string RequestedUser = ViewData["RequestedUser"].ToString();
+    long RequestedUserId = Int64.Parse(ViewData["RequestedUserId"].ToString());
+    int lastConversation = 0;
+    if (Model.Count > 0)
+    {
+        lastConversation = Model[0].Id;
+    }
+
+}
+
+
+<div class="conversation open chatboxscroll" data-userid-chat-window="@RequestedUserId">
+
+    <div class="row top">
+        <span class="close_conversation" data-userid-close-chat-window="@RequestedUserId"><a href="#"><i class="fa fa-times"></i></a></span>
+        <span class="who_is shifted_right"><a href="#">@RequestedUser</a></span>
+    </div>
+
+    <div class="row stage_chat chatBoxScroll" id=@String.Format("stage_chat_userId_{0}", RequestedUserId) data-userid-stage-chat="@RequestedUserId" data-last-conversation="@lastConversation" onscroll="ScrollChatWindow(@RequestedUserId,this)">
+
+        @foreach (ConversationVM conversationVM in Model)
+        {
+            lastConversation = conversationVM.Id;
+
+            if (conversationVM.SenderId == SessionInfo.CurrentUser.Id)
+            {
+
+                <div class="i">
+                    <div class="img_other">
+                        <span></span>
+                    </div>
+                    <div class="area_send">
+                        <div class="row">
+                            <span class="name_other">@conversationVM.SenderName</span>
+                            <span class="time_other">@conversationVM.Date</span>
+                        </div>
+                        <div class="row">
+                            <span class="text_other">@conversationVM.Text</span>
+                        </div>
+
+                    </div>
+                </div>
+
+            }
+
+            else
+            {
+
+                <div class="i">
+                    <div class="img_other">
+                        <span></span>
+                    </div>
+                    <div class="area_send">
+                        <div class="row">
+                            <span class="name_other">@conversationVM.SenderName</span>
+                            <span class="time_other">@conversationVM.Date</span>
+                        </div>
+                        <div class="row">
+                            <span class="text_other"> @conversationVM.Text</span>
+                        </div>
+
+                    </div>
+                </div>
+
+            }
+        }
+
+
+    </div>
+
+    <script>
+
+
+        SetScrollToTop("stage_chat_userId_" + @RequestedUserId);
+
+        function SetScrollToTop(elemntId) {
+
+            elemnt = document.getElementById(elemntId);
+            elemnt.scrollTop = elemnt.scrollHeight;
+        }
+
+    </script>
+
+
+
+    <div class="row bottom">
+        <span class="input_chat">
+            @*<form role="form">*@
+            <textarea rows="1" cols="20" placeholder="أكتب النص هنا" class="messageRow" data-userid-chat-window="@RequestedUserId"></textarea>
+            @*</form>*@
+        </span>
+    </div>
+
+
+</div>
+

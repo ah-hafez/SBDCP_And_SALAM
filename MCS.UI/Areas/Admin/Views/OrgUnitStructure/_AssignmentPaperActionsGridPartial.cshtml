@@ -1,0 +1,27 @@
+﻿@using MCS.Framework.Localization 
+@using MCS.Framework.Controls.Mvc
+@model AjaxGrid<MCS.UI.Areas.Admin.Models.OrgUnit.AssignmentPaperActionVM>
+
+@{
+    Layout = null;
+}
+
+@Html.Grid(Model, "_Grid").Named("grdAssignmentPaperActions").Columns(columns =>
+    {
+        columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").Titled("", "<input type='checkbox' id='chkall'></input>")
+                                                  .RenderValueAs(o =>
+                                                    @<div class="chkCol" id="spanCheckBox">
+                                                        <input id="AssigneeSelectorcheckbox" type="checkbox" />
+                                                    </div>);
+
+        columns.Add(model => model.Id, true);
+        columns.Add(model => model.Name).Titled(DbRes.TResource("Admin.AssignmentPaperActions.Action"));
+        columns.Add().Encoded(false).Sanitized(false).Css("hidden_").RenderValueAs(model => @Html.Hidden("departmentsStructureActionGrid", null, new { id = "hdnDepartmentsStructureActionGrid" }));
+        columns.Add().Encoded(false).Sanitized(false).Css("hidden_").RenderValueAs(model => @Html.Hidden("orgUnitKeyActionGrid", null, new { id = "hdnOrgUnitKeyActionGrid" }));
+        columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => @Html.ConfirmImageButton("DeleteAssignmentPaperActions", "grdAssignmentPaperActions", 1, "dvAssignmentPaperActionsGrid", "dvAssignmentPaperActionsGrid :input", null, "DeleteAction", "Post"));
+    }).WithPaging(GridHelper.PageSize).Sortable().Filterable().WithMultipleFilters().UpdateActionUrl(Url.Action("UpdateGridAssignmentPaperAction", "OrgUnitStructure")).RenderDeleteButton("DeleteAssignmentPaperActions", 1, "dvAssignmentPaperActionsGrid :input", "dvAssignmentPaperActionsGrid", "DeleteAction")
+
+<script>
+    $('#hdnDepartmentsStructureActionGrid').val($('#hdnSaveDepartmentsData').val());
+    $('#hdnOrgUnitKeyActionGrid').val($('#hdnOrgUnitKey').val());
+</script>

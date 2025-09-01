@@ -1,0 +1,133 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.Lookups;
+@using MCS.GridMvc.Ajax.GridExtensions
+@model PriorityViewModel
+
+@{
+    ViewBag.Title = DbRes.TResource("Admin.Lookups.Priority.Title");
+    Layout = "~/Areas/Admin/Views/Shared/_LookupsLayout.cshtml";
+}
+
+<div class="mx-3 mx-md-5 header-container d-flex flex-row align-items-center">
+    <div class="d-flex flex-column flex-md-row align-items-md-center flex-grow-1">
+        <h3 class="site-color mb-4">@DbRes.TResource("Admin.Lookups.Priority.Title")</h3>
+    </div>
+</div>
+<div class="white-container mx-3 mx-md-5">
+    @*<div id="dvAdd">
+            @Html.Partial("~/Areas/Admin/Views/Lookups/_PriorityAddPartial.cshtml", Model.AddPriority)
+        </div>
+        <div id="dvEdit" style="display:none;">
+            @Html.Partial("~/Areas/Admin/Views/Lookups/_PriorityEditPartial.cshtml", Model.EditPriority)
+        </div>
+        <hr />*@
+    <div id="dvGrid">
+        <div class="w-100 d-flex align-items-center mt-2 mb-2">
+            <h3 class="white-c-title">@DbRes.TResource("Admin.Lookup.Grid.Proirity")</h3>
+            <span class="roundedred ml-3">@(((AjaxGrid<PriorityVM>)ViewData["GridData"]).ItemsCount)</span>
+            <span class="pl-2 gray4">@DbRes.TResource("Admin.Grid.Records")</span>
+        </div>
+        @Html.Partial("~/Areas/Admin/Views/Lookups/_PriorityGridPartial.cshtml", ViewData["GridData"])
+    </div>
+    <div id="token">
+        @Html.AntiForgeryToken()
+    </div>
+</div>
+
+
+<script>
+    function EditPriority(id) {
+        window.location.href = '@Url.Action("EditPriorityDetails", "Lookups")?priorityId=' + id;
+        @*$.ajax({
+            type: "get",
+            url: '@Url.Action("EditPriorityDetails", "Lookups")',
+            data: { priorityId : id },
+            success:
+                function (data) {
+                    
+                    if (data.MessageType != 2) {
+                        //$("#dvEdit").html("");
+                        //$("#dvEdit").html(data.Html);
+                        //$("#dvEdit").html("");
+                        //$("#dvEdit").html(data.Html);
+                        //jQuery.validator.unobtrusive.parse("#dvEdit");
+                        //ShowSuccesMessage(data.MessageText);
+                    }
+                    else {
+                       // ShowErrorMessage(data.MessageText);
+                    }
+                },
+            error: function (data) {
+            }
+        });*@
+    }
+
+    function ShowEditDiv() {
+        $("#dvEdit").css("display", "block");
+        $("#dvAdd").css("display", "none");
+    }
+
+    function HideEditDiv() {
+        $("#dvEdit").css("display", "none");
+        $("#dvAdd").css("display", "block");
+    }
+
+    function OnEditSuccess(data, div) {
+        if (data.MessageType != 2) {
+            $("#dvEdit").css("display", "none");
+            $("#dvAdd").css("display", "block");
+            $("#" + div).html("");
+            $("#" + div).html(data.Html);
+            jQuery.validator.unobtrusive.parse('#' + div);
+            ClearInputs('EditProirityContent');
+            ShowSuccesMessage(data.MessageText);
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function OnAddSuccess(data, div) {
+        if (data.MessageType != 2) {
+            $("#" + div).html("");
+            $("#" + div).html(data.Html);
+            jQuery.validator.unobtrusive.parse('#' + div);
+            ShowSuccesMessage(data.MessageText);
+            ClearInputs('AddProirityContent');
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function OnDeleteSuccess(data, divUpdatData, deletedList) {
+        if (data.PrioritiesUsedList.length == 0) {
+            ShowSuccesMessage(data.MessageText);
+        }
+        else {
+            var msg = '';
+            for (var i = 0; i < data.PrioritiesUsedList.length; i++) {
+                if (msg == '')
+                    msg = data.PrioritiesUsedList[i];
+                else
+                    msg = msg + '</br>' + data.PrioritiesUsedList[i];
+            }
+            msg = '@DbRes.TResource("Admin.Priority.DeletePrioritiesErrorMsg")' + '</br>' + msg;
+            ShowErrorMessage(msg);
+        }
+        var deletedArray = deletedList.split(',');
+        for (var i = 0; i < deletedArray.length; i++) {
+            var deleted = true;
+            for (var y = 0; y < data.PrioritiesUsedList.length; y++) {
+
+                if (deletedArray[i] == data.PrioritiesUsedList[y]) {
+
+                    deleted = false;
+                }
+            }
+            if (deleted)
+                if (deletedArray[i] == $('#hdnEditId').val())
+                    HideEditDiv();
+        }
+    }
+</script>

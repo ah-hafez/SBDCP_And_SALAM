@@ -1,0 +1,281 @@
+﻿@using MCS.Common
+@using MCS.Framework.Localization
+@using MCS.Framework.Controls.Mvc
+@using MCS.Framework.Controls
+@using MCS.UI.Areas.User.Models.Shared
+@using MCS.UI.Common
+@using MCS.UI.Areas.User.Models.OrgUnit;
+
+
+@model DashboardHomeVM
+
+@{
+    var counts = ViewData["TransactionCounter"] as List<CounterDetailVM>;
+
+}
+
+<script src="~/Content/User/lib/plugins/charts/morris.min.js"></script>
+<script src="~/Content/User/lib/plugins/charts/raphael-min.js"></script>
+
+
+
+<style>
+    .card {
+        min-height: 150px;
+        min-width: 194px;
+        border-radius: 1.25rem;
+        display: grid;
+        place-items: center;
+    }
+
+    .progress-ring {
+    }
+
+    .progress-ring__circle {
+        transition: 0.35s stroke-dashoffset;
+        transform: rotate(-90deg);
+        transform-origin: 50% 50%;
+    }
+
+    .container {
+        display: flex;
+        margin-bottom: 20px;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .circular-progress {
+        position: relative;
+        height: 100px;
+        width: 100px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: #f23687;
+    }
+
+
+        .circular-progress::before {
+            content: "";
+            position: absolute;
+            height: 84%;
+            width: 84%;
+            background: white;
+            border-radius: 50%;
+        }
+
+
+    .value-container {
+        position: relative;
+        font-size: 30px;
+        color: #a7a7a7;
+    }
+
+
+    .graph {
+        margin-top: 32px;
+        border: 1px solid #e2e2e2;
+        margin-right: 65px;
+    }
+
+        .graph span {
+            display: grid;
+            place-items: center;
+            color: black;
+            font-weight: bolder;
+            font-size: 20px;
+        }
+
+    .number {
+        text-align: center;
+        font-size: 50px;
+        color: #dadada;
+        font-weight: bolder;
+    }
+
+    .title {
+        color: white;
+        font-size: 20px;
+    }
+
+    .lableBlock {
+        margin-top: 15px;
+        text-align: center;
+    }
+
+    .morris-hover.morris-default-style div {
+        display: inline-block;
+        position: relative;
+        padding-right: 20px;
+        min-width: 20%;
+        font-weight: 600;
+        font-size: 12px;
+    }
+
+    .morris-hover-row-label {
+        display: none !important;
+    }
+
+    svg {
+        left: 20.587463px !important;
+    }
+    .table > thead > tr > th, .table > tbody > tr > td {
+        text-align: center;
+    }
+   .table > thead > tr {
+       background:#fff;
+       border-bottom:3px solid #fff;
+   }
+    .table > tbody > tr > td {
+        font-size:large;
+        font-weight:700;
+    }
+    .table{
+        width:50%;
+    }
+</style>
+
+<div style="display:flex; margin-bottom:30px;">
+    @*<h1 class="col-lg-10" style="display:flex; place-content:center; margin-top:40px;">لوحة القيادة</h1>*@
+
+    <div class="container col-lg-2">
+        <div class="circular-progress" id="divLateCircular">
+            <div class="value-container" id="divlate">
+                0%
+            </div>
+        </div>
+        <div class="lableBlock">
+            <span style="font-size:16px">معدل المعاملات </span>
+            <br />
+            <span style="font-size:20px;"> المتأخرة</span>
+        </div>
+
+        <div class="circular-progress" id="divLateCircularComplete">
+            <div class="value-container" id="divlateComplete">
+                15%
+            </div>
+        </div>
+        <div class="lableBlock">
+            <span style="font-size:16px">معدل المعاملات </span>
+            <br />
+            <span style="font-size:20px;"> المنجزة</span>
+        </div>
+
+    </div>
+    <table class="table mt-5">
+        <thead>
+            <tr>
+                <th>عدد الوارد</th>
+                <th>عدد الداخلي</th>
+                <th>عدد الصادر</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+
+                <td style="color: #04ab87">
+
+                    @counts.Where(c => c.TransactionCategories.Where(x => x.IsSelected).FirstOrDefault().Id == (int)TransactionCategories.Inbound).FirstOrDefault().LastTransactionNumber
+
+                </td>
+                <td style="color: #0c4a4d">
+
+                    @counts.Where(c => c.TransactionCategories.Where(x => x.IsSelected).FirstOrDefault().Id == (int)TransactionCategories.InternalOutbound).FirstOrDefault().LastTransactionNumber
+
+                </td>
+                <td style="color: #0e8270">
+
+                    @counts.Where(c => c.TransactionCategories.Where(x => x.IsSelected).FirstOrDefault().Id == (int)TransactionCategories.Outbound).FirstOrDefault().LastTransactionNumber
+
+                </td>
+
+
+            </tr>
+        </tbody>
+
+    </table>
+
+    <div>
+
+    </div>
+</div>
+
+<div class="d-flex flex-wrap align-content-start" style="gap: 20px; place-content:center">
+    <div class="" data-itemId="1">
+        <div class="card denim animated zoomIn" style="background: #04AB87 ">
+            <div class="card-h">
+                <div class="title">
+                    @DbRes.TResource("عدد المعاملات")
+                </div>
+                <div class="number">
+                    @Model.TotalTransactions
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="" data-itemId="2">
+        <div class="card denim animated zoomIn" style="background: #0C4A4D ">
+            <div class="card-h">
+                <div class="title">
+                    @DbRes.TResource("عدد الاحالات")
+                </div>
+                <div class="number">
+                    @Model.TotalAssignments
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="" data-itemId="4">
+        <div class="card denim animated zoomIn" style="background: #0E8270 ">
+            <div class="card-h">
+                <div class="title">
+                    @DbRes.TResource("عدد الوارد")
+                </div>
+                <div class="number">
+                    @Model.TotalInbound
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="" data-itemId="5">
+        <div class="card denim animated zoomIn" style="background: #1B2542 ">
+            <div class="card-h">
+                <div class="title">
+                    @DbRes.TResource("عدد الصادر")
+                </div>
+                <div class="number">
+                    @Model.TotalOutbound
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="" data-itemId="6">
+        <div class="card denim animated zoomIn" style="background: #46677B ">
+            <div class="card-h">
+                <div class="title">
+                    @DbRes.TResource("عدد الداخلي")
+                </div>
+                <div class="number">
+                    @Model.TotalInternal
+                </div>
+            </div>
+        </div>
+    </div>
+   
+</div>
+<br />
+<br />
+
+<div class="row">
+    <div class="graph col-lg-5">
+        <span>عدد المعاملات حسب النوع</span>
+        <div id='area-chart'></div>
+    </div>
+    <div class="graph col-lg-5">
+        <span>عدد المعاملات حسب السرية  </span>
+        <div id='chart_line2'></div>
+    </div>
+</div>
+

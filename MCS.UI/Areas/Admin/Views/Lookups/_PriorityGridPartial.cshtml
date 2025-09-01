@@ -1,0 +1,51 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.Lookups
+@using MCS.GridMvc.Helpers;
+@using MCS.GridMvc.Html;
+@using MCS.Common;
+
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<PriorityVM>
+@{
+    ViewBag.Title = "_PriorityLookupGridPartial";
+}
+
+
+@Html.Grid(Model).Named("Proirity").Columns(columns =>
+{
+columns.Add(model => model.Id).Titled(DbRes.TResource("Admin.Priority.Id")).Css("hidden_");
+columns.Add(model => model.Description[0].Text, "DescriptionAr").Titled(DbRes.TResource("Admin.Proirity.Name.ar"));
+columns.Add(model => model.Description[1].Text, "DescriptionEn").Titled(DbRes.TResource("Admin.Proirity.Name.en"));
+columns.Add(model => model.LateForEntity, "LateForEntity").Titled(DbRes.TResource("Admin.Proirity.LateForEntity"));
+columns.Add(model => model.LateForUser, "LateForUser").Titled(DbRes.TResource("Admin.Proirity.LateForUser"));
+columns.Add().Encoded(false).Sanitized(false).Css("").RenderValueAs(model => MvcHtmlString.Create(
+     model.HasPriorityExceptions ? DbRes.TResource("Admin.Proirity.HasPriorityExceptions.Yes") : DbRes.TResource("Admin.Proirity.HasPriorityExceptions.No")
+ )).Titled(DbRes.TResource("Admin.Proirity.HasPriorityExceptions"));
+//columns.Add(model => model.LocalName, "LocalizationIdentifier").Titled(DbRes.TResource("Admin.Priority.Description"));
+//columns.Add(model => model.TransactionCategory, "TransactionCategory").Titled(DbRes.TResource("Admin.Priority.TransactionCategories")).SetFilterWidgetType("CheckBoxFilterWidget");
+//columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => @Html.GridImageButton("GetPriority", "Proirity", 1, OperationType.Update, "dvEdit", null, null, "ShowEditDiv", "", "get"));
+//columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => @Html.GridImageButton("DeletePriority", "Proirity", 1, OperationType.Delete, "dvGrid", "", null, "OnDeleteSuccess"));
+columns.Add().Encoded(false).Sanitized(false).Css("").RenderValueAs(model =>
+MvcHtmlString.Create(
+"<div class='table-icon d-flex align-items-center'>" +
+    @Html.ClientLinkTag(text: "", cssClass: "color-green", title: DbRes.TResource("Grid.Edit"), clientFunctionToCall: "EditPriority(" + model.Id + ")", innerHtml: "<i class='icon-tables-edit'></i></i>")  +
+"</div>"));
+
+}).WithPaging(GridHelper.PageSize)
+
+<script>
+    var token = $("#token input[name='__RequestVerificationToken']").val()
+    var myProirityGridEventHandler = "@Url.Action("UpdatePriorityGrid", "Lookups")?__RequestVerificationToken=" + token;
+    function prepareProirityReportGrid() {
+            $(".grid-mvc").gridmvc();
+            pageGrids.Proirity.ajaxify({
+                getPagedData: myProirityGridEventHandler,
+                requestType: "get",
+                getData: myProirityGridEventHandler
+            });
+        }
+
+        $(document).ready(function () {
+            prepareProirityReportGrid();
+        });
+</script>
+

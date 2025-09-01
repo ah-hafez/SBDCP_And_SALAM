@@ -1,0 +1,310 @@
+﻿@using MCS.Common
+@using MCS.UI.Areas.User.Models.Transaction
+@using MCS.Framework.Localization
+@model TransactionNameVM
+
+@{
+    string controller = TempData.Peek("ControllerName") != null ? TempData.Peek("ControllerName").ToString() : ViewContext.RouteData.Values["controller"].ToString();
+    ViewData.TemplateInfo.HtmlFieldPrefix = "TransactionName";
+    string genderValue = (Gender.Male.LookupIdentity(LookupCategory.Gender, SessionInfo.CultureShortName)).ToString();
+}
+
+<div>
+    <div class="form-horizontal">
+        <div id="dvNamesBody">
+            <div id="dvNamesForm">
+                <div class="form-row">
+                    @Html.StickyHiddenFor(model => model.Key, new { id = "Key" })
+                    @Html.HiddenFor(model => model.Id)
+
+                    <div class="form-group col-lg-2 col-md-4 col-sm-6 col-xs-12 mb-3">
+                        <label class="w-100">@DbRes.TResource("User.Transaction.Name.CivilID") <span class="stark">*</span></label>
+                        @Html.NumericTextBoxFor(model => model.CivilID, new { @class = "form-control", @Value = "", maxlength = "10" }, "Names")
+                    </div>
+
+                    @*<div class="form-group col-lg-2 col-md-4 col-sm-6 col-xs-12 mb-3">
+            <label class="w-100">@DbRes.TResource("User.Transaction.Name.NationalityID") <span class="stark">*</span></label>
+            @Html.NumericTextBoxFor(model => model.NationalityId, new { @class = "form-control", @Value = "", maxlength = "10" }, "Names")
+        </div>*@
+
+                    <div class="form-group col-lg-2 col-md-4 col-sm-6 col-xs-12  mb-3">
+                        <label class="w-100">@DbRes.TResource("User.Transaction.Name.FullName")<span class="stark">*</span></label>
+                        <div class="FirstName">
+                            @Html.TextBoxGroupFor(model => model.FirstName, "Names", new { @class = "form-control", @Value = "", maxlength = "120" })
+                        </div>
+                    </div>
+                    <div class="form-group col-lg-2 col-md-4 col-sm-6 col-xs-12 mb-3" style="display:none">
+                        <label class="w-100">@DbRes.TResource("User.Transaction.Name.MobileNumber")<span class="stark">*</span></label>
+                        <div class="MobileNumber">
+                            @Html.NumericTextBoxFor(model => model.MobileNumber, new { @class = "form-control", maxlength = "14" }, "Names")
+                            @Html.CustomCheckBox("SendSMS")
+                            @DbRes.TResource("User.Transaction.Name.SendSMS")
+                        </div>
+                    </div>
+                    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                        <label class="w-100">@DbRes.TResource("User.Transaction.Name.Nationality")</label>
+                        <div class="Nationality">
+                            @Html.AutoCompleteBuilder(ViewData.TemplateInfo.HtmlFieldPrefix + "_ddlNationality", "NationalityId", LookupCategory.Nationality, null, true, "form-control")
+                            @Html.HiddenGroupFor(model => model.NationalityId, new { @Value = "", id = "NationalityId" })
+                        </div>
+                    </div>
+
+
+                    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                        <label class="w-100">@DbRes.TResource("User.Transaction.Name.Phone")</label>
+                        @Html.NumericTextBoxFor(model => model.Phone, new { @class = "form-control", maxlength = "15" }, "Names")
+                    </div>
+
+                    <div class=" text-right panel-body" style="margin-top:7px;">
+                        @Html.StickyHiddenFor(model => model.Key, new { id = "NameEditKey" })
+                        @Html.ClientActionButton(DbRes.TResource("User.Transaction.Name.Add"), Url.Action("AddName", controller), "dvNamesGrid", "NamesOnSuccess", null, "Names", "btnNames", "dvNamesBody", " btn-site ", null, null, UserClaims.Names.Add, "<i class='glyphicon glyphicon-plus' style=\"\r\n    margin-top: -10px;\r\n    font-size: small;\r\n\"></i>")
+                        @Html.ClientActionButton(DbRes.TResource("User.Transaction.Name.Edit"), Url.Action("EditName", controller), "dvNamesGrid", "NamesOnEditSuccess", null, "Names", "btnEditNames", "dvNamesBody", "btn-site hidden_", null, null, UserClaims.Names.Edit)
+                        <a class="btn-site " style="display:none;" id="aCancelName" onclick="CancelEdit(); return false;">@DbRes.TResource("User.Transaction.Name.Cancel")</a>
+                    </div>
+                    <div class="col-lg-12">
+                        <h4>
+                            <a role="button" style="display:flex">
+                                <span onclick="CollapseDiv('dvExtraOptions'); return false;" style="cursor: pointer;">
+                                    <img src="~/Content/User/lib/images/plus-icon.svg" id="dvExtraOptionsPlusIcon" width="25" />
+                                    <img src="~/Content/User/lib/images/Dash-icon.svg" id="dvExtraOptionsDashIcon" width="25" style="display: none;" />
+                                </span>
+                                <span class="ml-3 mt-1">@DbRes.TResource("User.Names.ExtraOptions")</span>
+                            </a>
+                        </h4>
+                        <div role="tabpanel" class="tab-pane" id="dvExtraOptions" style="display:none">
+
+                            <div class="form-group col-lg-2 col-md-4 col-sm-6 col-xs-12 mb-3" style="display:none">
+                                <label class="w-100">@DbRes.TResource("User.Transaction.Name.Email")</label>
+                                @Html.TextBoxGroupFor(model => model.Email, "Names", new { @class = "form-control", maxlength = "150" }, "Names")
+                            </div>
+
+
+
+                            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                                <div class="TitleId">
+                                    <label class="w-100">@DbRes.TResource("User.Transaction.Name.Title")</label>
+                                    @Html.AutoCompleteBuilder(ViewData.TemplateInfo.HtmlFieldPrefix + "_ddlTitle", "TitleId", LookupCategory.Title, null, true, "form-control")
+                                    @Html.HiddenGroupFor(model => model.TitleId, new { @Value = "", id = "TitleId" })
+                                </div>
+                            </div>
+
+                            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                                <label class="w-100">@DbRes.TResource("User.Transaction.Name.RelativeRelation") </label>
+                                @Html.AutoCompleteBuilder(ViewData.TemplateInfo.HtmlFieldPrefix + "_ddlRelativeRelation", "RelativeRelation", LookupCategory.RelativeRelation, null, true, "form-control")
+                                @Html.HiddenGroupFor(model => model.RelativeRelation, new { @Value = "", id = "RelativeRelation" }, "Names")
+                            </div>
+                            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                                <label class="w-100">@DbRes.TResource("User.Transaction.Name.Address")</label>
+                                @Html.TextBoxGroupFor(model => model.Address, "Names", new { @class = "form-control", maxlength = "255" }, "Names")
+                            </div>
+
+
+                            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                                <label class="w-100">@DbRes.TResource("User.Transaction.Name.City")</label>
+                                @Html.AutoCompleteBuilder(ViewData.TemplateInfo.HtmlFieldPrefix + "_ddlCity", "City", ViewData["SettingCity"].ToString(), null, true, "form-control")
+                                @Html.HiddenGroupFor(model => model.City, new { @Value = "", id = "City" }, "Names")
+                            </div>
+
+
+                            <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                                <label class="w-100">@DbRes.TResource("User.Transaction.Name.Gender") </label>
+                                @Html.AutoCompleteBuilder(ViewData.TemplateInfo.HtmlFieldPrefix + "_ddlGender", "Gender", LookupCategory.Gender, null, true, "form-control")
+                                @Html.HiddenGroupFor(model => model.Gender, new { @Value = "", id = "Gender" }, "")
+                            </div>
+
+
+                            <div class="form-group col-lg-2 col-md-4 col-sm-6 col-xs-12  mb-3" style="display:none">
+                                @Html.LabelFor(model => model.OtherInformation, new { @class = "w-100" })
+                                @Html.TextBoxGroupFor(model => model.OtherInformation, "Names", new { @class = "form-control", @Value = "", maxlength = "200" }, "Names")
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+                    @*<div class="col-xs-12">
+            <p class="stark">@DbRes.TResource("Admin.User.MustFill") * </p>
+        </div>*@
+
+
+                    @*<div class=" row col-xs-12">
+            <div class="row control-label">
+                <div class="col-xs-12 text-right panel-body">
+                    @Html.StickyHiddenFor(model => model.Key, new { id = "NameEditKey" })
+                    @Html.ClientActionButton(DbRes.TResource("User.Transaction.Name.Add"), Url.Action("AddName", controller), "dvNamesGrid", "NamesOnSuccess", null, "Names", "btnNames", "dvNamesBody", " btn-site ", null, null, UserClaims.Names.Add, "<i class='glyphicon glyphicon-plus'></i>")
+                    @Html.ClientActionButton(DbRes.TResource("User.Transaction.Name.Edit"), Url.Action("EditName", controller), "dvNamesGrid", "NamesOnEditSuccess", null, "Names", "btnEditNames", "dvNamesBody", "btn-site hidden_", null, null, UserClaims.Names.Edit)
+                    <a class="btn-site " style="display:none;" id="aCancelName" onclick="CancelEdit(); return false;">@DbRes.TResource("User.Transaction.Name.Cancel")</a>
+                </div>
+            </div>
+        </div>*@
+
+                </div>
+            </div>
+            @*<hr />*@
+            <div class=" panel-body">
+                <div id="dvNamesGrid">
+                    @Html.Partial("~/Areas/User/Views/Transaction/_NamesGridPartial.cshtml", Model.Names, new ViewDataDictionary { { "IsEnableAction", Model.IsEnableAction }, { "TransactionCategoryId", ViewData["TransactionCategoryId"] } })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        SetAutoCompleteValue('TransactionName_ddlGender', "@genderValue");
+        $('[name="TransactionName.SendSMS"][type="hidden"]').remove();
+
+        var sendSMSCheckBox = $('#TransactionName_SendSMS')
+        sendSMSCheckBox.change(function () {
+            debugger
+            sendSMSCheckBox.val(sendSMSCheckBox.is(":checked"));
+        });
+    });
+    function CollapseDiv(divName) {
+        if ($('#' + divName).css('display') == 'block') {
+            $('#' + divName).css("display", "none");
+            $('#' + divName + 'PlusIcon').css("display", "inline-block");
+            $('#' + divName + 'DashIcon').css("display", "none");
+        }
+        else {
+            $('#' + divName).css("display", "block");
+            $('#' + divName + 'PlusIcon').css("display", "none");
+            $('#' + divName + 'DashIcon').css("display", "inline-block");
+        }
+    }
+    $(document).on("change", "#TransactionName_CivilID", function () {
+        var htmlPrefix = '@ViewData.TemplateInfo.HtmlFieldPrefix';
+        if ($(this).val().length == 10) {
+            var token = $('form:first').find("input[name='__RequestVerificationToken']").val();
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("GetTransactionName",controller)',
+                cache: false,
+                data: { __RequestVerificationToken: token, civilId: $(this).val() },
+                success:
+                    function (data) {
+                        var hasData = false;
+
+                        if (data.Id != null) {
+                            $.each(data, function (name, value) {
+
+                                var x = $("#dvNamesBody #" + name);
+                                if (x.length == 0) {
+                                    $("#dvNamesBody #TransactionName_" + name).val(value);
+                                }
+                                else {
+
+                                    $("#dvNamesBody #" + name).val(value);
+                                    $("#dvNamesBody #" + name).trigger("change");
+
+                                }
+                                hasData = true;
+
+                            });
+                        }
+                        if (hasData) {
+                            $("#dvNamesBody #" + "NationalityId").trigger("change");
+                            $("#dvNamesBody #" + "TitleId").trigger("change");
+                            $("#dvNamesBody #" + "City").trigger("change");
+                            $("#dvNamesBody #" + "RelativeRelation").trigger("change");
+                            $("#dvNamesBody #" + "Gender").trigger("change");
+                        }
+                        else {
+                            if ($("#btnNames").css("display") == "block") {
+                                $("#dvNamesBody #Id").val("");
+                            }
+                        }
+                        return;
+                    }
+            });
+        }
+    });
+
+    function CancelEdit() {
+        $("#btnNames").show();
+        $("#btnResetName").show();
+        $("#btnEditNames").hide();
+        $("#aCancelName").hide();
+        $('#grid-table-grdNames').find('#Key_' + $("#Key").val()).closest('tr').removeClass("grid-row-selected");
+        ClearInputs('dvNamesForm');
+        SetAutoCompleteValue('TransactionName_ddlGender', "@genderValue");
+    }
+
+    function NamesOnSuccess(data, div) {
+        if (data.MessageType != 2) {
+            $("#grid-table-grdNames > tbody > .grid-empty-text").remove();
+            $("#grid-table-grdNames > tbody:last").append(data.Html);
+            ClearInputs('dvNamesForm');
+            SetAutoCompleteValue('TransactionName_ddlGender', "@genderValue");
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function NamesOnEditSuccess(data) {
+        if (data.MessageType != 2) {
+            if (data.Key != "") {
+                $('#grid-table-grdNames').find('#Key_' + data.Key).closest('tr').replaceWith(data.Html);
+            }
+            ClearInputs('dvNamesForm');
+            $("#hdnNames").val(data.hdnValue);
+            $("#btnNames").show();
+            $("#btnResetName").show();
+            $("#btnEditNames").hide();
+            $("#aCancelName").hide();
+            SetAutoCompleteValue('TransactionName_ddlGender', "@genderValue");
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+    function ResetActionName() {
+        $("#btnNames").show();
+        $("#btnEditNames").hide();
+        $("#aCancelName").hide();
+        SetAutoCompleteValue('TransactionName_ddlGender', "@genderValue");
+    }
+    function GetNameById(key) {
+        $('#Key').val(key)
+        $('#NationalityId').val($("#NationalityId_" + key).val());
+        $('#NationalityId').trigger('change');
+        SetAutoCompleteValue('TransactionName_ddlNationality', $("#NationalityName_" + key).val());
+
+        SetAutoCompleteValue('TransactionName_ddlTitle', $("#TitleName_" + key).val());
+        $('#TitleId').val($("#TitleId_" + key).val());
+        $('#TitleId').trigger('change');
+        $("#hdnTitleName").val($("#TitleName_" + key).val());
+
+        SetAutoCompleteValue('TransactionName_ddlCity', $("#CityName_" + key).val());
+        $('#City').val($("#City_" + key).val());
+        $('#City').trigger('change');
+
+        SetAutoCompleteValue('TransactionName_ddlRelativeRelation', $("#RelativeRelationName_" + key).val());
+        $('#RelativeRelation').val($("#RelativeRelation_" + key).val());
+        $('#RelativeRelation').trigger('change');
+
+        SetAutoCompleteValue('TransactionName_ddlGender', $("#GenderName_" + key).val());
+        $('#Gender').val($("#Gender_" + key).val());
+        $('#Gender').trigger('change');
+
+        $('#TransactionName_CivilID').val($("#CivilID_" + key).val());
+        $('#TransactionName_FirstName').val($("#FirstName_" + key).val());
+        $('#TransactionName_MobileNumber').val($("#MobileNumber_" + key).val());
+        $('#TransactionName_Phone').val($("#Phone_" + key).val());
+        $('#TransactionName_OtherInformation').val($("#OtherInformation_" + key).val());
+        $('#TransactionName_Email').val($("#Email_" + key).val());
+        $('#TransactionName_Address').val($("#Address_" + key).val());
+        $("#dvNamesBody #chkMale").prop("checked", $("#Gender_" + key).val() == '1');
+        $("#dvNamesBody #chkFemale").prop("checked", $("#Gender_" + key).val() == '2');
+
+        $('#TransactionName_Id').val($("#Id_" + key).val());
+        $('#TransactionName_Gender').val($("#Gender_" + key).val());
+        $("#btnNames").hide();
+        $("#btnResetName").hide();
+        $("#btnEditNames").show();
+        $("#aCancelName").show();
+        $("#btnEditNames").removeClass("hidden_");
+    }
+</script>

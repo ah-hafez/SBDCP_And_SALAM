@@ -1,0 +1,21 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models
+@using MCS.GridMvc.Helpers;
+@using MCS.GridMvc.Html;
+@using MCS.Common;
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<MCS.UI.Areas.Admin.Models.AdminAudit.AdminAuditGridVM>
+
+
+@Html.Grid(Model).CollectionName("AdminAuditGridVMs").Named("grdAdminAuditGridVMs").Columns(columns =>
+{
+     
+    columns.Add(model => model.UserName).Titled(DbRes.TResource("User.FollowUp.FollowUpType"));
+    columns.Add(model => model.AuditAction).Titled(DbRes.TResource("User.FollowUp.CreatingUserName"));
+    columns.Add(model => model.TableName).Titled(DbRes.TResource("User.FollowUp.CreationDate"));
+    columns.Add(model => model.AuditDate).Titled(DbRes.TResource("User.FollowUp.FollowUpUser"));
+    columns.Add(model => model.).Titled(DbRes.TResource("User.FollowUp.FollowUpReceiveDate"));
+    columns.Add(model => model.FollowUpExpireDateHj).Titled(DbRes.TResource("User.FollowUp.FollowUpExpireDate"));
+    columns.Add(model => model.FollowUpStatus).Titled(DbRes.TResource("User.FollowUp.FollowUpStatus"));
+
+
+})

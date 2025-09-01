@@ -1,0 +1,153 @@
+﻿@{
+    ViewBag.Title = "InboundTransactions";
+}
+
+
+
+<div class="grid formAction noBorder">
+    <div class="headRow">
+        <div class="col4">
+            <div class="iconHeadRow">
+                <img src="~/images/sentPapersMini.png" width="32" height="32" alt="">
+            </div>
+            <h2>
+                @Html.Label("تقرير معاملات الوارد", new { id = "lblPageTitle" })
+                @*<asp:Literal ID="lblPageTitle" runat="server" meta:resourcekey="lblPageTitleResource1"
+                            Text="معاملات الوارد" />*@
+            </h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="colWide text-left">
+            <h3>
+                @Html.Label("معايير البحث", new { id = "lblSearch" })
+                @*<asp:Label ID="lblSearch" runat="server" meta:resourcekey="wclblSearchCriteria" />*@
+            </h3>
+        </div>
+    </div>
+    <div class="rowF text-center" style="display: block">
+        <div class="colWide98">
+            @*<asp:ValidationSummary ID="wcValidationSummary" runat="server" CssClass="alert alert-danger" ForeColor=""
+                        ShowMessageBox="false" ShowSummary="true" meta:resourcekey="wcValidationSummaryResource1" />*@
+        </div>
+    </div>
+    <div class="rowF">
+        <div class="pading">&nbsp;</div>
+        <div class="col2">
+            @Html.Label("الوحدة المعنية بالقيد", new { id = "wslblMenuLabel", @Class = "LredColor" })
+            @*<asp:Label ID="wslblMenuLabel" runat="server" />*@
+        </div>
+
+        @Html.Partial("~/Views/Shared/_MenuCollapsiblePartial.cshtml", null)
+    </div>
+    <div class="rowF">
+
+        <div class="pading">&nbsp;</div>
+        <div class="col2">
+            @Html.Label("أقسام الوحدة", new { id = "wslblMenuLabel", @Class = "LredColor" })
+            @*<asp:Label ID="wslblMenuLabel" runat="server" />*@
+        </div>
+        @Html.Partial("~/Views/Shared/_MenuCollapsiblePartial.cshtml", null)
+    </div>
+    <div class="rowF">
+        <div class="pading">
+            &nbsp;
+        </div>
+        <div class="col2">
+            @Html.Label("من تاريخ", new { @class = "LredColor" })
+            @*<asp:label id="wclblFromDate" runat="server" meta:resourcekey="wclblToDateResource1"
+                cssclass="LredColor" />*@
+        </div>
+        <div class="col3">
+
+            @Html.TextBox("zcalFromDate", null, new { id = "zcalFromDate" })
+            @*<sssframework:textbox id="zcalFromDate" runat="server" />
+                    <sssframework:hijricalendarextender id="HijriCalendarExtender2" targetcontrolid="zcalToDate"
+                        runat="server" />*@
+        </div>
+        @Html.Partial("~/Views/Shared/_TimePickerPartial.cshtml", null)
+        @*<uc1:timepicker runat="server" id="ucTimeSpinTimeTo" getsettime="2359" />*@
+    </div>
+    <div class="rowF">
+        <div class="pading">
+            &nbsp;
+        </div>
+        <div class="col2">
+            @Html.Label("إلى تاريخ", new { @class = "LredColor" })
+            @*<asp:label id="wclblToDate" runat="server" meta:resourcekey="wclblToDateResource1"
+                cssclass="LredColor" />*@
+        </div>
+        <div class="col3">
+
+            @Html.TextBox("zcalToDate", null, new { id = "zcalToDate" })
+            @*<sssframework:textbox id="zcalToDate" runat="server" />
+                    <sssframework:hijricalendarextender id="HijriCalendarExtender2" targetcontrolid="zcalToDate"
+                        runat="server" />*@
+        </div>
+        @Html.Partial("~/Views/Shared/_TimePickerPartial.cshtml", null)
+        @*<uc1:timepicker runat="server" id="ucTimeSpinTimeTo" getsettime="2359" />*@
+    </div>
+    <div class="rowF" id="trInboundSource" runat="server">
+        <div class="pading">
+            &nbsp;
+        </div>
+        <div class="col2">
+            @Html.Label("نوع الوارد", new { id = "wslblInboundSource" })
+            @*                    <asp:Label ID="wslblInboundSource" runat="server" meta:resourcekey="wslblInboundSourceResource1" />*@
+        </div>
+        <div class="col5">
+            @Html.DropDownList("ddlMinutes", new List<SelectListItem>{
+           new SelectListItem{Text="جهات داخلية",Value="1"},
+            new SelectListItem{Text="جهات تابعة للوزارة",Value="2"},
+            new SelectListItem{Text="جهات خارجية",Value="3"}
+
+                }, "--إختر--", new { id = "wscboInboundSource", @class = "col7" })
+            @*<asp:dropdownlist id="wscboInboundSource" runat="server" meta:resourcekey="wscboInboundSourceResource1"
+                cssclass="col7" />*@
+        </div>
+    </div>
+    <div class="rowF">
+        <div class="pading">
+            &nbsp;
+        </div>
+        <div class="col2">
+            @Html.Label("مستوى السرية", new { id = "wslblDocConfLevel" })
+
+            @*                    <asp:Label ID="wslblDocConfLevel" runat="server" meta:resourcekey="wslblDocConfLevelResource1" />*@
+        </div>
+        <div class="col5">
+            @Html.DropDownList("ddlMinutes", new List<SelectListItem>{
+            new SelectListItem{Text="عادى",Value="1"},
+            new SelectListItem{Text="سري",Value="2"},
+            new SelectListItem{Text="سري للغاية",Value="3"}
+
+                }, "--إختر--", new { id = "wscboInboundSource", @class = "col7" })
+           @* <asp:dropdownlist id="wscboDocConfLevel" runat="server" meta:resourcekey="wscboDocConfLevelResource1"
+                cssclass="col7" />*@
+        </div>
+    </div>
+    <div class="rowF">
+        <div class="pading">
+            &nbsp;
+        </div>
+        <div class="col2">
+            @Html.Label("درجة الأسبقية", new { id = "wslblDocPriorityLevel" })
+            @*                    <asp:Label ID="wslblDocPriorityLevel" runat="server" meta:resourcekey="wslblDocPriorityLevelResource1" />*@
+        </div>
+        <div class="col6">
+            @Html.Partial("~/Views/Shared/_PriorityLevelPartial.cshtml", null)
+        </div>
+    </div>
+    <div class="rowF text-center">
+        <div class="colWide">
+            <input type="button" value="@DbRes.TResource("User.Search.SubmitSearch")" id="eibtnSearch" class="btn btnBlue" />
+            @*<sss:sssbutton id="eibtnSearch" runat="server" cssclass="btn btnBlue" onclick="eibtnSearch_Click"
+                meta:resourcekey="eibtnSearch" />*@
+        </div>
+    </div>
+    <div class="footerRow">
+        <div class="colWide">
+            &nbsp;
+        </div>
+    </div>
+</div>

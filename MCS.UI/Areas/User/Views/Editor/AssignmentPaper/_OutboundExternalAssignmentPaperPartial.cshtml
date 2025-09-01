@@ -1,0 +1,1112 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Common;
+@using MCS.UI.Areas.User.Models.Assignment
+@using MCS.UI.Areas.User.Models.Transaction;
+@using MCS.Framework.Controls
+
+@model TransactionAssignmentVM
+
+@{
+    Model.DeliveryMethodId = DeliveryMethodType.Electronic.LookupIdentity(LookupCategory.DeliveryMethod, SessionInfo.CultureShortName);
+    int i = 1;
+
+}
+<div>
+    <div>
+        <div class="" id="dvEditorTreeAssignmentPaper">
+            @using (Html.BeginForm("AddTemporaryEntity", "Inbound", FormMethod.Post, new { id = "frmAddTemporaryEntity", @class = "form-horizontal form-row" }))
+            {
+                @Html.AntiForgeryToken()
+                <div id="dvAddTemporaryEntity" class="col-xs-12">
+                    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3 hidden_">
+                        <div class="inline-radio ">
+                            <label>@DbRes.TResource("User.Transaction.Assignment.SearchType")</label>
+                            <div>
+                                @Html.RadioButton("rbgSearchMethod", @DbRes.TResource("User.Transaction.Assignment.SearchByUser"), true, htmlAttributes: new { @onchange = "toggleSearchMethod()", id = "EditorAssignmentPaper_rbSearchByUser" })
+                                @DbRes.TResource("User.Transaction.Assignment.SearchByUser")
+
+                                @Html.RadioButton("rbgSearchMethod", @DbRes.TResource("User.Transaction.Assignment.SearchByOrgUnit"), false, htmlAttributes: new { @onchange = "toggleSearchMethod()", id = "EditorAssignmentPaper_rbSearchByOrgUnit" })
+                                @DbRes.TResource("User.Transaction.Assignment.SearchByOrgUnit")
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3" id="divUser">
+                        @Html.LabelFor(model => model.ToUserId, new { @class = "w-100" })
+                        @Html.EditorFor(model => model.ToUserId, "AutoComplete", additionalViewData: new { autoCompleteControlid = "ddlAssignmentPaperUsers", hdnIdToSaveValue = "hdnAssignmentPaperUserId", items = "", selectedId = Model != null ? Model.ToUserId.ToString() : null, matchAnywhere = true, hdnExtraParametersId = "", selectFirstIndex = false, validationGroup = "AssignmentPaper", onChangeCallback = "DoCheckUser", sourceMethod = Url.Action("AutoComplete_SearchUsersByOrgUnit", "Inbound"), sourceParameters = "" })
+                        @Html.HiddenFor(model => model.ToUserName, new { id = "hdnAssignmentPaperUserName" })
+                    </div>
+
+                    <div class="form-group col-lg-6 col-md-4 col-sm-6 col-xs-12 mb-3" id="divOrgUnit">
+                        <div id="dvDepartmentsTrees">
+                            @*<label>@Html.DisplayNameFor(model => model.ToOrgUnitId)<span class="stark">*</span></label>*@
+                            @*@Html.EditorFor(model => model.ToOrgUnitId, "OrgHierarchyCaller", additionalViewData: new { treeId = "ToOrgUnitId", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Shared"), onClickfunction = "DoCheckOrgUnit", ValidationGroup = "AssignmentPaper", ShowAddPartyButton = false, GetChildrenActionParameters = Newtonsoft.Json.JsonConvert.SerializeObject(new { UserId = "##ddlAssignmentPaperUsers_hdnIdToSaveValue" }) })*@
+                            @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.ToOrgUnitId, TreeMode.Single, "ToOrgUnitId", true, "GetDirectedToUsersByOrgUnitId_Assignment", null, "dvDepartmentsTrees")
+
+                        </div>
+                        <i id="CalMessageIcon" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                        <span id="DepartmentValidateMessage" style="color:red"></span>
+                    </div>
+
+                    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3" style="margin-top:23px;">
+                        <a class="btn-site" onclick="Clear()"> <i class="glyphicon glyphicon-remove"></i> @DbRes.TResource("User.Transaction.Assignment.Cancel") </a>
+                        <a class="btn-site" onclick="checkIfAnEntitySelected()"><i class="glyphicon glyphicon-plus"></i> @DbRes.TResource("User.Transaction.Assignment.TemporaryAddition") </a>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!--<div class="row DepartmentsTitle">-->
+        @*<hr />*@
+        <!--<div class="col-xs-12">
+                <h4 class="title4 sub-title sub-title-margin d-inline-block">@DbRes.TResource("User.Departments")</h4>
+                <div id="CurrentDate" class="small d-inline-block"></div>
+            </div>
+        </div>-->
+        <form>
+            <div class="form-horizontal">
+
+                <div id="AddedEntities">
+                    @{
+                        var list = ViewData["AssignmentPaperData"] as List<TransactionAssignmentVM> ?? new List<TransactionAssignmentVM>();
+                    }
+                    <table class="table" style="border: 2px solid #e7e7e7">
+
+                        <thead>
+                            <tr>
+                                <th scope="col">
+                                    <h3 class="title4 sub-title sub-title-margin d-inline-block">المجموعة</h3>
+                                </th>
+                                <th scope="col">
+                                    <h3 class="title4 sub-title sub-title-margin d-inline-block"></h3>
+                                </th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var group in list.GroupBy(a => a.GroupName))
+                            {
+                                <tr>
+                                    <th scope="row" id="groupName" style="cursor:pointer" onclick="GroupDisplay('@group.Key')"><h3 class="title4 sub-title sub-title-margin d-inline-block">@group.Key</h3></th>
+                                    <td>
+                                        <div style="display:none" id="GroupData_@group.Key">
+
+                                            @foreach (var item in group)
+                                            {
+                                                item.Key = i;
+                                                Html.RenderPartial("~/Areas/User/Views/Editor/AssignmentPaper/_AddedOutboundExternalAssignmentEntities.cshtml", item, Html.ViewData);
+                                                i++;
+
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+
+                </div>
+
+                <i id="CalMessageOrg" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                <span id="dateMessageOrg" style="color:red"></span>
+                @*<hr />*@
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        @*<hr />*@
+                    </div>
+                </div>
+
+
+                <div class="form-group col-lg-3 col-md-3 col-sm-6 col-xs-12 mb-2 divDDl ActionId">
+                    <label class="control-label">@DbRes.TResource("User.Transaction.Assignment.ActionId")<span class="stark NotIndividual">*</span></label>
+                    @Html.AutoCompleteBuilder("Action_" + Html.IdFor(a => a.ActionId).ToString(), Html.IdFor(a => a.ActionId).ToString(), ViewData["AllActionsData"].ToString(), Model != null ? Model.ActionId.ToString() : null, true, "form-control DDLClass", "", "", "", true, "", "ActionChanged")
+                    @Html.HiddenGroupFor(model => model.ActionId, new { @Value = "", id = Html.IdFor(a => a.ActionId).ToString() }, "AssignmentPaper")
+                </div>
+
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                    <label class="w-100">@DbRes.TResource("User.Explanation.Confidentiality")<span class="stark NotIndividual">*</span></label>
+                    @Html.AutoCompleteBuilder("ddlExplanationConfedentialityForAssignmentPaper", "hdnExplanationConfedentialityForAssignmentPaper", ViewData["ExplanationConfidentialityData"].ToString(), null, true, "form-control", "", "", "", true)
+                    @Html.Hidden("hdnExplanationConfedentialityForAssignmentPaper", "", new { id = "hdnExplanationConfedentialityForAssignmentPaper" })
+                </div>
+
+
+                <i id="CalMessageConfidentiality" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                <span id="dateMessageConfidentiality" style="color:red"></span>
+
+                <div class="form-group col-sm-6 col-xs-12 mb-3">
+                    <label class="w-100">@DbRes.TResource("User.Transaction.Assignment.AssignmentPaper") </label>
+                    <div contenteditable="true" id="explanation" class="form-control explanationDiv"></div>
+                    @*<textarea class="form-control long-textarea2" id="explanation"></textarea>*@
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        @*<hr />*@
+                    </div>
+                </div>
+
+                <div class="form-group col-lg-3 col-md-6 col-sm-12 col-xs-12 mb-3">
+                    @*<label class="w-100">@DbRes.TResource("User.Transaction.AssignmenPaper.FollowUp")</label>*@
+                    <input id="followUpCheck" class="form-check-input" type="checkbox" ><label class="dark-color p-0"> @DbRes.TResource("للمتابعة") </label>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        @*<hr />*@
+                    </div>
+                </div>
+
+                <div id="followupshow">
+
+                    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                        <label class="w-100">@DbRes.TResource("User.Transaction.FollowUp.Proccess") <span class="stark">*</span></label>
+                        @Html.AutoCompleteBuilder("ddlAssignmentPaperFollowUpProccess", "AssignmentPaperFollowUpProccessId", ViewData["FollowUpProccess"].ToString(), null, true, "form-control", selectFirstIndex: true)
+                        @Html.HiddenGroupFor(model => model.FollowUpProccessId, new { @Value = "", id = "AssignmentPaperFollowUpProccessId" }, "AssignmentPaperFollowUp")
+                    </div>
+
+                    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                        <label class="w-100">@DbRes.TResource("User.Transaction.FollowUp.Period") <span class="stark">*</span></label>
+                        @Html.AutoCompleteBuilder("ddlAssignmentPaperFollowUpPeriod", "AssignmentPaperFollowUpPeriodId", ViewData["FollowUpPeriod"].ToString(), null, true, "form-control", selectFirstIndex: true)
+                        @Html.HiddenGroupFor(model => model.ProccessPeriod, new { @Value = "AssignmentPaperFollowUpPeriodId", id = "AssignmentPaperFollowUpPeriodId" }, "AssignmentPaperFollowUp")
+                    </div>
+                    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3" id="divAssignmentPaperFollowupDate" style="display:none">
+
+                        <label class="w-100">@DbRes.TResource("User.Transaction.FollowUp.EndDate")<span class="stark NotIndividual">*</span></label>
+                        <div class="with-icon">
+                            @Html.CalendarCustom("AssignmentPaperFollowUpDateCal", "hdnAssignmentPaperFolloupDateGreg", "hdnAssignmentPaperFollowUpDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), Model != null ? Model.FollowupDateToH : null, "form-control")
+                            <a class=" date-icon2 " onclick="showCalender('FollowUpDateCal')"><img src="~/Content/User/lib/images/SystemIcon/main bar-08.svg" width="30" /></a>
+                            @Html.HiddenGroupFor(model => model.FollowupDateTo, new { id = "hdnAssignmentPaperFolloupDateGreg", AutoComplete = "off" }, "")
+                            @Html.HiddenGroupFor(model => model.FollowupDateToH, new { id = "hdnAssignmentPaperFollowUpDateUm", AutoComplete = "off" }, "")
+                            <i id="FollowUpMessage" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                            <span id="FollowUpdateMessage" style="color:red"></span>
+                        </div>
+                    </div>
+                </div>
+                @Html.StickyHidden("isConfirmed", "false", new { id = "isConfirmed" })
+
+                @*<hr />*@
+                <i id="FollowCalMessageOrg" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                <span id="FollowdateMessageOrg" style="color:red"></span>
+                @*<hr />*@
+
+                @*<div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+            <label class="w-100">@DbRes.TResource("User.Explanation.Confidentiality")<span class="stark NotIndividual">*</span></label>
+            @Html.AutoCompleteBuilder("ddlExplanationConfedentialityForAssignmentPaper", "hdnExplanationConfedentialityForAssignmentPaper", ViewData["ExplanationConfidentialityData"].ToString(), null, true, "form-control", "", "", "", true)
+            @Html.Hidden("hdnExplanationConfedentialityForAssignmentPaper", "", new { id = "hdnExplanationConfedentialityForAssignmentPaper" })
+        </div>
+        <i id="CalMessageConfidentiality" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+        <span id="dateMessageConfidentiality" style="color:red"></span>*@
+
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3" hidden>
+                    <label class="w-100">@DbRes.TResource("User.Transaction.Assignment.DeliveryMethod") <span class="stark"> *</span> </label>
+                    @Html.AutoCompleteBuilder("ddlDeliveryMethodForAssignmentPaper", "hdnDeliveryMethodForAssignmentPaper", ViewData["DeliveryMethod"].ToString(),
+                   Model != null ? Model.DeliveryMethodId.ToString() : null, true, "form-control", onChangeCallback: "onChangeAssinmentPaperMethod")
+                    @Html.Hidden("hdnDeliveryMethodForAssignmentPaper", "", new { @Value = "", id = "hdnDeliveryMethodForAssignmentPaper" })
+                    <i id="CalMessageDeliveryMethod" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                    <span id="dateMessageDeliveryMethod" style="color:red"></span>
+                </div>
+
+                <!--<div class="form-group col-sm-6 col-xs-12 mb-3">
+    <label class="w-100">@DbRes.TResource("User.Transaction.Assignment.AssignmentPaper") </label>
+    <div contenteditable="true" id="explanation" class="form-control explanationDiv"></div>-->
+                @*<textarea class="form-control long-textarea2" id="explanation"></textarea>*@
+                <!--</div>-->
+
+
+                <div id="ReporterContentAssignmentPaper" class="hide">
+                    <div class="form-group col-sm-6 col-xs-12 mb-3">
+
+                        @Html.LabelFor(model => model.ReporterId, new { @class = "w-100" })
+                        @Html.AutoCompleteBuilder("ddlAssignmentPaperReporter", "hdnAssignmentPaperReporter",
+                         ViewData["Reporters"].ToString(), Model != null ? Model.ReporterId.ToString() : null, true, "form-control")
+                        @Html.HiddenGroupFor(model => model.ReporterId, new { id = "hdnAssignmentPaperReporter" })
+                        <div class="form-group">
+                            <label class="w-100"></label>
+                            @Html.ClientButton("<i class='glyphicon glyphicon-plus'></i>" + DbRes.TResource("User.Transaction.BasicInfo.AddNewReporter"), null, " btn-site", "AddReporter", UserClaims.Reporter.AddReporter)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        @*<hr />*@
+                    </div>
+                    <div class="col-xs-12 text-right preview-mini-options">
+                        <a class="btn-site btn-icon" onclick="openPrintModal()"> طباعة الأدارات</a>
+
+                        <a class="btn-site btn-icon" onclick="PrintAssignment()"> @DbRes.TResource("User.Transaction.Assignment.Print") </a>
+                        <a class="btn-site btn-icon" onclick="SendAssignmentPaper()"> @DbRes.TResource("User.Transaction.Assignment.Send") </a>
+                        <a class="btn-site btn-icon" onclick="PdfAssignmentPaper()">Approved</a>
+
+
+
+
+                        @*<a class="btn-site" onclick="GetUserDelegationsById()" id="GetUserDelegationsById"> @DbRes.TResource("User.Transaction.Assignment.Send")</a>*@
+
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    @Html.StickyHidden("hdnTransactionId", ViewData["TransactionId"].ToString(), new { id = "hdnAssignmentsTransactionId", @class = "TransactionId" })
+
+</div>
+
+<div class="modal fade" id="PrintDepartments" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="PrintBody" class="modal-body">
+
+            </div>
+            <div class="modal-footer text-right">
+                <button id="TransactionPrint" class="btn btn-site" onclick="PrintDepartment()"><i class="la la-print"></i> طباعة</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="UserDelegationsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">تفويضات الموظف </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="col-lg-12">
+                    <ul id="UserDelegationsList" style="list-style: disc;">
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnsConfirmSendEditorAssignments" class="btn-site">استمرار</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+
+    function GroupDisplay(id) {
+        var GroupData = document.getElementById('GroupData_' + id);
+        debugger
+        if (GroupData.style.display === "none") {
+            GroupData.style.display = "block";
+        }
+        else {
+            GroupData.style.display = "none";
+        }
+    }
+
+    var checkbox = document.querySelector("#followUpCheck");
+
+    checkbox.addEventListener('change', function ()
+    {
+        if (this.checked)
+        {
+            document.querySelector("#followupshow").style = "display:block;";
+            $("#AssignmentPaperFollowUpPeriodId").val(14);
+            $("#ddlAssignmentPaperFollowUpPeriod").val('أسبوعين');
+        }
+        else
+        {
+            document.querySelector("#followupshow").style = "display:none;";
+        }
+    });
+
+    function GetUserDelegationsById() {
+
+
+             var errorCount = 0;
+        if (localStorage.getItem("selectedEntity") == null) {
+            $("#CalMessageOrg").removeClass("hidden_");
+            $("#CalMessageorg").show();
+            $("#dateMessageOrg").html('@Html.Raw(DbRes.TValidation("User.Transaction.AssignedToEntityValidation"))');
+            errorCount++;
+        }
+        if ($('#hdnDeliveryMethodForAssignmentPaper').val() == null || $('#hdnDeliveryMethodForAssignmentPaper').val() == "") {
+            $("#CalMessageDeliveryMethod").removeClass("hidden_");
+            $("#CalMessageDeliveryMethod").show();
+            $("#dateMessageDeliveryMethod").html('@Html.Raw(DbRes.TValidation("User.Transaction.AssignmentPaper.DeliveryMethodValidation"))');
+            errorCount++
+        }
+        if (($('#explanation').text() != null && $('#explanation').text().trim() != "") && ($('#hdnExplanationConfedentialityForAssignmentPaper').val() == null || $('#hdnExplanationConfedentialityForAssignmentPaper').val() == "")) {
+            $("#CalMessageConfidentiality").removeClass("hidden_");
+            $("#CalMessageConfidentiality").show();
+            $("#dateMessageConfidentiality").html('@Html.Raw(DbRes.TValidation("User.Explanation.ConfidentialityRequired"))');
+            errorCount++
+        }
+        if (errorCount > 0) {
+            return false;
+        }
+
+        var AssginmentIndividualToUserId = '';
+        var AssginmentIndividualToUserName = '';
+        $('input.isAssigned').each(function () {
+            if ($(this).attr('value')) {
+                AssginmentIndividualToUserId = $(this).parent().find('.ToUserId').val();
+                AssginmentIndividualToUserName = $(this).parent().parent().find("#ToUserNamelabel").text();
+            }
+
+        });
+
+        var del = "{0} مفوض بالعمل عن {1} من تاريخ {2} الى تاريخ {3}."
+        var DelegationsList = '';
+        $("ul#UserDelegationsList").html('');
+        if (AssginmentIndividualToUserId != '') {
+            $.ajax({
+                url: "@Url.Action("GetUserDelegationsById", "Inbound")",
+                type: 'GET',
+                data: { UserId: AssginmentIndividualToUserId },
+                success: function (data) {
+                    if (data.result != null) {
+                        if (data.result.length > 0) {
+
+                            data.result.forEach(element => {
+                                var Msg = del;
+                                Msg = Msg.replace('{0}', AssginmentIndividualToUserName);
+                                Msg = Msg.replace('{1}', element.UserPreferenceName);
+                                Msg = Msg.replace('{2}', new Date(parseInt(element.FromDate.replace('/Date(', '').replace(')/', ''))).toLocaleDateString());
+                                Msg = Msg.replace('{3}', new Date(parseInt(element.ToDate.replace('/Date(', '').replace(')/', ''))).toLocaleDateString());
+
+                                DelegationsList = DelegationsList + '<li>' + Msg + '</li>'
+                            });
+
+                            $("ul#UserDelegationsList").append(DelegationsList);
+                            $("#UserDelegationsModal").modal();
+                        }
+                        else {
+                            $("#UserDelegationsList").hide();
+                            $("#UserDelegationsModal").modal('hide');
+                            SendAssignmentPaper();
+                        }
+
+
+                    } else {
+                        $("#UserDelegationsModal").modal('hide');
+                        SendAssignmentPaper();
+                    }
+
+
+
+                },
+                error: function (a) {
+                }
+            });
+        } else {
+            $("#UserDelegationsModal").modal('hide');
+            SendAssignmentPaper();
+        }
+    }
+
+    $(document).ready(function () {
+
+
+        $("#btnsConfirmSendEditorAssignments").click(function () {
+
+            $("#UserDelegationsModal").modal('hide');
+            SendAssignmentPaper();
+        });
+        setTimeout(function () {
+            $('#EditorAssignmentPaper_rbSearchByOrgUnit').click();
+        }, 500);
+    });
+</script>
+
+<script>
+    function openPrintModal() {
+        var PrintHtml = '<div class="col-xl-12">' + $(".DepartmentsTitle").find('.col-xs-12').html()+'<hr></div>'
+        $('#AddedEntities').find('div.row').each(function () {
+
+            var ToOrgUnitName =  $(this).find('.ToOrgUnitName').find('div label').html()
+            var ToUserId = $(this).find('.ToUserId').find('div label').html()
+            var Actiontext = $(this).find('.ActionId').find('.AutPosition .DDLClass').val()
+            var isAssigned = $(this).find('.divRadio').find('.isAssigned').val()
+            var IsCopy = $(this).find('.divRadio').find('.IsCopy').val()
+
+            PrintHtml = PrintHtml + '<div class="row">';
+            PrintHtml = PrintHtml + '<div class="form-group col-lg-3 col-md-3 col-sm-3 col-xs-3 mb-2">';
+            PrintHtml = PrintHtml + '<label class="control-label">اسم الادارة :</label>';
+            PrintHtml = PrintHtml + '<div><label>' + ToOrgUnitName + '</label></div>';
+            PrintHtml = PrintHtml + '</div>';
+
+            PrintHtml = PrintHtml + '<div class="form-group col-lg-3 col-md-3 col-sm-3 col-xs-3 mb-2">';
+            PrintHtml = PrintHtml + '<label class="control-label">الموظف  :</label>';
+            PrintHtml = PrintHtml + '<div><label>' + ToUserId + '</label></div>';
+            PrintHtml = PrintHtml + '</div>';
+
+            PrintHtml = PrintHtml + '<div class="form-group col-lg-3 col-md-3 col-sm-3 col-xs-3 mb-2">';
+            PrintHtml = PrintHtml + '<label class="control-label"> النوع :</label>';
+            PrintHtml = PrintHtml + '<div class="inline-radio mr-3 ml-3">';
+
+
+
+            if (isAssigned == 'true') {
+                PrintHtml = PrintHtml + '<div class="radio">  <input class="form-check-input" disabled type="radio" checked >  <label class="form-check-label"> إحالة </label> ';
+            }
+            else {
+                PrintHtml = PrintHtml + '<div class="radio">  <input class="form-check-input" disabled type="radio"   >   <label class="form-check-label"> إحالة </label> ';
+            }
+
+            PrintHtml = PrintHtml + '</div>';
+
+            if (IsCopy == 'true') {
+                PrintHtml = PrintHtml + '<div class="checkbox  mr-3 ml-3">  <input disabled class="form-check-input" type="checkbox"   checked ><label class="form-check-label"> صورة </label></div> ';
+            }
+            else {
+                PrintHtml = PrintHtml + '<div class="checkbox  mr-3 ml-3">  <input disabled class="form-check-input" type="checkbox"    ><label class="form-check-label"> صورة </label></div>';
+            }
+
+            PrintHtml = PrintHtml + '</div>';
+            PrintHtml = PrintHtml + '</div>';
+            PrintHtml = PrintHtml + '<div class="form-group col-lg-3 col-md-3 col-sm-3 col-xs-3 mb-2">';
+            PrintHtml = PrintHtml + '<label class="control-label">الإجراء  :</label>';
+            PrintHtml = PrintHtml + '<div><label>' + Actiontext + '</label></div>';
+            PrintHtml = PrintHtml + '</div>';
+            PrintHtml = PrintHtml + '</div>';
+        });
+
+        $("#PrintBody").html(PrintHtml);
+        $('#PrintDepartments').modal();
+    }
+
+
+    function PrintDepartment() {
+        var cssUrl = '<link href="../../../Content/Admin/lib/bootstrap/css/bootstrap.min.rtl.css" rel="stylesheet">';
+        var cssUrl = cssUrl + '<link href="../../../Content/Admin/lib/bootstrap/css/bootstrap.form.rtl.css" rel="stylesheet">';
+        var cssUrl = cssUrl + '<link href="../../../Content/Admin/lib/bootstrap/css/bootstrap.grid.rtl.css" rel="stylesheet">';
+        var cssUrl = cssUrl + '<link href="../../../Content/Admin/lib/css/main.css" rel="stylesheet">';
+        var cssUrl = cssUrl + '<link href="../../../Content/Admin/lib/css/jquery-ui.css" rel="stylesheet">';
+        var cssUrl = cssUrl + '<link href="../../../Content/Admin/lib/css/style.css" rel="stylesheet">';
+
+
+        var contents = $("#dvContents").html();
+        var frame1 = $('<iframe />');
+        frame1[0].name = "frame1";
+        frame1.css({ "position": "absolute", "top": "-1000000px" });
+        $("body").append(frame1);
+        var frameDoc = frame1[0].contentWindow ? frame1[0].contentWindow : frame1[0].contentDocument.document ? frame1[0].contentDocument.document : frame1[0].contentDocument;
+        frameDoc.document.open();
+        //Create a new HTML document.
+        frameDoc.document.write('<html><head><title>DIV Contents</title>');
+        frameDoc.document.write('</head><body>');
+        //Append the external CSS file.
+        frameDoc.document.write(cssUrl);
+        //Append the DIV contents.
+        frameDoc.document.write($("#PrintBody").html());
+        frameDoc.document.write('</body></html>');
+        frameDoc.document.close();
+        setTimeout(function () {
+            window.frames["frame1"].focus();
+            window.frames["frame1"].print();
+            frame1.remove();
+        }, 500);
+
+
+
+    }
+    $(document).ready(function () {
+        onChangeAssinmentPaperMethod();
+    });
+
+    function onChangeAssinmentPaperMethod() {
+        var value = $('#hdnDeliveryMethodForAssignmentPaper').val();
+        switch (parseInt(value)) {
+            case DeliveryMethodType.Paper:
+                ShowHideAssinmentPaperReporterContent(true);
+                break;
+            case DeliveryMethodType.Electronic:
+                ShowHideAssinmentPaperReporterContent(false);
+                break;
+            case DeliveryMethodType.ElectronicPaper:
+                ShowHideAssinmentPaperReporterContent(true);
+                break;
+            default:
+        }
+    }
+
+    function ShowHideAssinmentPaperReporterContent(isShow) {
+        if (isShow) {
+            $('#ReporterContentAssignmentPaper').removeClass('hide');
+        } else {
+            $('#ReporterContentAssignmentPaper').addClass('hide');
+        }
+    }
+
+    function ActionChanged() {
+        var divrValue = $(".rValue:checked").closest(".divRadio").next(".divDDl").find(".AutPosition");
+        if (divrValue && divrValue.length > 0) {
+            var ddlControl = $(divrValue).find(".DDLClass");
+            if (ddlControl && ddlControl.length > 0) {
+                $('#explanation > .tag').remove();
+                $("#explanation").html('<span class="tag" contenteditable="false" style="display:inline-block;"><a class="d-flex flex-nowrap" data-editable="True"><span class="align-self-center">' + ddlControl.val() + '</span><span class="align-self-center removing_tag uicon icon_close" title="حذف"></span> </a> </span>' + ' ' + $("#explanation").html().trim() + '&nbsp;');
+            }
+        }
+    }
+
+    var urlAccordingToTransactionType;
+    var errorCount = 0;
+    function SendAssignmentPaper() {
+        debugger;
+       var AddFollowUp = false;
+
+        errorCount = 0;
+        if (localStorage.getItem("selectedEntity") == null) {
+            $("#CalMessageOrg").removeClass("hidden_");
+            $("#CalMessageorg").show();
+            $("#dateMessageOrg").html('@Html.Raw(DbRes.TValidation("User.Transaction.AssignedToEntityValidation"))');
+            errorCount++;
+        }
+        if ($('#hdnDeliveryMethodForAssignmentPaper').val() == null || $('#hdnDeliveryMethodForAssignmentPaper').val() == "") {
+            $("#CalMessageDeliveryMethod").removeClass("hidden_");
+            $("#CalMessageDeliveryMethod").show();
+            $("#dateMessageDeliveryMethod").html('@Html.Raw(DbRes.TValidation("User.Transaction.AssignmentPaper.DeliveryMethodValidation"))');
+            errorCount++
+        }
+        if (($('#explanation').text() != null && $('#explanation').text().trim() != "") && ($('#hdnExplanationConfedentialityForAssignmentPaper').val() == null || $('#hdnExplanationConfedentialityForAssignmentPaper').val() == "")) {
+            $("#CalMessageConfidentiality").removeClass("hidden_");
+            $("#CalMessageConfidentiality").show();
+            $("#dateMessageConfidentiality").html('@Html.Raw(DbRes.TValidation("User.Explanation.ConfidentialityRequired"))');
+            errorCount++
+        }
+
+        if (followUpCheck.checked == true) {
+            AddFollowUp = true;
+            AssignPaperCheckFollowUpDate();
+
+        }
+        else {
+
+             $('#hdnAssignmentPaperFolloupDateGreg').val(null);
+             $('#hdnAssignmentPaperFollowUpDateUm').val(null);
+            $('#AssignmentPaperFollowUpPeriodId').val(null);
+            $('#AssignmentPaperFollowUpProccessId').val(null);
+        }
+        if (errorCount > 0) {
+            return false;
+        }
+
+
+        //var divrValue= $(".rValue:checked").closest(".divRadio").next(".divDDl").find(".AutPosition");
+        //$("#explanation").text($(divrValue).find(".DDLClass").val() + '\n' + $("#explanation").text().trim());
+        var token = $("#frmAddTemporaryEntity").find("input[name='__RequestVerificationToken']").val();
+        var AddedEntities = $("#AddedEntities :input").serialize();
+        var explanation = $("#explanation").text().trim();
+        var Confedentiality = $('#hdnExplanationConfedentialityForAssignmentPaper').val();
+        var deliveryMethodId = $('#hdnDeliveryMethodForAssignmentPaper').val();
+        var TransactionId = @ViewData["TransactionId"];
+        var reporterId = $('#hdnAssignmentPaperReporter').val();
+        var FolloupDateTo = $('#hdnAssignmentPaperFolloupDateGreg').val();
+        var FolloupDateH = $('#hdnAssignmentPaperFollowUpDateUm').val();
+        var FollowUpPeriod = $('#AssignmentPaperFollowUpPeriodId').val();
+        if (FollowUpPeriod == "") {
+            FollowUpPeriod = "0"
+        }
+        var FollowUpProccess = $('#AssignmentPaperFollowUpProccessId').val();
+        if (FollowUpProccess == "") {
+            FollowUpProccess = "0"
+        }
+        //var requestData = "__RequestVerificationToken=" + token + "&" + AddedEntities + "&explanationTxt=" + explanation + "&ConfedentialityId=" + Confedentiality +
+        //    "&TransactionId=" + TransactionId + "&deliveryMethodId=" + deliveryMethodId + "&reporterId=" + reporterId +
+        //    "&FolloupDateTo=" + FolloupDateTo +
+        //        "&FolloupDateH=" + FolloupDateH + "&FromEntityIdFollowUp=" + FromEntityIdFollowUp + "&FollowUpToUserIdFollowUp=" + FollowUpToUserIdFollowUp;
+
+
+        var selectedConfidentiality = $("input[name='selectedConfidentiality']:checked").val() != undefined ? $("input[name='selectedConfidentiality']:checked").val() : $('#hdnExplanationConfedentialityForAssignmentPaper').val();
+        var selectedAction = $("input[name='selectedAction']:checked").val() != undefined ? $("input[name='selectedAction']:checked").val() : '';
+
+        var isConfirmed = $("#isConfirmed").val();
+
+        var requestData = "__RequestVerificationToken=" + token + "&" + AddedEntities +
+            "&explanationTxt=" + explanation +
+            "&ConfedentialityId=" + selectedConfidentiality +
+            "&TransactionId=" + TransactionId +
+            "&deliveryMethodId=" + deliveryMethodId +
+            "&reporterId=" + reporterId +
+            "&AddFollowUp=" + AddFollowUp +
+            "&FolloupDateTo=" + FolloupDateTo +
+            "&FolloupDateH=" + FolloupDateH +
+            "&FollowUpPeriod=" + FollowUpPeriod +
+            "&FollowUpProccess=" + FollowUpProccess +
+            "&isConfirmed=" + isConfirmed +
+            "&action=" + selectedAction;
+
+
+
+
+
+        if (AddedEntities != "") {
+            $.ajax({
+                type: 'post',
+                cache: false,
+                url: '@Url.Action("SendAssignmentPaper", "Inbound")',
+                data: requestData,
+                success:
+                    function (data) {
+                        if (data.MessageType != 2) {
+                            urlAccordingToTransactionType = data.returnUrl;
+                            if (parseInt($('#hdnDeliveryMethodForAssignmentPaper').val()) == DeliveryMethodType.ElectronicPaper) {
+                                $.ajax({
+                                    type: 'post',
+                                    url: '@Url.Action("GetDeliveryReportByTransactionIds", "Inbound")',
+                                    data: { transactionIds: $('#hdnTransactionID').val(), __RequestVerificationToken: token },
+                                    success: function (data) {
+                                        if (data.MessageType != 2) {
+                                            PrintAssignmentPaperDeliveryReport(data.TransactionDeliveryReports);
+                                        }
+                                        else {
+                                            RedirectToTargetPage();
+                                            //ShowErrorMessage(data.MessageText);
+                                        }
+                                    }
+                                });
+                            }
+                            else {
+                                RedirectToTargetPage();
+                            }
+                        }
+                        else {
+                            //RedirectToTargetPage();
+                          ShowErrorMessage(data.MessageText);
+                        }
+                    }
+            });
+        }
+    }
+
+
+        function SaveAssignmentPaper() {
+        var AddFollowUp = false;
+        errorCount = 0;
+
+
+        var token = $("#frmAddTemporaryEntity").find("input[name='__RequestVerificationToken']").val();
+        var AddedEntities = $("#AddedEntities :input").serialize();
+        var TransactionId = @ViewData["TransactionId"];
+            var explanation = $("#explanationTxt").val();
+
+
+
+            var requestData = "__RequestVerificationToken=" + token + "&" + AddedEntities + "&TransactionId=" + $('#hdnTransactionID').val() + "&explanationTxt=" + explanation;
+
+
+        if (AddedEntities != "") {
+        $.ajax({
+            type: 'post',
+            cache: false,
+            url: '@Url.Action("SaveAssignmentPaper","Inbound")',
+            data: requestData,
+            success:
+                function (data) {
+                    debugger;
+                    if (data.MessageType != 2) {
+                        ShowSuccesMessage(data.MessageText);
+                    }
+                    else {
+                        debugger;
+                        ShowErrorMessage(data.MessageText);
+                    }
+                }
+            });
+        }
+    }
+        ///////////// اعتماد
+    function PdfAssignmentPaper() {
+        debugger;
+        var hdnMainDocToken  = $('#hdnMainDocToken').val();
+        var token = $("#frmAddTemporaryEntity").find("input[name='__RequestVerificationToken']").val();
+        var AddedEntities = $("#AddedEntities :input").serialize();
+
+        var explanation = $("#explanation").text();
+
+
+        var selectedConfidentiality = $("input[name='selectedConfidentiality']:checked").val() != undefined ? $("input[name='selectedConfidentiality']:checked").val() : $('#hdnExplanationConfedentialityForAssignmentPaper').val();
+        var selectedAction = $("input[name='selectedAction']:checked").val() != undefined ? $("input[name='selectedAction']:checked").val() : '';
+
+
+
+
+         var ExplanationPriority = $("input[name='ExplanationPriority']:checked").val() != undefined ? $("input[name='ExplanationPriority']:checked").val() : $('#hdnExplanationPriority').val();
+
+
+
+        var TransactionId = @ViewData["TransactionId"];
+
+        var requestData = "__RequestVerificationToken=" + token +
+            "&" + AddedEntities +
+            "&transactionId=" + TransactionId +
+            "&MainDocToken=" + hdnMainDocToken +
+            "&explanation=" + explanation +
+            "&Action=" + selectedAction +
+            "&Confidentiality=" + selectedConfidentiality +
+            "&ExplanationPriority" + ExplanationPriority;
+
+
+            if (AddedEntities != "") {
+                $.ajax({
+                    type: 'post',
+                    cache: false,
+                    url: '@Url.Action("PdfAssignmentPaper", "Inbound")',
+                    data: requestData,
+                    success:
+                    function (data) {
+                        if (data) {
+                            if (data.MessageType != 2) {
+
+                                //document.getElementById('frameViewerAttachment').contentWindow.location.reload();
+                                document.getElementById('frameViewer').contentWindow.location.reload();
+                                $("#SavebackgroundBtn").click();
+                                //refreshDoconut();
+                            }
+                            else {
+                                ShowErrorMessage(data.MessageText);
+                            }
+                        }
+                    }
+                });
+            }
+
+
+
+
+    }
+
+       $('#ddlAssignmentPaperFollowUpPeriod').change(function () {
+
+        var selectedPeriod= $(this).val();
+
+        if (selectedPeriod == "أخرى") {
+            $('#AssignmentPaperFollowUpDateCal').attr('autocomplete', 'off');
+            $('#divAssignmentPaperFollowupDate').show();
+        } else {
+            $('#divAssignmentPaperFollowupDate').hide();
+
+        }
+                    });
+    function AssignPaperCheckFollowUpDate() {
+
+       var FollowUpPeriod = $('#AssignmentPaperFollowUpPeriodId').val();
+        var FollowUpProccess = $('#AssignmentPaperFollowUpProccessId').val();
+
+         if (FollowUpPeriod.val <= 0 || FollowUpProccess.length <= 0) {
+            $("#FollowCalMessageOrg").removeClass("hidden_");
+            $("#FollowCalMessageorg").show();
+            $("#FollowdateMessageOrg").html('@Html.Raw(DbRes.TValidation("User.Transaction.AssignedFollowUpToEntityValidation"))');
+            errorCount++
+            return false;
+        }
+        else {
+            $("#FollowCalMessageOrg").addClass("hidden_");
+            $("#FollowCalMessageorg").hide();
+
+        }
+        @*var dateNow = $.datepicker.formatDate('dd/mm/yy', new Date($.now()));
+        var currentDate = convertdate(dateNow);
+        if ($("#AssignmentPaperFollowUpDateCal").val() != "" ) {
+        if ($("#hdnAssignmentPaperFolloupDateGreg").val() != undefined  ) {
+            var selectedDate = convertdate($("#hdnAssignmentPaperFolloupDateGreg").val());
+
+                if (selectedDate < currentDate) {
+                    $("#AssignPaperFollowUpMessage").removeClass("hidden_");
+                    $("#AssignPaperFollowUpMessage").show();
+                    $('#AssignmentPaperFollowUpDateCal').addClass('RedBorder');
+                    $("#AssignPaperFollowUpdateMessagee").html(' @Html.Raw(DbRes.TValidation("User.FollowUp.RemindDateCompare"))');
+                    errorCount++
+                    return false;
+                }
+                else {
+                    $('#AssignmentPaperFollowUpDateCal').removeClass('RedBorder');
+                    $("#AssignPaperFollowUpMessage").hide()
+                    $("#AssignPaperFollowUpdateMessagee").html('');
+
+
+                }
+            }
+        }
+        else {
+        $("#AssignPaperFollowUpMessage").removeClass("hidden_");
+        $("#AssignPaperFollowUpMessage").show();
+        $('#AssignmentPaperFollowUpDateCal').addClass('RedBorder');
+        $("#AssignPaperFollowUpdateMessagee").html(' @Html.Raw(DbRes.TValidation("User.Report.TransactionsDeliveryReport.DateToRequired"))');
+        errorCount++
+        return false;
+        }*@
+    }
+    function PrintAssignment() {
+        var TransactionId = $('#hdnAssignmentsTransactionId').val();
+        var url = '@Url.Action("GetTransactionAssignmentHistoryWithContent", "TransactionLog")' + '?transactionId=' + TransactionId;
+        ShowDialog(url, 'dialogbox col-md-12 ');
+    }
+
+    function PrintAssignmentPaperDeliveryReport(data) {
+        var reporterName = $('#ddlAssignmentPaperReporter').val();
+        var deliveryReportArray = [];
+        for (var i = 0; i < data.length; i++) {
+            var tranDeliveryReport = data[i];
+            deliveryReportArray.push({ TransactionId: tranDeliveryReport.TransactionId, ReportsIds: [] });
+            deliveryReportArray[i].ReportsIds.push(tranDeliveryReport.Id);
+        }
+        var reportType = @((int)DeliveryReportType.DeliveryReport);
+        var parameters = '?transactionReportInfo=' + JSON.stringify(deliveryReportArray) + '&isPerTransaction=true&group=false&reportType=' + reportType + '&reporterName=' + reporterName;
+        urlDeliveryReport = '@Url.Action("PrintDeliveryReportsByIds", "Reports")' + parameters
+        PrintReport(urlDeliveryReport, '', RedirectToTargetPage);
+    }
+
+    function RedirectToTargetPage() {
+        setTimeout(function () {
+            window.location.href = urlAccordingToTransactionType;
+        }, 3000);
+    }
+
+    function AddNewEntity() {
+        var token = $("#frmAddTemporaryEntity").find("input[name='__RequestVerificationToken']").val();
+        var AddedEntities = $("#AddedEntities :input").serialize();
+        var NewEntity = $("#dvAddTemporaryEntity :input").serialize();
+        var requestData = "__RequestVerificationToken=" + token + "&" + NewEntity + '&' + AddedEntities;
+        $.ajax({
+            type: 'post',
+            cache: false,
+            url: '@Url.Action("AddTemporaryEntity")',
+            data: requestData,
+            success:
+                function (data) {
+                    if (data.MessageType == @((int)MessageType.Error)) {
+                        ShowErrorMessage(data.MessageText);
+                    } else {
+                        addEntitySuccess(data, "");
+                    }
+                }
+        });
+    }
+
+    function UpdateAssignedToEntity(obj) {
+        $(".isAssigned").each(function () {
+            $(this).val(false);
+        });
+
+        var objId = obj.id;
+        var hdnId = objId.replace("Radio_", "hdn_");
+        $('#' + hdnId).val(true);
+        localStorage.setItem('selectedEntity', objId);
+    }
+
+    function UpdateIsCopy(obj) {
+        var objId = obj.id;
+        var hdnId = objId.replace("ch_", "hdn_");
+        if (obj.checked) {
+            $('#' + hdnId).val(true);
+        } else {
+            $('#' + hdnId).val(false);
+        }
+    }
+
+    function addEntitySuccess(data, div) {
+        var includeCopy = [];
+        $('input[type = "checkbox"]:checked').each(function (index, obj) {
+            includeCopy.push(obj.id);
+        });
+
+        if (data != "") {
+            $('#AddedEntities').append(data.html);
+            $('#' + localStorage.getItem("selectedEntity")).attr("checked", true);
+
+            $.each(includeCopy, function (i, val) {
+                $('#' + val).attr("checked", true);
+            });
+        }
+    }
+
+    function Clear(){
+        ClearInputs('dvAddTemporaryEntity');
+    }
+
+    function checkIfAnEntitySelected() {
+
+        var ToOrgUnitId = $("#EditorAssignmentPaper_ToOrgUnitId").val();
+        if  (ToOrgUnitId == "") {
+            $("#dvAddTemporaryEntity .InboundDepName, #dvAddTemporaryEntity .InboundDepNum").addClass('RedBorder');
+        }
+        else {
+            $("#dvAddTemporaryEntity .InboundDepName, #dvAddTemporaryEntity .InboundDepNum").removeClass('RedBorder');
+        }
+
+        if (ToOrgUnitId.length == 0) {
+            $("#CalMessageIcon").removeClass("hidden_");
+            $("#CalMessageIcon").show();
+            $('#DepartmentValidateMessage').html('@DbRes.TValidation("User.UserDelegation.OrgUnitRequired")');
+            return false;
+        } else {
+            $('#DepartmentValidateMessage').html('');
+            $("#CalMessageIcon").addClass("hidden_");
+            return ChecktAllowedUserAssignment();
+        }
+
+    }
+
+    function DoCheckUserr() {
+
+       AutoCompleteChangeSourceParameters("dddlAssignmentPaperUsers", '@Url.Action("AutoComplete_SearchUsersByOrgUnit", "Inbound")', "");
+    }
+    function DoCheckUser() {
+
+        var rbSearchByUser = $("#EditorAssignmentPaper_rbSearchByUser");
+
+        if (rbSearchByUser.is(':checked')) {
+            ClearInputs('divOrgUnit')
+        }
+    }
+    function DoCheckOrgUnit() {
+        var rbSearchByOrgUnit = $("#EditorAssignmentPaper_rbSearchByOrgUnit");
+        $('#ddlAssignmentPaperUsers').removeAttr('disabled');
+        if (rbSearchByOrgUnit.is(':checked')) {
+            ClearInputs('divUser')
+        }
+    }
+
+    $(document).ready(function () {
+        ClearInputs('dvEditorTreeAssignmentPaper');
+        $("#ddlAssignmentPaperUsers").prop('disabled', false);
+        localStorage.removeItem("selectedEntity");
+    });
+
+    function AddAssignmentPaperOnSuccess(data, div) {
+        if (data.MessageType != 2) {
+            $("#" + div).html("");
+            $("#" + div).html(data.Html);
+            //ShowSuccesMessage(data.MessageText)
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    $("#ddlAssignmentPaperUsers").change(function () {
+        $("#hdnAssignmentPaperUserName").val($(this).val());
+    })
+
+    $("#ddlAssignmentPaperAction").change( function () {
+        $("#hdnAssignmentPaperActionName").val($(this).val());
+    })
+
+    function OnSelectAssignmentPaperOrgUnit(selectedParty) {
+        @*var token = $("#frmAddTemporaryEntity").find("input[name='__RequestVerificationToken']").val();
+
+        if (selectedParty) {
+            $.ajax({
+                type: 'post',
+                cache: false,
+                url: '@Url.Action("GetUsersByOrgUnitId")',
+                data: { id:selectedParty, __RequestVerificationToken: token},
+                success:
+                    function (data) {
+                        $("#ddlAssignmentPaperUsers").val("");
+                        $("#hdnAssignmentPaperUserId").val("");
+                        AutoCompleteChangeList("ddlAssignmentPaperUsers", data);
+                        $("#ddlAssignmentPaperUsers").prop('disabled', false);
+                    }
+            });
+        }
+        else {
+            $("#ddlAssignmentPaperUsers").val("");
+            $("#hdnAssignmentPaperUserId").val("");
+            AutoCompleteChangeList("ddlAssignmentPaperUsers", "[]");
+            $("#ddlAssignmentPaperUsers").prop('disabled', true);
+        }
+        // maybe ToOrgUnitName nested ToOrgUnitName
+        $("#hdnAssignmentPaperToOrgUnitName").val($("#divForm__treeAssignmentPaper").find(".txtDepartmentName").val());*@
+
+    }
+
+    function toggleSearchMethod() {
+        var rbSearchByUser = $("#EditorAssignmentPaper_rbSearchByUser");
+        var rbSearchByOrgUnit = $("#EditorAssignmentPaper_rbSearchByOrgUnit");
+        var divUser = $("#divUser");
+        var divOrgUnit = $("#divOrgUnit");
+
+        if (rbSearchByUser.is(':checked')) {
+            divOrgUnit.insertAfter(divUser);
+            AutoCompleteChangeSourceParameters("ddlAssignmentPaperUsers", '@Url.Action("AutoComplete_SearchUsersByOrgUnit", "Inbound")', "");
+            TreeChangeGetChildrenParameters("ToOrgUnitId", { UserId: "##ddlAssignmentPaperUsers_hdnIdToSaveValue" });
+            ResetAutoComplete("ddlAssignmentPaperUsers");
+            ResetTree("ToOrgUnitId");
+        }
+        else {
+            divUser.insertAfter(divOrgUnit);
+            AutoCompleteChangeSourceParameters("ddlAssignmentPaperUsers", '@Url.Action("AutoComplete_SearchUsersByOrgUnit", "Inbound")', { orgUnitId: "#input[name ='EditorAssignmentPaper.ToOrgUnitId']" });
+            TreeChangeGetChildrenParameters("ToOrgUnitId", "");
+            ResetAutoComplete("ddlAssignmentPaperUsers");
+            ResetTree("ToOrgUnitId");
+            ClearInputs('divUser');
+            $('#ddlAssignmentPaperUsers').attr('disabled', 'disabled');
+        }
+    }
+    d = Date.now();
+    d = new Date(d);
+    d = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' ' + (d.getHours() > 12 ? d.getHours() - 12 : d.getHours()) + ':' + d.getMinutes() + ' ' + (d.getHours() >= 12 ? "PM" : "AM");
+
+    $('#CurrentDate').append(d);
+</script>
+
+<script>
+     function ChecktAllowedUserAssignment() {
+         var UserId = $("#ddlAssignmentPaperUsers_hdnIdToSaveValue").val();
+         if (!UserId) {
+             AddNewEntity();
+             return;
+         }
+          $.ajax({
+            type: 'get',
+            data: { FromUserId: UserId },
+            url: '@Url.Action("GetAllowedUserAssignment", "Inbound")',
+              success: function (data) {
+                  debugger
+                  if (data.selectedUserAllowedAssignmentCount == 0) {
+                      AddNewEntity();
+                }
+                else {
+                    if (data.isUserAllowAssignment) {
+                        AddNewEntity();
+                    }
+                    else {
+                        ShowInformationMessage(data.MessageText);
+                    }
+                }
+
+
+            }
+        });
+    }
+
+</script>
+<style>
+    .RedBorder {
+        border: 1px solid #fe0000 !important
+    }
+
+    #CurrentDate {
+        direction: ltr;
+    }
+
+    .explanationDiv {
+        min-height: 70px;
+        height: auto;
+    }
+
+    .modal-lg {
+        min-width: 65vw !important;
+    }
+
+  
+</style>

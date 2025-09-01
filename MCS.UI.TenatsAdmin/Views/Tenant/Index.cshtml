@@ -1,0 +1,204 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.TenantsAdmin.Models;
+@model TenantViewModel
+
+@{
+    ViewBag.Title = DbRes.TResource("Tenant.Tenant");
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="page-title">
+    <h2><span class="fa fa-arrow-circle-o-left"></span>@DbRes.TResource("Tenant.Tenants")</h2>
+</div>
+<div class="page-content-wrap" style="height: calc(100vh - 100px) !important;
+    overflow: auto;">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-horizontal">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">@DbRes.TResource("Tenant.Tenant")</h3>
+                    </div>
+                    <div id="dvAdd">
+                        @Html.Partial("~/Views/Tenant/_TenantAddPartial.cshtml", Model.AddTenant)
+                    </div>
+                    <div id="dvEdit" style="display:none">
+                        @Html.Partial("~/Views/Tenant/_TenantEditPartial.cshtml", Model.EditTenant)
+                    </div>
+                    <div id="dvGrid">
+                        <div class="panel-body">
+                            <div class="row">
+                                @Html.Partial("~/Views/Tenant/_TenantGridPartial.cshtml", ViewData["GridData"])
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(function () {
+        $('#fromAddDateCal').attr('autocomplete', 'off');
+        $('#toAddDateCal').attr('autocomplete', 'off');
+        $('#fromDateCal').attr('autocomplete', 'off');
+        $('#toDateCal').attr('autocomplete', 'off');
+    });
+    function ShowEditDiv() {
+        $("#dvEdit").css("display", "block");
+        $("#dvAdd").css("display", "none");
+    }
+
+    function HideEditDiv() {
+        $("#dvEdit").css("display", "none");
+        $("#dvAdd").css("display", "block");
+    }
+
+    function OnEditSuccess(data, div) {        
+        if (data.MessageType != 2) {
+            if (data.MessageType == undefined) {
+                window.location.href = __loginPageUrl;
+            }
+            else {
+                $("#dvEdit").css("display", "none");
+                $("#dvAdd").css("display", "block");
+                $("#" + div).html("");
+                $("#" + div).html(data.Html);
+                jQuery.validator.unobtrusive.parse('#' + div);
+                ShowSuccesMessage(data.MessageText);
+                ClearInputs('FormTenant');
+            }
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function OnAddSuccess(data, div) {
+        if (data.MessageType != 2) {
+            if (data.MessageType == undefined) {
+                window.location.href = __loginPageUrl;
+            }
+            else {
+                $("#" + div).html("");
+                $("#" + div).html(data.Html);
+                jQuery.validator.unobtrusive.parse('#' + div);
+                ShowSuccesMessage(data.MessageText);
+                //ClearInputs('FormTenant');
+            }
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function OnDeleteSuccess(data, divUpdatData) {
+        
+        if (data.MessageType != 2) {
+
+            if (data.MessageType == undefined) {
+                window.location.href = __loginPageUrl;
+            }
+            else {
+                $("#" + divUpdatData).html("");
+                $("#" + divUpdatData).html(data.Html);
+                jQuery.validator.unobtrusive.parse('#' + divUpdatData);
+                ShowSuccesMessage(data.MessageText);
+                $("#dvEdit").hide();
+                $("#dvAdd").show();
+            }
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function ValidateLogoTypeAdd() {        
+        var fileOption = document.getElementById('LogoFileAdd').files[0];
+        var arrayType = ['jpg', 'jpeg', 'png'];
+        var fileName = $("#LogoFileAdd").val();
+        var idxDot = fileName.lastIndexOf(".") + 1;
+        var extFile = fileName.substr(idxDot, fileName.length).toLowerCase();
+        var isValidType = extFile != "" && $.inArray(extFile, arrayType) == -1;
+        if (isValidType) {
+            ShowErrorMessage('حدث خطأ ما, يرجى التاكد من تحميل ملف واحد مطابق للمعايير في المرة الواحدة');
+            return false;
+        }
+        //Convert Byte to Kilobytes => (fileOption.size / 1024) =
+        var isValidSize = Math.round(fileOption.size / 1024) >= 200;
+        if (isValidSize) {
+            ShowErrorMessage('حجم الملف يجب ان لا يتجاوز 200 كيلوبايت')
+            return false;
+        }
+        return true;
+    }
+
+    function ValidateLogoTypeEdit() {
+        
+        var fileOption = document.getElementById('LogoFileEdit').files[0];
+        if (fileOption == undefined) {
+            return true;
+        }
+        var arrayType = ['jpg', 'jpeg', 'png'];
+        var fileName = $("#LogoFileEdit").val();
+        var idxDot = fileName.lastIndexOf(".") + 1;
+        var extFile = fileName.substr(idxDot, fileName.length).toLowerCase();
+        var isValidType = extFile != "" && $.inArray(extFile, arrayType) == -1;
+        if (isValidType) {
+            ShowErrorMessage('حدث خطأ ما, يرجى التاكد من تحميل ملف واحد مطابق للمعايير في المرة الواحدة');
+            return false;
+        }
+        //Convert Byte to Kilobytes => (fileOption.size / 1024) =
+        var isValidSize = Math.round(fileOption.size / 1024) >= 200;
+        if (isValidSize) {
+            ShowErrorMessage('حجم الملف يجب ان لا يتجاوز 200 كيلوبايت')
+            return false;
+        }
+        return true;
+    }
+
+    function ValidateYesserCertificateTypeAdd() {
+        return true;
+        var fileOption = document.getElementById('YesserCertificateFileAdd').files[0];
+        var arrayType = ['pfx', 'cer'];
+        var fileName = $("#YesserCertificateFileAdd").val();
+        var idxDot = fileName.lastIndexOf(".") + 1;
+        var extFile = fileName.substr(idxDot, fileName.length).toLowerCase();
+        var isValidType = extFile != "" && $.inArray(extFile, arrayType) == -1;
+        if (isValidType) {
+            ShowErrorMessage('حدث خطأ ما, يرجى التاكد من تحميل ملف واحد مطابق للمعايير في المرة الواحدة');
+            return false;
+        }
+        //Convert Byte to Kilobytes => (fileOption.size / 1024) =
+        var isValidSize = Math.round(fileOption.size / 1024) >= 200;
+        if (isValidSize) {
+            ShowErrorMessage('حجم الملف يجب ان لا يتجاوز 200 كيلوبايت')
+            return false;
+        }
+        return true;
+    }
+
+    function ValidateYesserCertificateTypeEdit() {
+        var fileOption = document.getElementById('YesserCertificateFileEdit').files[0];
+        if (fileOption == undefined) {
+            return true;
+        }
+        var arrayType = ['pfx', 'cer'];
+        var fileName = $("#YesserCertificateFileEdit").val();
+        var idxDot = fileName.lastIndexOf(".") + 1;
+        var extFile = fileName.substr(idxDot, fileName.length).toLowerCase();
+        var isValidType = extFile != "" && $.inArray(extFile, arrayType) == -1;
+        if (isValidType) {
+            ShowErrorMessage('حدث خطأ ما, يرجى التاكد من تحميل ملف واحد مطابق للمعايير في المرة الواحدة');
+            return false;
+        }
+        //Convert Byte to Kilobytes => (fileOption.size / 1024) =
+        var isValidSize = Math.round(fileOption.size / 1024) >= 200;
+        if (isValidSize) {
+            ShowErrorMessage('حجم الملف يجب ان لا يتجاوز 200 كيلوبايت')
+            return false;
+        }
+        return true;
+    }
+</script>

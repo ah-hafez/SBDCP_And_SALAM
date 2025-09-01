@@ -1,0 +1,135 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.Tray
+@model List<TrayVM>
+
+@{
+    Layout = null;
+}
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmSortTray", @class = "form-horizontal form-row" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="content-rtl panel panel-default dialogbox_panel">
+        <div class="panel-heading">
+            <h3 class="panel-title">@DbRes.TResource("Admin.Trays.TraysOrder")</h3>
+        </div>
+        <div class="modal-body">
+            <div class="panel-body">
+                <div class="row sort_dialog">
+                    <div class="col-md-2">
+                        <div class="control_sort">
+                            <div class="sort_up" onclick="MoveUP();"><i class="fa fa-caret-up"></i></div>
+                            <div class="sort_down" onclick="MoveDown();"><i class="fa fa-caret-down"></i></div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-10">
+                        <div class="sort_tabel">
+                            <div class="thead">
+                                <div class="row title_sort_tabel">
+                                    <div class="col-md-2">@DbRes.TResource("Admin.Trays.Order")</div>
+                                    <div class="col-md-10">@DbRes.TResource("Admin.UsersTrays.Trays")</div>
+                                </div>
+                            </div>
+                            <div class="tbody" id="BigDiv">
+                                @for (int i = 0; i < Model.Count(); i++)
+                                {
+                                    <div class="sortableDiv row" id="@Model[i].Id" data-sort="@Model[i].sort" onclick="SelectDiv(@Model[i].Id);">
+                                        <div class="col-md-2" id="lblsort_@Model[i].Id">@Model[i].sort</div>
+                                        <div class="col-md-10">
+                                            @Model[i].LocalName
+                                            @Html.HiddenFor(model => model[i].Id, new { @id = "hdnID" })
+                                            @Html.HiddenFor(model => model[i].sort, new { @id = "hdnSort_" + Model[i].Id })
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <input type="hidden" id="selectedDiv" />
+                        <input type="hidden" value="@Model.Count" id="maxVal" />
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+        <div class="modal-footer">
+            @Html.ActionButton(DbRes.TResource("Admin.Trays.Save"), "UpdateTraySort", "GridDiv", null, null, "OnUpdateSuccess", null, "post", null, "btnUpdateTray", "frmSortTray", "btn btn-primary pull-right")
+            <button type="button" onclick="__dialog.close(); return false;" class="btn btn-default" id="BtnClose">@DbRes.TResource("Admin.Trays.Close")</button>
+        </div>
+    </div>
+}
+
+<script>
+    function SelectDiv(id) {
+        $("#selectedDiv").val(id);
+        $('.sortableDiv').removeClass("select");
+        $("#" + id).addClass("select");
+    }
+    function MoveUP() {
+
+        var id = $("#selectedDiv").val();
+        var oldSort = $("#" + id).attr('data-sort');
+        var newSort = parseInt($("#" + id).attr('data-sort')) - 1;
+        if (newSort > 0 && newSort < $("#maxVal").val()) {
+            $('*[data-sort="' + newSort + '"]').attr("data-sort", oldSort);
+            $("#" + id).attr("data-sort", newSort);
+
+            $("#hdnSort_" + id).val(newSort);
+            $("#lblsort_" + id).text(newSort);
+            oldId = $('*[data-sort="' + oldSort + '"]').attr('id');
+            $("#hdnSort_" + oldId).val(oldSort);
+            $("#lblsort_" + oldId).text(oldSort);
+            var sorted = getSorted('.sortableDiv', 'data-sort');
+
+            $.each(sorted, function (index, value) {
+                $('#BigDiv').append(value);
+            });
+        }
+    }
+    function MoveDown() {
+
+        var id = $("#selectedDiv").val();
+        var oldSort = $("#" + id).attr('data-sort');
+        var newSort = parseInt($("#" + id).attr('data-sort')) + 1;
+        var max = parseInt($("#maxVal").val()) + 1;
+        if (newSort > 0 && newSort < max) {
+            $('*[data-sort="' + newSort + '"]').attr("data-sort", oldSort);
+            $("#" + id).attr("data-sort", newSort);
+
+            $("#hdnSort_" + id).val(newSort);
+            $("#lblsort_" + id).text(newSort);
+            oldId = $('*[data-sort="' + oldSort + '"]').attr('id');
+            $("#hdnSort_" + oldId).val(oldSort);
+            $("#lblsort_" + oldId).text(oldSort);
+
+            var sorted = getSorted('.sortableDiv', 'data-sort');
+
+            $.each(sorted, function (index, value) {
+                $('#BigDiv').append(value);
+            });
+        }
+    }
+    function getSorted(selector, attrName) {
+        return $($(selector).toArray().sort(function (a, b) {
+            var aVal = parseInt(a.getAttribute(attrName)),
+                bVal = parseInt(b.getAttribute(attrName));
+            return aVal - bVal;
+        }));
+    }
+    function OnUpdateSuccess(data, div) {
+        if (data.MessageType != 2) {
+            $("#" + div).html("");
+            $("#" + div).html(data.Html);
+
+            ShowSuccesMessage(data.MessageText)
+
+            __dialog.close();
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+        $("#BtnClose").click();
+    }
+</script>

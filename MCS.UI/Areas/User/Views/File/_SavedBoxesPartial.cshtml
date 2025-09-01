@@ -1,0 +1,86 @@
+﻿@using MCS.Common
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.File
+@model IList<TransactionTrayInfoVM>
+
+@{
+    bool isVIP = (bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser);
+    DefaultDisplay defaultDisplay = (DefaultDisplay)SessionInfo.GetObjectFromSession(Constants.DefaultDisplay);
+    Session["viewType"] = "Saved";
+}
+
+<script>
+         var isVIPUser = '@SessionInfo.GetObjectFromSession(Constants.IsVIPUser)';
+
+    $(document).ready(function () {
+        if ($('#selectAll').is(":checked")) {
+            $('#selectAll').click();
+        }
+
+        if (isVIPUser.toLowerCase() == 'true') {
+            goTableView();
+        }
+        else {
+            goCardsView();
+        }
+    });
+</script>
+
+@if (defaultDisplay == DefaultDisplay.Cards@*&& !isVIP*@)
+{
+<div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="sub-tab-1">
+        @{
+            Session["renderType"] = "cardItem";
+            Html.RenderPartial("~/Areas/User/Views/File/_FileGrid.cshtml",
+                Model,
+                new ViewDataDictionary {
+                    { "ListItemName", "_Saved_Item" },
+                    { "GridName", "Saved" },
+                    { "renderType", "cardItem" }
+                    });
+        }
+    </div>
+</div>
+}
+else
+{
+Session["renderType"] = "tableItem";
+Html.RenderPartial("~/Areas/User/Views/File/_FileGrid.cshtml", Model,
+    new ViewDataDictionary {
+        //{ "ListItemName", "_Saved_TableItem" },
+        { "GridName", "Saved" },
+                        //{ "dateType", ViewData["dateType"] },
+                        //{ "renderType", "tableItem" }
+                                });
+}
+<script>
+    var mySavedGridEventHandler = "@Url.Action("Saved", "File")";
+    function prepareSavedGrid() {
+        if (!pageGrids.Saved) {
+            $(".grid-mvc").gridmvc();
+        }
+        pageGrids.Saved.ajaxify({
+            getPagedData: mySavedGridEventHandler,
+            getData: mySavedGridEventHandler,
+            callbackClientFunctionAfter: ["goToViewAfterPaging","reRegisterSaveRevertButton"]
+        });
+    }
+    $(document).ready(function () {
+        prepareSavedGrid();
+    });
+
+
+
+
+       function ShowTransactionLog(transactionId) {
+
+
+           url = '@Url.Action("SavedCertificate", "Shared")' + '?transactionId=' + EncryptionKey(transactionId);
+
+
+       // var url = '/MCS.UI/User/TransactionLog/Index' + '?transactionId=' + transactionId + "&transactionCategory=" +@((int)TransactionCategory.Inbound);
+
+        ShowDialog(url, 'dialogbox col-md-12 ');
+    }
+</script>

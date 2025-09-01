@@ -1,0 +1,269 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.File
+@using MCS.Common
+@using MCS.UI.Areas.User.Models.Shared;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.UI.Common;
+@{UserVM userVM = SessionInfo.CurrentUser;}
+@{
+    var controllerName = HttpContext.Current.Request.RequestContext.RouteData.Values["controller"].ToString();
+    var actionName = ViewContext.RouteData.GetRequiredString("action").ToString();
+}
+
+
+<div class="align-self-start main_sidebar ">
+    <!--<div class="my-3 mx-3 d-flex logo_div">
+        <a class="main_logo" href="@Url.Action("MyTransactions", "File", new { area = "user" })">
+            <img src="~/Content/User/lib/images/GAMI_Logo_Color-01.svg" />-->
+    @*<img src="../../Content/User/lib/images/mbs.png" title="" alt="">
+        <img src="../../Content/User/lib/images/@Session["ThemePath"]/logo.png" title="" alt="" class="logo">
+        <img src="../../Content/User/lib/images/@Session["ThemePath"]/GAMI_Logo_Color-01.svg" title="" class="GAMI_Logo_Color-01.svg">*@
+    <!--</a>
+    </div>-->
+
+
+    <div class="d-none d-md-block mr-auto">
+
+        <a id="aMenuTrigger" class="nav-link nav-menu-main menu-toggle hidden-xs is-active" href="#" onclick="setMenuState()">
+            <img src="~/Content/User/lib/images/SystemIcon/align-left.svg" style="width:40px">
+        </a>
+    </div>
+    <div class=" main-menu menu-fixed menu-light menu-accordion menu-icon-left" data-scroll-to-active="true" style="direction:ltr;">
+        <div class="main-menu-content">
+
+            <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
+
+                @{
+                    if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Files.MyTransactions))
+                    {
+
+                        <li class="@(controllerName == "File" && actionName == "MyTransactions" ? "nav-item active" : "nav-item")" title="@DbRes.TResource("User.File.MyTransactions")">
+                            <a href="@Url.Action("MyTransactions", "File", new { area = "user" })" class="d-flex">
+                                <i>
+                                    <img src="~/Content/User/lib/images/SystemIcon/main bar-09.svg" class="ml-2">
+                                </i>
+
+                                <span class="menu-title">@DbRes.TResource("User.File.MyTransactions")</span>
+                                <span class="badget badge badge-primary badge-pill spnCount_@((int)TrayType.MyTransactions)">0</span>
+                            </a>
+                        </li>
+                    }
+
+                    if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Files.CopiesOutbound))
+                    {
+                        <li class="@(controllerName == "File" && actionName == "ElcOutBound" ? "nav-item active" : "nav-item")" title="@DbRes.TResource("User.Trays.OutboundDraft")">
+
+                            <a href="@Url.Action("ElcOutBound", "File", new { area = "user" })" class="d-flex">
+                                <i>
+                                    <img src="~/Content/User/lib/images/SystemIcon/main bar-13.svg" width="30" style="width:60px; height:55px; margin-right:-9px;">
+                                </i>
+                                <span class="menu-title"  style="margin-right:-6px;">@DbRes.TResource("User.Trays.OutboundDraft")</span>
+                                <span class="badget badge badge-primary badge-pill spnCount_@((int)TrayType.OutboundExternal)">0</span>
+                            </a>
+                        </li>
+                    }
+
+                    if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Files.DraftOutbound))
+                    {
+                        <li class="@(controllerName == "File" && actionName == "DraftOutbound" ? "nav-item active" : "nav-item")" title="@DbRes.TResource("User.LetterDraft")">
+
+                            <a href="@Url.Action("DraftOutbound", "File", new { area = "user" })" class="d-flex">
+                                <i>
+                                    <img src="~/Content/User/lib/images/SystemIcon/main bar-14.svg" width="30" style="width:60px; height:55px; margin-right:-9px;">
+                                </i>
+                                <span class="menu-title"  style="margin-right:-6px;">@DbRes.TResource("User.Trays.LetterDraft")</span>
+                                <span class="badget badge badge-primary badge-pill spnCount_@((int)TrayType.DraftOutbound)">0</span>
+                            </a>
+                        </li>
+                    }
+
+                    if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Files.SentTransactions))
+                    {
+                        <li class="@(controllerName == "File" && actionName == "SentTransactions" ? "nav-item active" : "nav-item")" title="@DbRes.TResource("User.Trays.SentTransactions")">
+
+                            <a href="@Url.Action("SentTransactions", "File", new { area = "user" })" class="d-flex">
+                                <i>
+                                    <img src="~/Content/User/lib/images/SystemIcon/main bar-15.svg" style="width:60px; height:55px; margin-right:-9px;">
+                                </i>
+                                <span class="menu-title"  style="margin-right:-6px;">@DbRes.TResource("User.Trays.SentTransactions")</span>
+                                <span class="badget badge badge-primary badge-pill spnCount_@((int)TrayType.SentTransactions)">0</span>
+                            </a>
+                        </li>
+                    }
+
+                    if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Files.Saved))
+                    {
+                        <li class="@(controllerName == "File" && actionName == "Saved" ? "nav-item active" : "nav-item")" title="@DbRes.TResource("User.Trays.Saved")">
+
+
+                            <a href="@Url.Action("Saved", "File", new { area = "user" })" class="d-flex">
+                                <i>
+                                    <img src="~/Content/User/lib/images/SystemIcon/main bar-16.svg" style="width: 60px; height: 55px; margin-right: -5px;">
+                                </i>
+                                <span class="menu-title"  style="margin-right:-6px;">@DbRes.TResource("User.Trays.Saved")</span>
+                                <span class="badget badge badge-primary badge-pill spnCount_@((int)TrayType.Saved)">0</span>
+                            </a>
+                        </li>
+                    }
+
+                    if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Files.Manager)/* & SessionInfo.IsManager == true*/)
+                    {
+                        <li class="@(controllerName == "File" && actionName == "Manager" ? "nav-item active" : "nav-item")" title="@DbRes.TResource("User.Trays.Manager")">
+                            @*<li class=" nav-item" id="selected" title="@DbRes.TResource("User.Trays.Manager")">*@
+                            <a href="@Url.Action("Manager", "File", new { area = "user" })" class="d-flex">
+                                <i>
+                                    <img src="~/Content/User/lib/images/SystemIcon/main bar-17.svg" class="ml-2">
+                                </i>
+                                <span class="menu-title">@DbRes.TResource("User.Trays.Manager")</span>
+                                <span class="badget badge badge-primary badge-pill spnCount_@((int)TrayType.Manager)">0</span>
+                            </a>
+                        </li>
+                    }
+
+                    if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Files.Copies))
+                    {
+                        <li class="@(controllerName == "File" && actionName == "Copies" ? "nav-item active" : "nav-item")" title="@DbRes.TResource("User.Trays.Copies")">
+                            @*<li class=" nav-item" id="selected" title="@DbRes.TResource("User.Trays.Copies")">*@
+                            <a href="@Url.Action("Copies", "File", new { area = "user" })" class="d-flex">
+                                <i>
+                                    <img src="~/Content/User/lib/images/SystemIcon/main bar-18.svg" class="ml-2">
+                                </i>
+                                <span class="menu-title">@DbRes.TResource("User.Trays.ElecCopies")</span>
+                                <span class="badget badge badge-primary badge-pill spnCount_@((int)TrayType.InternalInboundCopies)">0</span>
+                            </a>
+                        </li>
+                    }
+
+                    if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Files.Tasks))
+                    {
+                        <li class="@(controllerName == "File" && actionName == "Tasks" ? "nav-item active" : "nav-item")" title="@DbRes.TResource("User.Trays.Tasks")">
+                            @*<li class=" nav-item" id="selected" title="@DbRes.TResource("User.Trays.Tasks")">*@
+                            <a href="@Url.Action("Tasks", "File", new { area = "user" })" class="d-flex">
+                                <i>
+                                    <img src="~/Content/User/lib/images/SystemIcon/main bar-19.svg" style="width:60px; height:55px; margin-right:-5px;">
+                                </i>
+                                <span class="menu-title"  style="margin-right:-6px;">@DbRes.TResource("User.Trays.Tasks")</span>
+                                <span class="badget badge badge-primary badge-pill spnCount_@((int)TrayType.Tasks)">0</span>
+                            </a>
+                        </li>
+                    }
+
+                    if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Files.FollowUp))
+                    {
+                        <li class="@(controllerName == "File" && actionName == "FollowUp" ? "nav-item active" : "nav-item")" title="@DbRes.TResource("User.Trays.FollowUp")">
+                            @*<li class=" nav-item" id="selected" title="@DbRes.TResource("User.Trays.FollowUp")">*@
+                            <a href="@Url.Action("FollowUp", "File", new { area = "user" })" class="d-flex">
+                                <i>
+                                    <img src="~/Content/User/lib/images/SystemIcon/main bar-20.svg" class="ml-2">
+                                </i>
+                                <span class="menu-title">@DbRes.TResource("User.Trays.FollowUp")</span>
+                                <span class="badget badge badge-primary badge-pill spnCount_@((int)TrayType.FollowUp)">0</span>
+                            </a>
+                        </li>
+                    }
+
+                    if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Files.Reservation))
+                    {
+                        <li class="@(controllerName == "File" && actionName == "Reservation" ? "nav-item active" : "nav-item")" title="@DbRes.TResource("User.Trays.Reservation")">
+                            @*<li class=" nav-item" id="selected" title="@DbRes.TResource("User.Trays.Reservation")">*@
+                            <a href="@Url.Action("Reservation", "File", new { area = "user" })" class="d-flex">
+                                <i>
+                                    <img src="~/Content/User/lib/images/SystemIcon/main bar-21.svg" style="width:60px; height:55px; margin-right:-3px;">
+                                </i>
+                                <span class="menu-title" style="margin-right:-6px;">@DbRes.TResource("User.Trays.Reservation")</span>
+                                <span class="badget badge badge-primary badge-pill spnCount_@((int)TrayType.Reservation)">0</span>
+                            </a>
+                        </li>
+                    }
+                }
+
+            </ul>
+        </div>
+    </div>
+</div>
+<style>
+
+
+    .icon-menu-1 .path1:before {
+        content: "\e911";
+        color: rgb(23, 101, 62);
+    }
+
+    .icon-menu-1 .path2:before {
+        content: "\e912";
+        margin-left: -1em;
+        color: rgb(136, 177, 75);
+    }
+
+    .icon-menu-1 .path3:before {
+        content: "\e913";
+        margin-left: -1em;
+        color: rgb(23, 101, 62);
+    }
+
+    .icon-menu-1 .path4:before {
+        content: "\e914";
+        margin-left: -1em;
+        color: rgb(136, 177, 75);
+    }
+
+    .icon-menu-10:before {
+        content: "\e92f";
+        color: #17653e;
+    }
+
+
+   
+</style>
+
+<script>
+    $(document).ready(function () {
+        var actionUrl = window.location.pathname.split("/")[4];
+        var OutboundEditUrl = window.location.pathname.split("/")[3];
+        switch (actionUrl) {
+            case 'MyTransactions':
+                $("#selected").addClass("active");
+                break;
+            case 'DraftOutbound':
+                $("#selected2").addClass("active");
+                break;
+            case 'SentTransactions':
+                $("#selected3").addClass("active");
+                break;
+            case 'Saved':
+                $("#selected4").addClass("active");
+                break;
+            case 'Manager':
+                $("#selected5").addClass("active");
+                break;
+            case 'Copies': case 'Index':
+                $("#selected6").addClass("active");
+                break;
+            case 'Tasks':
+                $("#selected7").addClass("active");
+                break;
+            case 'FollowUp':
+                $("#selected8").addClass("active");
+                break;
+            case 'Reservation':
+                $("#selected9").addClass("active");
+                break;
+            default:
+                $("#selected").addClass("active");
+                break;
+        }
+        switch (OutboundEditUrl) {
+            case 'OutboundExternal':
+                $("#selected2").addClass("active");
+                $("#selected").removeClass("active");
+                break;
+            case 'Reservation':
+                $("#selected9").addClass("active");
+                $("#selected").removeClass("active");
+                break;
+        }
+
+        GetTraysCount();
+    });
+
+</script>

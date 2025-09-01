@@ -1,0 +1,151 @@
+﻿<div class="colWide98">
+    <div class="grid formAction noBorder noPadding noAnimation">
+        <div class="headRow">
+            <div class="col4">
+                <div class="iconHeadRow"><!--<img src="images/sentPapersMini.png" width="32" height="32" alt="">--></div>
+                <h2>مشروع الصادر</h2>
+                <!--<span class=""><img src="../../Motorcv/aljisr html/Images/twitterh.png"></span> -->
+            </div>
+        </div>
+        <div class="row">
+            <div class="colWide text-left">
+                <h3>&nbsp;</h3>
+            </div>
+        </div>
+        <div class="rowF">
+            <div class="pading">&nbsp;</div>
+            @Html.Partial("~/View/Shared/_ImpersonatelistPartial.cshtml", null)
+            <div class="col2">
+                @Html.Label("نوع الصادر", new { id = "lblRecord" })
+            </div>
+            <div class="col3">
+                @Html.DropDownList("ddlRecordSource",
+                                                    new List<SelectListItem>
+                                                                  {
+                                                                   new SelectListItem { Text = "عام" },
+                                                                   new SelectListItem { Text = "سري" },
+                                                                   new SelectListItem { Text = "صادر داخلي" },
+                                                                  },
+                                                                     new { @class = "colWide" })
+            </div>
+        </div>
+        <div class="rowF">
+            <div class="pading">&nbsp;</div>
+            <div class="col2">
+                @Html.Label("جهة الصادر", new { id = "lblOutboundDistenation", @class = "LredColor" })
+            </div>
+            <div class="col3">
+                @Html.Partial("~/View/Shared/_MenucollapsiblePartial.cshtml", null)
+            </div>
+            <div class="col2">
+                @Html.Label("صادر الى", new { id = "lblOutboundTo" })
+            </div>
+            <div class="col3">
+                @Html.DropDownList("ddlOutboundTo",
+                                                    new List<SelectListItem>
+                                                                  {
+
+                                                                  }, "اختر",
+                                                                              new { @class = "colWide" })
+            </div>
+        </div>
+        <div class="rowF">
+            <div class="pading">&nbsp;</div>
+            <div class="col2">
+                @Html.Label("موقعة من", new { id = "lblSignedFrom", @class = "LredColor" })
+            </div>
+            <div class="col3">
+                @Html.DropDownList("ddlSignedFrom",
+                                                    new List<SelectListItem>
+                                                                  {
+                                                                 new SelectListItem { Text = "مدير النظام" },
+                                                                 new SelectListItem { Text = "مدير الجهه" },
+                                                                  }, "اختر",
+
+                                                                              new { @class = "colWide" })
+
+            </div>
+            <div class="col2">
+                @Html.Label("قائمة التوزيع ", new { id = "lblDistributionList" })
+            </div>
+            <div class="col3">
+                @Html.DropDownList("ddlDistributionList",
+                                                    new List<SelectListItem>
+                                                                  {
+
+                                                                  }, "اختر",
+                                                                     new { @class = "colWide" })
+            </div>
+
+        </div>
+        <div class="rowF">
+            <div class="pading">&nbsp;</div>
+            <div class="col2">
+                @Html.Label("الحاله", new { id = "lblCase", @class = "LredColor" })
+            </div>
+            <div class="col3">
+                @Html.DropDownList("ddlCase",
+                                                    new List<SelectListItem>
+                                                                  {
+                                                                   new SelectListItem { Text = "صادر" },
+                                                                   new SelectListItem { Text = "صادر بانتظار اجابه" },
+
+                                                                  },
+                                                                              new { @class = "colWide" })
+
+            </div>
+            <div class="col2">
+                @Html.Label("مستوى السريه", new { id = "lblSecretyLevel", @class = "LredColor" })
+            </div>
+            <div class="col3">
+                @Html.DropDownList("ddlSecretyLevel",
+                                                    new List<SelectListItem>
+                                                                  {
+                                                                   new SelectListItem { Text = "عادي" },
+                                                                   new SelectListItem { Text = "سري" },
+                                                                   new SelectListItem { Text = "سري للغايه" },
+                                                                   new SelectListItem { Text = "غير قابل للتداول" },
+
+                                                                  },
+                                                                              new { @class = "colWide" })
+
+            </div>
+        </div>
+        <div class="rowF">
+            <div class="pading">&nbsp;</div>
+            <div class="col2">
+                @Html.Label("درجة الأسبقية", new { id = "lblPriorityLevel", @class = "LredColor" })
+            </div>
+            @Html.Partial("~/Areas/Shared/_PriorityLevelPartial.cshtml", null)
+
+            <div class="col2">
+                @Html.Label(" الموضوع ", new { id = "lblSubject" })
+            </div>
+            <div class="col3">
+                @Html.TextArea("txtSubject")
+            </div>
+        </div>
+        <div class="rowF">
+            <div class="pading">&nbsp;</div>
+            <div class="col2">
+                @Html.Label("صور الوارد", new { id = "lblCopies" })
+            </div>
+            <div class="col3"><button class="btn btnGray">إضافة</button></div>
+        </div>
+        <div class="rowF text-center">
+            <div class="colWide">
+                <button class="btn btnGray" type="text">حفظ</button>
+                <button class="btn btnBlue" type="reset" name="reset" id="btnEdit">اغلاق</button>
+            </div>
+        </div>
+        <div class="footerRow">
+            <div class="colWide">&nbsp;</div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+

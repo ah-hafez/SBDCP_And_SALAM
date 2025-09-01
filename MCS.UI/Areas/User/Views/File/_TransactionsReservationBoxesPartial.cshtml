@@ -1,0 +1,79 @@
+﻿@using MCS.Common
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.File
+@model IList<TransactionTrayInfoVM>
+
+@{
+    bool isVIP = (bool)SessionInfo.GetObjectFromSession(Constants.IsVIPUser);
+    DefaultDisplay defaultDisplay = (DefaultDisplay)SessionInfo.GetObjectFromSession(Constants.DefaultDisplay);
+    Session["viewType"] = "Reservation";
+}
+
+<script>
+    $(document).ready(function () {
+     var isVIPUser = '@SessionInfo.GetObjectFromSession(Constants.IsVIPUser)';
+        if ($('#selectAll').is(":checked")) {
+            $('#selectAll').click();
+        }
+        if (isVIPUser.toLowerCase() == 'true') {
+            goTableView();
+        }
+        else {
+            var type = localStorage.getItem('CurrentTypeView');
+            if (type) {
+                if (type === "Table") {
+                    goTableView();
+                }
+                else if (type === "Card") {
+                    goCardsView();
+                }
+            }
+        }
+    });
+</script>
+
+@if (defaultDisplay == DefaultDisplay.Cards@*&& !isVIP*@)
+{
+    <div class="col-xs-12">
+        <div class="boxes">
+            <div class="row">
+                @{
+                    Session["renderType"] = "cardItem";
+                    Html.RenderPartial("~/Areas/User/Views/File/_FileGrid.cshtml",
+                          Model, new ViewDataDictionary {
+                      { "ListItemName", "_Reservation_Item" },
+                      { "GridName", "ReservationGrid" },
+                      { "renderType", "cardItem" }
+            });
+                }
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    Session["renderType"] = "tableItem";
+    Html.RenderPartial("~/Areas/User/Views/File/_FileGrid.cshtml", Model,
+        new ViewDataDictionary {
+        { "ListItemName", "_Reservation_TableItem" },
+        { "GridName", "ReservationGrid" },
+        { "dateType", ViewData["dateType"] },
+        { "renderType", "tableItem" }
+                            });
+}
+<script>
+    var reservationGridEventHandler = "@Url.Action("Reservation", "File")";
+    function prepareReservationGrid() {
+        if (!pageGrids.ReservationGrid) {
+            $(".grid-mvc").gridmvc();
+        }
+        pageGrids.ReservationGrid.ajaxify({
+            getPagedData: reservationGridEventHandler,
+            getData: reservationGridEventHandler,
+            callbackClientFunctionAfter: ["goToViewAfterPaging"]
+        });
+    }
+    $(document).ready(function () {
+        prepareReservationGrid();
+    });
+</script>

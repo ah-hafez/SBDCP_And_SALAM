@@ -1,0 +1,343 @@
+﻿@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.UI.Areas.User.Models
+@using MCS.UI.Areas.User.Models.UserPreferences.UserDelegation;
+@using MCS.Common
+@using MCS.Framework.Localization
+@model UserDelegationVM
+
+<div id="dvAddUserDelegation">
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmUserDelegation", @class = "form-horizontal" }))
+    {
+        @Html.AntiForgeryToken()
+    <div class="form-row" id="dvAddDelegation">
+
+        <div class="form-group col-lg-4 col-md-6 col-sm-12 col-xs-12">
+            <div class="col-sm-6 col-xs-12 pr-sm-2 pl-sm-0 p-xs-0">
+                <label class="w-100">@DbRes.TResource("User.UserDelegation.FromDate") <span class="stark">*</span></label>
+                <div class="input-group with-icon">
+                    @Html.HiddenGroupFor(model => model.FromDateH, new { id = "hdnFromDateUm" })
+                    @Html.HiddenGroupFor(model => model.CurrentDate, new { id = "hdnCurrentDate" })
+                    @Html.CalendarCustom("FromDateCal", "hdnFromDateGreg", "hdnFromDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+                    <a class="hyperlink date-icon2 "> <img src="~/Content/User/lib/images/SystemIcon/main bar-08.svg" width="30" /> </a>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xs-12 pr-sm-2 pl-sm-0 p-xs-0">
+                <label class="w-100">@DbRes.TResource("User.UserDelegation.ToDate") <span class="stark">*</span></label>
+                <div class="input-group with-icon">
+                    @Html.HiddenGroupFor(model => model.ToDateH, new { id = "hdnToDateUm" })
+                    @Html.CalendarCustom("toDateCal", "hdnToDateGreg", "hdnToDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+                    <a class="hyperlink date-icon2 "> <img src="~/Content/User/lib/images/SystemIcon/main bar-08.svg" width="30"/> </a>
+                </div>
+            </div>
+            @Html.HiddenGroupFor(model => model.FromDate, new { id = "hdnFromDateGreg", @Value = "" }, "AddDelegation")
+            @Html.HiddenGroupFor(model => model.ToDate, new { id = "hdnToDateGreg", @Value = "" }, "AddDelegation")
+        </div>
+        <div class="form-group col-lg-5 col-md-6 col-sm-12 col-xs-12" >
+            <div id="dvDepartments">
+                @*@Html.EditorFor(model => model.OrgUnitId, "OrgHierarchyCaller", additionalViewData: new { treeId = "OrgUnitId", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Shared"), GetNodeInfoByIdActionURL = @Url.Action("GetInternalPartyInfoById", "Shared"), GetNodeInfoByNumActionURL = @Url.Action("GetInternalPartyInfoByNumber", "Shared"), onClickfunction = "GetDirectedToUsersByOrgUnitId", ValidationGroup = "AddDelegation", ShowAddPartyButton = false })*@
+                @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.OrgUnitId, TreeMode.Single, "OrgUnitId", true, "GetDirectedToUsersByOrgUnitId", "AddDelegation", "dvDepartments")
+            </div>
+           
+            
+
+
+        </div>
+
+        <div class="form-group col-lg-3 col-md-4 col-sm-12 col-xs-12">
+            <label class="w-100">@DbRes.TResource("User.UserDelegation.EmployeeName")<span class="stark">*</span></label>
+            <div class="">
+                <div class="">
+                    @Html.AutoCompleteBuilder("ddlDirectedToId", "hdnDirectedToId", ViewData["OrgUnitsUsersData"] != null ? ViewData["OrgUnitsUsersData"].ToString() : null, Model != null ? Model.DirectedToId.ToString() : null, true, "form-control")
+                    @Html.HiddenGroupFor(model => model.DirectedToId, new { id = "hdnDirectedToId" }, "AddDelegation")
+                    @Html.StickyHiddenFor(model => model.DirectedTo, new { @id = "hdnDirectedToName" })
+                </div>
+                <span class="help-block"></span>
+            </div>
+        </div>
+
+        <div class="form-group  col-lg-3 col-md-4 col-sm-12 col-xs-12">
+
+            @if (Model.TransactionCategories != null)
+            {
+                for (int i = 0; i < Model.TransactionCategories.Count; i++)
+                {
+                    <div class="form-check form-check-inline">
+                        @Html.CheckBoxFor(model => model.TransactionCategories[i].IsSelected, new { @class = "form-check-input chkk" })
+                        @Html.StickyHiddenFor(model => model.TransactionCategories[i].Text)
+                        @Html.StickyHiddenFor(model => model.TransactionCategories[i].Id)
+                        @Html.LabelFor(model => model.TransactionCategories[i].Text, Model.TransactionCategories[i].Text, new { @class = "form-check-label" })
+                    </div>
+                }
+            }
+        </div>
+        <div style="display:none">
+            <div class="form-group col-lg-3 col-md-4 col-sm-12 col-xs-12">
+                <label class="w-100">@DbRes.TResource("User.UserDelegation.Priority")</label>
+                <div>
+                    <div class="">
+                        @Html.AutoCompleteBuilder("ddlPriority", "hdnPriorityId", ViewData["PrioritiesData"].ToString(), Model != null ? Model.PriorityId.ToString() : null, true, "form-control")
+                        @Html.HiddenGroupFor(model => model.PriorityId, new { id = "hdnPriorityId" }, "AddDelegation")
+                        @Html.StickyHiddenFor(model => model.Priority, new { id = "hdnPriorityName" })
+                    </div>
+                    <span class="help-block"></span>
+                </div>
+            </div>
+            <div class="form-group col-lg-3 col-md-4 col-sm-12 col-xs-12">
+                <label class="w-100">@DbRes.TResource("User.UserDelegation.SourceType")</label>
+                <div>
+                    <div class="">
+                        @Html.AutoCompleteBuilder("ddlSourceTypes", "hdnSourceTypesId", ViewData["TransactionCategoryData"].ToString(), Model != null ? Model.SourceTypesId.ToString() : null, true, "form-control")
+                        @Html.HiddenGroupFor(model => model.SourceTypesId, new { id = "hdnSourceTypesId" }, "AddDelegation")
+                        @Html.StickyHiddenFor(model => model.SourceType, new { id = "hdnSourceTypeName" })
+                        @Html.StickyHiddenFor(model => model.Status, new { id = "hdnStatusName" })
+                        @Html.StickyHiddenFor(model => model.StatusId, new { id = "hdnStatusId" })
+                    </div>
+                    <span class="help-block"></span>
+                </div>
+            </div>
+            <div class="form-group col-lg-3 col-md-4 col-sm-12 col-xs-12">
+                <label class="w-100">@DbRes.TResource("User.UserDelegation.Confidentiality")</label>
+                <div>
+                    <div class="">
+                        @Html.AutoCompleteBuilder("ddlConfidentiality", "hdnConfidentialityId", ViewData["ConfidentialityData"].ToString(), null, true, "form-control")
+                        @Html.HiddenGroupFor(model => model.ConfidentialityId, new { id = "hdnConfidentialityId" }, "AddDelegation")
+                        @Html.StickyHiddenFor(model => model.Confidentiality, new { id = "hdnConfidentialityName" })
+                    </div>
+                    <span class="help-block"></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group col-lg-8 col-md-6 col-sm-12 col-xs-12">
+            <div class="col-sm-4 col-xs-12 pr-sm-8 pl-sm-0 p-xs-0">
+                @Html.CheckBoxFor(model => model.ReceiveCopy, new { @class = "" })
+                @Html.StickyHiddenFor(model => model.ReceiveCopy, new { id = "hdnReceiveCopy" })
+                <label class="form-check-label dark-color" for="inlineRadio1">   @DbRes.TResource("User.UserDelegation.ReceiveCopy")</label>
+            </div>
+            <div class="col-sm-6 col-xs-12 pr-sm-2 pl-sm-0 p-xs-0">
+                @Html.CheckBoxFor(model => model.ShowTransaction, new { @class = "" })
+                @Html.StickyHiddenFor(model => model.ShowTransaction, new { id = "hdnShowTransaction" })
+                <label class="form-check-label dark-color" for="inlineRadio1">   @DbRes.TResource("User.UserDelegation.ShowTransaction")</label>
+            </div>
+        </div>
+        <div class="form-group  col-lg-3 col-md-4 col-sm-12 col-xs-12">
+            @if (Model.ConfidentialityLevels != null)
+            {
+                for (int i = 0; i < Model.ConfidentialityLevels.Count; i++)
+                {
+                    <div class="form-check form-check-inline">
+                        @Html.CheckBoxFor(model => model.ConfidentialityLevels[i].IsSelected, new { @class = "form-check-input chkk" })
+                        @Html.StickyHiddenFor(model => model.ConfidentialityLevels[i].Text)
+                        @Html.StickyHiddenFor(model => model.ConfidentialityLevels[i].Id)
+                        @Html.LabelFor(model => model.ConfidentialityLevels[i].Text, Model.ConfidentialityLevels[i].Text, new { @class = "form-check-label" })
+                    </div>
+                }
+            }
+        </div>
+        <div class="form-group col-lg-12 col-md-12 col-xs-12 col-sm-12">
+            <p class="stark">@DbRes.TResource("Admin.User.MustFill") * </p>
+        </div>
+    </div>
+        <div class="row">
+            <div class="col-sm-12 panel-body text-right">
+                @Html.StickyHiddenFor(model => model.Key, new { id = "hdnEditKey" })
+                @Html.ActionButton(DbRes.TResource("User.UserDelegation.Add"), "AddUserDelegate", "dvGrid", null, null, "OnAddSuccess", null, "post", "AddDelegation", "btnAddDelegate", "frmUserDelegation", "btn-site", "CheckOrgUnit")
+                @Html.ActionButton(DbRes.TResource("User.UserDelegation.Edit"), "ClientEditUserDelegate", "dvGrid", null, null, "OnClientEditSuccess", null, "post", "AddDelegation", "btnClientEditDelegate", "frmUserDelegation", "btn-site hidden_")
+                <a class="btn-site" style="display:none" id="btnCancel" onclick="CancelDelegationEdit()">@DbRes.TResource("User.UserDelegation.Cancel")</a>
+            </div>
+        </div>
+        <hr />
+        <br />
+        <div class="panel-body" id="dvGrid">
+            @Html.Partial("~/Areas/User/Views/UserPreferences/Delegation/_UserCurrentDelegationsGridPartial.cshtml", Model.DelegationListGrid, ViewData)
+        </div>
+        <div class="content_container content_container--footer">
+            <div class="text-center">
+                @Html.ConfirmAction(OperationType.Save, "btnSaveDelegation", DbRes.TResource("Admin.User.Save"), Url.Action("SaveUserDelegations", "UserPreferences"), null, null, null, "OnSaveDelegationCallBack", null, DbRes.TResource("User.Inbound.SaveMessage"), "post", "frmUserDelegation", "", "btn btn-st1 btn-lg pull-right")
+            </div>
+        </div>
+    }
+
+</div>
+
+<script>
+    $(document).ready(function () {
+        
+        $("#OrgUnitName").val($(".txtDepartmentName").val());
+        //$("#btnSaveDelegation").attr("formnovalidate", "");
+        $(".txtDepartmentName").change(function () {
+            debugger;
+            $("#OrgUnitName").val($(this).val());
+        });
+        $(".txtDepartmentNumber").change(function () {
+            debugger;
+            GetDirectedToUsersByOrgUnitId();
+        });
+        $("#FromDateCal").attr("autocomplete", "off");
+        $("#toDateCal").attr("autocomplete", "off");
+    });
+    
+    $("#ddlDirectedToId").change(function () {
+        $("#hdnDirectedToName").val($(this).val());
+    });
+    $("#ddlPriority").change(function () {
+        $("#hdnPriorityName").val($(this).val());
+    });
+    $("#ddlSourceTypes").change(function () {
+        $("#hdnSourceTypeName").val($(this).val());
+    });
+    $("#ddlConfidentiality").change(function () {
+        $("#hdnConfidentialityName").val($(this).val());
+    });
+
+    function CheckOrgUnit() {
+        
+        if ($('#dvAddDelegation .txtDepartmentName').val() == "") {
+            $('#dvAddDelegation .txtDepartmentName, #dvAddDelegation .txtDepartmentNumber').addClass("RedBorder");
+        }
+        else {
+            $('#dvAddDelegation .txtDepartmentName, #dvAddDelegation .txtDepartmentNumber').removeClass("RedBorder");
+        }
+        if ($('#FromDateCal').val()=="")
+            $('#FromDateCal').addClass("RedBorder");
+        else
+            $('#FromDateCal').removeClass("RedBorder");
+        if ($('#toDateCal').val() == "")
+            $('#toDateCal').addClass("RedBorder");
+        else
+            $('#toDateCal').removeClass("RedBorder");
+        return true;
+    }
+
+    function OnSaveDelegationCallBack(data, div) {
+        
+        if (data.MessageType != 2) {
+            ShowSuccesMessage('@DbRes.TResource("User.AssignmentPaper.SaveSucceeded")', redirect());
+            //window.location.reload();
+        } else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+    function redirect() {
+        setTimeout(function () { window.location.reload(); }, 3000);
+    }
+
+    function GetDirectedToUsersByOrgUnitId() {
+        
+        var token = $("#frmUserDelegation").find("input[name='__RequestVerificationToken']").val();
+        if ($("#divForm__treeToOrgUnit").find(".hdnDepartmentId").val() != '' && $("#dvAddDelegation .txtDepartmentName").val() != '') {
+            $("#hdnDirectedToId").val('');
+            $("#ddlDirectedToId").val('');
+            $("#hdnOrgUnitUserName").val('');
+            $('#hdnDirectedToName').val($('#dvAddDelegation .txtDepartmentName').val());
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("GetUsersByOrgUnitId", "UserPreferences")',
+                data: { id: $("#OrgUnitId").val(), __RequestVerificationToken: token },
+                success:
+                    function (data) {
+                        AutoCompleteChangeList("ddlDirectedToId", data);
+                        $("#ddlDirectedToId").trigger('change');
+                        $("#hdnDirectedToId").trigger('change');
+                        //$("#ddlDirectedToId").prop('disabled', false);
+                    }
+            });
+            return false;
+        }
+        else {
+
+            AutoCompleteChangeList("ddlOrgUnitUsers", "[]");
+            $("#hdnDirectedToId").val('');
+            $("#ddlDirectedToId").trigger('change');
+            $("#hdnDirectedToId").trigger('change');
+            //$("#ddlDirectedToId").prop('disabled', true);
+        }
+    }
+
+    function OnAddSuccess(data, div) {
+        if (data.MessageType != 2) {
+            $("#grid-table-grdCurrentDelegations> tbody > .grid-empty-text").remove();
+            $("#grid-table-grdCurrentDelegations > tbody").append(data.Html);
+            ClearInputs('dvAddDelegation');
+            $("#divForm__treeToOrgUnit").find(".hdnDepartmentId").val("-1");
+            $("#ddlDirectedToId").removeClass("invalid-input");
+        }
+        else {
+              ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function OnClientEditSuccess(data, div) {
+        if (data.MessageType != 2) {
+            if (data.Key != "") {
+                $('#grid-table-grdCurrentDelegations').find('#Key_' + data.Key).closest('tr').replaceWith(data.Html);
+            }
+            CancelDelegationEdit();
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function GetDelegationByKey(keyValue) {
+         
+        $("#OrgUnitId").val($("#OrgUnitId_" + keyValue).val());
+        SetTreeDefaultInfo("OrgUnitId");
+        
+        $("#divForm__treeToOrgUnit").find(".hdnDepartmentId").val($("#OrgUnitId_" + keyValue).val());
+        $("#dvAddDelegation .txtDepartmentNumber ").val($("#OrgUnitId_" + keyValue).val());
+        $("#dvAddDelegation .txtDepartmentName").val($("#OrgUnit_" + keyValue).val());
+        FillOrgUnitsTreeControls('treeToOrgUnit', $("#OrgUnitId_" + keyValue).val());
+        $("#ddlDirectedToId").val($("#DirectedTo_" + keyValue).val());
+        $("#hdnDirectedToId").val($("#DirectedToId_" + keyValue).val());
+        $("#hdnDirectedToName").val($("#DirectedTo_" + keyValue).val());
+        $("#hdnStatusName").val($("#Status_" + keyValue).val());
+        $("#hdnStatusId").val($("#StatusId_" + keyValue).val());
+        $("#hdnReceiveCopy").val($("#ReceiveCopy_" + keyValue).val().toLowerCase());
+        if ($("#ReceiveCopy_" + keyValue).val().toLowerCase() == "true") {
+            $("#ReceiveCopy").prop('checked', $("#ReceiveCopy_" + keyValue).val().toLowerCase());
+        }
+        $("#hdnShowTransaction").val($("#ShowTransaction_" + keyValue).val().toLowerCase());
+        if ($("#ShowTransaction_" + keyValue).val().toLowerCase() == "true") {
+            $("#ShowTransaction").prop('checked', $("#ShowTransaction_" + keyValue).val().toLowerCase());
+        }
+        SetDate('FromDateCal', 'hdnFromDateGreg', 'hdnFromDateUm', $("#FromDateG_" + keyValue).val());
+        SetDate('toDateCal', 'hdnToDateGreg', 'hdnToDateUm', $("#ToDateG_" + keyValue).val());
+        $("#hdnEditKey").val(keyValue);
+        $("#btnAddDelegate").hide();
+        $("#btnClientEditDelegate").show();
+        $("#btnCancel").show();
+        $("#btnClientEditDelegate").removeClass("hidden_");
+    }
+    function CancelDelegationEdit() {
+        $("#btnAddDelegate").show();
+        $("#btnClientEditDelegate").addClass('hidden_');
+        $("#btnCancel").hide();
+        ClearInputs('dvAddDelegation');
+        $("#divForm__treeToOrgUnit").find(".hdnDepartmentId").val("-1");
+    }
+</script>
+<script>
+    $.validator.addMethod('require-one', function (value) {
+        return $('.require-one:checked').size() > 0;
+    });
+
+    var checkboxes = $('.require-one');
+    var checkbox_names = $.map(checkboxes, function (e, i) {
+        return $(e).attr("name")
+    }).join(" ");
+
+    $('.require-one').change(function () {
+        if ($(this).is(':checked')) {
+            $("._msgval")
+                .removeClass("field-validation-error")
+                .addClass("field-validation-valid")
+        }
+    });
+</script>
+<style>
+    .RedBorder {
+        border: 1px solid #fe0000 !important
+    }
+</style>
+

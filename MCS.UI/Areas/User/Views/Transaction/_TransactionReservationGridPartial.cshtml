@@ -1,0 +1,37 @@
+﻿@using MCS.UI.Areas.User.Models.Transaction;
+@model AjaxGrid<TransactionReservationVM>
+
+@{
+    Layout = null;
+}
+
+@Html.Grid(Model).CollectionName("Reservations").Named("grdTransactionReservations").Columns(columns =>
+{
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Id, new { id = "Id_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.Key, new { id = "Key_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(model => model.TransactionCategoryName).Titled(DbRes.TResource("User.Transaction.Reservation.Type"));
+    columns.Add(model => model.EntityName).Titled(DbRes.TResource("User.Transaction.Reservation.Unit"));
+    columns.Add(model => model.UserName).Titled(DbRes.TResource("User.Transaction.Reservation.UserName"));
+    columns.Add(model => model.Count).Titled(DbRes.TResource("User.Transaction.Reservation.Count"));
+    columns.Add(model => model.Reason).Titled(DbRes.TResource("User.Transaction.Reservation.Reason"));
+    columns.Add(model => model.DateTimeHJ).Titled(DbRes.TResource("User.Transaction.Reservation.Datetime"));
+    columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => @Html.ClientLinkTag("", cssClass: "edit_link", title: DbRes.TResource("User.Transaction.Reservation.View"), 
+    clientFunctionToCall: "DisplayReservedTransactions(" + model.Id + ",'" + model.TransactionCategoryName + "')", innerHtml: "<i class='fas fa-chevron-left'></i>"));
+  
+}).WithPaging(GridHelper.PageSize)
+
+<script>
+    $(document).ready(function () {
+        userTransactionReservations();
+    })
+    function userTransactionReservations() {
+        $(".grid-mvc").gridmvc();
+        pageGrids.grdTransactionReservations.ajaxify(
+            {
+                getPagedData: '@Html.Raw(Url.Action("UpdateGridReservations", "Reservation"))',
+                getData: '@Html.Raw(Url.Action("UpdateGridReservations", "Reservation"))',
+                requestType: "POST"
+            });
+    }
+</script>
+

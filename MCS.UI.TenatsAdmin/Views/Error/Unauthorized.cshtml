@@ -1,0 +1,30 @@
+﻿@using MCS.Framework.Localization;
+
+@{
+    Layout = "~/Views/Shared/_EmptyLayout.cshtml";
+}
+
+<div class="error-container">
+    <div class="error-subtext">
+        @DbRes.TResource("Global.Unauthorized.PermissionErrorMassage")
+    </div>
+    <div class="error-actions">
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+                <button class="btn btn-info btn-block btn-lg btn-error_01" onclick="UrlReferrer(); return false;">@DbRes.TResource("Shared.Error.PreviousPage")</button>
+            </div>
+            <div class="col-md-3"></div>
+        </div>
+    </div>
+    <div class="clear"></div>
+</div>
+
+<script>
+    var url = '@Request.UrlReferrer.AbsolutePath';
+    function UrlReferrer() {
+
+        document.location.href =url;
+    }
+</script>
+

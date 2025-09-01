@@ -1,0 +1,53 @@
+﻿/*.DefaultAutocompleteUi {
+    border-bottom: 1px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    font-family: Verdana,Arial,sans-serif;
+    font-size: 15px;
+    display: block;
+    float: left;
+    list-style: none outside none;
+    margin: 0;
+    padding: 2px;
+    cursor: default;
+    position: absolute;
+}
+
+.DefaultAutocompleteUi li {
+        background-color: #fff;
+}
+
+.DefaultAutocompleteUi li:hover {
+        background-color: #99C2FF;
+}*/
+
+.ui-menu .ui-menu-item:hover {
+    background-color: rgba(53, 60, 119, 0.85) !important;
+    position: relative;
+    margin: 0;
+    padding: 3px 1em 3px .4em;
+    cursor: pointer;
+    min-height: 0;
+    color: #fff
+}
+
+.ui-menu .ui-menu-item {
+    background-color: #fff !important;
+    margin: 0;
+    padding: 3px 1em 3px .4em;
+    cursor: pointer;
+    min-height: 0;
+  
+}
+    .ui-menu {
+        border: 1px solid rgba(204, 204, 204, 0.8);
+    }
+
+.AutPosition {
+    position: relative;
+}
+.icon_arrow_down {
+    position: absolute;
+    left: 10px;
+    top: 13px;
+}

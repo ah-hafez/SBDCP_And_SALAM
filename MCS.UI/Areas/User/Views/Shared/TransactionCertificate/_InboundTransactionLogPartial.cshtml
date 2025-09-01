@@ -1,0 +1,472 @@
+﻿@model MCS.UI.Areas.User.Models.Search.TransactionCertificate.InboundCertificateVM
+@using MCS.Common
+@using MCS.Framework.Localization
+
+@{
+    /**/
+
+    Layout = "~/Views/Shared/_DialogLayout.cshtml";
+    int id = Model.Id;
+    string GUID = Guid.NewGuid().ToString();
+    bool HasPermissionToOpenEncrypted = true;
+    if (Model.Encrypted)
+    {
+        if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.GeneralPermissions.OpenEncryptTransaction))
+        {
+            HasPermissionToOpenEncrypted = true;
+        }
+        else
+        {
+
+            HasPermissionToOpenEncrypted = false;
+        }
+
+    }
+}  
+<div style="padding:5px;">
+    <h2 class="site-color main-title " style="margin-left:40px">@DbRes.TResource("User.Search.TransactionCertificate")</h2>
+    @if (HasPermissionToOpenEncrypted)
+    {
+        <div class="content_container content_container--body certificate-border">
+            @Html.StickyHidden("hdnGUID", GUID, new { @class = "hdnGUID" })
+            <!-- Nav tabs -->
+            <ul class="custom-nav-tabs d-flex flex-wrap" role="tablist" style="margin-right:10px">
+                <li role="presentation" class="flex-fill liTransaction">
+                    <a href="#tab-1" aria-controls="tab-1" role="tab" data-bs-toggle="tab" onclick="GetCertificateBasicInfo(@id, this); GetCertificateNames(@id, this);" class="active">
+                        @*<i class="icon-tab1"></i><br>*@
+                        @*@Html.Raw(DbRes.TResource("User.TransactionLog.TransactionData"))*@
+                        @Html.Raw(DbRes.TResource("User.TransactionLog.TransactionDataAndRelatedPersons"))
+                    </a>
+                </li>
+                <div class="border-left"></div>
+                @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.TransactionCertificate.Assignments))
+                {
+                    <li role="presentation" class="flex-fill liTransaction">
+                        <a href="#tab-2" id="CertificateAssignmentsTab" aria-controls="tab-2" role="tab" data-bs-toggle="tab" onclick="GetCertificateAssignments(@id,this)">
+                            @Html.Raw(DbRes.TResource("User.TransactionLog.TransactionAssignments"))
+
+                        </a>
+                    </li>
+                    <div class="border-left"></div>
+                }
+
+
+            @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.TransactionCertificate.Attachments) || SessionInfo.CurrentUser.Claims.Contains(UserClaims.TransactionCertificate.Explanations))
+            {
+                <li role="presentation" class="flex-fill liTransaction">
+                    <a href="#tab-3" aria-controls="tab-3" role="tab" data-bs-toggle="tab" onclick="GetCertificateAttachments(@id, this)">
+                        @*<i class="icon-tab3"></i><br>*@
+                        @Html.Raw(DbRes.TResource("User.TransactionLog.AttachmentAndExplanations"))
+
+                        </a>
+                    </li>
+                    <div class="border-left"></div>
+
+                }
+
+                <li role="presentation" class="flex-fill liTransaction">
+                    <a href="#" id="ElectronicreceiptTab" aria-controls="" role="tab" data-bs-toggle="tab" onclick="GetElectronicreceipt(@id, this); ">
+                        @*<i class="icon-tab2"></i><br>*@
+                        @Html.Raw(DbRes.TResource("الاستلام الالكتروني"))
+
+                    </a>
+                </li>
+                <div class="border-left"></div>
+
+
+
+                <!--@if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.TransactionCertificate.Names))
+                { }
+                    <li role="presentation" class="flex-fill">
+                        <a href="#tab-4" aria-controls="tab-4" role="tab" data-bs-toggle="tab" onclick="GetCertificateNames(@id,this)">-->
+                @*<i class="icon-tab4"></i><br>*@
+                @*@Html.Raw(DbRes.TResource("User.TransactionLog.TransactionRelatedPersons"))*@
+
+            <!--</a>
+        </li>
+    }
+    <div style="border-left:2px solid  #0E8270; height:28px; margin-top:18px; margin-left:10px"></div>-->
+
+
+
+
+            @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.TransactionCertificate.CopiesInternal) || SessionInfo.CurrentUser.Claims.Contains(UserClaims.TransactionCertificate.CopiesExternal))
+            {
+                <li role="presentation" class="flex-fill liTransaction">
+                    <a href="#tab-5" aria-controls="tab-5" role="tab" data-bs-toggle="tab" onclick="GetCertificateCopies(@id, this , false); GetCertificateExternalCopies(@id, this); ">
+                        @*<i class="icon-tab5"></i><br>*@
+                        @*@Html.Raw(DbRes.TResource("User.TransactionLog.TransactionInternalElectronicCopies"))*@
+                        @Html.Raw(DbRes.TResource("User.TransactionLog.ElectronicCopies"))
+
+                        </a>
+                    </li>
+                    <div class="border-left"></div>
+
+                }
+
+
+                <!--@if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.TransactionCertificate.CopiesExternal))
+                { }
+                    <li role="presentation" class="flex-fill">
+                        <a href="#tab-6" aria-controls="tab-6" role="tab" data-bs-toggle="tab" onclick="GetCertificateExternalCopies(@id,this)">-->
+                @*<i class="icon-tab6"></i><br>*@
+                <!--@Html.Raw(DbRes.TResource("User.TransactionLog.TransactionExternalElectronicCopies"))
+                        </a>
+                    </li>
+                }
+
+
+    <div style="border-left:2px solid  #0E8270; height:28px; margin-top:18px; margin-left:10px"></div>-->
+
+
+
+                @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.TransactionCertificate.Links))
+                {
+                    <li role="presentation" class="flex-fill liTransaction">
+                        <a href="#tab-7" aria-controls="tab-7" role="tab" data-bs-toggle="tab" onclick="GetCertificateLinks(@id,this)">
+                            @*<i class="icon-tab7"></i><br>*@
+                            @Html.Raw(DbRes.TResource("User.TransactionLog.TransactionLinksLog"))
+
+                        </a>
+                    </li>
+                }
+                <div class="border-left"></div>
+
+            <!--@if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.TransactionCertificate.Explanations))
+    { }
+        <li role="presentation" class="flex-fill">
+            <a href="#tab-8" aria-controls="tab-8" role="tab" data-bs-toggle="tab" onclick="GetCertificateExplanations(@id,this)">-->
+            @*<i class="icon-tab8"></i><br>*@
+            <!--@Html.Raw(DbRes.TResource("User.TransactionLog.ExplanationLog"))
+            </a>
+        </li>
+    }
+    <div style="border-left:2px solid  #0E8270; height:28px; margin-top:18px; margin-left:10px"></div>-->
+
+                @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.TransactionCertificate.Followup))
+                {
+                    <li role="presentation" class="flex-fill liTransaction">
+                        <a href="#tab-9" aria-controls="tab-9" role="tab" data-bs-toggle="tab" onclick="GetCertificateFollowUp(@id, this); GetCertificateTasks(@id, this);">
+                            @*<i class="icon-tab9"></i><br>*@
+                            @*@Html.Raw(DbRes.TResource("User.TransactionLog.FollowUpLog"))*@
+                            @Html.Raw(DbRes.TResource("User.TransactionLog.FollowUpLogAndTasks"))
+
+                    </a>
+                </li>
+            }
+            <!--<div style="border-left:2px solid  #0E8270; height:28px; margin-top:18px; margin-left:10px"></div>
+
+                @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.TransactionCertificate.Tasks))
+                { }
+                    <li role="presentation" class="flex-fill">
+                        <a href="#tab-10" aria-controls="tab-10" role="tab" data-bs-toggle="tab" onclick="GetCertificateTasks(@id,this)">-->
+                @*<i class="icon-tab10"></i><br>*@
+                <!--@Html.Raw(DbRes.TResource("User.TransactionLog.TasksLog"))
+                        </a>
+                    </li>
+                }-->
+
+            </ul>
+            <hr class="hr" />
+            <div class="tab-content" id="dvContent_@GUID">
+
+                @Html.Partial("~/Areas/User/Views/Shared/TransactionCertificate/CertificatePartials/_InboundCertificateBasicInfoPartial.cshtml", Model)
+            </div>
+        </div>
+    }
+    else
+    {
+        @DbRes.TResource("User.File.EncryptedTransaction")
+    }
+</div>
+
+
+
+
+<script>
+
+    function InsertPrintButton() {
+        $('#printElectronicreceipt').append('<input type="button" onclick="PrintElectronicreceipt()" id="Print" class="btn btn-site mr-auto" value="طباعة" />');
+    }
+
+
+
+
+    $("div.anchor a").click(function () {
+        $("div.anchor a").removeClass("active");
+        $("div.anchor a").addClass("disabled");
+        $(this).addClass("active");
+        var id = $(this).data("id");
+        $("#" + id).addClass("active");
+        // $(".tabscontent").addClass("hidden_");
+        //var divId = $(this).data("divid");
+        //$("#" + divId).removeClass("hidden_");
+    });
+
+    $('.tab_editor').click(function () {
+
+        var url;
+        var data = new Array();
+
+        $('.tab_editor').removeClass('select_but');
+        $(this).addClass('select_but');
+
+        $("._views").hide();
+
+        switch ($(this)[0].id) {
+
+            case "btnBasicInfo":
+                $("#dvEditorBasicInfo").show();
+                break;
+
+            case "btnExplanation":
+                $("#dvEditorExplanation").show();
+                break;
+        }
+        return false;
+    });
+
+</script>
+
+<script>
+    function PrintElectronicreceipt() {
+        var url = '@Url.Action("GetElectronicreceipt", "TransactionLog")' + '?transactionId=' + @Model.Id;
+        ShowDialog(url, 'dialogbox col-md-12');
+    }
+
+    var urlPrintTicket = '@Url.Action("PrintTicket","Shared")' + '?transactionId=' + @Model.Id;
+
+
+
+
+    function ShowTransactionCertificate(id, transactionType) {
+        var url;
+        debugger
+        switch (transactionType) {
+
+            case '@TransactionCategory.Inbound.LookupIdentity(LookupCategory.TransactionCategory,SessionInfo.CultureShortName).ToString()':
+
+                url = '@Url.Action("InboundCertificate", "Shared")' + '?transactionId=' + id;
+                break;
+
+            case '@TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName).ToString()':
+
+                url = '@Url.Action("InboundCertificate", "Shared")' + '?transactionId=' + id;
+                break;
+
+            case '@TransactionCategory.ExternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName).ToString()':
+            case '@TransactionCategory.DraftOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName).ToString()':
+
+                url = '@Url.Action("OutboundCertificate", "Shared")' + '?transactionId=' + id;
+                break;
+        }
+
+        ShowDialog(url);
+    }
+    function ShowPrintDialog(id) {
+        var params = { transactionId: id };
+        ShowDialogAjaxPrintingBarcodes('@Url.Action("PrinttingBarcodes","Shared")' + "?" + $.param(params), {}, 'OpenPrintDialogSuccess', 'dialogbox col-md-12 ');
+    }
+
+    function OpenPrintDialogSuccess(data, $obj) {
+        if (data.MessageType != 2) {
+            $obj.setContent(data.Html);
+        }
+        else {
+            __dialog.close();
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+    function CloseDialog()
+    {
+        $(".closeIcon").click();
+        __dialog.close();
+
+    }
+</script>
+
+<script>
+    function GetCertificateBasicInfo(transactionId, element) {
+        var id = transactionId;
+
+        $.ajax({
+            type: 'Get',
+            cache: false,
+            url: '@Url.Action("GetInboundBasicInfo", "TransactionLog")',
+            data: { transactionId: id},
+            success:
+                function (data) {
+                    UpdateDivContent(data, element,false);
+                }
+        });
+    }
+
+    function GetCertificateNames(transactionId, element) {
+        var id = transactionId;
+
+        $.ajax({
+            type: 'Get',
+            cache: false,
+            url: '@Url.Action("GetTransactionNames", "TransactionLog")',
+            data: { transactionId: id},
+            success:
+                function (data) {
+                    UpdateDivContent(data, element, true);
+                }
+        });
+    }
+
+    function GetCertificateAssignments(transactionId, element) {
+        var id = transactionId;
+        debugger;
+        $.ajax({
+            type: 'Get',
+            cache: false,
+            url: '@Url.Action("GetTransactionAssignmentHistories", "TransactionLog")',
+            data: { transactionId: id},
+            success:
+                function (data) {
+                    UpdateDivContent(data, element, false);
+
+                }
+        });
+    }
+    function GetElectronicreceipt(transactionId, element) {
+        var id = transactionId;
+
+        $.ajax({
+            type: 'Get',
+            cache: false,
+            url: '@Url.Action("GetElectronicreceipt", "TransactionLog")',
+            data: { transactionId: id},
+            success:
+                function (data) {
+                    UpdateDivContent(data, element, false);
+                  /*  InsertPrintButton();*/
+                }
+        });
+    }
+    function GetCertificateLinks(transactionId, element) {
+        var id = transactionId;
+
+        $.ajax({
+            type: 'Get',
+            cache: false,
+            url: '@Url.Action("GetTransactionLinks", "TransactionLog")',
+            data: { transactionId: id},
+            success:
+                function (data) {
+                    UpdateDivContent(data, element);
+                }
+        });
+    }
+    function GetCertificateAttachments(transactionId, element) {
+        var id = transactionId;
+
+        $.ajax({
+            type: 'Get',
+            cache: false,
+            url: '@Url.Action("GetTransactionAttachments", "TransactionLog")',
+            data: { transactionId: id},
+            success:
+                function (data) {
+                    UpdateDivContent(data, element, false);
+                }
+        });
+    }
+    function GetCertificateCopies(transactionId, element, isAppend) {
+        var id = transactionId;
+
+        $.ajax({
+            type: 'Get',
+            cache: false,
+            url: '@Url.Action("GetTransactionCopiesByTransactionId", "TransactionLog")',
+            data: { transactionId: id },
+            success:
+                function (data) {
+                    UpdateDivContent(data, element, isAppend);
+                }
+        });
+    }
+    function GetCertificateExternalCopies(transactionId, element) {
+        var id = transactionId;
+        $.ajax({
+            type: 'Get',
+            cache: false,
+            url: '@Url.Action("GetTransactionExternalCopiesByTransactionId", "TransactionLog")',
+            data: { transactionId: id},
+            success:
+                function (data) {
+                    UpdateDivContent(data, element, true);
+                }
+        });
+    }
+
+    //function Copies(transactionId, element) {
+
+    //    GetCertificateCopies(transactionId, element);
+    //    GetCertificateExternalCopies(transactionId, element);
+    //}
+
+    function GetCertificateExplanations(transactionId, element) {
+        var id = transactionId;
+
+        $.ajax({
+            type: 'Get',
+            cache: false,
+            url: '@Url.Action("GetExplanationsByTransactionId", "TransactionLog")',
+            data: { transactionId: id},
+            success:
+                function (data) {
+                    UpdateDivContent(data, element, true);
+                }
+        });
+    }
+    function GetCertificateTasks(transactionId, element) {
+        var id = transactionId;
+
+        $.ajax({
+            type: 'Get',
+            cache: false,
+            url: '@Url.Action("GetTransactionTasks", "TransactionLog")',
+            data: { transactionId: id},
+            success:
+                function (data) {
+                    UpdateDivContent(data, element, true);
+                }
+        });
+    }
+    function GetCertificateFollowUp(transactionId, element) {
+        var id = transactionId;
+
+        $.ajax({
+            type: 'Get',
+            cache: false,
+            url: '@Url.Action("GetTransactionFollowUp", "TransactionLog")',
+            data: { transactionId: id},
+            success:
+                function (data) {
+                    UpdateDivContent(data, element, false);
+                }
+        });
+    }
+
+    function UpdateDivContent(data, element, doAppend) {
+        debugger
+        if (doAppend) {
+            $("#dvContent_" + $(element).parent().parent().parent().find(".hdnGUID:first").val()).append(data);
+        }
+        else {
+            $("#dvContent_" + $(element).parent().parent().parent().find(".hdnGUID:first").val()).html("");
+            $("#dvContent_" + $(element).parent().parent().parent().find(".hdnGUID:first").val()).html(data);
+        }
+    }
+
+    function PrintExplanations(TransactionId) {
+
+        var url = '@Url.Action("GetTransactionExplanationsForPrint", "Editor")' + '?transactionId=' + TransactionId;
+
+        ShowDialog(url, 'dialogbox col-md-12 ');
+    }
+
+</script>

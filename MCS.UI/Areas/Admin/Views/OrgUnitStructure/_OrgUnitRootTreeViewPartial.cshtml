@@ -1,0 +1,123 @@
+﻿@model MCS.Common.TreeViewModel
+@using MCS.Common
+@using MCS.Framework.Localization
+
+
+@*@Html.NativeTree(Model, "jstree_default")*@
+@*@{
+        Layout = "~/Areas/Admin/Views/Shared/_OrgUnitStructureLayout.cshtml";
+    }*@
+
+<div class="content_container">
+    <div class="white-container mx-3 mx-md-5 ">
+        <form id="frmExternalPartiesSearch">
+            @Html.AntiForgeryToken()
+            <div class="form-row">
+                @*<div class="form-group col-lg-6 col-md-6 col-sm-12 col-xs-12 readonlyByPrivilege">
+
+                        <div>
+                            <div class="dvDepartmentsTree">
+                                <fieldset class="field-set">
+
+                                    @Html.DepartmentsTree(ViewData["orgUnitDataInfo"] as TreeViewModel, model => model.RootNode, TreeMode.Single, "dvTree", true, "", "", "dvDepartmentsTree")
+                                </fieldset>
+
+                            </div>
+                        </div>
+                    </div>*@
+                @*<ul class="test" style="display:flex; gap:25px; padding-right:10px;">
+                            <li>
+                        <a href="#fourth-tab" aria-controls="fourth-tab" role="tab" data-toggle="tab">
+                            <h1 style="font-size:16px; color:black;">@DbRes.TResource("User.OutboundDraft.ElectronicCopies")</h1>
+                        </a>
+                    </li>
+                    <div class="border-left"></div>
+                            <li>
+                        <h1 style="font-size:16px; color:black;">@DbRes.TResource("User.Transaction.ExternalCopies")</h1>
+                    </li>
+                        </ul>*@
+
+                @*<hr style="border:1px solid green; width:99%;" />*@
+                @*<div class="form-group col-lg-3 col-md-6 col-sm-12 col-xs-12 mb-3">
+                        <fieldset class="field-set" >
+                            <div id="dvDepartmentsTree2">
+                                @Html.DepartmentsTree(ViewData["orgUnitDataInfo"] as TreeViewModel, model => model.RootNode, TreeMode.Single, "dvTree", true, "GetDirectedToUsersByOrgUnitId", "", "dvDepartmentsTree2")
+
+                            </div>
+                        </fieldset>
+                    </div>*@
+
+
+                <div class="col-lg-6">
+                    <div class="divOrgUnit">
+                        <fieldset class="field-set" id="divContainerOrgParties">
+                            @Html.DepartmentsTree(ViewData["orgUnitDataInfo"] as TreeViewModel, model => model.RootNode, TreeMode.Single, "dvTree", true, "GetOrgStructureSearchById", "BasicInformation", "divContainerOrgParties")
+                        </fieldset>
+                    </div>
+                </div>
+
+                @*<div class="col-lg-4">
+                        <div class="form-group " id="divOrgUnit">
+                            <div class="TreeHeight" id="dvDepartmentsTree2">
+                                @Html.DepartmentsTreeOnDemand(ViewData["orgUnitDataInfo"] as TreeViewModel, model => model.RootNode, TreeMode.Single, "dvTree", true, "GetDestinationUsersByOrgUnitId", "", "dvDepartmentsTree2")
+
+                                @Html.DepartmentsTree(ViewData["orgUnitDataInfo"] as TreeViewModel, model => model.RootNode, TreeMode.Single, "dvTree", true, "GetDirectedToUsersByOrgUnitId", "", "dvDepartmentsTree2")
+                            </div>
+                        </div>
+                    </div>*@
+                <div style="margin-top:2.25rem" class="col-lg-2">
+                    @Html.ClientButton(@DbRes.TResource("User.File.Search"), "btnSearch", "btn btn-st1 w-xs-100", "GetOrgStructureSearchById")
+
+                </div>
+
+                <div style="margin-top:2.25rem" class="col-lg-2">
+                    <a class="btn btn-st1 w-xs-100" id="UpdateOrgunitBtn" onclick="UpdateOrgunit()">@DbRes.TResource("Admin.Orgunit.UpdateOrgunits")</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <div class="white-container mx-3 mx-md-5">
+        <div id="divOrgUnit">
+            @foreach (MCS.Common.TreeNode node in Model.Nodes.Values)
+            {
+                Html.RenderPartial("~/Areas/Admin/Views/OrgUnitStructure/_OrgUnitChildsTreeViewPartial.cshtml", node);
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+
+
+
+    function UpdateOrgunit()
+    {
+        $("#UpdateOrgunitBtn").attr("disabled", true);
+        debugger;
+               $.ajax({
+                 url: '@Url.Action("UpdateOrgUnitHierarchy", "User")',
+                 type: 'Get',
+                 success: function (data) {
+                     if (data.MessageType != 2)
+                     {
+                         $("#UpdateOrgunitBtn").attr("disabled", false);
+                          ShowSuccesMessage('@DbRes.TResource("Admin.User.Success")', reloadPage());
+                     } else
+                     {
+                         $("#UpdateOrgunitBtn").attr("disabled", false);
+                         ShowErrorMessage(data.MessageText);
+                     }
+
+                 }
+               });
+    }
+
+    function reloadPage()
+    {
+        setTimeout(function ()
+        {
+            window.location.reload();
+        }, 2000);
+    }
+</script>

@@ -1,0 +1,55 @@
+﻿@using MCS.UI.Areas.User.Models
+@using MCS.UI.Areas.User.Models.UserProfile
+@using MCS.Framework.Localization
+@using MCS.Common
+@{
+    Layout = "~/Views/Shared/_DialogLayout.cshtml";
+}
+<div class="d-flex flex-column flex-sm-row mx-5 mx-xs-3 mb-3 header-container mt-5">
+    <h3 class="site-color">معلومات المستخدم</h3>
+</div>
+
+@model UpdateUserInformationVM
+@using (Html.BeginForm("UpdateUserInternalNumber", "UserProfile", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { id = "frmUpdateProfile" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="white-container mx-5 mx-xs-3">
+        <div class="tab-content">
+            <div class=" white-bg">
+                <div class="form-row">
+
+
+                    <div class="form-group col-lg-3 col-md-6 col-sm-12 col-xs-12 mb-3">
+                        <label class="w-100">رقم الهاتف </label>
+                        <div>
+                            @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="form-group col-lg-3 col-md-6 col-sm-12 col-xs-12 mb-3">
+                        <label class="w-100">رقم التحويلة </label>
+                        <div>
+                            @Html.TextBoxFor(m => m.TransferNumber, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="row"><hr /></div>
+                </div>
+                <div class="content_container content_container--footer">
+                    <div class="col-xs-12 text-right preview-mini-options">
+                        @*<button type="submit" class="btn btn-block" style="padding:15px;">@DbRes.TResource("User.UserPreferences.Save") </button>*@
+
+                        @Html.ConfirmAction(OperationType.Update, "updateProfile", DbRes.TResource("User.UserPreferences.Save"), Url.Action("UpdateUserInternalNumber", "UserProfile"), null, null, null, "OnUpdateProfileSuccess", null, null, "post", "frmUpdateProfile", "", "btn btn-block", "", "", "")
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+}
+
+<script>
+    function OnUpdateProfileSuccess()
+    {
+        window.location.reload();
+    }
+</script>

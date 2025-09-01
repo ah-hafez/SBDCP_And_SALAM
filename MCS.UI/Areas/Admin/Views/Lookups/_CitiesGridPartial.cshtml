@@ -1,0 +1,37 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.Lookups
+@using MCS.GridMvc.Helpers;
+@using MCS.GridMvc.Html;
+@using MCS.Common;
+
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<CityVM>
+@{
+    ViewBag.Title = "_CitiesGridPartial";
+}
+
+@Html.Grid(Model).Named("Cities").Columns(columns =>
+{
+    columns.Add(model => model.Id).Css("hidden_");
+    columns.Add(model => model.CityId).Titled(DbRes.TResource("Admin.City.Id"));
+    columns.Add(model => model.Description[0].Text, "CityNameAr").Titled(DbRes.TResource("Admin.Lookups.City.Name.ar"));
+    columns.Add(model => model.Description[1].Text, "CityNameEn").Titled(DbRes.TResource("Admin.Lookups.City.Name.en"));
+
+}).WithPaging(GridHelper.PageSize)
+
+<script>
+    var token = $("#token input[name='__RequestVerificationToken']").val()
+    var CitiesGridEventHandler = "@Url.Action("UpdateCities", "Lookups")?__RequestVerificationToken=" + token;
+    function prepareCitiesGrid() {
+            $(".grid-mvc").gridmvc();
+        pageGrids.Cities.ajaxify({
+            getPagedData: CitiesGridEventHandler,
+                requestType: "GET",
+            getData: CitiesGridEventHandler
+            });
+        }
+
+        $(document).ready(function () {
+            prepareCitiesGrid();
+        });
+</script>
+

@@ -1,0 +1,218 @@
+﻿@using MCS.UI.Areas.User.Models.Report;
+@using MCS.Framework.Localization;
+@using MCS.Framework.Controls;
+@using MCS.UI.Helpers;
+@using MCS.UI.Common;
+
+@model FollowupReportResult
+@{
+    Layout = null;
+    List<int> columnsToGrid = ViewData["ColumnsToGrid"] == null ? new List<int>() : (List<int>)ViewData["ColumnsToGrid"];
+    string imagePath = Server.MapPath("~/Content/User/lib/images/GAMI_Logo_Color-01.svg");
+    byte[] imageBytes = System.IO.File.ReadAllBytes(imagePath);
+    string base64String = Convert.ToBase64String(imageBytes);
+    string imageSource = "data:image/png;base64," + base64String;
+}
+
+<DOCTYPE html>
+    <html lang="ar">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" id="theme" href="@UIConfigurations.GetFullURl()/Content/User/lib/css/theme_@(SessionInfo.CultureShortName).css" />
+        @if (SessionInfo.CultureShortName == "ar")
+        {
+            <link rel="stylesheet" type="text/css" id="theme" href="@UIConfigurations.GetFullURl()/Content/User/lib/css/rtl.css" />
+        }
+        <link type="image/x-icon" rel="shortcut icon" href="@UIConfigurations.GetFullURl()/Content/User/lib/favicon.png">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <meta name="theme-color" content="#0c7c5a">
+        <title>@ViewBag.Title</title>
+        <!-- New -->
+        <link href="@UIConfigurations.GetFullURl()/Content/User/lib/css/new.css" rel="stylesheet" />
+        <!-- Select2 CSS -->
+        <link href="@UIConfigurations.GetFullURl()/Content/User/lib/plugins/select2/select2.min.css" rel="stylesheet" />
+        <link href="@UIConfigurations.GetFullURl()/Content/User/lib/css/dawood-style.css" rel="stylesheet" />
+        <script src="@UIConfigurations.GetFullURl()/Scripts/jquery.min.js"></script>
+        <style>
+            .pagebreak {
+                page-break-after: always;
+            }
+
+            table.rprt {
+                width: 91%;
+            }
+
+                table.rprt td {
+                    padding: 5px;
+                    text-align: center;
+                }
+
+            table.rprtGrid {
+                width: 91%;
+                border: 1px solid #000000;
+            }
+
+                table.rprtGrid td {
+                    padding: 5px;
+                    border-left: 1px #000000 solid;
+                    border-bottom: 1px #000000 solid !important;
+                    border-right: 1px #000000 solid;
+                }
+        </style>
+    </head>
+    <body dir="rtl" style="background-color: #ffffff;">
+
+        @{ var results = Model.TransactionPrintResultVMs; int cnt = 1; }
+        @if (results != null && results.Count > 0)
+        {
+            for (int i = 0; i < results.Count; i += 15)
+            {
+                <table class="rprt" style="direction: rtl;">
+                    <tr>
+                        <td>
+                            <p><strong>المملكة العربية السعودية</strong></p>
+                            <p><strong>الهيئة العامة للصناعات الحربية</strong></p>
+                            <br />
+                            <p><strong>الادارة المنشئة:</strong> @Model.TransactionBasicResultVM.CreatedEntity</p>
+                            <p><strong>الموظف المنشئ:</strong> @Model.TransactionBasicResultVM.CreatedBy</p>
+                        </td>
+                        <td>
+                            <img class="" width="200" src="~/Content/User/lib/images/GAMI_Logo_Color-01.svg" />
+
+                            <h3 class=""><strong>@Model.TransactionBasicResultVM.TenantName</strong></h3>
+
+                            <p><strong>تقرير / المعاملات  @Model.TransactionBasicResultVM.TransactionType</strong></p>
+                            <p>@Model.TransactionBasicResultVM.ExternalParty</p>
+                        </td>
+                        <td></td>
+                        <td style="font-size: 12px; display: inline-block;">
+                            <br>
+                            <p style="display: inline-block; margin: 0;"><strong>عدد السجلات</strong></p>
+                            <p style="display: inline-block; margin: 0;">@Model.TransactionBasicResultVM.TotalCount</p>
+
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <p><strong>من تاريخ:</strong> @Model.TransactionBasicResultVM.DateFrom - @Model.TransactionBasicResultVM.DateFromG.ToString("dd/MM/yyyy")</p>
+                            <p><strong>الى تاريخ:</strong> @Model.TransactionBasicResultVM.DateTo - @Model.TransactionBasicResultVM.DateToG.ToString("dd/MM/yyyy")</p>
+                            <p><strong>طبع في:</strong> @DateHelper.ConvertDateCalendar(Model.TransactionBasicResultVM.CreateOn, CalenderType.Ummalqura, SessionInfo.CultureShortName)</p>
+                        </td>
+                    </tr>
+
+                </table>
+                <br />
+                <br />
+                <table class="rprtGrid">
+                    <tr>
+                        <td>م</td>
+                        <td><b>@DbRes.TResource("User.SubjectSearch.NumberWithDate")</b></td>
+                        <td><b>@DbRes.TResource("User.OutboundExternal.BasicInfo.Type")</b></td>
+                        <td><b>@DbRes.TResource("User.TransactionCertificate.SenderDepartmentName")</b></td>
+                        <td><b>@DbRes.TResource("User.TransactionCertificate.ReceiverDepartmentName")</b></td>
+                        <td><b>@DbRes.TResource("User.OutboundInternal.RecordDate")</b></td>
+                        <td><b>@DbRes.TResource("User.Transaction.ConfidentialityLevel")</b></td>
+                        <td><b>@DbRes.TResource("User.SubjectSearch.TransactionStatus")</b></td>
+                        <td><b>@DbRes.TResource("User.Transaction.PriorityLevel")</b></td>
+                        <td><b>@DbRes.TResource("User.FollowUp.FollowUpUser")</b></td>
+                    </tr>
+                    
+                    @for (int j = i; j < i + 15 && j < results.Count; j++)
+                    {
+                        var m = results[j];
+                        <tr>
+                            <td>@(cnt++)</td>
+                            <td>@m.NumberWithDate</td>
+                            <td>@m.TransactionCategoryText</td>
+                            <td>@m.FromEntityText</td>
+                            <td>@m.ToEntityText</td>
+                            <td>@m.DateText</td>
+                            <td>@m.ConfidentialityText</td>
+                            <td>@m.TransactionStatus</td>
+                            <td>@m.PriorityText</td>
+                            <td>@m.ToUserText</td>
+
+                        </tr>
+                    }
+
+                </table>
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <br /> 
+            }
+        }
+        else
+        {
+
+            <table class="rprt" style="direction:rtl;">
+                <tr>
+                    <td>
+                        <p> المملكة العربية السعودية</p>
+                        <p>الهيئة العامة للصناعات الحربية</p>
+                    </td>
+                    <td>
+
+                        @if (ViewData["LogoFile"] != null)
+                        {
+                            <img class="" width="200" src="~/Content/User/lib/images/GAMI_Logo_Color-01.svg" />
+                        }
+                        <img class="" width="200" src="~/Content/User/lib/images/GAMI_Logo_Color-01.svg" />
+
+                        <h3 class="">@Model.TransactionBasicResultVM.TenantName</h3>
+
+                        تقرير / المعاملات  @Model.TransactionBasicResultVM.TransactionType
+                        @Model.TransactionBasicResultVM.ExternalParty
+                    </td>
+                    <td></td>
+                    <td style="font-size:12px;">
+                        <p> عدد السجلات</p>
+                        <p>@Model.TransactionBasicResultVM.TotalCount</p>
+                    </td>
+                </tr>
+                <tr>
+
+                    <td style="font-size:12px;">
+                        <p>الادارة المنشئة: @Model.TransactionBasicResultVM.CreatedEntity</p>
+                        <p> الموظف المنشئ: @Model.TransactionBasicResultVM.CreatedBy</p>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td style="font-size:12px;">
+                        <p>من تاريخ: @Model.TransactionBasicResultVM.DateFrom - @Model.TransactionBasicResultVM.DateFromG.ToString("dd/MM/yyyy")</p>
+                        <p>الى تاريخ: @Model.TransactionBasicResultVM.DateTo - @Model.TransactionBasicResultVM.DateToG.ToString("dd/MM/yyyy")</p>
+                        <p>طبع في: @DateHelper.ConvertDateCalendar(Model.TransactionBasicResultVM.CreateOn, CalenderType.Ummalqura, SessionInfo.CultureShortName)</p>
+                    </td>
+                </tr>
+            </table>
+            <br />
+            <br />
+            <table class="rprtGrid">
+                <tr>
+                    <td>م</td>
+                    <td><b>@DbRes.TResource("User.SubjectSearch.NumberWithDate")</b></td>
+                    <td><b>@DbRes.TResource("User.OutboundExternal.BasicInfo.Type")</b></td>
+                    <td><b>@DbRes.TResource("User.TransactionCertificate.SenderDepartmentName")</b></td>
+                    <td><b>@DbRes.TResource("User.TransactionCertificate.ReceiverDepartmentName")</b></td>
+                    <td><b>@DbRes.TResource("User.OutboundInternal.RecordDate")</b></td>
+                    <td><b>@DbRes.TResource("User.Transaction.ConfidentialityLevel")</b></td>
+                    <td><b>@DbRes.TResource("User.SubjectSearch.TransactionStatus")</b></td>
+                    <td><b>@DbRes.TResource("User.Transaction.PriorityLevel")</b></td>
+                </tr>
+                <tr>
+                    <td>لا يوجد بيانات للعرض</td>
+                </tr>
+            </table>
+        }
+
+
+    </body>
+
+</html>

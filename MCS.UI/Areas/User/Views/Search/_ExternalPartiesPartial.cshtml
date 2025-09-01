@@ -1,0 +1,9 @@
+﻿@model InboundExternalPartiesVM
+@using MCS.Common
+@using MCS.UI.Areas.User.Models
+
+<div class="externalParties">
+    <fieldset class="field-set">
+        @Html.DepartmentsTreeOnDemand(ViewData["ExternalPartiesData"] as TreeViewModel, model => model.DestinationId, TreeMode.Single, "dvDestinationTree1", true, "FillExternalPartyId", "BasicInformation", "divContainerExternalParties1", false)
+    </fieldset>
+</div>

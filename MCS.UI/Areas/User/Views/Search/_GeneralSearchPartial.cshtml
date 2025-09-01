@@ -1,0 +1,45 @@
+﻿
+@model MCS.UI.Areas.User.Models.Search.SearchCriteriaGeneralVM
+
+
+<div class="panel-body panel_dark">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Text, new { @class = "control-label" })
+                <div class="col-md-8">
+                    @Html.TextBoxGroupFor(model => model.Text, "Search", new { @Value = "", @class = "form-control" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <div class="col-md-8">
+                    <div class="col-md-4">
+                        
+                    </div>
+                    <div class="col-md-4">
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <div class="col-md-8">
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $('#btnSearch').removeClass('hidden_');
+        $("#Barcode").focus();
+    });
+ 
+</script>
+

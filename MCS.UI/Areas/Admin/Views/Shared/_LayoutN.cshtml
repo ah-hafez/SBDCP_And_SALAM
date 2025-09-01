@@ -1,0 +1,673 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Common
+@using MCS.Common
+@using MCS.Framework.Controls.Mvc;
+@using MCS.UI.Areas.User.Models.Shared;
+
+<!DOCTYPE html>
+<html lang="@SessionInfo.CultureShortName">
+<head>
+    <!-- META SECTION -->
+    <title>@ViewBag.Title</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link type="image/x-icon" rel="shortcut icon" href="~/Content/AdminN/newLib/assets/favicon.png">
+    <link href="~/Content/AdminN/newLib/assets/bootstrap/css/bootstrap.min.rtl.css" rel="stylesheet">
+    <link href="~/Content/AdminN/newLib/assets/bootstrap/css/bootstrap.form.rtl.css" rel="stylesheet">
+    <link href="~/Content/AdminN/newLib/assets/bootstrap/css/bootstrap.grid.rtl.css" rel="stylesheet">
+    <link href="~/Content/AdminN/newLib/assets/css/main.css" rel="stylesheet">
+    <link href="~/Content/AdminN/newLib/assets/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="~/Content/AdminN/newLib/assets/plugins/vertical-menu/vertical-menu.min.css">
+    <link rel="stylesheet" type="text/css" href="~/Content/AdminN/newLib/assets/plugins/confirm/jquery-confirm.min.css" />
+    <link href="~/Content/AdminN/newLib/assets/css/d-rtl.css" rel="stylesheet">
+
+    <!-- CSS INCLUDE -->
+    <!-- EOF CSS INCLUDE -->
+    @if (SessionInfo.CultureShortName == Constants.Languages.Arabic)
+    {
+        <link rel="stylesheet" type="text/css" id="theme" href="~/Content/AdminN/lib/css/rtl.css" />
+    }
+
+    @{UserVM userVM = SessionInfo.GetObjectFromSession(Constants.LoggedInUserKey) as UserVM;}
+
+    <!-- Theme -->
+    <link rel="stylesheet" type="text/css" href="~/Content/AdminN/lib/fonts/fonts.css" />
+    <link rel="stylesheet" type="text/css" href=@Url.Content("~/Content/AdminN/lib/css/admin_" + SessionInfo.CultureShortName + ".css") />
+    <!-- END Theme-->
+    <!-- JS Tree -->
+    <link rel="stylesheet" type="text/css" href=@Url.Content("~/Content/AdminN/lib/css/jstree/jstree.min_" + SessionInfo.CultureShortName + ".css") />
+    <!--END jquery-confirm -->
+    <link rel="stylesheet" href="~/Content/AdminN/lib/js/theme/droppable/droppable_style.css">
+    @*<link type="text/css" href=@Url.Content("~/Content/AdminN/Site_" + SessionInfo.CultureShortName + ".css") rel="stylesheet" />*@
+    <link href="~/Content/style/jquery.contextMenu.css" rel="stylesheet" />
+
+
+    <script src="~/Content/AdminN/newLib/assets/js/jquery.js"></script>
+    <script src="~/Content/AdminN/Scripts/jquery.plugin.js"></script>
+    <script src="@Url.Content("~/Content/AdminN/Scripts/jquery.tooltip.js")"></script>
+    <script src="~/Content/AdminN/Scripts/jquery.navgoco.js"></script>
+    <script type="text/javascript" src="~/Content/AdminN/lib/js/plugins/bootstrap/bootstrap-datepicker.js"></script>
+    <script src="~/Content/Admin/lib/plugins/customValidation/jquery.validate.js"></script>
+    <script src="~/Content/AdminN/Scripts/CustomValidation/jquery.validate.unobtrusive.js"></script>
+    <script src="~/Content/AdminN/Scripts/CustomValidation/CustomValidation.js"></script>
+    <script src="~/Content/AdminN/Scripts/HtmlHelper.js"></script>
+    <script src="~/Content/AdminN/lib/js/ActionButtonsHelper.js"></script>
+    <script src="~/Content/AdminN/Scripts/jquery-ui.min.js"></script>
+    <script src="~/Views/Shared/Scripts/GridViewActions.js"></script>
+    <script src="~/Views/Shared/Scripts/Tree.js"></script>
+    <script src="~/Content/AdminN/Scripts/jquery.nestable-rtl.js"></script>
+    <script src="~/Content/AdminN/Scripts/jquery.contextMenu.js"></script>
+    <script src="~/Content/AdminN/Scripts/jstree.js"></script>
+
+    <script type="text/javascript" src="@Url.Content("~/Content/AdminN/Scripts/Common.js")"></script>
+
+    <script type="text/javascript" src="~/Content/AdminN/lib/js/theme/jquery-confirm/js/jquery-confirm.js"></script>
+    <script src="~/Content/AdminN/lib/js/theme/owlcarousel/owl.carousel.js"></script>
+    <script type="text/javascript" src="~/Content/User/lib/js/jquery.toastmessage-min.js"></script>
+
+    <script src="~/Content/AdminN/newLib/assets/js/jquery-inline-popup-rtl.js"></script>
+
+    <script type="text/javascript">
+        var __OrgUnitDataByIdAction = '@Url.Action("GetOrgUnitNodeById")';
+        var __OrgUnitsAutoCompleteAction = '@Url.Action("GetOrgUnitsAutoComplete")';
+        var __OrgUnitsDataByIdsAction = '@Url.Action("GetOrgUnitsNodesByIds")';
+        var AllowSend = false;
+        var __dateformat = '@System.Web.Configuration.WebConfigurationManager.AppSettings["CalendarDateFormat"]';
+        var __dialogNoText = '@DbRes.TResource("Global.Dialog.No")';
+        var __dialogYesText = '@DbRes.TResource("Global.Dialog.Yes")';
+        var __dialogCloseText = '@Html.Raw(DbRes.TResource("Global.Dialog.Close"))';
+        var __dialogCancelText = '@Html.Raw(DbRes.TResource("Global.Dialog.Cancel"))';
+        var __cultureName = '@SessionInfo.CultureShortName';
+        var __OrgUnitsAutoCompleteAction = '@Url.Action("GetOrgUnitsAutoComplete")';
+        var ConnectionProtocolType = { Wrapper: @((int)ConnectionProtocolType.Wrapper), HTTP: @((int)ConnectionProtocolType.HTTP) };
+        $.validator.setDefaults({ ignore: null });
+
+        $(document).ajaxStart(function () {
+            $("#Loader").show();
+            AllowSend = false;
+        });
+        $(document).ajaxComplete(function () {
+            $("#Loader").hide();
+        });
+
+        var signalROptions = {
+            WebApiUrl: '@SystemConfigurations.WebApiUrl',
+            BaseUri: '@MCS.UI.UrlHelper.GetBaseUri()',
+            UserId: '@userVM.Id',
+            UserName: '@userVM.LoclizationName.Where(l => l.CultureName == SessionInfo.CultureShortName).FirstOrDefault().Text',
+            OrgUnitId: '@SessionInfo.OrgUnitId',
+            LocalDateTime: new Date().toLocaleString(),
+            MarkAsReadMessage: '@DbRes.TResource("User.Home.MarkAsRead")'
+        };
+    </script>
+
+    <!--rendering framework scripts -->
+    <script src="~/Content/AdminN/lib/js/demo_file_handling.js"></script>
+    <script src="~/Content/AdminN/lib/js/fileinput.min.js"></script>
+    <script src="~/Content/AdminN/lib/js/jqueryFileTree.js"></script>
+    <script src="~/Content/AdminN/lib/js/bootstrap-file-input.min.js"></script>
+    <script src="~/Content/AdminN/Scripts/grid/gridmvc.min.js"></script>
+    <script src="~/Content/AdminN/Scripts/grid/gridmvc-ext.min.js"></script>
+    @*<script src="~/Content/AdminN/Scripts/grid/gridmvc-ext.js"></script>*@
+    <script src="~/Content/AdminN/Scripts/grid/URI.min.js"></script>
+    @*@System.Web.Optimization.Scripts.Render("~/bundles/plugin")*@
+    @Html.RenderCalendarResources()
+    @Html.RenderAutoCompleteResources()
+    @*@Html.RenderGridViewResources()*@
+    @Html.RenderOrgStructureResources(SessionInfo.CultureShortName)
+    @Html.RenderTextEditorResources()
+    <!--end rendering framework scripts -->
+
+    <script src=@string.Format("{0}/signalr/hubs", SystemConfigurations.WebApiUrl)></script>
+    <script src="~/Content/AdminN/Scripts/Collaboration.js"></script>
+    <script src="~/Content/AdminN/Scripts/SignalRManager.js"></script>
+</head>
+<body class="vertical-layout vertical-menu 2-columns   menu-flipped fixed-navbar " data-open="click"
+      data-menu="vertical-menu" data-col="2-columns" dir="rtl" id="MasterLayoutBody">
+    <div class="fixed-top">
+        <div class="top-header">
+            <div class="container-fluid">
+                <div class="d-flex flex-row">
+                    <div class="">
+                        <a class="main_logo" href="#">
+                            <img src="~/Content/Admin/newLib/assets/images/logo-morasalat.png" title="" alt="">
+                        </a>
+                    </div>
+                    <div class="d-flex ml-auto  mr-0 align-content-around flex-wrap h-side">
+                        <div class="top-icons new-view">
+                            <div class="d-flex">
+                                <div class="pl-0 pr-0">
+                                    <a href="@Url.Action("Logout","Login")" data-bs-toggle="tooltip" data-placement="bottom" title="خروج">
+                                        <i class="la la-power-off"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="right-arrow mr-auto">
+                            <i class="la la-angle-right pl-2"></i>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- start of fixed header -->
+        <nav class="navbar navbar-default  navbar-second">
+            <div class="container-fluid">
+                <div class="row row-custom">
+                    <div class="navbar-header d-flex">
+                        <div class="mobile-menu d-md-none mr-auto">
+                            <a class="nav-link nav-menu-main menu-toggle is-active" href="#">
+                                <i class="la la-ellipsis-h"></i>
+                            </a>
+                        </div>
+                        <div class="ml-auto">
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-expanded="false" aria-controls="navbar">
+                                <span class="sr-only">Toggle navigation</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="navbar-collapse collapse" id="navbarToggleExternalContent">
+                        <div class="searchbox2 px-2">
+                            <div class="h-search">
+                                <i onclick="focusMethod()" data-bs-toggle="tooltip" data-placement="bottom" title="" class="la la-search" data-original-title="البحث السريع"></i>
+                                <input class="myTextField" type="text" name="search" placeholder="البحث هنا">
+                            </div>
+                            <script>
+                                focusMethod = function getFocus() {
+                                    $('.myTextField').focus();
+                                }
+                            </script>
+                        </div>
+                        <div class="d-flex top-icons2 h-side">
+                            <div class="notifications dropdown px-2">
+                                <a href="#" class="dropdown-toggle white-notification" data-bs-toggle="dropdown" aria-haspopup="false" aria-expanded="true" data-placement="bottom" title="التنبيهات">
+                                    <em class="notification_sticky"></em>
+                                    <img src="~/Content/User/lib/images/SystemIcon/main bar-07.svg" width="30" />
+                                </a>
+                                <ul class="dropdownposition dropdown-menu  fadeIn animated" aria-labelledby="drop1">
+                                    <li>
+                                        <a href="#" class="d-flex notification-row">
+                                            <i class="la la-bell bold2"></i>
+                                            <span class="bold2">التنبيهات</span>
+
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="d-flex bgchange notification-row">
+                                            <i class="icon-assignment-return"></i>
+                                            <div>
+                                                <span>تم إرجاع معاملة</span>
+                                                <div class="pt-1 pr-3 pl-1 light-gray2 flex-column"> 28 تشرين الثاني 2018</div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="d-flex bgchange notification-row">
+                                            <i class="icon-assignment-delivered"></i>
+                                            <div>
+                                                <span>تم استلام معاملة</span>
+                                                <div class="pt-1 pr-3 pl-1 light-gray2 flex-column"> 28 تشرين الثاني 2018</div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="d-flex notification-row">
+                                            <i class="icon-assignment-new"></i>
+                                            <div>
+                                                <span>تم استلام مهمة جديدة</span>
+                                                <div class="pt-1 pr-3 pl-1 light-gray2 flex-column"> 28 تشرين الثاني 2018</div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="notifications.html" class="d-flex notification-row more">
+                                            <div class="w-100">إظهار المزيد</div>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="px-2">
+                                <a href="#" data-bs-toggle="tooltip" data-placement="bottom" title="" class="chatbtn white-notification" data-original-title="المحادثات">
+                                    <em class="notification_sticky"></em>
+                                    <i class="la la-comments white-notification "></i>
+                                </a>
+                            </div>
+                            <div class="px-2">
+                                <a href="#" data-bs-toggle="tooltip" data-placement="bottom" title="الدعم الفني">
+                                    <i class="la la-headphones"></i>
+                                </a>
+                            </div>
+                            <div class="px-2">
+                                <a href="#" data-bs-toggle="tooltip" data-placement="bottom" title="المساعدة" class="help2">
+                                    <i class="la la-question-circle"></i>
+                                </a>
+                            </div>
+                            <div class="px-2">
+                                <a href="#" data-bs-toggle="tooltip" data-placement="bottom" title="English">
+                                    <i class="la la-globe"></i>
+                                </a>
+                            </div>
+                            <div class="pl-0 pr-0">
+                                <a href="#" data-bs-toggle="tooltip" data-placement="bottom" title="خروج">
+                                    <i class="la la-power-off"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <ul class="nav navbar-nav px-2">
+                            <li title="@Url.Action("Index","OrgUnitStructure")" id="li_1">
+                                <a href='@Url.Action("Index","OrgUnitStructure")'>@DbRes.TResource("Admin.Layout.OrgStructure")</a>
+                            </li>
+                            <li title="@DbRes.TResource("Admin.SystemSetting")" id="li_2">
+                                <a href='@Url.Action("GeneralSettings","SystemSettings")'>@DbRes.TResource("Admin.SystemSetting")</a>
+                            </li>
+                            <li title="@DbRes.TResource("Admin.Layout.Lookup")" id="li_3">
+                                <a href='@Url.Action("AttachmentType","Lookups")'>@DbRes.TResource("Admin.Layout.Lookup")</a>
+                            </li>
+                            <li title="@DbRes.TResource("Admin.Layout.TransfersAction")" id="li_4">
+                                <a href='@Url.Action("MoveUser","Actions")'>@DbRes.TResource("Admin.Layout.TransfersAction")</a>
+                            </li>
+                            <li title="@DbRes.TResource("Admin.UsersTrays.usersTrays")" id="li_5">
+                                <a href='@Url.Action("Index" ,"User")'>@DbRes.TResource("Admin.UsersTrays.usersTrays")</a>
+                            </li>
+                            @*<li title="@DbRes.TResource("Admin.Permissions.PermissionsManagement")" id="li_6">
+                                <a href='@Url.Action("Index" ,"Permissions")'>@DbRes.TResource("Admin.Permissions.PermissionsManagement")</a>
+                            </li>*@
+                            <li title="@DbRes.TResource(" Admin.ExternalParty.ExternalParty")" id="li_7">
+                                <a href='@Url.Action("Index" ,"ExternalParties")'>@DbRes.TResource("Admin.ExternalParty.ExternalParty")</a>
+                            </li>
+                            <li title="@DbRes.TResource("User.Transaction.Path")" id="li_8">
+                                <a href='@Url.Action("Index" ,"Paths")'>@DbRes.TResource("User.Transaction.Path")</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    @RenderBody()
+
+    <!-- jQuery -->
+    <!-- Bootstrap Core JavaScript -->
+    <script src="~/Content/Admin/newLib/assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/Content/Admin/newLib/assets/js/bootstrap-select.js"></script>
+    <script src="~/Content/AdminN/newLib/assets/js/jquery.matchHeight-min.js"></script>
+    <script src="~/Content/AdminN/newLib/assets/js/aos.js"></script>
+    <script src="~/Content/AdminN/newLib/assets/js/jquery.slimscroll.min.js"></script>
+    <script src="~/Content/AdminN/newLib/assets/js/app.js"></script>
+    <script>
+        $(function () {
+            $('[data-bs-toggle="tooltip"]').tooltip()
+        })
+    </script>
+    <script src="~/Content/AdminN/newLib/assets/plugins/vertical-menu/vendors.min.js"></script>
+    <script src="~/Content/AdminN/newLib/assets/plugins/vertical-menu/app-menu.min.js"></script>
+    <script src="~/Content/AdminN/newLib/assets/plugins/vertical-menu/app.min.js"></script>
+
+
+</body>
+
+</html>
+
+<script>
+    $(document).ready(function () {
+        var actionUrl = window.location.pathname.split("/")[3];
+
+        switch (actionUrl) {
+            case "OrgUnitStructure":
+                $("#li_1").addClass("active");
+                break;
+            case "SystemSettings":
+                $("#li_2").addClass("active");
+                break;
+            case "Lookups":
+                $("#li_3").addClass("active");
+                break;
+            case "Actions":
+                $("#li_4").addClass("active");
+                break;
+            case "User":
+                $("#li_5").addClass("active");
+                break;
+            case "Permissions":
+                $("#li_6").addClass("active");
+                break;
+            case "ExternalParties":
+                $("#li_7").addClass("active");
+                break;
+            case "Paths":
+                $("#li_8").addClass("active");
+                break;
+            default:
+                $("#li_1").addClass("active");
+                break;
+        }
+    });
+</script>
+
+<script src="~/Content/AdminN/lib/js/theme/pushslide/js/slidebars.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            $.slidebars();
+        });
+    })(jQuery);
+</script>
+
+
+
+<!-- THIS PAGE PLUGINS -->
+<script type='text/javascript' src='~/Content/AdminN/lib/js/plugins/icheck/icheck.min.js'></script>
+<script type="text/javascript" src="~/Content/AdminN/lib/js/plugins/mcustomscrollbar/jquery.mCustomScrollbar.min.js"></script>
+<script type="text/javascript" src="~/Content/AdminN/lib/js/plugins/bootstrap/bootstrap-file-input.js"></script>
+<script type="text/javascript" src="~/Content/AdminN/lib/js/plugins/tagsinput/jquery.tagsinput.min.js"></script>
+<script type="text/javascript" src="~/Content/AdminN/lib/js/plugins/datatables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Content/AdminN/lib/js/plugins/bootstrap/bootstrap-colorpicker.js"></script>
+
+<!-- JS Tree -->
+<script type="text/javascript" src="~/Content/AdminN/lib/js/plugins/dropzone/dropzone.min.js"></script>
+<script type="text/javascript" src="~/Content/AdminN/lib/js/plugins/filetree/jqueryFileTree.js"></script>
+<script type="text/javascript" src="~/Content/AdminN/lib/js/plugins/cropper/cropper.min.js"></script>
+<!-- END JS Tree -->
+<!-- NOTY -->
+<script type='text/javascript' src='~/Content/AdminN/lib/js/plugins/noty/jquery.noty.min.js'></script>
+<script type='text/javascript' src='~/Content/AdminN/lib/js/plugins/noty/layouts/topCenter.min.js'></script>
+<script type='text/javascript' src='~/Content/AdminN/lib/js/plugins/noty/layouts/topLeft.min.js'></script>
+<script type='text/javascript' src='~/Content/AdminN/lib/js/plugins/noty/layouts/topRight.js'></script>
+<script type='text/javascript' src='~/Content/AdminN/lib/js/plugins/noty/themes/default.min.js'></script>
+<script type="text/javascript">
+    function notyConfirm() {
+        noty({
+            text: 'Do you want to continue?',
+            layout: 'topRight',
+            buttons: [
+                {
+                    addClass: 'btn btn-success btn-clean', text: 'Ok', onClick: function ($noty) {
+                        $noty.close();
+                        noty({ text: 'You clicked "Ok" button', layout: 'topRight', type: 'success' });
+                    }
+                },
+                {
+                    addClass: 'btn btn-danger btn-clean', text: 'Cancel', onClick: function ($noty) {
+                        $noty.close();
+                        noty({ text: 'You clicked "Cancel" button', layout: 'topRight', type: 'error' });
+                    }
+                }
+            ]
+        })
+    }
+</script>
+<!-- END NOTY -->
+<!-- END THIS PAGE PLUGINS -->
+<!-- START TEMPLATE -->
+<script type="text/javascript" src="~/Content/AdminN/lib/js/plugins.js"></script>
+<script type="text/javascript" src="~/Content/AdminN/lib/js/actions.js"></script>
+<!-- END TEMPLATE -->
+<script type="text/javascript" src="~/Content/AdminN/lib/js/plugins/scrolltotop/scrolltopcontrol.js"></script>
+<script type="text/javascript" src="~/Content/AdminN/lib/js/plugins/owl/owl.carousel.min.js"></script>
+<script type="text/javascript" src="~/Content/AdminN/lib/js/plugins/moment.min.js"></script>
+<script type="text/javascript" src="~/Content/AdminN/lib/js/plugins/daterangepicker/daterangepicker.js"></script>
+
+<script type="text/javascript" src="~/Content/AdminN/lib/js/plugins/highlight/jquery.highlight-4.js"></script>
+<script type="text/javascript" src="~/Content/AdminN/lib/js/faq.js"></script>
+<script>
+    $(window).on('resize', function () {
+        if ($(window).width() < 1025) {
+            $("#no_mini_wide").removeClass('page-container-wide');
+            $("#no_mini").removeClass('x-navigation-minimized');
+        }
+    });
+</script>
+<script>
+
+    $("#navigation_minimize").click(function () {
+        if (localStorage.getItem('navigation') == undefined) {
+            localStorage.setItem('navigation', "1");
+        }
+        else {
+            if (localStorage.getItem('navigation') == "0")
+                localStorage.setItem('navigation', "1");
+            else
+                localStorage.setItem('navigation', "0");
+        }
+    });
+
+    $(function () {
+        if (localStorage.getItem('navigation') != undefined && localStorage.getItem('navigation') == "1") {
+            $(".page-container").removeClass("page-navigation-toggled");
+            x_navigation_minimize("open");
+
+        }
+        else {
+            $(".page-container").addClass("page-navigation-toggled");
+        }
+
+        if (!$(".page-container").hasClass("page-navigation-toggled")) {
+            $(".x-navigation").find('a.active_ok').parent().addClass('active_ok');
+            $(".x-navigation").find('li.active_ok').parents('li:first').addClass('active');
+        }
+
+    });
+</script>
+
+<script>
+    $('.change_your_password').click(function () {
+
+        ShowDialogAjax('@Url.Action("RenderChangePasswordPartial","UserProfile")', {}, 'OpenChangePasswordDialogSuccess');
+    });
+
+    function OpenChangePasswordDialogSuccess(data, $obj) {
+        $obj.setContent(data.View);
+        jQuery.validator.unobtrusive.parse('#frmChangePassword');
+    }
+</script>
+<script>
+    function ChangeCulture(name) {
+        $.ajax({
+            url: '@Url.Action("SetCultureName", "Home")',
+            type: 'POST',
+            data: { 'cultureName': name },
+            success: function (data) {
+                window.location.href = '@(MCS.UI.UrlHelper.GetBaseUri() + "/Admin/OrgUnitStructure/Index")';
+            },
+            error: function (a) {
+            }
+        });
+    }
+
+    var custom_templatePlugins = function () {
+
+        var custom_tp_clock = function () {
+
+            function custom_tp_clock_time() {
+                var now = new Date();
+                var hour = now.getHours();
+                var minutes = now.getMinutes();
+                var suffix = (hour >= 12) ? '@DbRes.TResource("Global.Time.PM")' : '@DbRes.TResource("Global.Time.AM")';
+
+                hour = ((hour + 11) % 12 + 1);
+                hour = hour < 10 ? '0' + hour : hour;
+                minutes = minutes < 10 ? '0' + minutes : minutes;
+
+                $(".timeplugin-clock").html(hour + "<span>:</span>" + minutes + " " + suffix);
+            }
+            if ($(".timeplugin-clock").length > 0) {
+
+                custom_tp_clock_time();
+
+                window.setInterval(function () {
+                    custom_tp_clock_time();
+                }, 10000);
+
+            }
+        }
+
+        return {
+            init: function () {
+                custom_tp_clock();
+            }
+        }
+    }();
+
+    $(function () {
+        custom_templatePlugins.init();
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $("input.form-control:text,textarea").each(function () {
+            var attr = $(this).attr('maxlength');
+            if (typeof attr == typeof undefined) {
+                $(this).attr('maxlength', '200');
+            }
+        });
+        encodeForm();
+    });
+
+    function encodeForm() {
+        var potentialError = false;
+        $('form').submit(function (e) {
+            $("input.form-control:text,textarea").each(function () {
+                var txt = $(this).val();
+                if (txt != '' && (txt.indexOf('<') > -1 || txt.indexOf('>') > -1 || txt.indexOf('&') > -1 || txt.indexOf('\'') > -1 || txt.indexOf('\"') > -1)) {
+                    potentialError = true
+                    return;
+                }
+            });
+            if (potentialError) {
+                alert('A potentially dangerous form value was detected, please review your inputs');
+            }
+        });
+    }
+
+    //TODO: Notification  not completed ==> 1- read notificationPageSize and pageIndex from web Config
+    // 2- Remove NotificationCookies and store notification Flag  in server side instead of cookies
+    // 3- Code review after complete it
+    var selectedUserId
+    var notificationPageSize=5;
+    var pageIndex=1;
+    var UrlChatData= '@Url.Action("GetChatHistory")';
+    var UrlInitChatData= '@Url.Action("GetIntitialChatDataHistory")';
+    var pageSize=10;
+    var SelectedTransactionId=null;
+
+    var AllUsers =new Array();
+
+    GetChatNotifications();
+
+    GetAllUsers();
+
+    HideNotificationChat();
+
+    HideNotificationChat();
+
+    $(document).on("keyup","#ChatSearch",function(message) {
+
+        var searchedText=$(this).val();
+        ClearChatSection();
+
+        for(i=0; i < AllUsers.length ; i++){
+            var userName=$(AllUsers[i]).attr("data-online-userName");
+            if(userName.indexOf(searchedText) != -1){
+                AddToChatSection(AllUsers[i]);
+            }
+        }
+
+    });
+
+    function AppearOnlineUser(userId)
+    {
+        $('.appear[data-online-userid="' + userId + '"]').addClass("online").addClass("onlineUser");
+    }
+
+    function ResetChatBinding()
+    {
+        IsBindingWithTransaction= false;
+    }
+
+    function SetChatBinding(userId, transactionId)
+    {
+        var element=$('.messageRow[data-userid-chat-window="' + userId + '"]');
+        element.addClass("TransactionRowMessage");
+        element.removeClass("messageRow");
+        element.data("transactionId",transactionId)
+        element.attr('data-transactionId', transactionId);
+        $('.TransactionRowMessage[data-userid-chat-window="' + userId + '"]').data("transactionId",transactionId);
+        $('.TransactionRowMessage[data-userid-chat-window="' + userId + '"]').attr('data-transactionId', transactionId);
+    }
+
+    function GetChatNotifications()
+    {
+        if(pageIndex==0)
+            return false;
+
+        $.ajax({
+            type: 'get',
+            url: '@Url.Action("GetChatNotifications")',
+            data: { },
+            Async:true,
+            global: false,
+            success:
+               function (data)
+               {
+                   if (data.ChatNotifications && data.ChatNotifications.Result && data.ChatNotifications.Result.TotalChatNotifications) {
+                       if (data.ChatNotifications.Result.TotalChatNotifications > 0) {
+                           UpdateChatNotification(data.ChatNotifications.Result.TotalChatNotifications);
+                       }
+                   }
+                   return null;
+               }
+        });
+    }
+
+
+    function GetAllUsers() {
+        $.ajax({
+            type: 'get',
+            url: '@Url.Action("GetCollaborationUsers")',
+            data: {},
+            Async: true,
+            global: false,
+            success:
+                function (data) {
+                    if (data && data.Users && data.Users.Result) {
+                        data.Users.Result.forEach(function (entry) {
+                            var id = @userVM.Id;
+
+                            if (entry.UserId != id) {
+
+                                if ($("#User" + entry.UserId).length < 1) {
+                                    CreateNewUserOffline(entry.UserName, entry.UserId, entry.NotificationCount);
+
+                                    AllUsers.push($('.onlineUser[data-online-userid="' + entry.UserId + '"]'));
+
+                                }
+
+                                InitializeUserNotifysCount(entry.UserId, entry.NotificationCount);
+                            }
+
+                        });
+                    }
+                }
+        });
+
+    }
+    function showSuccessToast(message) {
+        $().toastmessage('showToast', {
+            text: message,
+            sticky: false,
+            stayTime: 10000,
+            position: 'top-right',
+            type: 'success',
+            closeText: '',
+            close: function () {
+                console.log("toast is closed ...");
+            }
+        });
+    }
+</script>

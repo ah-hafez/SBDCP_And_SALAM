@@ -1,0 +1,82 @@
+﻿
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models
+@using MCS.UI.Areas.User.Models.Lookups
+@model MCS.UI.Areas.User.Models.Assignment.AssignmentGroupVM
+@{
+    Layout = "~/Views/Shared/_DialogLayout.cshtml";
+}
+
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmAssignmentGroup" }))
+{
+    @Html.AntiForgeryToken()
+    string controller = ViewData["ControllerName"] != null ? ViewData["ControllerName"].ToString() : ViewContext.RouteData.Values["controller"].ToString();
+
+    <div class="dia_inbound_class content-rtl panel panel-default dialogbox_panel">
+        <div class="panel-heading">
+            <h3 class="panel-title">@DbRes.TResource("User.Transaction.AssignmentGroup.CreateGroup")</h3>
+        </div>
+
+        <div class="modal-body">
+            <div class="panel-body">
+                <p>@DbRes.TResource("Global.Forms.MandatoryFields")</p>
+
+                <div class="row">
+                    @{List<CultureVM> cultureVMs = ViewData["Culture"] as List<CultureVM>;}
+
+                    @if (cultureVMs != null)
+                    {
+                        for (int i = 0; i < cultureVMs.Count; i++)
+                        {
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.CustomLabelFor(model => model.GroupName[i].CultureName, new { @class = "col-md-4 control-label" }, DbRes.TResource(string.Format("User.Transaction.AssignmentGroup.GroupName.{0}", cultureVMs[i].ShortName)))
+                                    @Html.StickyHiddenFor(model => model.GroupName[i].CultureId, new { Value = cultureVMs[i].Id })
+                                    @Html.StickyHiddenFor(model => model.GroupName[i].CultureName, new { Value = cultureVMs[i].ShortName })
+                                    <div class="col-md-8">
+                                        <div class="">
+                                            @Html.TextBoxGroupFor(model => model.GroupName[i].Text, "AssignmentGroup", new { @class = "form-control" }, DbRes.TValidation(string.Format("User.Transaction.AssignmentGroup.GroupNameRequired.{0}", cultureVMs[i].ShortName)))
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            @Html.Partial("~/Areas/User/Views/Editor/Assignments/_AssignmentGroupDetailsPartial.cshtml", new AssignmentGroupDetailVM())
+        </div>
+
+        @Html.StickyHidden("hdnAssignmentGroups")
+        <!---->
+        <div class="modal-footer">
+            @Html.ActionButton(DbRes.TResource("User.Transaction.AssignmentGroup.Save"), Url.Action("AddGroupByEditor", controller), null, null, null, "OnAddAssignmentGroupSuccess", null, "post", "AssignmentGroup", "btnAddAssignmentGroup", "frmAssignmentGroup", "btn btn-save pull-right")
+            <button type="button" class="btn btn-default" id="btnClose" onclick="__dialog.close(); return false;">@DbRes.TResource("User.Transaction.AssignmentGroup.Close")</button>
+        </div>
+
+    </div>
+}
+
+<script>
+    $(document).ready(function () {
+        jQuery.validator.unobtrusive.parse('#frmAssignmentGroup');
+        $("#hdnAssignmentGroups").val($("#dvEditorAssignmentGroupBody #hdnGroupData").val());
+    })
+
+    function OnAddAssignmentGroupSuccess(data) {
+        if (data.MessageType != 2) {
+
+            $("#dvEditorAssignmentGroupBody #hdnGroupData").val(data.GroupsData);
+            AutoCompleteChangeList("ddlEditorAssignmentGroupId", data.GroupsData);
+            $("#ddlEditorAssignmentGroupId").val(data.Text);
+            $("#hdnEditorGroupName").val(data.Text);
+            $("#ddlEditorAssignmentGroupId").trigger("focusout");
+
+            ShowSuccesMessage(data.MessageText);
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+</script>

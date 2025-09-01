@@ -1,0 +1,180 @@
+﻿@using MCS.Framework.Localization
+@model MCS.UI.Areas.User.Models.Assignment.TransactionAssignmentVM
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmEditorAssignmentPaper" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="single-wrapper">
+        <div class="panel-body editor" id="dvAssignmentPaper">
+            <div id="dvAssignmentPaperBody">
+                @Html.Partial("~/Areas/User/Views/Editor/AssignmentPaper/_AssignmentPaperBodyPartial.cshtml")
+            </div>
+
+            <div class="row">
+                <div class="text-right">
+                    @Html.ClientActionButton("<i class='glyphicon glyphicon-plus'></i>" + DbRes.TResource("User.Transaction.Assignment.Add"), Url.Action("AddAssignmentPaper", "Editor"), "dvAssignmentPaperGrid", "OnAddAssignmentPaperSuccess", null, "AssignmentPaper", "btnAddAssignmentPaperEditor", "dvAssignmentPaper", " btn-site")
+                    @Html.ClientActionButton(DbRes.TResource("User.Transaction.Assignment.Update"), Url.Action("EditAssignmentPaper", "Editor"), "dvAssignmentPaperGrid", "OnEditAssignmentPaperSuccess", null, "AssignmentPaper", "btnEditAssignmentPaper", "dvAssignmentPaper", " btn-site ")
+                    <a class="btn-site" id="aCancelAssignmentPaper" onclick="CancelEditAssignmentPaper(); return false;">@DbRes.TResource("User.Transaction.Assignment.Cancel")</a>
+                </div>
+            </div>
+            @Html.StickyHidden("hdnAssignmentPaperData", ViewData["AssignmentPaperData"].ToString())
+        </div>
+        <hr />
+        <div class="panel-body">
+
+            <div class="row">
+                <div id="dvAssignmentPaperGrid">
+                    @Html.Partial("~/Areas/User/Views/Editor/AssignmentPaper/_AssignmentPaperGridPartial.cshtml", ViewData["AssignmentPaperGridData"])
+                </div>
+            </div>
+        </div>
+        <div class="row ">
+            <div class="col-xs-12 text-right">
+                @Html.ConfirmAction(OperationType.Save, "btnSendAssignmentPaper", DbRes.TResource("User.Editor.AssignmentPaper.Save"), Url.Action("SendAssignmentPaper", "Editor"), null, null, null, "SendAssignmentPaperOnSuccess", null, DbRes.TResource("User.Editor.AssignmentPaper.SaveMessage"), "post", "frmEditorAssignmentPaper", null, "btn-site", "CheckIfHasAssignmentPaper")
+            </div>
+        </div>
+    </div>
+    @Html.StickyHidden("hdnTransactionId", ViewData["TransactionId"].ToString(), new { id = "hdnAssignmentsTransactionId", @class = "TransactionId" })
+    @Html.StickyHidden("trayId")
+    @Html.StickyHidden("page")
+    @Html.StickyHidden("gridColumn")
+    @Html.StickyHidden("fromDate")
+    @Html.StickyHidden("toDate")
+    @Html.StickyHidden("number")
+    @Html.StickyHidden("filter")
+    @Html.StickyHidden("dateType")
+    @Html.StickyHidden("dir")
+    @Html.StickyHidden("pageSize")
+}
+
+<script>
+    $(document).ready(function () {
+        $("#btnEditAssignmentPaper").hide();
+        $("#aCancelAssignmentPaper").hide();
+    })
+
+    function SaveAssignmentPaperOnSuccess(data, div) {
+        if (data.MessageType != 2) {
+            $("#dvEditorAssignments").html("");
+            $("#dvEditorAssignments").html(data.Html);
+            jQuery.validator.unobtrusive.parse('#dvEditorAssignments');
+            ShowSuccesMessage(data.MessageText)
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function CancelEditAssignmentPaper() {
+        ClearInputs('dvAssignmentPaperBody');
+        $("#btnEditAssignmentPaper").hide();
+        $("#btnAddAssignmentPaperEditor").show();
+        $("#aCancelAssignmentPaper").hide();
+    }
+
+    function OnAddAssignmentPaperSuccess(data, div) {
+        if (data.MessageType != 2) {
+            $("#" + div).html("");
+            $("#" + div).html(data.Html);
+            ClearInputs('dvAssignmentPaperBody');
+            $("#hdnAssignmentPaperData").val(data.hdnValue);
+            ClearInputs('dvAssignmentPaperBody');
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function OnEditAssignmentPaperSuccess(data, div) {
+        if (data.MessageType != 2) {
+            $("#btnEditAssignmentPaper").hide();
+            $("#btnAddAssignmentPaperEditor").show();
+            $("#aCancelAssignmentPaper").hide();
+            $("#" + div).html("");
+            $("#" + div).html(data.Html);
+            $("#hdnAssignmentPaperData").val(data.hdnValue);
+            ClearInputs('dvAssignmentPaperBody');
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function OnGetAssignmentPaperSuccess(data, div) {
+        $("#btnEditAssignmentPaper").show();
+        $("#aCancelAssignmentPaper").show();
+        $("#btnAddAssignmentPaperEditor").hide();
+        $("#" + div).html("");
+        $("#" + div).html(data.Html);
+        $("#hdnIndexAssignmentPaper").val(data.Index);
+        jQuery.validator.unobtrusive.parse('#' + div);
+    }
+
+    function OnDeleteAssignmentPaperSuccess(data, div) {
+        $("#hdnAssignmentPaperData").val(data.hdnValue);
+    }
+
+    function CheckIfHasAssignmentPaper() {
+        var check = true;
+        if ($("#hdnAssignmentPaperData").val() != "[]") {
+            var data = jQuery.parseJSON($("#hdnAssignmentPaperData").val());
+            $.each(data, function (i, item) {
+                if (item.ActionId == -1 || item.ActionId == "") {
+                    check = false;
+                }
+            })
+            if (check) {
+                return true;
+            }
+            else {
+                ShowErrorMessage('@Html.Raw(DbRes.TValidation("User.Transaction.Assignment.ActionsRequired"))');
+                return false;
+            }
+        }
+        else {
+            ShowErrorMessage('@Html.Raw(DbRes.TValidation("User.Transaction.Assignment.AssignmentRequired"))');
+            return false;
+        }
+    }
+
+
+    function SendAssignmentPaperOnSuccess(data) {
+        if (data.MessageType != 2) {
+
+            //$("#dvTransactionsContainer").html("");
+            //$("#dvTransactionsContainer").html(data.Html);
+            //$("#txtCurrentPage").val($("#page").val());
+            //$("#hdnCurrentPage").val($("#page").val());
+            //$("#ddlPaging option[value=" + $("#pageSize").val() + "]").attr('selected', 'selected');
+
+            //$("li#_UserFileMenu").html("");
+            //$("li#_UserFileMenu").html(data.FileMenuHtml);
+            //$("#editor_transaction").html("");
+
+            ShowSuccesMessage(data.MessageText)
+
+            window.location.href = '@(MCS.UI.UrlHelper.GetBaseUri() + "/User/File/MyTransactions")';
+            //$("#btnSendAssignmentPaper").hide();
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+
+    }
+
+</script>
+<script>
+    $(document).ready(function () {
+        $("#frmEditorAssignmentPaper #trayId").val(1);
+        $("#frmEditorAssignmentPaper #page").val($("#hdnCurrentPage").val());
+        $("#frmEditorAssignmentPaper #gridColumn").val($("#hdnOrderBy").val());
+        $("#frmEditorAssignmentPaper #dir").val($("#hdnDirection").val());
+        $("#frmEditorAssignmentPaper #filter").val($("#hdnFilter").val());
+        $("#frmEditorAssignmentPaper #fromDate").val($("#hdnFromDateValue").val());
+        $("#frmEditorAssignmentPaper #toDate").val($("#hdnToDateValue").val());
+        $("#frmEditorAssignmentPaper #number").val($("#hdnSearchTransactionNumberValue").val());
+        $("#frmEditorAssignmentPaper #dateType").val($("#hdnFilterDateType").val());
+        $("#frmEditorAssignmentPaper #pageSize").val($("#ddlPaging").val());
+
+    })
+</script>

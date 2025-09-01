@@ -1,0 +1,769 @@
+﻿@model MCS.UI.Areas.User.Models.Transaction.FollowUpCertificateVM
+@using MCS.Common;
+@using MCS.UI.Areas.User.Models.Transaction;
+@using MCS.Framework.Controls
+@using MCS.Framework.Localization
+@using MCS.Framework.Controls.Mvc
+@{
+    /**/
+    string controller = TempData.Peek("ControllerName") != null ? TempData.Peek("ControllerName").ToString() : ViewContext.RouteData.Values["controller"].ToString();
+    ViewData.TemplateInfo.HtmlFieldPrefix = "FollowUpTab";
+    if (ViewData["FollowUpOrgId"] != null)
+    {
+        Model.FollowUpEntityId = Convert.ToInt32(ViewData["FollowUpOrgId"]);
+    }
+    if (ViewData["FollowUpUserId"] != null)
+    {
+        Model.FollowUpUserId = Convert.ToInt32(ViewData["FollowUpUserId"]);
+    }
+}
+<script src=@Url.Content("~/Content/User/lib/js/app.min.js")></script>
+<script src="~/Scripts/Transaction.js"></script>
+<br />
+
+<div id="FollowUpForm">
+    @if (true)
+    {
+
+        <div class="form-row BasicInfo ml-3">
+            <div class="d-flex" style="margin-right:-45px; margin-bottom:16px;">
+                <div class="pl-sm-5 Editor-div">
+                    <div class="gray3">@DbRes.TResource("User.Inbound.BasicInfo.Subject")</div>
+                    <div class="transaction-number Editor-lable">@ViewData["Subject"]</div>
+                </div>
+                <div class="pl-5 Editor-div">
+                    <div class="gray3">@DbRes.TResource("User.Transaction.Link.TransactionNumber") </div>
+                    <div class="date-value Editor-lable">
+                        @ViewData["TransactionsNumber"]
+                    </div>
+                </div>
+                <div class="pl-sm-5">
+                    <div class="gray3">@DbRes.TResource("User.Transaction.PriorityLevel")</div>
+                    <div class="transaction-number Editor-lable" style="word-break:break-all">@ViewData["PriorityLevel"]</div>
+                </div>
+
+                <div class="pl-5 Editor-div">
+                    <div class="gray3">@DbRes.TResource("User.Transaction.ConfidentialityLevel") </div>
+                    <div class="date-value Editor-lable">
+                        @ViewData["ConfidentialityName"]
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div id="divFollowUpContent">
+
+            <div class="form-row">
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                    <label class="w-100">@DbRes.TResource("User.FollowUpCertificate.FollowUp.Source") <span class="stark">*</span></label>
+                    @Html.AutoCompleteBuilder("ddlFollowUpSource", "FollowUpSourceId", ViewData["FollowUpSource"].ToString(), null, true, "form-control", selectFirstIndex: true)
+                    @Html.HiddenGroupFor(model => model.FollowUpSourceId, new { @Value = "", id = "FollowUpSourceId" }, "FollowUp")
+                </div>
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                    <label class="w-100">@DbRes.TResource("User.FollowUpCertificate.FollowUp.Method") <span class="stark">*</span></label>
+                    @Html.AutoCompleteBuilder("ddlFollowUpMethod", "FollowUpMethodId", ViewData["FollowUpMethod"].ToString(), null, true, "form-control", selectFirstIndex: true)
+                    @Html.HiddenGroupFor(model => model.FollowUpMethodId, new { @Value = "", id = "FollowUpMethodId" }, "FollowUp")
+                </div>
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                    <label class="w-100">@DbRes.TResource("User.FollowUpCertificate.FollowUp.Prioritytype") <span class="stark">*</span></label>
+                    @Html.AutoCompleteBuilder("ddlFollowUpPrioritytype", "FollowUpPrioritytypeId", ViewData["FollowUpPrioritytype"].ToString(), null, true, "form-control", selectFirstIndex: true)
+                    @Html.HiddenGroupFor(model => model.FollowUpPriortyId, new { @Value = "", id = "FollowUpPrioritytypeId" }, "FollowUp")
+                </div>
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                    <label class="w-100">@DbRes.TResource("User.FollowUpCertificate.FollowUp.Proccess") <span class="stark">*</span></label>
+                    @Html.AutoCompleteBuilder("ddlFollowUpProccess", "FollowUpProccessId", ViewData["FollowUpProccess"].ToString(), null, true, "form-control", selectFirstIndex: true)
+                    @Html.HiddenGroupFor(model => model.FollowUpProccessId, new { @Value = "", id = "FollowUpProccessId" }, "FollowUp")
+                </div>
+                <div class="form-group col-lg-6 col-md-4 col-sm-6 col-xs-12 mb-3" id="divOrgUnit">
+                    <div class="TreeHeight" id="dvFollowUpOrgUnit">
+                        @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.FollowUpEntityId, TreeMode.Single, "treeFollowUpOrgUnit", true, "GetDirectedToUsersByOrgUnitId", "", "dvFollowUpOrgUnit")
+                    </div>
+                </div>
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                    <label class="w-100">@DbRes.TResource("User.FollowUpCertificate.FollowUp.FollowUpUser")<span class="stark NotIndividual">*</span></label>
+                    @Html.EditorFor(model => model.FollowUpUserId, "AutoComplete", additionalViewData: new { autoCompleteControlid = "ddlFollowUpIndividualToUserId", hdnIdToSaveValue = "hdnFollowUpIndividualToUserId", items = "", selectedId = Model != null ? Model.FollowUpUserId.ToString() : null, matchAnywhere = true, hdnExtraParametersId = "", selectFirstIndex = false, validationGroup = "" })
+                    @Html.HiddenFor(model => model.FollowUpUserId, new { id = "hdnFollowUpIndividualToUserId" })
+
+                </div>
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+
+                    <label class="w-100">@DbRes.TResource("User.FollowUpCertificate.FollowUp.EndDate")<span class="stark NotIndividual">*</span></label>
+                    <div class="with-icon">
+                        @Html.CalendarCustom("FollowUpDateCal", "hdnFolloupDateGreg", "hdnFollowUpDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), Model != null ? Model.FollowUpExpireDateHj : null, "form-control")
+                        <a class=" date-icon2 " onclick="showCalender('FollowUpDateCal')"><img src="~/Content/User/lib/images/SystemIcon/main bar-08.svg" width="30" /></a>
+                        @Html.HiddenGroupFor(model => model.FollowUpExpireDate, new { id = "hdnFolloupDateGreg", AutoComplete = "off" }, "")
+                        @Html.HiddenGroupFor(model => model.FollowUpExpireDateHj, new { id = "hdnFollowUpDateUm", AutoComplete = "off" }, "")
+                        <i id="FollowUpMessage" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                        <span id="FollowUpdateMessage" style="color:red"></span>
+                    </div>
+                </div>
+                <div class="form-group col-lg-6 col-md-6 col-sm-12 col-xs-12  mb-3">
+                    <div class="class=" input-group w-100"">
+                        <div class="form-group w-100">
+                            <label class="w-100">@DbRes.TResource("User.FollowUpCertificate.FollowUp.FollowUpProccessNote") <span class="stark">*</span></label>
+                            @Html.TextAreaGroupFor(model => model.FollowUpProccessNote, new { id = "txtAreaFollowUpProccessNote", @class = "form-control basic-info-add", @rows = "3" }, "FollowUp")
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-lg-6 col-md-6 col-sm-12 col-xs-12  mb-3">
+                    <div class="class=" input-group w-100"">
+                        <div class="form-group w-100">
+                            <label class="w-100">@DbRes.TResource("User.FollowUpCertificate.FollowUp.FollowUpReason") <span class="stark">*</span></label>
+                            @Html.TextAreaGroupFor(model => model.FollowUpReason, new { id = "txtAreaFollowUpReason", @class = "form-control basic-info-add", @rows = "3" }, "FollowUp")
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                    <label class="w-100">@DbRes.TResource("User.FollowUpCertificate.FollowUp.Progress") </label>
+                    @Html.NumericTextBoxFor(model => model.FollowUpProgressId, new { id = "txtFollowUpProgress", @class = "form-control", maxlength = 3 }, "")
+
+                </div>
+
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                    <label>
+                        @Html.CheckBoxFor(model => model.IsCompleted, new { id = "chkIsCompleted", @class = "" })
+                        @Html.StickyHiddenFor(model => model.IsCompleted, new { id = "hdnIsCompleted" })
+                        @DbRes.TResource("User.FollowUpCertificate.FollowUp.IsCompleted")
+                    </label>
+                </div>
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3" id="divCompletionDate" style="display:none">
+
+                    <label class="w-100">@DbRes.TResource("User.FollowUpCertificate.FollowUp.CompletionDate")<span class="stark NotIndividual">*</span></label>
+                    <div class="with-icon">
+                        @Html.CalendarCustom("FolloupCompletionDateCal", "hdnFolloupCompletionDateGreg", "hdnFolloupCompletionDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), Model != null ? Model.FollowUpCompletionDateHj : null, "form-control")
+                        <a class=" date-icon2 " onclick="showCalender('FolloupCompletionDateCal')"><img src="~/Content/User/lib/images/SystemIcon/main bar-08.svg" width="30" /></a>
+                        @Html.HiddenGroupFor(model => model.FollowUpCompletionDate, new { id = "hdnFolloupCompletionDateGreg", AutoComplete = "off" }, "")
+                        @Html.HiddenGroupFor(model => model.FollowUpCompletionDateHj, new { id = "hdnFolloupCompletionDateUm", AutoComplete = "off" }, "")
+                        <i id="FollowUpMessage" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                        <span id="FollowUpdateMessage" style="color:red"></span>
+                    </div>
+
+                    @Html.StickyHiddenFor(model => model.TransactionId, new { id = "hdnTransactionId" })
+                    @Html.StickyHiddenFor(model => model.FollowUpTypeId, new { id = "hdnfollowuptype" })
+                    @Html.StickyHiddenFor(model => model.FollowUpId, new { id = "hdnfollowupid" })
+                    @Html.StickyHiddenFor(model => model.ReadOnly, new { id = "hdnReadOnly" })
+                    @Html.StickyHiddenFor(model => model.IsUnderFollowup, new { id = "hdnIsUnderFollowup" })
+                    @Html.StickyHiddenFor(model => model.IsCanceld, new { id = "hdnIsCanceld" })
+                    @Html.StickyHiddenFor(model => model.HasChild, new { id = "hdnHasChild" })
+                    @Html.StickyHiddenFor(model => model.IsFinalCompleted, new { id = "hdnIsFinalCompleted" })
+                    @Html.StickyHiddenFor(model => model.FollowUpUserName, new { id = "hdnFollowUpUserName" })
+                    @Html.StickyHiddenFor(model => model.IsEscalated)
+                    @Html.StickyHiddenFor(model => model.IsCopy)
+                    @Html.StickyHiddenFor(model => model.IsImportant)
+                    @Html.StickyHiddenFor(model => model.IsReminder)
+                </div>
+                <div id="dvButtonFooter" class="row text-right mr-5 mt-4 ml-xs-3 mb-4 save">
+                    <div class="btn btn-st2 btn-lg pull-right mr-1 " style="clear:both" id="dvSaveFollowUp">
+                        <button id="btnConfirmAddFollowUp" style="background-color:#0E8270;border:hidden" type="button" validationgroup="FollowUpValidation" value="حفظ">حفظ</button>
+                        @Html.ClientActionButton(DbRes.TResource("User.Transaction.FollowUp.Save"), Url.Action("SaveFollowUp", controller), "FollowUpForm", "OnAddFollowUpEmployeeSuccess", null, "FollowUpValidation", "btnAddFollowUp", "FollowUpForm", " btn-site clsHidden", null, "", UserClaims.FollowUps.AddFollowUp, "<i class='glyphicon glyphicon-plus'></i>")
+
+                    </div>
+                    <div class="btn btn-st2 btn-lg pull-right mr-1 " id="dvSendFollowUp">
+                        <button id="btnConfirmSendFollowUp" style="background-color:#0E8270;border:hidden" type="button" validationgroup="FollowUpValidation" value="ارسال">ارسال</button>
+                        @Html.ClientActionButton(DbRes.TResource("User.Transaction.FollowUp.Send"), Url.Action("SendFollowUp", controller), "FollowUpForm", "OnSendFollowUpEmployeeSuccess", null, "FollowUpValidation", "btnSendFollowUp", "FollowUpForm", " btn-site clsHidden", null, "", UserClaims.FollowUps.AddFollowUp, "<i class='glyphicon glyphicon-plus'></i>")
+
+                    </div>
+                    <a class="btn btn-st2 btn-lg pull-right mr-1 " id="btnLockFollowup" onclick="LockFollowup(@Model.FollowUpId,@Model.TransactionId)">@DbRes.TResource("User.FollowUpCertificate.FollowUp.Lock")</a>
+                    <a class="btn btn-st2 btn-lg pull-right mr-1 " id="btnUnLockFollowup" onclick="UnLockFollowup(@Model.FollowUpId,@Model.TransactionId)">@DbRes.TResource("User.FollowUpCertificate.FollowUp.UnLock")</a>
+                    <a class="btn btn-st2 btn-lg pull-right mr-1 " id="btnDeactivateFollowup" onclick="DeactivateFollowup(@Model.FollowUpId,@Model.TransactionId)">@DbRes.TResource("User.FollowUpCertificate.FollowUp.DeactivateFollowup")</a>
+                    <a class="btn btn-st2 btn-lg pull-right mr-1 " id="btnComplitFollowup" onclick="ComplitFollowup(@Model.FollowUpId,@Model.TransactionId)">@DbRes.TResource("User.FollowUpCertificate.FollowUp.ComplitFollowup")</a>
+
+                    <a class="btn btn-st2 btn-lg pull-right mr-1 " id="btnSendFollowUpReminder" onclick="SendFollowUpReminder(@Model.FollowUpId,@Model.TransactionId,@Model.FollowUpUserId)">@DbRes.TResource("User.FollowUpCertificate.FollowUp.SendFollowUpReminder")</a>
+
+                    <a class="btn btn-st2 btn-lg pull-right mr-1 " id="btnEscalateFollowUp" onclick="EscalateFollowUp(@Model.FollowUpId,@Model.TransactionId,@Model.FollowUpUserId)">@DbRes.TResource("User.FollowUpCertificate.FollowUp.EscalateFollowUp")</a>
+                </div>
+
+
+                <div class="extraOption col-lg-12 col-md-4 col-sm-6 col-xs-12 mb-3">
+                    <h4>
+                        <a role="button" style="display:flex">
+                            <span onclick="CollapseDiv('divFollowUpGridContent'); return false;" style="cursor: pointer;">
+                                <img src="~/Content/User/lib/images/plus-icon.svg" id="divFollowUpGridContentPlusIcon" width="25" />
+                                <img src="~/Content/User/lib/images/Dash-icon.svg" id="divFollowUpGridContentDashIcon" width="25" style="display: none;" />
+                            </span>
+                            <span class="ml-3 mt-1">@DbRes.TResource("جدول المتابعات المضافة")</span>
+                        </a>
+                    </h4>
+                    <div role="tabpanel" class="tab-pane" id="divFollowUpGridContent" style="display:none">
+                        <div>
+                            @Html.Partial("~/Areas/User/Views/TransactionFollowUp/_FollowUpGridPartial.cshtml", ViewData["DetailsGridData"])
+                        </div>
+                    </div>
+                </div>
+
+                <div class="extraOption col-lg-12 col-md-4 col-sm-6 col-xs-12 mb-3">
+                    <h4>
+                        <a role="button" style="display:flex">
+                            <span onclick="CollapseDiv('divFollowUpAuditTrailContent'); return false;" style="cursor: pointer;">
+                                <img src="~/Content/User/lib/images/plus-icon.svg" id="divFollowUpAuditTrailContentPlusIcon" width="25" />
+                                <img src="~/Content/User/lib/images/Dash-icon.svg" id="divFollowUpAuditTrailContentDashIcon" width="25" style="display: none;" />
+                            </span>
+                            <span class="ml-3 mt-1">@DbRes.TResource("جدول تاريخ الإجراءات")</span>
+                        </a>
+                    </h4>
+                    <div role="tabpanel" class="tab-pane" id="divFollowUpAuditTrailContent" style="display:none">
+                        <div>
+                            @Html.Partial("~/Areas/User/Views/TransactionFollowUp/_FollowUpAuditTrail.cshtml", ViewData["AuditTrailGridData"])
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="extraOption col-lg-12 col-md-4 col-sm-6 col-xs-12 mb-3">
+                    <h4>
+                        <a role="button" style="display:flex">
+                            <span onclick="CollapseDiv('divTransactionFollowUp'); return false;" style="cursor: pointer;">
+                                <img src="~/Content/User/lib/images/plus-icon.svg" id="divTransactionFollowUpPlusIcon" width="25" />
+                                <img src="~/Content/User/lib/images/Dash-icon.svg" id="divTransactionFollowUpDashIcon" width="25" style="display: none;" />
+                            </span>
+                            <span class="ml-3 mt-1">@DbRes.TResource("User.OutboundInternal.Link")</span>
+                        </a>
+                    </h4>
+                    <div role="tabpanel" class="tab-pane" id="divTransactionFollowUp" style="display:none">
+                        <div>
+                            @{Html.ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+                            @Html.Partial("~/Areas/User/Views/TransactionFollowUp/_FollowUpLinksPartial.cshtml", Model)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+        </div>
+    }
+</div>
+<script>
+    $(function () {
+        //LoadFollowUpAuditTrails();
+        //  LoadFollowUpDetailsTab();
+
+       $("#chkIsCompleted").change(function() {
+            if (this.checked) {
+                $('#divCompletionDate').show();
+                $('#btnComplitFollowup').show();
+            }
+            else {
+                $('#divCompletionDate').hide();
+                  $('#btnComplitFollowup').hide();
+                }
+                });
+            });
+
+    function CollapseDiv(divName) {
+        if ($('#' + divName).css('display') == 'block') {
+            $('#' + divName).css("display", "none");
+            $('#' + divName + 'PlusIcon').css("display", "inline-block");
+            $('#' + divName + 'DashIcon').css("display", "none");
+        }
+        else {
+            $('#' + divName).css("display", "block");
+            $('#' + divName + 'PlusIcon').css("display", "none");
+            $('#' + divName + 'DashIcon').css("display", "inline-block");
+        }
+    }
+
+    $(document).ready(function () {
+
+        EnableDisableControl($("#hdnReadOnly").val(),$("#hdnIsCanceld").val(),$("#hdnIsFinalCompleted").val(),$("#hdnIsUnderFollowup").val());
+
+
+        if ($("#chkIsCompleted").checked) {
+             $("#btnComplitFollowup").attr("disabled", "");
+        }
+        $('#FollowUpDateCal').attr('autocomplete', 'off');
+        $('#FolloupCompletionDateCal').attr('autocomplete', 'off');
+        GetFollowUpUsersByOrgUnitId(callback);
+
+        $('#btnConfirmAddFollowUp').click(function () {
+            //if (CheckFollowUpDate()) {
+                ShowConfirmMessage("هل انت متأكد من الحفظ ؟", 'addFollowUp');
+            //}
+        });
+
+                $('#btnConfirmSendFollowUp').click(function () {
+            //if (CheckFollowUpDate()) {
+                ShowConfirmMessage("هل انت متأكد من الحفظ ؟", 'sendFollowUp');
+            //}
+        });
+    });
+
+
+        function UnLockFollowup(FollowUpId, TransactionId) {
+
+        event.preventDefault();
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("UnLockFollowUp", "TransactionFollowUp")' + '?FollowUpId=' + FollowUpId + '&TransactionId=' + TransactionId ,
+            cache: false,
+            success:
+                function (data) {
+                    LoadFollowUpAuditTrails();
+                    LoadFollowUpDetailsTab();
+                    EnableDisableControl(true,false, false, false);
+                }
+        });
+    }
+    function LockFollowup(FollowUpId, TransactionId) {
+
+        event.preventDefault();
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("LockFollowUp", "TransactionFollowUp")' + '?FollowUpId=' + FollowUpId + '&TransactionId=' + TransactionId ,
+            cache: false,
+            success:
+                function (data) {
+
+                     $("#hdnReadOnly").val(false);
+                $("#hdnIsCanceld").val(false);
+                $("#hdnIsFinalCompleted").val(false);
+                $("#hdnIsUnderFollowup").val(true);
+                    LoadFollowUpAuditTrails();
+                     LoadFollowUpDetailsTab();
+                    EnableDisableControl(false,false, false, true);
+                }
+        });
+    }
+     function LoadFollowUpDetailsTab() {
+
+        var id = $("#hdnTransactionID").val();
+        $.ajax({
+            url: '@Url.Action("FollowUpLoadGrid", controller)',
+                data: { transactionId: id },
+            success: function (data) {
+                debugger
+                $("#divFollowUpGridContent").html("");
+                $("#divFollowUpGridContent").html(data);
+
+            }
+        })
+    }
+
+    function LoadFollowUpAuditTrails() {
+
+        var id = $("#hdnfollowupid").val();
+        $.ajax({
+            url: '@Url.Action("FollowUpLoadAuditTrailGrid", controller)',
+                data: { FollowUpId: id },
+            success: function (data) {
+                $("#divFollowUpAuditTrailContent").html("");
+                $("#divFollowUpAuditTrailContent").html(data);
+
+            }
+        })
+    }
+        function DeactivateFollowup(FollowUpId, TransactionId) {
+
+        event.preventDefault();
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("DeactivateFollowUp", "TransactionFollowUp")'  + '?FollowUpId=' + FollowUpId + '&TransactionId=' + TransactionId ,
+            cache: false,
+            success:
+                function (data) {
+                      window.location.href = '@Url.Action("FollowUp", "File")';
+                }
+        });
+    }
+
+
+    function ComplitFollowup(FollowUpId,TransactionId) {
+
+        event.preventDefault();
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("ComplitFollowup", "TransactionFollowUp")' + '?FollowUpId=' + FollowUpId + '&TransactionId=' + TransactionId ,
+            cache: false,
+            success:
+                function (data) {
+                    EnableDisableControl(false,false, true, false);
+                     LoadFollowUpAuditTrails();
+                    ShowErrorMessage("تم اكمال المتابعة واغلاقها ");
+                },
+
+        });
+    }
+
+    function SendFollowUpReminder(FollowUpId,TransactionId,FollowUoUserId) {
+
+        event.preventDefault();
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("SendFollowUpReminder", "TransactionFollowUp")' + '?FollowUpId=' + FollowUpId + '&TransactionId=' + TransactionId  + '&FollowUoUserId=' + FollowUoUserId ,
+            cache: false,
+            success:
+                function (data) {
+                    ShowErrorMessage("تم ارسال تذكير للمتابعة الفرعية بنجاح");
+                }
+        });
+    }
+
+    function EscalateFollowUp(FollowUpId, TransactionId, FollowUoUserId) {
+
+        event.preventDefault();
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("EscalateFollowUp", "TransactionFollowUp")' + '?FollowUpId=' + FollowUpId + '&TransactionId=' + TransactionId  + '&FollowUoUserId=' + FollowUoUserId ,
+            cache: false,
+            success:
+                function (data) {
+                    ShowErrorMessage("تم تصعيد المتابعة الفرعية بنجاح");
+                }
+        });
+    }
+
+
+
+    function EnableDisableControl(IsReadOnly, IsCanceld, IsFinalCompleted, IsUnderFollowup) {
+
+        if (IsReadOnly == "True" || IsReadOnly == true) {
+
+            //$("#ddlFollowUpSource").prop("readonly", "readonly");
+            $("#ddlFollowUpSource").attr("disabled", "disabled");
+            $("#ddlFollowUpMethod").attr("disabled", "disabled");
+            $("#ddlFollowUpPrioritytype").attr("disabled", "disabled");
+            $("#ddlFollowUpProccess").attr("disabled", "disabled");
+            $("#ddlFollowUpSource").attr("disabled", "disabled");
+            $("#txtAreaFollowUpProccessNote").attr("disabled", "disabled");
+            $("#txtAreaFollowUpReason").attr("disabled", "disabled");
+            $("#txtFollowUpProgress").attr("disabled", "disabled");
+            $("#chkIsCompleted").attr("disabled", "disabled");
+            $("#FolloupCompletionDateCal").attr("disabled", "disabled");
+            $("#FollowUpDateCal").attr("disabled", "disabled");
+            $("#autoCompleteFollowUpUserId").attr("disabled", "disabled");
+            $("#treeFollowUpToOrgUnit").attr("disabled", "disabled");
+            $("#dvSaveFollowUp").attr("disabled", "disabled");
+            $("#btnDeactivateFollowup").show();
+            $("#btnComplitFollowup").hide();
+            $("#btnUnLockFollowup").hide();
+            $("#btnEscalateFollowUp").hide();
+             $("#dvSaveFollowUp").hide();
+            $("#dvSendFollowUp").hide();
+            $("#btnLockFollowup").show();
+            $("#btnSendFollowUpReminder").hide();
+            $("#btnEscalateFollowUp").hide();
+
+            //$('#btnUnLockFollowup').prop('disabled', true);
+        } else if (IsCanceld  == "True" || IsCanceld  == true) {
+
+
+            $("#ddlFollowUpSource").attr("disabled", "disabled");
+            $("#ddlFollowUpMethod").attr("disabled", "disabled");
+            $("#ddlFollowUpPrioritytype").attr("disabled", "disabled");
+            $("#ddlFollowUpProccess").attr("disabled", "disabled");
+            $("#ddlFollowUpSource").attr("disabled", "disabled");
+            $("#txtAreaFollowUpProccessNote").attr("disabled", "disabled");
+            $("#txtAreaFollowUpReason").attr("disabled", "disabled");
+            $("#txtFollowUpProgress").attr("disabled", "disabled");
+            $("#chkIsCompleted").attr("disabled", "disabled");
+            $("#FolloupCompletionDateCal").attr("disabled", "disabled");
+            $("#FollowUpDateCal").attr("disabled", "disabled");
+            $("#btnUnLockFollowup").attr("disabled", "disabled");
+            $("#autoCompleteFollowUpUserId").attr("disabled", "disabled");
+            $("#treeFollowUpToOrgUnit").attr("disabled", "disabled");
+            $("#btnLockFollowup").hide();
+            $("#btnDeactivateFollowup").hide();
+            $("#btnComplitFollowup").hide();
+            $("#btnUnLockFollowup").hide();
+             $("#dvSaveFollowUp").hide();
+            $("#dvSendFollowUp").hide();
+              $("#btnSendFollowUpReminder").hide();
+            $("#btnEscalateFollowUp").hide();
+        } else if (IsFinalCompleted  == "True" || IsFinalCompleted  == true) {
+             $("#ddlFollowUpSource").attr("disabled", "disabled");
+            $("#ddlFollowUpMethod").attr("disabled", "disabled");
+            $("#ddlFollowUpPrioritytype").attr("disabled", "disabled");
+            $("#ddlFollowUpProccess").attr("disabled", "disabled");
+            $("#ddlFollowUpSource").attr("disabled", "disabled");
+            $("#txtAreaFollowUpProccessNote").attr("disabled", "disabled");
+            $("#txtAreaFollowUpReason").attr("disabled", "disabled");
+            $("#txtFollowUpProgress").attr("disabled", "disabled");
+            $("#chkIsCompleted").attr("disabled", "disabled");
+            $("#FolloupCompletionDateCal").attr("disabled", "disabled");
+            $("#FollowUpDateCal").attr("disabled", "disabled");
+            $("#autoCompleteFollowUpUserId").attr("disabled", "disabled");
+            $("#treeFollowUpToOrgUnit").attr("disabled", "disabled");
+            $("#btnLockFollowup").hide();
+            $("#btnSendFollowUpReminder").hide();
+            $("#btnDeactivateFollowup").hide();
+            $("#btnComplitFollowup").hide();
+            $("#btnUnLockFollowup").hide();
+             $("#dvSaveFollowUp").hide();
+            $("#dvSendFollowUp").hide();
+             $("#btnEscalateFollowUp").hide();
+            $('#divCompletionDate').show();
+        }
+        else if (IsUnderFollowup == "True" || IsUnderFollowup == true) {
+            $("#ddlFollowUpSource").removeAttr("disabled");
+            $("#ddlFollowUpMethod").removeAttr("disabled");
+            $("#ddlFollowUpPrioritytype").removeAttr("disabled");
+            $("#ddlFollowUpProccess").removeAttr("disabled");
+            $("#ddlFollowUpSource").removeAttr("disabled");
+            $("#txtAreaFollowUpProccessNote").removeAttr("disabled");
+            $("#txtAreaFollowUpReason").removeAttr("disabled");
+            $("#txtFollowUpProgress").removeAttr("disabled");
+            $("#chkIsCompleted").removeAttr("disabled");
+            $("#FolloupCompletionDateCal").removeAttr("disabled");
+            $("#FollowUpDateCal").removeAttr("disabled");
+            $("#autoCompleteFollowUpUserId").removeAttr("disabled");
+            $("#treeFollowUpToOrgUnit").removeAttr("disabled");
+            $("#dvSaveFollowUp").removeAttr("disabled");
+            $("#btnLockFollowup").show();
+            $("#btnDeactivateFollowup").show();
+            $("#btnComplitFollowup").show();
+            $("#btnUnLockFollowup").show();
+             $("#dvSaveFollowUp").show();
+            $("#dvSendFollowUp").show();
+            $("#btnLockFollowup").hide();
+
+            if ($("#hdnHasChild").val() == "True" || $("#hdnHasChild").val() == true) {
+                $("#btnSendFollowUpReminder").show();
+                $("#btnEscalateFollowUp").show();
+            } else {
+             $("#btnSendFollowUpReminder").hide();
+            $("#btnEscalateFollowUp").hide();
+            }
+
+        }
+        $("#btnComplitFollowup").hide();
+        $("#FollowUpDateCal").attr("disabled", "disabled");
+    }
+
+
+  function addFollowUp() {
+        $('#btnAddFollowUp').click();
+    }
+       function sendFollowUp() {
+           $("#hdnFollowUpUserName").val($("#ddlFollowUpIndividualToUserId").val());
+           $("#hdnHasChild").val(true);
+    $('#btnSendFollowUp').click();
+    }
+        function CheckFollowUpDate() {
+
+        var dateNow = $.datepicker.formatDate('dd/mm/yy', new Date($.now()));
+        var currentDate = convertdate(dateNow);
+        if ($("#FollowUpDateCal").val() != "") {
+            if ($("#hdnFolloupDateGreg").val() != undefined) {
+                var selectedDate = convertdate($("#hdnFolloupDateGreg").val());
+
+                if (selectedDate < currentDate) {
+                    $("#FollowUpMessage").removeClass("hidden_");
+                    $("#FollowUpMessage").show();
+                    $('#FollowUpDateCal').addClass('RedBorder');
+                    $("#FollowUpdateMessage").html(' @Html.Raw(DbRes.TValidation("User.FollowUp.RemindDateCompare"))');
+                    return false;
+                }
+                else {
+                    $('#FollowUpDateCal').removeClass('RedBorder');
+                    $("#FollowUpMessage").hide()
+                    $("#FollowUpdateMessage").html('');
+                    if ($('#FollowUpEntityId_txtDepartmentNumber').val() == "") {
+                        $('#FollowUpEntityId_txtDepartmentNumber, #FollowUpEntityId_txtDepartmentName').addClass('RedBorder');
+                    }
+                    else {
+                        $('#FollowUpEntityId_txtDepartmentNumber, #FollowUpEntityId_txtDepartmentName').removeClass('RedBorder');
+                    }
+                    return true;
+                }
+            }
+        }
+        else {
+              $("#FollowUpMessage").removeClass("hidden_");
+                    $("#FollowUpMessage").show();
+                    $('#FollowUpDateCal').addClass('RedBorder');
+                    $("#FollowUpdateMessage").html(' @Html.Raw(DbRes.TValidation("User.Report.TransactionsDeliveryReport.DateToRequired"))');
+            if ($('#dvFollowUpCertificate .txtDepartmentNumber').val() == "")
+            {
+                $('#dvFollowUpCertificate .txtDepartmentNumber ,#dvFollowUpCertificate .txtDepartmentName ').addClass('RedBorder');
+            }
+            else
+            {
+                $('#dvFollowUpCertificate .txtDepartmentNumber ,#dvFollowUpCertificate   .txtDepartmentName ').removeClass('RedBorder');
+            }
+            return false;
+        }
+    }
+
+
+
+    function GetFollowUpUsersByOrgUnitId(callback) {
+     
+        if ($("#FollowUpEntityId_hdnDepartmentId").val() != "" && $("#FollowUpEntityId_hdnDepartmentId").val()!=undefined) {
+
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetUnitUsers", controller)',
+                data: { id: $("#FollowUpTab_FollowUpEntityId").val() },
+                success:
+                    function (data) {
+
+                   $("#autoCompleteFollowUpUserId").val("");
+                   $("#hdnFollowUpUserId").val("");
+                   AutoCompleteChangeList("autoCompleteFollowUpUserId", data);
+                   $("#autoCompleteFollowUpUserId").prop('disabled', false);
+
+                   if (typeof callback !== 'undefined' && $.isFunction(callback)) {
+                       callback();
+                   }
+               }
+            });
+            return false;
+        }
+        else {
+            $("#autoCompleteFollowUpUserId").prop('disabled', true);
+            $("#autoCompleteFollowUpUserId").val("");
+            $("#hdnFollowUpUserId").val("");
+            AutoCompleteChangeList("autoCompleteFollowUpUserId", "[]");
+        }
+    }
+    function callback() {
+         if ('@ViewData["FollowUpUserId"]' != null)
+       {
+           $("#hdnFollowUpUserId").val('@ViewData["FollowUpUserId"]');
+                $("#autoCompleteFollowUpUserId").trigger('change');
+                $("#hdnFollowUpUserId").trigger('change');
+            }
+    }
+    function OnAddFollowUpEmployeeSuccess(data) {
+        LoadFollowUpAuditTrails();
+        ShowErrorMessage("تم الحفظ بنجاح");
+        //if (data.MessageType != 2) {
+            //$("#divFollowUpContent").html('');
+            //$("#divFollowUpContent").html(data);
+            //ClearInputs('dvFollowUpCertificate');
+             //
+             //LoadFollowUpDetailsTab();
+            @*if ('@ViewData["FollowUpUserId"]' != null)
+            {
+                $("#FollowUpEntityId_hdnDepartmentId").val("@ViewData["FollowUpOrgId"]");
+                SetTreeDefaultInfo("FollowUpEntityId");
+                GetFollowUpUsersByOrgUnitId(function () {
+                     $("#hdnFollowUpUserId").val('@ViewData["FollowUpUserId"]');
+                $("#autoCompleteFollowUpUserId").trigger('change');
+                $("#hdnFollowUpUserId").trigger('change');
+                });
+            }
+            else
+            {
+                $("#FollowUpEntityId_hdnDepartmentId").val("@ViewData["FollowUpOrgId"]");
+                SetTreeDefaultInfo("FollowUpEntityId");
+            }
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }*@
+    }
+      function OnSendFollowUpEmployeeSuccess(data) {
+          LoadFollowUpAuditTrails();
+          LoadFollowUpDetailsTab();
+             $("#btnSendFollowUpReminder").show();
+            $("#btnEscalateFollowUp").show();
+          ShowErrorMessage("تم الحفظ اضافة متابعة فرعية بنجاح");
+
+        //if (data.MessageType != 2) {
+            //$("#divFollowUpContent").html('');
+            //$("#divFollowUpContent").html(data);
+            //ClearInputs('dvFollowUpCertificate');
+             //
+             //
+            @*if ('@ViewData["FollowUpUserId"]' != null)
+            {
+                $("#FollowUpEntityId_hdnDepartmentId").val("@ViewData["FollowUpOrgId"]");
+                SetTreeDefaultInfo("FollowUpEntityId");
+                GetFollowUpUsersByOrgUnitId(function () {
+                     $("#hdnFollowUpUserId").val('@ViewData["FollowUpUserId"]');
+                $("#autoCompleteFollowUpUserId").trigger('change');
+                $("#hdnFollowUpUserId").trigger('change');
+                });
+            }
+            else
+            {
+                $("#FollowUpEntityId_hdnDepartmentId").val("@ViewData["FollowUpOrgId"]");
+                SetTreeDefaultInfo("FollowUpEntityId");
+            }
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }*@
+    }
+    function GetDirectedToUsersByOrgUnitId() {
+    $("#ddlDirectedToId_hdnIdToSaveValue").val('')
+    var x = $("#FollowUpTab_FollowUpEntityId").val();
+    var token = $("input[name='__RequestVerificationToken']").val();
+    if ($("#FollowUpEntityId").val() != "") {
+    $.ajax({
+    type: 'post',
+    url: '@Url.Action("GetUsersByOrgUnitId")',
+    data: { id: $("#FollowUpTab_FollowUpEntityId").val(), __RequestVerificationToken: token  },
+    success:
+    function (data) {
+    $("#ddlFollowUpIndividualToUserId").val("");
+    $("#hdnFollowUpIndividualToUserId").val("");
+    AutoCompleteChangeList("ddlFollowUpIndividualToUserId", data);
+    $("#ddlFollowUpIndividualToUserId").prop('disabled', false);
+    }
+    });
+    return false;
+    }
+    else {
+    $("#ddlFollowUpIndividualToUserId").prop('disabled', true);
+    $("#ddlFollowUpIndividualToUserId").val("");
+    $("#hdnFollowUpIndividualToUserId").val("");
+    AutoCompleteChangeList("ddlFollowUpIndividualToUserId", "[]");
+    }
+        }
+
+      $(document).on("click", "span[data-node-id]", function () {
+
+    var elemnt = $(this);
+    if ($(this).hasClass('fa-plus') && $(this).hasClass('LoadedData')) {
+    $.ajax({
+    type: 'get',
+    url: '@Url.Action("GetExternalPartyNodes")',
+    data: { parentId: $(this).data("node-id"), letterId: $("#hdnInboundDocumentType").val(), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+    success:
+    function (data) {
+
+    $(elemnt).closest('li').children('ul').last().empty()
+
+    $(elemnt).closest('li').children('ul').last().append(data);
+
+    if ($(elemnt).attr('data-isRefreshEnabled').toLowerCase() == 'false') {
+
+    $(elemnt).removeClass("LoadedData")
+
+              }
+              }
+    });
+    }
+    if ($(this).hasClass('fa-plus') && $(this).hasClass('InternalLoadedData')) {
+    $.ajax({
+    type: 'get',
+    url: '@Url.Action("GetOrgUnitsNodes")',
+    data: { parentId: $(this).data("node-id"), containerName: $(this).data('node-container'), onClickFunc: $(this).data('func') },
+    success:
+    function (data) {
+
+    $(elemnt).closest('li').children('ul').last().empty()
+
+    $(elemnt).closest('li').children('ul').last().append(data);
+
+    $(elemnt).removeClass("InternalLoadedData");
+    }
+    });
+    }
+    });
+
+</script>
+<style>
+    .RedBorder {
+        border: 1px solid #fe0000 !important
+    }
+
+    .clsHidden {
+        display: none;
+    }
+</style>

@@ -1,0 +1,6 @@
+﻿@model List<MCS.DTO.UserGroupDTO>
+
+@foreach (MCS.DTO.UserGroupDTO userGroupDTO in Model)
+{
+    Html.RenderPartial("_UserRolesItem", userGroupDTO);
+}

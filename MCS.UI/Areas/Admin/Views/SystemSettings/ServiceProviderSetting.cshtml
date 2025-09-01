@@ -1,0 +1,92 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.Shared;
+@model SuperSettingVM
+@{
+    ViewBag.Title = DbRes.TResource("Admin.GeneralSettings.Title");
+    Layout = "~/Areas/Admin/Views/Shared/_SettingsLayout.cshtml";
+    var rowStartTag = "<div class='form-group'>";
+    var rowEndTag = "</div>";
+}
+
+<div class="mx-3 mx-md-5 header-container d-flex flex-row align-items-center">
+    <div class="d-flex flex-column flex-md-row align-items-md-center flex-grow-1">
+        <h3 class="site-color mb-4">@Model.SubTitle</h3>
+    </div>
+    <div class="close-icon pl-2 mt-0 ml-auto">
+        <a class="circle-icon color-white" href="@Url.Action("GeneralSettings","SystemSettings")" data-bs-toggle="tooltip" data-placement="bottom" title="العوده للإعدادات العامة"><i class="la la-close"></i></a>
+    </div>
+</div>
+
+<div class="white-container mx-3 mx-md-5">
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmSetting", @class = "form-horizontal form-row" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="form-row w-100" id="SettingContent">
+            @for (int i = 0; i < Model.SettingVMs.Count; i++)
+            {
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                    <label for="">@DbRes.TResource(Model.SettingVMs[i].ResourceId, SessionInfo.CultureShortName)<span class="red-color ml-1">*</span></label>
+                    @Html.Hidden("SettingVMs[" + @i + "].Id", Model.SettingVMs[i].Id)
+                    @Html.Hidden("SubTitle", Model.SubTitle)
+                    @Html.SettingControlWithValidation("SettingVMs[" + @i + "].Value", Model.SettingVMs[i].Value, Model.SettingVMs[i].SettingConfigVM)
+                    @{
+                        string message = string.Format("SettingVMs[{0}].Value", i);
+                    }
+                    <span class="field-validation-valid" data-valmsg-for="@message" data-valmsg-replace="true"></span>
+                </div>
+            }
+        </div>
+    }
+</div>
+@if (Model.EnableSave)
+{
+    <div class="mx-3 mx-md-5 mb-4 d-flex">
+        <div class="ml-auto">
+            @Html.ActionButton(DbRes.TResource("Admin.UserCategory.Save"), "UpdateServiceProviderSetting", "dvGrid", null, null, "OnEditSuccess", null, "post", "", "btnEditSetting", "frmSetting", "btn btn-lg btn-st3 mx-1")
+            <a class="btn btn-lg btn-st3 mx-1" onclick="ClearInputsServiceProviderSetting(); return false;">@DbRes.TResource("Global.ResetButton")</a>
+        </div>
+    </div>
+}
+
+<script>
+    $(document).ready(function () {
+        $('#SettingContent').find('input[type=radio]').change(function () {
+            var connectionProtocolType = $(this).data("connectionprotocoltype");
+            var isChecked = $(this).is(":checked");
+            if (connectionProtocolType == ConnectionProtocolType.Wrapper && isChecked) {
+                $('#SettingContent').find(".ConnectionMode ").removeAttr("disabled");
+                $('#SettingVMs_1__SettingConfigVM_ConnectionProtocolType').val(ConnectionProtocolType.Wrapper);
+            } else {
+                $('#SettingContent').find(".ConnectionMode ").attr("disabled", "disabled");
+                $('#SettingVMs_1__SettingConfigVM_ConnectionProtocolType').val(ConnectionProtocolType.HTTP);
+            }
+        });
+
+        $('#SettingContent').find('input[type=checkbox]').change(function () {
+            if ($(this).is(':checked')) {
+                console.log("is checked");
+                $('#SettingContent').find(".Field").removeAttr("disabled");
+                $($('#SettingContent').find('input[type=radio]')[0]).trigger("change");
+            } else {
+                $('#SettingContent').find(".Field").attr("disabled", "disabled");
+            }
+        });
+        $('#SettingContent').find('input[type=checkbox]').trigger("change");
+    });
+
+    function ClearInputsServiceProviderSetting() {
+        var Title = $("#SubTitle").val()
+        ClearInputs('SettingContent');
+        $("#SubTitle").val(Title);
+        $('#SettingContent').find('input[type=checkbox]').trigger("change");
+    }
+
+    function OnEditSuccess(data) {
+        if (data.MessageType != 2) {
+            ShowSuccesMessage(data.MessageText);
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+</script>

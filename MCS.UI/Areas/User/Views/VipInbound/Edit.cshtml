@@ -1,0 +1,391 @@
+﻿@model VIPEditInboundVM
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Transaction.Inbound
+@using MCS.UI.Areas.User.Models.Assignment
+@using MCS.UI.Areas.User.Models.Transaction
+@using MCS.Common
+@using MCS.UI.Helpers
+@using MCS.Framework.Controls;
+
+@{
+
+    Layout = "~/Areas/User/Views/Shared/_VIPLayout.cshtml";
+    ViewBag.Title = DbRes.TResource("User.Inbound.EditTitle");
+    var linkVM = new TransactionLinkVM { Links = (AjaxGrid<TransactionLinkVM>)new AjaxGridFactory().CreateAjaxGrid(Model.Links, 1, Model.Links.Count, false) };
+    var followUpVM = new TransactionFollowUpVM() { FollowUps = (AjaxGrid<TransactionFollowUpVM>)new AjaxGridFactory().CreateAjaxGrid(Model.FollowUps, 1, Model.FollowUps.Count, false) };
+}
+
+@Html.StickyHidden("ConfidentialityItems", ViewData["ConfidentialityData"].ToString())
+<script src="~/Scripts/VipCommon.js"></script>
+<script src="~/Scripts/VipTransaction.js"></script>
+<div class="d-flex flex-column flex-sm-row mx-5 mx-xs-3 mb-3 header-container">
+
+</div>
+
+
+@*<div class="d-flex" style="font-size:20px; position:absolute; left:60px;">
+        <a href="@Url.Action("MyTransactions", "File", new { area = "user" })">
+            <i class="fa fa-arrow-left"></i>
+        </a>
+        <a data-toggle="" title="@DbRes.TResource("User.OutboundInternal.Assignment")" onclick="assignmentPaper()">
+            <i class="fa fa-book"></i>
+        </a>
+    </div>*@
+<a href="@Url.Action("MyTransactions", "File", new { area = "user" })">
+    <i class="fa fa-arrow-left" style="position: absolute; left: 63px; top: 30px; font-size:20px;"></i>
+</a>
+<div class="white-container mx-5 mx-xs-3">
+
+    @{
+        var list = ViewData["AssignmentPaperData"] as List<TransactionAssignmentVM> ?? new List<TransactionAssignmentVM>();
+
+    }
+    <div class="tab-content">
+        <div class="BasicInfo">
+            <div class="d-flex flex-column">
+
+                <div class="d-flex" style="margin-right:-45px; margin-bottom:16px;">
+                    <div class="pl-sm-5 Editor-div">
+                        <div class="gray3">@DbRes.TResource("User.Inbound.Open.InboundNumber")</div>
+                        <div class="transaction-number Editor-lable">
+                            @Model.InboundBasicInfoEdit.InboundNumber
+                        </div>
+                        @Html.Hidden("hdnNumber", Model.InboundBasicInfoEdit.InboundNumber)
+                    </div>
+                    <div class="pl-5 Editor-div">
+                        <div class="gray3">@DbRes.TResource("User.OutboundDraft.TransactionCreatedDate") </div>
+                        <div class="date-value Editor-lable">
+                            @Model.InboundBasicInfoEdit.CreatedDateH
+                        </div>
+                    </div>
+                    <div class="pl-5">
+                        <div class="gray3">@DbRes.TResource("User.Audit.TransactionLog.EntityId") </div>
+                        <div class="date-value Editor-lable">
+                            @Model.InboundBasicInfoEdit.EntityName
+                        </div>
+                    </div>
+                    <div class="pl-5 Editor-div">
+                        <div class="gray3">@DbRes.TResource("User.Transaction.ConfidentialityLevel") </div>
+                        <div class="date-value Editor-lable" id="ConfidentialityLevelText">
+                            @Model.InboundBasicInfoEdit.ConfidentialityLevelText
+                        </div>
+                    </div>
+
+                    <div class="pl-sm-5">
+                        <div class="gray3">@DbRes.TResource("User.Transaction.Subject")</div>
+                        <div class="transaction-number Editor-lable" id="subject" style="word-break:break-all">@Model.InboundBasicInfoEdit.Subject</div>
+
+                    </div>
+                    @if (Model.InboundBasicInfoEdit.RemindDateH != null)
+                    {
+                        <div class="pl-sm-5 Editor-div">
+                            <div class="gray3"><br /></div>
+                            <div class="transaction-number Editor-lable">
+                                @DbRes.TResource("User.Transaction.HasDate")
+                            </div>
+                        </div>
+                    }
+                    <div class="pl-sm-5" style="display:none;">
+                        <div class="" id="PriorityLevelText">@Model.InboundBasicInfoEdit.PriorityLevelText</div>
+
+                    </div>
+                </div>
+                <div class="d-flex" style="margin-right:-45px; margin-bottom:16px;">
+                    <div class="pl-sm-5 Editor-div">
+                        <div class="gray3">@DbRes.TResource("User.OutboundInternal.BasicInfo.Summary") :</div>
+                        <div class="transaction-number Editor-lable">
+                            @Model.InboundBasicInfoEdit.Summary
+                        </div>
+                    </div>
+                   
+
+                </div>
+
+
+                @{
+                    Html.ViewData.TemplateInfo.HtmlFieldPrefix = "InboundBasicInfoEdit";
+                    Html.ViewData.Add("HijriDate", Model.HijriRecordDate + " - " + Model.RecordDate.ToString("hh:mm tt"));
+                    Html.ViewData.Add("HijriDateTitle", DbRes.TResource("User.Inbound.BasicInfo.RecordDate"));
+                    Html.ViewData.Add("TransactionNumber", Model.InboundBasicInfoEdit.InboundNumber);
+                    Html.ViewData.Add("TransactionNumberTitle", DbRes.TResource("User.Inbound.BasicInfo.InboundNumber"));
+                    Html.ViewData.Add("StatusId", Model.StatusId);
+                }
+            </div>
+            @Html.HiddenFor(model => model.InboundBasicInfoEdit.DestinationId, "hdnDestinationId")
+
+
+        </div>
+
+
+        <ul class="custom-sub-nav-tabs mb-2 mb-sm-auto d-flex flex-nowrap" role="tablist" style="border: 1px solid white; border-radius: 20px; padding: 5px;">
+            <li role="presentation" class="vipTab">
+                <a class="site-color-vip px-2 d-block d-sm-inline" onclick="basicInfo()" title="@DbRes.TResource("المعاملة")">
+                    <span>@DbRes.TResource("المعاملة")</span>
+                    <i class="uicon icon_folder1"></i>
+                </a>
+            </li>
+            <div style="border-left: 2px solid #FFF; height: 24px; "></div>
+
+            <li role="presentation" id="reply" class="vipTab ml-3">
+                <a class="site-color-vip  px-2 d-block d-sm-inline" title="@DbRes.TResource("User.OutboundInternal.Assignment")" onclick="assignmentPaper()">
+                    <span>@DbRes.TResource("User.OutboundInternal.Assignment")</span>
+                    <i class="fa fa-book"></i>
+                </a>
+            </li>
+
+        </ul>
+
+        <div role="tabpanel" class="tab-pane active" id="first-tab">
+
+            <div id="dvBasicInfo">
+                @Html.Partial("~/Areas/User/Views/VipInbound/_BasicInfoPartial.cshtml", Model.InboundBasicInfoEdit, Html.ViewData)
+            </div>
+
+            <div class="tabscontent hidden_" id="eleven-tab">
+                <div id="dvOutboundDraftContainer">
+                </div>
+            </div>
+
+            <div class="extraOption col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-3 mt-3">
+                <h4>
+                    <a role="button" style="display:flex">
+                        <span onclick="CollapseDiv('dvContentAssignmement'); return false;" style="cursor: pointer;">
+                            <img src="~/Content/User/lib/images/plus-icon.svg" id="dvContentAssignmementPlusIcon" width="25" />
+                            <img src="~/Content/User/lib/images/Dash-icon.svg" id="dvContentAssignmementDashIcon" width="25" style="display: none;" />
+                        </span>
+                        <span class="ml-3 mt-1">@DbRes.TResource("User.TransactionCertificate.TransactionAssignments")</span>
+                    </a>
+                </h4>
+
+                <div role="tabpanel" class="tab-pane" id="dvContentAssignmement" style="display:none">
+
+                </div>
+
+            </div>
+
+        </div>
+        @using (Html.BeginForm("Send", "InboundVip", FormMethod.Post, new { id = "frmEditInbound", @class = "tab-content" }))
+        {
+
+            @Html.AntiForgeryToken()
+            @Html.StickyHidden("hdnTransactionId", ViewData["TransactionId"].ToString(), new { id = "Id", @class = "TransactionId" })
+            @Html.StickyHidden("InboundId", ViewData["TransactionId"].ToString(), new { id = "InboundId", @class = "InboundId" })
+            @Html.StickyHidden("hdnMainDocTokenId", "", new { id = "hdnMainDocTokenId", @class = "hdnMainDocTokenId" })
+
+            @*<div class="extraOption col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-3 mt-3">
+                <h4>
+                    <a role="button" style="display:flex">
+                        <span onclick="CollapseDiv('assigmentpaper'); return false;" style="cursor: pointer;">
+                            <img src="~/Content/User/lib/images/Dash-icon.svg" id="assigmentpaperDashIcon" width="25" />
+                            <img src="~/Content/User/lib/images/plus-icon.svg" id="assigmentpaperPlusIcon" width="25" style="display: none;" />
+                        </span>
+                        <span class="ml-3 mt-1">@DbRes.TResource("User.File.AssignmentPaper")</span>
+                    </a>
+                </h4>*@
+
+
+            <div role="tabpanel" class="tab-pane" id="assigmentpaper">
+                <div>
+                    @{ViewData.TemplateInfo.HtmlFieldPrefix = "AssignmentVM";}
+
+                    @if (SessionInfo.CurrentUser.DefaultAssignmentPaper == false)
+                    {
+                        @Html.Partial("~/Areas/User/Views/Vip/AssignmentPaper/_AssignmentPaperPartial.cshtml", new VIPAssignmentVM(), Html.ViewData)
+                    }
+                    else
+                    {
+                        @Html.Partial("~/Areas/User/Views/Vip/AssignmentPaper/_AssignmentPaperPartialNew2.cshtml", new VIPAssignmentVM { ToOrgUnitId = SessionInfo.OrgUnitId }, Html.ViewData)
+                    }
+                </div>
+            </div>
+            @*</div>*@
+            <div class="row">
+                <div class="col-xs-12">
+                    @*<hr />*@
+                </div>
+            </div>
+
+            <div class="extraOption col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-3 mt-3" id="divFollow">
+                <h4>
+                    <a role="button" style="display:flex">
+                        <span onclick="CollapseDiv('followup'); return false;" style="cursor: pointer;">
+                            <img src="~/Content/User/lib/images/Dash-icon.svg" id="followupDashIcon" width="25" />
+                            <img src="~/Content/User/lib/images/plus-icon.svg" id="followupPlusIcon" width="25" style="display: none;" />
+                        </span>
+                        <span class="ml-3 mt-1">@DbRes.TResource("User.Inbound.FollowUp")</span>
+                    </a>
+                </h4>
+
+                <div id="followup" role="tabpanel" class="tab-pane">
+                    <div>
+                        @Html.Partial("~/Areas/User/Views/Vip/Followup/_FollowUpPartial.cshtml", followUpVM, Html.ViewData)
+                    </div>
+                </div>
+            </div>
+            @Html.HiddenFor(model => model.InboundBasicInfoEdit.ToFollowUp, new { id = "hdnToFollowUp", value = Model.InboundBasicInfoEdit.ToFollowUp, @name = "hdnToFollowUp" })
+            <i id="FollowCalMessageOrg" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+            <span id="FollowdateMessageOrg" style="color:red"></span>
+
+
+            <div class="row" id="divAddExplanation">
+                @{ ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+                <div class="col-lg-12">
+                    <div id="ctl00_MainPlaceHolder_divAddExplanation">
+                        <div class="corr-details-subtitle d-flex">
+                            <span class="mt-2">التوجيه</span>
+                            <span onchange="DirectionTypeChange(1);" name="direction" style="padding-right: 10px" class="checkbox">
+                                <label>
+                                    <input type="checkbox" id="ctl00_MainPlaceHolder_chkAgree" name="ctl00MainPlaceHolderchkAgree" />
+                                    <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                    <label for="ctl00_MainPlaceHolder_chkAgree">@DbRes.TResource("User.Transaction.Agree")</label>
+                                </label>
+
+                            </span>
+                            <span onchange="DirectionTypeChange(2);" name="direction" style="padding-right: 10px" class="checkbox mt-2">
+
+                                <label>
+                                    <input type="checkbox" id="ctl00_MainPlaceHolder_chkNotAgree" name="ctl00MainPlaceHolderchkNotAgree" />
+                                    <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                    <label for="ctl00_MainPlaceHolder_chkNotAgree">@DbRes.TResource("User.Transaction.disagree")</label>
+                                </label>
+
+                            </span>
+                            <span onchange="DirectionTypeChange(3);" style="padding-right: 10px" class="checkbox mt-2">
+                                <label>
+                                    <input type="checkbox" id="ctl00_MainPlaceHolder_chkAcknowledge" name="ctl00MainPlaceHolderchkAcknowledge" />
+                                    <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                    <label for="ctl00_MainPlaceHolder_chkAcknowledge">@DbRes.TResource("User.Transaction.seen")</label>
+                                </label>
+                            </span>
+                        </div>
+                        <div class="corr-details-section">
+                            @Html.TextAreaFor(x => x.Notes, new { rows = 3, cols = 20, @id = "ctl00_MainPlaceHolder_txtData", @class = "form-control", @name = "Notes" })
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        }
+        <div role="tabpanel" class="tab-pane hidden_" id="CertificateAssignment-tab">
+            <div class="">
+
+            </div>
+        </div>
+    </div>
+</div>
+<div id="dvButtonFooter" class="row text-right mr-5 mt-4 ml-xs-3 mb-4">
+
+    @*<button onclick="AssignBack()" class="btn btn-st1 btn-lg pull-right margin">@DbRes.TResource("Global.SaveandReturn")</button>*@
+    @Html.ActionButton(DbRes.TResource("Global.SaveandReturn"), Url.Action("InboundAssignItBack", "VipInbound"), "", null, "", "OnSuccess", "", "Post", null, "SaveandReturn", "frmEditInbound", "btn btn-st1 btn-lg pull-right margin", "checkIfHasMainDocument", UserClaims.Outbound.EditOutbound)
+    @*  @Html.ConfirmAction(OperationType.Update, "SaveandReturn", DbRes.TResource("Global.SaveandReturn"), Url.Action("InboundAssignItBack", "VipInbound"), null, null, null, "OnSuccess", null, null, "post", "frmEditInbound", "", "btn btn-st1 btn-lg pull-right margin", "", UserClaims.Outbound.EditOutbound, null)*@
+    @*@Html.ConfirmAction(OperationType.Update, "SaveBtn", DbRes.TResource("User.File.SaveandSend"), Url.Action("Send", "VipInbound"), null, null, null, "OnSuccess", null, null, "post", "frmEditInbound", "", "btn btn-st2 btn-lg pull-right margin", "checkIfHasMainDocument", UserClaims.Outbound.EditOutbound, null)*@
+    @Html.ActionButton(DbRes.TResource("User.File.SaveandSend"), Url.Action("Send", "VipInbound"), "", null, "", "OnSuccess", "", "Post", null, "SaveBtn", "frmEditInbound", "btn btn-st2 btn-lg pull-right margin", "checkIfHasMainDocument", UserClaims.Outbound.EditOutbound)
+
+    <button id="SaveBtn" hidden></button>
+
+</div>
+
+
+<script>
+
+
+    function assignmentPaper()
+    {
+
+        $("#assigmentpaper").show();
+        $("#first-tab").hide();
+        $("#divAddExplanation").hide();
+        $("#divFollow").hide();
+
+    }
+    function basicInfo()
+    {
+        $("#assigmentpaper").hide();
+        $("#first-tab").show();
+        $("#divAddExplanation").show();
+        $("#divFollow").show();
+    }
+    function goToNext(data)
+    {
+        debugger;
+        var redirectUrl = '@Url.Action("MyTransactions", "File", new { Area = "user" })';
+        var nextId = data.NextId;
+        if (nextId != undefined && nextId != null && nextId > 0)
+        {
+            if (data.Controller == "VipInbound")
+            {
+                redirectUrl = '@Url.Action("Edit", "VipInbound")?id=' + EncryptionKey(nextId);
+            } else
+            {
+                redirectUrl = '@Url.Action("Edit", "VipOutboundInternal")?id=' + EncryptionKey(nextId);
+            }
+
+        }
+
+     setTimeout(function () {
+            window.location.href = redirectUrl;
+        }, 2000);
+
+
+
+
+    }
+   function checkIfHasMainDocument()
+          {
+              debugger;
+              var isSecret = true;
+        var isReadOnly = $('#hdnDocumentReadOnly').val();
+        if (isReadOnly == 'True')
+        {
+            $('#hdnMainDocTokenId').val('');
+            return true;
+        }
+        window.checkIfHasMainArchiveURL = '@Url.Action("CheckIfHasMainArchive", "VipOutboundDraft")';
+        var token = $("#dvArchivingMainDocumentBody").parents("form").find("input[name='__RequestVerificationToken']").val();
+     var docoNutFrameContent = $('#frameViewer').contents();
+    var isDraft=false;
+      var isArchived = true;
+    if (docoNutFrameContent.length > 0)
+     {
+
+     var __docViewerToken = $('#_hdnToken', docoNutFrameContent)[0].value;
+        $('#hdnMainDocTokenId').val(__docViewerToken);
+        return true;
+    }
+
+       return false;
+
+
+    }
+    var token = $('form:first').find("input[name='__RequestVerificationToken']").val();
+
+
+
+
+
+</script>
+
+
+
+<style>
+    .margin {
+        margin-left: 10px;
+    }
+
+    .VIPEditLable {
+        color: green;
+        font-weight: bold;
+    }
+
+
+
+
+    #aArchive {
+        color: black;
+    }
+
+    #followupshow {
+        display: none;
+    }
+</style>

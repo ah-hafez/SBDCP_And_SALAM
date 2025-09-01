@@ -1,0 +1,141 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.Lookups
+@using MCS.Common;
+
+@model PriorityExceptionVM
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmPriorityException" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="col-xs-12 w-100 d-flex align-items-center mt-2 mb-2">
+        <h3 class="white-c-title">@DbRes.TResource("Admin.Lookups.Priority.Exceptions")</h3>
+    </div>
+    <div class="form-group col-lg-6 col-md-8 col-sm-12 col-xs-12">
+        <div class="row" id="dvDepartmentsTree">
+            @*@Html.DepartmentsTree(ViewData["OrgUnitData"] as TreeViewModel, model => model.OrgUnitId, TreeMode.Single, "frmAddForm", true, "GetUsersByOrgUnitId", "BasicInformation", "dvDepartmentsTree")
+            @Html.HiddenGroupFor(model => model.OrgUnitId, null)*@
+
+
+
+            <label>@Html.DisplayNameFor(model => model.OrgUnitId)<span class="stark">*</span></label>
+            @*@Html.EditorFor(model => model.OrgUnitId, "OrgHierarchyCaller", additionalViewData: new { treeId = "OrgUnitId", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Shared"), onClickfunction = "GetCopyUsersByOrgUnitId", ValidationGroup = "Copies", ShowAddPartyButton = false })*@
+            @Html.EditorFor(model => model.OrgUnitId, "OrgHierarchyCaller", additionalViewData: new { treeId = "frmAddForm", GetChildrenActionURL = @Url.Action("GetInternalPartyChildren", "Common"), GetNodeInfoByIdActionURL = @Url.Action("GetInternalPartyInfoById", "Common"), GetNodeInfoByNumActionURL = @Url.Action("GetInternalPartyInfoByNumber", "Common"), onClickfunction = "GetUsersByOrgUnitId", ValidationGroup = "BasicInformation", ShowAddPartyButton = false })
+
+
+            <label id="OrgUnitValidationMessage" style="display:none; color:red">@DbRes.TValidation("Admin.Form.OrgUnitValidation")</label>
+            <label id="AtLeastOneOrgUnitValidationMessage" style="display:none; color:red">@DbRes.TValidation("Admin.Form.AtLeastOneOrgUnitValidation")</label>
+        </div>
+        <small class="form-text text-muted hidden_" id="lblEntity" style="color:red">@DbRes.TValidation("Admin.Lookups.Priority.EntityValidation")</small>
+    </div>
+    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+        @Html.Label(DbRes.TResource("Admin.Lookups.PriorityExceptions.UserName"))<span class="stark">*</span>
+        @Html.AutoCompleteBuilder("ddlUserId", "hdnUserId", ViewData["OrgUnitsUsersData"] != null ? ViewData["OrgUnitsUsersData"].ToString() : null, Model != null ? Model.UserId.ToString() : null, true, "form-control")
+        @Html.HiddenGroupFor(model => model.UserId, new { @Value = "", id = "hdnUserId" })
+        <small class="form-text text-muted hidden_" id="lblUser" style="color:red">@DbRes.TValidation("Admin.Lookups.Priority.UserValidation")</small>
+    </div>
+    <div class="form-group col-lg-4 col-md-6  col-sm-6 col-xs-12">
+        @Html.Label(DbRes.TResource("Admin.Lookups.PriorityExceptions.ConsideredAsLate"))
+        <div class="input-group">
+            @Html.NumericTextBoxFor(model => model.LateOnUsersAfter, htmlAttributes: new {id = "LateOnUsersAfter", @class = "form-control number-field" })
+            <div class="input-group-prepend bg-none">
+                <div class="input-group-text">@DbRes.TResource("Admin.Lookups.Priority.Days")</div>
+            </div>
+        </div>
+        <small class="form-text text-muted hidden_" style="color:red" id="ExLateAfter">@DbRes.TValidation("Admin.Lookups.Priority.ProcessingPeriod")</small>
+    </div>
+    <div class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12 align-self-end mang-button d-flex">
+        <div class="ml-auto">
+            @Html.ActionButton(DbRes.TResource("Admin.Lookups.PriorityExceptions.Add"),Url.Action("AddPriorityException", "Lookups"),"", null,"", "onAddPriorityExceptionSuccess", "","Post",
+            null, "btnAddPriorityException", "frmPriorityException", "btn btn-lg btn-st3 mx-1", "CheckInputsvalidity")
+
+            @Html.ActionButton(DbRes.TResource("Admin.Lookups.PriorityExceptions.Edit"),Url.Action("EditPriorityException", "Lookups"),"", null,"", "onEditPriorityExceptionSuccess", "","Put",
+            null, "btnEditPriorityException", "frmPriorityException", "btn btn-lg btn-st3 mx-1 hidden_", "CheckInputsvalidity")
+            <a class="btn btn-lg btn-st3 mx-1 hidden_" id="aCancelPriorityException" onclick="CancelPriorityExceptionEdit(); return false;">@DbRes.TResource("User.Transaction.Name.Cancel")</a>
+        </div>
+    </div>
+    <div class="form-group col-lg-12 col-md-12 col-xs-12 col-sm-12 d-flex">
+        <small class="text-danger ml-auto">
+            @*يرجى تعبئة الحقول التي تحتوي على إشارة **@
+        </small>
+    </div>
+    @Html.StickyHiddenFor(model => model.Id, new { id = "priorityExceptionId" })
+    @Html.StickyHiddenFor(model => model.PriorityId, new { id = "priorityIdForPriorityException" })
+}
+
+
+
+<script>
+    function CancelPriorityExceptionEdit() {
+        $("#btnAddPriorityException").removeClass("hidden_");
+        $("#btnEditPriorityException").addClass("hidden_");
+        $("#aCancelPriorityException").addClass("hidden_");
+        ClearInputs('frmPriorityException');
+    }
+
+    $(document).ready(function () {
+        $("#ddlUserId").prop('disabled', true);
+
+        $(".txtDepartmentNumber").on("keyup", function () {
+            if ($(this).val().trim() == "") {
+                $("#ddlUserId").prop('disabled', true);
+                $("#ddlUserId").val("");
+                $("#hdnUserId").val("");
+                AutoCompleteChangeList("ddlUserId", "[]");
+            }
+        });
+    });
+    function CheckInputsvalidity() {
+         
+        var OrgUnitId = $("#frmAddForm_hdnDepartmentId").val();
+        var UserId = $("#frmPriorityException #hdnUserId").val();
+        var LateOnUsersAfter = $("#frmPriorityException #LateOnUsersAfter").val();
+        var errorCount = 0;
+        if (OrgUnitId == "") {
+            $("#lblEntity").removeClass("hidden_");
+            errorCount++;
+        }
+        if (UserId == "") {
+            $("#lblUser").removeClass("hidden_");
+            errorCount++;
+        }
+        if (LateOnUsersAfter == "" || LateOnUsersAfter > 500 || LateOnUsersAfter < 0) {
+            $("#ExLateAfter").removeClass("hidden_");
+            errorCount++;
+        }
+        if (errorCount != 0) {
+            return false;
+        }
+        $("#lblEntity").addClass("hidden_");
+        $("#lblUser").addClass("hidden_");
+        $("#ExLateAfter").addClass("hidden_");
+        return true;
+    }
+
+    function GetUsersByOrgUnitId() {
+        var OrgUnitId = $('#frmAddForm_hdnDepartmentId').val();
+        if (OrgUnitId != "") {
+            var token = $('#frmPriorityException').find("input[name='__RequestVerificationToken']").val();
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("GetUsersByOrgUnitId","Actions")',
+                data: { id: OrgUnitId, __RequestVerificationToken: token },
+                success: function (data) {
+                    $("#ddlUserId").val("");
+                    $("#hdnUserId").val("");
+                    AutoCompleteChangeList("ddlUserId", data);
+                    $("#ddlUserId").prop('disabled', false);
+                },
+                error: function (jqXHR) {
+
+                }
+            });
+            return false;
+        }
+        else {
+            $("#ddlUserId").prop('disabled', true);
+            $("#ddlUserId").val("");
+            $("#hdnUserId").val("");
+            AutoCompleteChangeList("ddlUserId", "[]");
+        }
+    }
+</script>

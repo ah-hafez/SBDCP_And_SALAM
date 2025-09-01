@@ -1,0 +1,337 @@
+@using MCS.UI.Areas.User.Models
+@using MCS.Framework.Localization
+@model TasksViewModel
+
+@{
+    ViewBag.Title = DbRes.TResource("User.Task.Tasks.Title");
+    Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
+}
+
+<div class="page-content-wrap">
+
+    <div class="row">
+        <div id="dvReceivedTasksContainer">
+            @Html.Partial("~/Areas/User/Views/Home/ReceivedTasksPartial.cshtml", Model.ReceivedTaskVMs, new ViewDataDictionary { { "ReceivedTasksCount", Model.ReceivedTasksCount }, { "SelectedPageIndex", ViewData["SelectedPageIndex"].ToString() }, { "PageSize", ViewData["PageSize"].ToString() } })
+        </div>
+        <div id="dvSentTasksContainer">
+            @Html.Partial("~/Areas/User/Views/Home/SendTasksPartial.cshtml", Model.SentTaskVMs, new ViewDataDictionary { { "SentTasksCount", Model.SentTasksCount }, { "SelectedPageIndex", ViewData["SelectedPageIndex"].ToString() }, { "PageSize", ViewData["PageSize"].ToString() } })
+        </div>
+        </div>
+
+</div>
+
+<script>
+
+    var selectedAcceptTask;
+
+    $(document).on('click', 'a[class="transaction_certificate"]', function () {
+        debugger;
+        var transactionId = $(this).data("task-transaction-id");
+       
+        ShowDialogAjax('@Url.Action("GetTransactionCertificateById")', { transctionId: transactionId }, 'ViewTransactionCertificateDialog');
+    });
+
+    function ViewTransactionCertificateDialog(data, $obj) {
+        debugger;
+        $obj.setContent(data);
+    }
+
+    $(document).on('click', 'a[class="view_sent_task"]', function () {
+
+        var taskId = $(this).data("task-id");
+
+        ShowDialogAjax('@Url.Action("ViewSentTask")', { taskId: taskId }, 'ViewReceivedTaskDialog');
+    });
+
+
+    $(document).on('click', 'a[class="view_received_task"]', function () {
+
+        var taskId = $(this).data("task-id");
+
+        ShowDialogAjax('@Url.Action("ViewReceivedTask")', { taskId: taskId }, 'ViewReceivedTaskDialog');
+    });
+
+
+    function OnAddSubTasksSuccess(data) {
+        if (data.MessageType != 2) {
+            __dialog.close();
+            $('#dvReceivedTasksContainer').html(data.Html);
+            $('#dvSentTasksContainer').html(data.SendTasks);
+            jQuery.validator.unobtrusive.parse('#dvReceivedTasksContainer');
+            jQuery.validator.unobtrusive.parse('#dvSentTasksContainer');
+            ShowSuccesMessage(data.MessageText);
+
+            return true;
+        }
+
+        ShowErrorMessage(data.MessageText);
+    }
+
+    function ReminderTask(taskId) {
+
+        $.ajax({
+            type: 'get',
+            url: '@Url.Action("ReminderTask")',
+            data: { taskId: taskId },
+            cache: false,
+            success:
+           function (data) {
+
+               if (data.MessageType != 2) {
+                   var taskReminder = $('*[data-task-reminder="reminder' + taskId + '"]');
+                   if (taskReminder != undefined) {
+                       taskReminder.attr('style', 'display: normal');
+                   }
+                   ShowSuccesMessage(data.MessageText);
+                   return true;
+               }
+
+               ShowErrorMessage(data.MessageText);
+           }
+        });
+    }
+
+
+    function ExtendTaskDate(taskId) {
+
+        var dileveryDate = $('#hdnToDateGreg' + taskId).val();
+        var dileveryDateH = $('#hdnToDateUm' + taskId).val();
+
+        $.ajax({
+            type: 'get',
+            url: '@Url.Action("ExtendTaskDate")',
+            data: { taskId: taskId, dileveryDate: dileveryDate },
+            success:
+           function (data) {
+
+               if (data.MessageType != 2) {
+
+                   var receivedTask = $('*[data-received-task-delivery-date="delivery-date' + taskId + '"]');
+                   receivedTask.html(dileveryDateH)
+                   var sentTask = $('*[data-sent-task-delivery-date="delivery-date' + taskId + '"]');
+                   if (sentTask != undefined) {
+                       sentTask.html(dileveryDateH)
+                       $('#task_color_status_' + taskId).addClass('blue');
+                   }
+                   ShowSuccesMessage(data.MessageText);
+                   return true;
+               }
+               else {
+
+                   ShowErrorMessage(data.MessageText);
+               }
+           }
+        });
+    }
+
+    function GetReceivedTasksByPageIndex(index) {
+        GetReceivedTasks(index);
+    }
+    $("#ReceivedPaging").change(function () {
+        GetReceivedTasks(1);
+    });
+    function GetReceivedTasks(index) {
+        $.ajax({
+            type: 'get',
+            url: '@Url.Action("GetReceivedTasks")',
+            data: { pageIndex: index, pageSize: $("#ReceivedPaging").val()},
+            success:
+           function (data) {
+              
+               $('#dvReceivedTasksContainer').html(data.Html);
+               $("#ReceivedPaging option[value=" + data.PageSize + "]").attr('selected', 'selected');
+           }
+        });
+    }
+    $(document).on("change","#SentPaging", function () {
+        GetSentTasks(1);
+    });
+
+    $(document).on("keyup", "#txtSentPageNumber", function (event) {
+        var index = parseInt($(this).val());
+        var selectedPage = parseInt($("#hdnSentTasksSelectedPageIndex").val());
+        var pagesCount = parseInt($("#hdnSentPagesCount").val());
+
+        if (event.keyCode == 13 && selectedPage != index && index >= 1 && index <= pagesCount) {
+            GetSentTasks(index);
+        }
+    });
+
+    $(document).on("click", "#ancSentPrevPage", function () {
+
+        var index = parseInt($("#hdnSentTasksSelectedPageIndex").val());
+
+        if (index > 1)
+        {
+            GetSentTasks(index-1);
+        }
+    });
+
+    $(document).on("click", "#ancSentNextPage", function () {
+
+        var index = parseInt($("#hdnSentTasksSelectedPageIndex").val());
+        var pagesCount = parseInt($("#hdnSentPagesCount").val());
+
+        if (index < pagesCount) {
+            GetSentTasks(index + 1);
+        }
+    });
+
+    function GetSentTasksByPageIndex(index) {
+        GetSentTasks(index);
+    }
+
+    $(document).on("change", "#ReceivedPaging", function () {
+        GetReceivedTasks(1);
+    });
+
+    $(document).on("keyup", "#txtReceivedPageNumber", function (event) {
+        var index = parseInt($(this).val());
+        var selectedPage = parseInt($("#hdnReceivedTasksSelectedPageIndex").val());
+        var pagesCount = parseInt($("#hdnReceivedPagesCount").val());
+
+        if (event.keyCode == 13 && selectedPage != index && index >= 1 && index <= pagesCount) {
+            GetReceivedTasks(index);
+        }
+    });
+
+    $(document).on("click", "#ancReceivedPrevPage", function () {
+
+        var index = parseInt($("#hdnReceivedTasksSelectedPageIndex").val());
+
+        if (index > 1) {
+            GetReceivedTasks(index - 1);
+        }
+    });
+
+    $(document).on("click", "#ancReceivedNextPage", function () {
+
+        var index = parseInt($("#hdnReceivedTasksSelectedPageIndex").val());
+        var pagesCount = parseInt($("#hdnReceivedPagesCount").val());
+
+        if (index < pagesCount) {
+            GetReceivedTasks(index + 1);
+        }
+    });
+
+    function GetSentTasks(index) {
+        $.ajax({
+            type: 'get',
+            url: '@Url.Action("GetSentTasks")',
+            data: { pageIndex: index, pageSize: $("#SentPaging").val()},
+            success:
+           function (data) {
+              
+               $('#dvSentTasksContainer').html(data.Html);
+               $("#SentPaging option[value=" + data.PageSize + "]").attr('selected', 'selected');
+           }
+
+        });
+    }
+
+    function RejectTask(taskId) {
+        var element = $('*[data-id="task_reject_' + taskId + '"]');
+        var selectedPageIndex = $('#hdnReceivedTasksSelectedPageIndex').val();
+        $.ajax({
+            type: 'get',
+            url: '@Url.Action("RejectTask")',
+            data: { pageIndex: selectedPageIndex, taskId: taskId, rejectReason: element.val() },
+            success:
+           function (data) {
+               if (data.MessageType != 2) {
+
+                   $('#dvReceivedTasksContainer').html(data.Html);
+                   $('#task_DateExtender_' + taskId).attr('style', 'display:none');
+                   $('#task_Task_Remind_' + taskId).attr('style', 'display:none');
+                   $('#task_color_status_' + taskId).removeClass('blue');
+                   $('#task_color_status_' + taskId).removeClass('red');
+                   $('#Recived_Task_' + taskId).remove();
+                   ShowSuccesMessage(data.MessageText);
+                   return true;
+               }
+
+               ShowErrorMessage(data.MessageText);
+           }
+        });
+    }
+
+    $(document).on("click", ".closePopUp", function () {        
+        $(this).parents(".refusal_task").removeClass("open");
+    })
+
+    $(document).on("change keyup paste", ".rejectReasonTask", function () {
+        var taskId = $(this).data("task-id")
+        var btnRejectElement = $('*[data-id="btnRejectTask' + taskId + '"]');
+        if ($(this).val().length > 0) {
+            btnRejectElement.prop('disabled', false)
+            return true;
+        }
+
+        btnRejectElement.prop('disabled', true);
+    });
+
+    $(document).on('click', 'a[class="accept_task_recive"]', function () {
+        
+        var selectedPageIndex = $('#hdnReceivedTasksSelectedPageIndex').val();
+
+        var taskId = $(this).data("accept-task-id")
+
+        ShowDialogAjax('@Url.Action("AcceptTask")', { pageIndex: selectedPageIndex, taskId: taskId }, 'OpenAcceptTaskDialog');
+    });
+
+    $(document).on('click', 'a[class="sub_task"]', function () {
+
+        var taskId = $(this).data("task-id");
+
+        var selectedPageIndex = $('#hdnReceivedTasksSelectedPageIndex').val();
+
+        var sendTasksPageIndex = $('#hdnSentTasksSelectedPageIndex').val();
+
+        var transId = $(this).data("trans-id");
+       
+        ShowDialogAjax('@Url.Action("SubTask")', { taskId: taskId, pageIndex: selectedPageIndex, sentTasksPageIndex: sendTasksPageIndex, transId: transId }, 'OpenSubTaskDialog');
+    });
+
+
+    function OpenSubTaskDialog(data, $obj) {
+
+        $obj.setContent(data);
+
+        jQuery.validator.unobtrusive.parse('#frmAddSubTask');
+    }
+
+
+    function OpenAcceptTaskDialog(data, $obj) {
+       
+        $obj.setContent(data);
+        jQuery.validator.unobtrusive.parse('#frmAccepTask');
+    }
+
+    function ViewReceivedTaskDialog(data, $obj) {
+        $obj.setContent(data);
+    }
+
+    function SelectTask(taskId) {
+
+        selectedAcceptTask = taskId;
+    }
+
+    function AcceptTask(data) {
+
+        if (data.MessageType != 2) {
+            __dialog.close();
+
+            $('#task_color_status_' + selectedAcceptTask).removeClass('blue');
+            $('#task_color_status_' + selectedAcceptTask).removeClass('red');
+            $('#task_color_status_' + selectedAcceptTask).addClass('green');
+            $('#dvReceivedTasksContainer').html("");
+            $('#dvReceivedTasksContainer').html(data.Html);
+            jQuery.validator.unobtrusive.parse('#dvReceivedTasksContainer');
+            ShowSuccesMessage(data.MessageText);
+
+            return true;
+        }
+
+        ShowErrorMessage(data.MessageText);
+    }
+</script>

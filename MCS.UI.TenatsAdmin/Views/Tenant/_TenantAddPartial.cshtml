@@ -1,0 +1,164 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.UI.TenantsAdmin.Models.Tenant;
+@using MCS.Common;
+@model MCS.UI.TenantsAdmin.Models.Tenant.AddTenantVM
+@{
+    /**/
+
+    ViewBag.Title = "_TenantLookupAddPartial";
+}
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmAddTenant", @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+    <div id="FormTenant">
+        <div class="panel-body">
+            <p>@DbRes.TResource("Tenant.MandatoryFields")</p>
+
+            <div class="row">
+                <div class="col-md-6">
+
+                    @{List<TenantCultureVM> cultureVMs = ViewData["Culture"] as List<TenantCultureVM>;}
+
+                    @if (cultureVMs != null)
+                    {
+                        for (int i = 0; i < cultureVMs.Count; i++)
+                        {
+                            <div class="form-group">
+                                @Html.CustomLabelFor(model => model.Names[i].CultureName, new { @class = "col-md-4 control-label" }, DbRes.TResource("Tenant.Name." + cultureVMs[i].ShortName))
+                                @Html.StickyHiddenFor(model => model.Names[i].CultureId, new { Value = cultureVMs[i].Id })
+                                <div class="col-md-8">
+                                    <div class="">
+                                        @Html.TextBoxGroupFor(model => model.Names[i].Text, null, new { @class = "form-control" }, DbRes.TValidation("Tenant.NameRequired." + cultureVMs[i].ShortName))
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    <div class="form-group hide">
+                        <label class="col-md-4 control-label">@DbRes.TResource("Tenant.DateBetween")</label>
+                        <div class="col-md-8">
+                            <div class="input-group">
+                                @Html.HiddenFor(model => model.FromDateH, new { id = "hdnAddFromDateUm", @class = "formField", @Value = DateTimeUtility.ConvertToUmAlQuraCalendar(DateTime.Now).ToString() })
+                                @Html.Calendar("fromAddDateCal", "hdnAddFromDateGreg", "hdnAddFromDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), DateTimeUtility.ConvertToUmAlQuraCalendar(DateTime.Now).ToString(), "form-control")
+                                <span class="input-group-addon add-on"> - </span>
+                                @Html.HiddenFor(model => model.ToDateH, new { id = "hdnAddToDateUm", @class = "formField", @Value = DateTimeUtility.ConvertToUmAlQuraCalendar(DateTime.Now).ToString() })
+                                @Html.Calendar("toAddDateCal", "hdnAddToDateGreg", "hdnAddToDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), DateTimeUtility.ConvertToUmAlQuraCalendar(DateTime.Now).ToString(), "form-control")
+                            </div>
+                            @Html.HiddenGroupFor(model => model.ToDate, new { id = "hdnAddToDateGreg", @Value = DateTime.Now.AddYears(10).ToString("dd/MM/yyyy"), @Class = "form-control formField" })
+                            @Html.HiddenGroupFor(model => model.FromDate, new { id = "hdnAddFromDateGreg", @Value = DateTime.Now.ToString("dd/MM/yyyy"), @Class = "form-control formField" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.OrgUnitsCount, new { @class = "col-md-4 control-label" })
+                        <div class="col-md-8">
+                            <div class="">
+                                @Html.NumericTextBoxFor(model => model.OrgUnitsCount, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.UsersCount, new { @class = "col-md-4 control-label" })
+                        <div class="col-md-8">
+                            <div class="">
+                                @Html.NumericTextBoxFor(model => model.UsersCount, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.HostName, new { @class = "col-md-4 control-label" })
+                        <div class="col-md-8">
+                            <div class="">
+                                @Html.TextBoxGroupFor(model => model.HostName, null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-body">
+            <p>@DbRes.TResource("Tenant.DelegatedUserInformations")</p>
+            <div class="row">
+                <div class="col-md-6">
+                    @if (cultureVMs != null)
+                    {
+                        for (int i = 0; i < cultureVMs.Count; i++)
+                        {
+                            <div class="form-group">
+                                @Html.CustomLabelFor(model => model.DelegatedName[i].CultureName, new { @class = "col-md-4 control-label" }, DbRes.TResource("Tenant.DelegatedName." + cultureVMs[i].ShortName))
+                                @Html.StickyHiddenFor(model => model.DelegatedName[i].CultureId, new { Value = cultureVMs[i].Id })
+                                <div class="col-md-8">
+                                    <div class="">
+                                        @Html.TextBoxGroupFor(model => model.DelegatedName[i].Text, null, new { @class = "form-control" }, DbRes.TValidation("Tenant.DelegatedNameRequired." + cultureVMs[i].ShortName))
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.DelegatedUserName, new { @class = "col-md-4 control-label" })
+                        <div class="col-md-8">
+                            <div class="">
+                                @Html.TextBoxGroupFor(model => model.DelegatedUserName, null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.DelegatedEmail, new { @class = "col-md-4 control-label" })
+                        <div class="col-md-8">
+                            <div class="">
+                                @Html.TextBoxGroupFor(model => model.DelegatedEmail, null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.DelegatedMobile, new { @class = "col-md-4 control-label" })
+                        <div class="col-md-8">
+                            <div class="">
+                                @Html.NumericTextBoxFor(model => model.DelegatedMobile, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Logo, new { @class = "col-md-4 control-label" })
+                        <div class="col-md-8">
+                            <div class="">
+                                <input type="file" class="fileinput upload_design none_push" name="LogoFileAdd" id="LogoFileAdd"
+                                       data-filename-placement="inside" title="@DbRes.TResource("User.Tenant.UploadLogo")"
+                                       accept=".jpg,.jpeg,.png" onchange="ValidateLogoTypeAdd()" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group hide">
+                        @Html.LabelFor(model => model.YesserCertificate, new { @class = "col-md-4 control-label" })
+                        <div class="col-md-8">
+                            <div class="">
+                                <input type="file" class="fileinput upload_design none_push" name="YesserCertificateFileAdd"
+                                       id="YesserCertificateFileAdd" data-filename-placement="inside" title="@DbRes.TResource("User.Tenant.UploadYesserCertificate")"
+                                       accept=".pfx,.cer" onchange="ValidateYesserCertificateTypeAdd()" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <div class="col-md-8">
+                            @Html.ActionLink(DbRes.TResource("AddUser"), "UserTenant", "Tenant")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel-footer middle">
+        @Html.ActionButton(DbRes.TResource("Tenant.Save"), Url.Action("AddTenant", "Tenant"), "dvGrid", null, null, "OnAddSuccess", null, "post", null,
+       "btnAddTenant", "frmAddTenant", "btn btn-save pull-right", clientFunctionToCall: "ValidateLogoTypeAdd,ValidateYesserCertificateTypeAdd")
+        @Html.ResetButton("ClearInputs('FormTenant')")
+    </div>
+}

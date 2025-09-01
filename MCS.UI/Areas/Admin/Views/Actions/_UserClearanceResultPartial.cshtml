@@ -1,0 +1,37 @@
+﻿@using MCS.UI.Areas.Admin.Models.Actions
+@using MCS.Framework.Localization;
+
+
+<div class="alert alert-danger w-100" role="alert" id="userClearanceValidation">
+    <p>
+        @DbRes.TResource("Admin.Actions.MoveUser.CanNotMove") :
+    </p>
+    <ol>
+        @foreach (var item in Model)
+        {
+
+            if (item.OutboundTransactionsCount > 0 && item.SavedTransactionsCount > 0)
+            {
+                <li>
+                    @DbRes.TResource("Admin.Actions.MoveUser.UserHasSavedAndOutboundTransactions").Replace("{0}", item.UserName).Replace("{1}", item.OutboundTransactionsCount.ToString()).Replace("{2}", item.SavedTransactionsCount.ToString())
+                </li>
+            }
+
+            else if (item.OutboundTransactionsCount > 0)
+            {
+                <li>
+                    @DbRes.TResource("Admin.Actions.MoveUser.UserHasOutboundTransactions").Replace("{0}", item.UserName).Replace("{1}", item.OutboundTransactionsCount.ToString())
+                </li>
+            }
+
+            else if (item.SavedTransactionsCount > 0)
+            {
+                <li>
+                    @DbRes.TResource("Admin.Actions.MoveUser.UserHasSavedTransactions").Replace("{0}", item.UserName).Replace("{1}", item.SavedTransactionsCount.ToString())
+                </li>
+            }
+
+        }
+    </ol>
+    <div>@DbRes.TResource("Admin.Actions.MoveUser.UserMustSendTransactions")</div>
+</div>

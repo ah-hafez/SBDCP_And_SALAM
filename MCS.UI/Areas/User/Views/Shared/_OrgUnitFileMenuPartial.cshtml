@@ -1,0 +1,89 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.File
+@using MCS.Common
+
+@{List<TrayDetailsVM> trayDetails = TempData.Peek("TrayDetails") as List<TrayDetailsVM>; }
+
+@if (trayDetails != null && trayDetails.Count > 0)
+{
+    <!-- BEGIN: Vertical Menu -->
+    <div class="align-self-start main_sidebar ">
+        @*<div class="my-3 mx-3 d-flex logo_div">
+            <a class="main_logo" href="#">
+                <img src="../../Content/User/lib/images/@Session["ThemePath"]/logo.png" title="" alt="" class="logo">
+                <img src="../../Content/User/lib/images/@Session["ThemePath"]/GAMI_Logo_Color-01.svg" title="" class="GAMI_Logo_Color-01.svg">
+            </a>
+        </div>*@
+        <div class="d-none d-md-block mr-auto">
+            <a id="aMenuTrigger" class="nav-link nav-menu-main menu-toggle hidden-xs is-active" href="#"><img src="~/Content/User/lib/images/SystemIcon/align-left.svg" style="width:40px"></a>
+        </div>
+        <div class=" main-menu menu-fixed menu-light menu-accordion menu-icon-left" data-scroll-to-active="true" style="direction:ltr;">
+            <div class="main-menu-content">
+                @*<h6>helloooo</h6>*@
+                <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
+                   
+                    @foreach (var trayDetail in trayDetails)
+                    {
+                        switch ((TrayType)trayDetail.Id)
+                        {
+                            case TrayType.OrgUnit:
+                                <li class=" nav-item" id="selected" title="@DbRes.TResource("User.Trays.Orgunit")">
+                                    <a href="@Url.Action("Orgunit", "File", new { area = "user" })" class="d-flex">
+                                        <i>
+                                            <img src="~/Content/User/lib/images/SystemIcon/main bar-09.svg"/>
+                                        </i>
+                                        <span class="menu-title">@DbRes.TResource("User.Trays.Orgunit")</span>
+                                        <span class="badget badge badge-primary badge-pill">@trayDetail.AllTransactionCount</span>
+                                        @Html.StickyHidden("hdnOrgunitTrayCount", "", new { @Value = @trayDetail.AllTransactionCount, id = "hdnOrgunitTrayCount" })
+
+                                    </a>
+                                </li>
+                                break;
+                            case TrayType.YESSER:
+                                if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Files.YESSER))
+                                {
+                                    <li class=" nav-item" id="selected2" title="@DbRes.TResource("User.File.YESSER")">
+                                        <a href="@Url.Action("GetAll", "Hub", new { area = "user" })" class="d-flex">
+                                            <i @*class="fa fa-outdent"*@>
+                                                <img src="~/Content/User/lib/images/SystemIcon/main bar-15.svg"/>
+                                            </i>
+                                            <span class="menu-title">@DbRes.TResource("User.File.YESSER")</span>
+                                            <span class="badget badge badge-primary badge-pill">@trayDetail.AllTransactionCount</span>
+                                        </a>
+                                    </li>
+                                }
+                                break;
+                        }
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- END: Vertical Menu -->
+}
+<style>
+    .main_sidebar{
+        height:16%;
+    }
+    .menu-title {
+        overflow:hidden;
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        var actionUrl = window.location.pathname.split("/")[4];
+        switch (actionUrl) {
+            case "OrgUnit":
+                $("#selected").addClass("active");
+                break;
+            case "GetAll":
+                $("#selected2").addClass("active");
+                break;
+            default:
+                $("#selected").addClass("active");
+                break;
+        }
+
+        $("#OrgUnitCount").text($('#hdnOrgunitTrayCount').val())
+    });
+</script>

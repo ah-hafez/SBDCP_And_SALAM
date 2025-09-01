@@ -1,0 +1,10 @@
+﻿@using MCS.UI.Areas.User.Models.Transaction
+@model AjaxGrid<TransactionNameVM>
+<div class="extra-padding">
+    @Html.Grid(Model).Named("grdNames").Columns(columns =>
+    {
+    columns.Add(model => model.FirstName).Titled(DbRes.TResource("User.TransactionCertificate.Name.FirstName"));
+    columns.Add(model => model.CivilID).Titled(DbRes.TResource("User.TransactionCertificate.Name.CivilID"));
+    columns.Add(model => model.MobileNumber).Titled(DbRes.TResource("User.TransactionCertificate.Name.MobileNumber"));
+    }).Sortable(false)
+</div>

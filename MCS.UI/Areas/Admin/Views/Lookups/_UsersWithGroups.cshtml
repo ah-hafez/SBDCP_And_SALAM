@@ -1,0 +1,104 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.Lookups
+@using MCS.GridMvc.Helpers;
+@using MCS.GridMvc.Html;
+@using MCS.Common;
+
+@model MCS.GridMvc.Ajax.GridExtensions.AjaxGrid<UserGroupVM>
+@{
+    //ViewBag.Title = "_AttachmentTypeGridPartial";
+    Layout = null;
+}
+
+
+@Html.Grid(Model).Named("UserGroup").Columns(columns =>
+{
+    //columns.Add(model => model.Id).Css("hidden_");
+    //columns.Add(model => model.UserName).Titled(DbRes.TResource("اسم المستخدم"));
+    columns.Add(model => model.Name).Titled(DbRes.TResource("اسم المستخدم"));
+    columns.Add(model => model.OrgUnitName).Titled(DbRes.TResource("الوحدة"));
+    columns.Add(model => model.AdminUserName).Titled(DbRes.TResource("المدير"));
+
+    //columns.Add(model => model.OrgUnitNames.).Titled(DbRes.TResource("اسم المستخدم"));
+    columns.Add(model => model.GroupName).Titled(DbRes.TResource("الدور"));
+}).WithPaging(GridHelper.PageSize)
+
+<button class="btn btn-st1 btn-lg" onclick="ExportUsersWithGroupsReportToPdf()">@DbRes.TResource("User.Transaction.Reports.Export")</button>
+
+<button class="btn btn-st1 btn-lg" onclick="ExportTransactionReportToExcel()"><i class="la la-file-pdf-o"></i> تصدير Excel</button>
+
+
+
+
+<script>
+    var token = $("#FormPerformanceSearch").find("input[name='__RequestVerificationToken']").val();
+
+    function ExportUsersWithGroupsReportToPdf() {
+        debugger;
+        event.preventDefault();
+        var searchCriteriaData = [];
+        searchCriteriaData.push({ name: 'TotalCount', value: $('#TotalCount').val() });
+        searchCriteriaData.push({ name: '__RequestVerificationToken', value: token });
+        $.ajax({
+            type: "post",
+            url: '@Url.Action("UsersWithGroupsExportToPdf", "Reports", new { Area = "user" })',
+            cache: false,
+            success: function (data) {
+                if (data) {
+                    if (data.MessageType != 2) {
+
+                        var url = '@Url.Action("Download", "Reports", new { Area = "user" })';
+                        // window.location.href = url + '?fileGuid=' + data.FileGuid + '&filename=' + data.FileName;
+                        //var url1 = url + '?fileGuid=' + data.FileGuid + '&filename=' + data.FileName;
+                        window.open(url + '?FileGuid=' + data.FileGuid + '&filename=' + data.FileName, '_blank').focus()
+                    }
+                    else {
+                        ShowErrorMessage(data.MessageText);
+                    }
+                }
+            }
+        });
+    }
+
+
+    function ExportTransactionReportToExcel() {
+        debugger;
+        event.preventDefault();
+        var searchCriteriaData = [];
+        searchCriteriaData.push({ name: 'TotalCount', value: $('#TotalCount').val() });
+        searchCriteriaData.push({ name: '__RequestVerificationToken', value: token });
+        $.ajax({
+            type: "post",
+            url: '@Url.Action("ExportUsersWithGroupsReportToExcel", "Reports", new { Area = "user" })',
+            cache: false,
+            success: function (data) {
+                if (data) {
+                    if (data.MessageType != 2) {
+                        var url = '@Url.Action("Download", "Reports", new { Area = "user" })';
+                        window.open(url + '?FileGuid=' + data.FileGuid + '&filename=' + data.FileName, '_blank').focus()
+                    }
+                    else {
+
+                        ShowErrorMessage(data.MessageText);
+
+                    }
+                }
+            }
+        });
+    }
+
+     @*var token = $("#dvAdd input[name='__RequestVerificationToken']").val()
+    var AttachmentTypeGridEventHandler = '@Url.Action("GetUpdateUsersWithGroups", "User")';
+    function prepareAttachmentTypeGrid() {
+            $(".grid-mvc").gridmvc();
+            pageGrids.AttachmentType.ajaxify({
+                getPagedData: AttachmentTypeGridEventHandler,
+                requestType: "GET",
+                getData: AttachmentTypeGridEventHandler
+            });
+        }
+
+        $(document).ready(function () {
+            prepareAttachmentTypeGrid();
+        });*@
+</script>

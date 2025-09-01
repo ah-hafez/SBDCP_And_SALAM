@@ -1,0 +1,286 @@
+﻿
+
+@using MCS.Framework.Localization
+@using MCS.GridMvc.Ajax.GridExtensions
+@using MCS.UI.Areas.User.Models.Lookups;
+@using MCS.Common;
+
+@model TemplateViewModel
+@{
+    ViewBag.Title = DbRes.TResource("Admin.Form.Forms");
+    Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
+
+}
+
+<div class="mx-3 mx-md-5 header-container d-flex flex-row align-items-center mt-5">
+    <div class="d-flex flex-column flex-md-row align-items-md-center flex-grow-1">
+        <h3 class="site-color mb-4">@DbRes.TResource("Admin.Form.Forms")</h3>
+    </div>
+</div>
+<div class="white-container mx-3 mx-md-5">
+    <div id="dvAdd">
+        @Html.Partial("~/Areas/User/Views/Lookups/Template/_AddPartial.cshtml", Model.AddTemplate)
+    </div>
+    <div id="dvEdit" style="display:none;">
+
+    </div>
+    <hr />
+    <br />
+    @*@Html.Partial("~/Areas/User/Views/Lookups/Template/_TxUploadFile.cshtml")*@
+
+    <br />
+
+    <div id="dvGrid">
+        <div class="w-100 d-flex align-items-center mt-2 mb-2">
+            <h3 class="white-c-title">@DbRes.TResource("Admin.Grid.FormTypes")</h3>
+            <span class="roundedred ml-3">@(((AjaxGrid<TemplateVM>)ViewData["GridData"]).ItemsCount)</span>
+            <span class="pl-2 gray4">@DbRes.TResource("Admin.Grid.Records")</span>
+        </div>
+        @Html.Partial("~/Areas/User/Views/Lookups/Template/_GridPartial.cshtml", ViewData["GridData"])
+    </div>
+</div>
+
+
+<script>
+    const addContentDiv = $("#dvAdd").html();
+    $(document).ready(function ()
+    {
+
+
+
+    });
+
+
+    
+    $(document).on("click", "span[data-node-id]", function () {
+        var elemnt = $(this);
+        if ($(this).hasClass('fa-plus') && $(this).hasClass('InternalLoadedData')) {
+            $.ajax({
+                type: 'get',
+                async: false,
+                url: '@Url.Action("GetOrgUnitsNodes")',
+                data: {
+                    parentId: $(this).data("node-id"),
+                    containerName: $(this).data('node-container'),
+                    onClickFunc: $(this).data('func'),
+                    treeMode : '@TreeMode.Single'
+                },
+                success: function (data) {
+                    $(elemnt).closest('li').children('ul').last().empty()
+                    $(elemnt).closest('li').children('ul').last().append(data);
+                    $(elemnt).removeClass("InternalLoadedData");
+                }
+            });
+        }
+        var arrayIds = [];
+        var formIdName = "";
+        if ($('#frmAddForm').is(":visible")) {
+            $('#frmAddForm').find("[data-name='DepartmentIds']").find('.tag').each(function (index) {
+                arrayIds.push(this.id);
+            });
+            formIdName = "frmAddForm";
+        } else if ($('#frmEditForm').is(":visible")) {
+            $('#frmEditForm').find("[data-name='DepartmentIds']").find('.tag').each(function (index) {
+                arrayIds.push(this.id);
+            });
+            formIdName = "frmEditForm";
+        }
+        SelectMultiTreeNode(formIdName, arrayIds.join(','));
+    });
+
+    function GetOrganizationUnitIdsToForm() {
+        $('#OrgUnitContentToForm').empty();
+        $("[data-name='DepartmentIds']").find('.tag').each(function (index) {
+            if ($('#frmAddForm').is(":visible")) {
+                $('#frmAddForm').find('#OrgUnitContentToForm').append("<input name='OrgUnitIds[" + index + "]' value=" + this.id + " type='hidden'/>");
+            }
+            else if ($('#frmEditForm').is(":visible")) {
+                $('#frmEditForm').find('#OrgUnitContentToForm').append("<input name='OrgUnitIds[" + index + "]' value=" + this.id + " type='hidden'/>");
+            }
+        });
+    }
+
+    function ShowEditDiv(data)
+    {
+        debugger;
+        var form1 = $("input").closest("form").attr("action");
+        $("#dvEdit").css("display", "block");
+        $("#dvAdd").css("display", "none");
+        $("#dvAdd").html('');
+        if (data.AllOrgUnitsSelected) {
+            $("#dvDepartmentsTreeEdit .txtDepartmentNumber").attr("disabled", true);
+            $("#dvDepartmentsTreeEdit .txtDepartmentName").attr("disabled", true);
+            $("#dvOrgUnitItemsEdit").html("");
+        }
+        if ($("#addedOrgUnits").val() != undefined)
+        {
+            AddedOrgunitsIds = $("#addedOrgUnits").val().split(',');
+            ClearInputs("dvDepartmentsTreeEdit");
+        }
+
+        //debugger;
+        //if ($("#FileContent").val() != '')
+        //{
+        //    FillDocument($("#FileContent").val());
+        //}
+
+    }
+
+    function HideEditDiv() {
+        $("#dvEdit").css("display", "none");
+        $("#dvAdd").css("display", "block");
+        $("#dvOrgUnitItems").html("");
+        $("#dvEdit").html('');
+        $("#dvAdd").html(addContentDiv);
+
+        AddedOrgunitsIds = [];
+        $("#dvDepartmentsTree input").attr("disabled", false);
+        $("#btnAddOrgUnit").attr("disabled", false);
+    }
+
+    function OnEditSuccess(data, div) {
+        if (data.MessageType != 2) {
+
+            $("#dvEdit").css("display", "none");
+            $("#dvAdd").css("display", "block");
+            $("#dvGrid").html("");
+            $("#dvGrid").html(data.Html);
+            jQuery.validator.unobtrusive.parse('#dvGrid');
+            $("#dvOrgUnitItems").html("");
+            AddedOrgunitsIds = [];
+            $("#FileContent").val('')
+
+            $("#dvAdd").html(addContentDiv);
+            ShowSuccesMessage(data.MessageText);
+
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function OnAddSuccess(data, div) {
+        if (data.MessageType != 2) {
+
+            $("#dvGrid").html("");
+            $("#dvGrid").html(data.Html);
+            jQuery.validator.unobtrusive.parse('#dvGrid');
+            $("#dvOrgUnitItems").html("");
+            AddedOrgunitsIds = [];
+
+            $("#dvOrgUnitItems").html("");
+            $("#dvEdit").css("display", "none");
+            $("#dvEdit").html('');
+            $("#dvAdd").html(addContentDiv);
+            $("#dvAdd").css("display", "block");
+            ShowSuccesMessage(data.MessageText);
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function DeleteDocument(documentId, formId) {
+        $.confirm({
+            title: '',
+            content: '<div class="mb-title"><span class="fa fa-question"></span></div><p>' + '@Html.Raw(DbRes.TResource("Admin.Form.DeleteDocumentMessage"))' + '</p>',
+            cancelButton: __dialogNoText,
+            cancelButtonClass: 'btn-default',
+            confirmButton: __dialogYesText,
+            confirmButtonClass: 'btn-primary',
+
+            animation: 'scale',
+            columnClass: 'alert_normal alert_new col-md-6 col-md-offset-3 col-xs-6 col-xs-offset-3',
+            backgroundDismiss: false,
+            closeIcon: false,
+            confirm: function () {
+                $.ajax({
+                    type: "post",
+                    url: '@Url.Action("DeleteTemplateDocument", "Lookup")',
+                    data: { documentId: documentId, formId: formId },
+                    success:
+                        function (data) {
+
+                       if (data.MessageType != 2) {
+
+                           $("#dvEdit").html("");
+                           $("#dvEdit").html(data.Html);
+                           jQuery.validator.unobtrusive.parse("#dvEdit");
+                           ShowSuccesMessage(data.MessageText);
+                       }
+                       else {
+                           ShowErrorMessage(data.MessageText);
+                       }
+                   },
+                    error: function (data) {
+                    }
+                });
+
+            },
+            cancel: function () {
+
+            }
+        });
+        return false;
+    }
+
+    function OnDeleteSuccess(data) {
+        if (data.MessageType != 2) {
+            ShowSuccesMessage(data.MessageText);
+            $("#dvGrid").html("");
+            $("#dvGrid").html(data.Html);
+        }
+        else {
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function LockUnlockLookup(LookupType, LookupOperationType, FormId) {
+        var token = $("#dvAdd input[name='__RequestVerificationToken']").val()
+        var data = { lookupType: LookupType, lookupOperationType: LookupOperationType, lookUpId: FormId, __RequestVerificationToken: token};
+        $.ajax({
+            type: "post",
+            url: '@Url.Action("LockUnlockLookup", "Lookup")',
+            data: data,
+            success:
+                function (data) {
+                    if (data.MessageType != 2) {
+                        $("#dvGrid").html("");
+                        $("#dvGrid").html(data.Html);
+                        //ShowInformationMessage("OK");
+                    }
+                    else {
+                        ShowErrorMessage(data.MessageText);
+                    }
+                },
+            error: function (data) {
+            }
+        });
+    }
+
+    function ActiveDeactiveLookup(LookupType, LookupOperationType, FormId) {
+        var token = $("#dvAdd input[name='__RequestVerificationToken']").val()
+        var data = { lookupType: LookupType, lookupOperationType: LookupOperationType, lookUpId: FormId, __RequestVerificationToken: token};
+        $.ajax({
+            type: "post",
+            url: '@Url.Action("ActiveDeactiveLookup", "Lookup")',
+            data: data,
+            success:
+                function (data) {
+                    if (data.MessageType != 2) {
+                        $("#dvGrid").html("");
+                        $("#dvGrid").html(data.Html);
+                        //ShowInformationMessage("OK");
+                    }
+                    else {
+                        ShowErrorMessage(data.MessageText);
+                    }
+                },
+            error: function (data) {
+            }
+        });
+    }
+
+      
+
+</script>

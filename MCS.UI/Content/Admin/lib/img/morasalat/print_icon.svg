@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="16px" height="16px" viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">
+<g>
+	<polygon fill="#333B48" points="12.454,1.23 12.454,15.999 3.646,15.999 3.646,0.001 11.251,0.001 	"/>
+	<g>
+		<path fill="#333B48" d="M15.084,4.056H13.92v1.737c0,1.013-0.821,1.833-1.833,1.833H3.934c-1.013,0-1.833-0.821-1.833-1.833V4.056
+			H0.917C0.411,4.056,0,4.466,0,4.973v6.969c0,0.506,0.411,0.916,0.917,0.916h14.167c0.506,0,0.916-0.41,0.916-0.916V4.973
+			C16,4.466,15.59,4.056,15.084,4.056z"/>
+		<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="8" y1="4.0562" x2="8" y2="12.3194">
+			<stop  offset="0" style="stop-color:#FFFFFF"/>
+			<stop  offset="0.1072" style="stop-color:#FFFFFF;stop-opacity:0.8928"/>
+			<stop  offset="1" style="stop-color:#FFFFFF;stop-opacity:0"/>
+		</linearGradient>
+		<path opacity="0.7" fill="url(#SVGID_1_)" d="M15.084,4.056H13.92v1.737c0,1.013-0.821,1.833-1.833,1.833H3.934
+			c-1.013,0-1.833-0.821-1.833-1.833V4.056H0.917C0.411,4.056,0,4.466,0,4.973v6.969c0,0.506,0.411,0.916,0.917,0.916h14.167
+			c0.506,0,0.916-0.41,0.916-0.916V4.973C16,4.466,15.59,4.056,15.084,4.056z"/>
+		<path fill="#14B6E7" d="M3.934,7.627h8.153c1.012,0,1.833-0.821,1.833-1.833V4.056H2.101v1.737
+			C2.101,6.806,2.921,7.627,3.934,7.627z"/>
+	</g>
+	<rect x="2.101" y="10.345" fill="#14B6E7" width="11.819" height="2.542"/>
+	<rect x="3.892" y="11.612" fill="#FFFFFF" width="8.271" height="4.091"/>
+	<g>
+		<g>
+			<rect x="4.735" y="12.375" fill="#B0B1B1" width="4.396" height="0.369"/>
+			<rect x="9.747" y="12.375" fill="#B0B1B1" width="1.59" height="0.369"/>
+		</g>
+		<g>
+			<rect x="6.94" y="14.58" fill="#B0B1B1" width="4.396" height="0.369"/>
+			<rect x="4.735" y="14.58" fill="#B0B1B1" width="1.59" height="0.369"/>
+		</g>
+		<rect x="8.129" y="13.474" fill="#B0B1B1" width="3.208" height="0.369"/>
+		<rect x="4.735" y="13.474" fill="#B0B1B1" width="2.823" height="0.369"/>
+	</g>
+	<circle fill="#FFFFFF" cx="11.991" cy="5.918" r="0.482"/>
+	<circle fill="#FFFFFF" cx="10.435" cy="5.918" r="0.482"/>
+	<circle fill="#FFFFFF" cx="8.879" cy="5.918" r="0.482"/>
+	<g>
+		<g>
+			<polygon fill="#FFFFFF" points="3.905,0.314 3.905,4.056 12.162,4.056 12.162,1.454 11.023,0.314 			"/>
+		</g>
+		<polygon fill="#AEAEAE" points="11.023,0.314 11.023,1.454 12.162,1.454 		"/>
+	</g>
+</g>
+<rect fill="none" width="16" height="16"/>
+</svg>

@@ -1,0 +1,1769 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Common;
+@using MCS.UI.Areas.User.Models.Assignment
+@using MCS.UI.Areas.User.Models.Transaction;
+@using MCS.Framework.Controls
+@using MCS.UI.Areas.User.Models.Actions;
+@using MCS.UI.Areas.User.Models.Permission;
+
+@model VIPAssignmentVM
+
+@{
+    var actions = ViewData["AllActionsData2"] as List<ActionVM>;
+    var confidentiality = ViewData["ExplanationConfidentiality"] as List<PermissionVM>;
+    Model.DeliveryMethodId =
+        DeliveryMethodType.Electronic
+        .LookupIdentity(LookupCategory.DeliveryMethod, SessionInfo.CultureShortName);
+    int i = 1;
+
+}
+
+
+<style>
+    .f-flex-container {
+        display: flex;
+        flex-wrap: nowrap;
+        border-bottom: 1px solid #C7A32D;
+    }
+
+        .f-flex-container > div {
+            width: 150px;
+            margin: 10px;
+            text-align: center;
+        }
+</style>
+
+
+<style>
+
+
+    .TransactionAssignment {
+        padding: 10px;
+    }
+
+    .divRadio {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .inline-radio {
+        display: flex;
+        align-items: center;
+    }
+
+    .radio, .checkbox {
+        display: inline-block;
+        margin-right: 10px;
+    }
+</style>
+
+
+<style>
+
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+/*            margin-bottom: 20px;
+*/        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 2px;
+            text-align: center;
+        }
+
+        /* th {
+                background-color: #f2f2f2;
+            } */
+
+        table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            table table th, table table td {
+                border: 1px solid black;
+                padding: 6px;
+                text-align: right;
+            }
+
+        /* table table th {
+                background-color: #d3d3d3;
+            } */
+        .parent-table-body tr {
+            padding: 0 10px 0 200px;
+        }
+
+        .sub-table th {
+            text-align: center;
+            color: #0c4a4d;
+        }
+
+
+
+        .checkbox {
+            padding: 5px 0;
+        }
+
+        hr {
+            height: 2px;
+            background-color: #000;
+        }
+
+        .title {
+            color: #0c4a4d;
+            font-weight: bolder;
+            background-color: #D9D9D9;
+        }
+
+        .title2 {
+            color: #0c4a4d;
+            font-weight: bolder;
+        }
+
+        .title3 {
+            color: #0c4a4d;
+        }
+
+        .c-width {
+            width: 120px;
+        }
+
+
+        .notes {
+            background-image: -webkit-linear-gradient(left, white 10px, transparent 10px), -webkit-linear-gradient(right, white 10px, transparent 10px), -webkit-linear-gradient(white 30px, #ccc 30px, #ccc 31px, white 31px);
+            background-image: -moz-linear-gradient(left, white 10px, transparent 10px), -moz-linear-gradient(right, white 10px, transparent 10px), -moz-linear-gradient(white 30px, #ccc 30px, #ccc 31px, white 31px);
+            background-image: -ms-linear-gradient(left, white 10px, transparent 10px), -ms-linear-gradient(right, white 10px, transparent 10px), -ms-linear-gradient(white 30px, #ccc 30px, #ccc 31px, white 31px);
+            background-image: -o-linear-gradient(left, white 10px, transparent 10px), -o-linear-gradient(right, white 10px, transparent 10px), -o-linear-gradient(white 30px, #ccc 30px, #ccc 31px, white 31px);
+            background-image: linear-gradient(left, white 10px, transparent 10px), linear-gradient(right, white 10px, transparent 10px), linear-gradient(white 30px, #ccc 30px, #ccc 31px, white 31px);
+            background-size: 100% 100%, 100% 100%, 100% 31px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+            line-height: 31px;
+            font-family: Arial, Helvetica, Sans-serif;
+            padding: 8px;
+/*            height: 150px;
+*/        }
+
+            .notes:focus {
+                outline: none;
+            }
+</style>
+
+
+<div>
+    <div>
+        <div class="" id="dvEditorTreeAssignmentPaper">
+
+            <div id="dvAddTemporaryEntity" class="col-xs-12">
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3 hidden_">
+                    <div class="inline-radio ">
+                        <label>@DbRes.TResource("User.Transaction.Assignment.SearchType")</label>
+                        <div>
+                            @Html.RadioButton("rbgSearchMethod", @DbRes.TResource("User.Transaction.Assignment.SearchByUser"), false, htmlAttributes: new { @onchange = "toggleSearchMethod()", id = "EditorAssignmentPaper_rbSearchByUser" })
+                            @DbRes.TResource("User.Transaction.Assignment.SearchByUser")
+
+                            @Html.RadioButton("rbgSearchMethod", @DbRes.TResource("User.Transaction.Assignment.SearchByOrgUnit"), false, htmlAttributes: new { @onchange = "toggleSearchMethod()", id = "EditorAssignmentPaper_rbSearchByOrgUnit" })
+                            @DbRes.TResource("User.Transaction.Assignment.SearchByOrgUnit")
+
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-lg-6 col-md-4 col-sm-6 col-xs-12 mb-3" id="divOrgUnit">
+                    <div id="dvDepartmentsTrees">
+
+                        @Html.DepartmentsTree(ViewData["DepartmentsData"] as TreeViewModel, model => model.ToOrgUnitId, TreeMode.Single, "AssignmentToOrgUnitId", true, "GetDirectedToUsersByOrgUnitId_Assignment", null, "dvDepartmentsTrees")
+
+                    </div>
+                    <i id="CalMessageIcon" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                    <span id="DepartmentValidateMessage" style="color:red"></span>
+                </div>
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3" id="divUser">
+                    @Html.LabelFor(model => model.ToUserId, new { @class = "w-100" })
+                    @Html.EditorFor(model => model.ToUserId, "AutoComplete", additionalViewData: new { autoCompleteControlid = "ddlAssignmentPaperUsers", hdnIdToSaveValue = "hdnAssignmentPaperUserId", items = "", selectedId = Model != null ? Model.ToUserId.ToString() : null, matchAnywhere = true, hdnExtraParametersId = "", selectFirstIndex = false, validationGroup = "AssignmentPaper", onChangeCallback = "DoCheckUser", sourceMethod = Url.Action("AutoComplete_SearchUsersByOrgUnit", "Inbound"), sourceParameters = "" })
+                    @Html.HiddenFor(model => model.ToUserName, new { id = "hdnAssignmentPaperUserName" })
+                </div>
+                @Html.StickyHidden("isConfirmed", "false")
+
+
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3" style="margin-top:23px;">
+                    <a class="btn-site" onclick="Clear()"> <i class="glyphicon glyphicon-remove"></i> @DbRes.TResource("User.Transaction.Assignment.Cancel") </a>
+                    <a class="btn-site" onclick="checkIfAnEntitySelected()"><i class="glyphicon glyphicon-plus"></i> @DbRes.TResource("User.Transaction.Assignment.TemporaryAddition") </a>
+                </div>
+            </div>
+        </div>
+
+        <!--<div class="row DepartmentsTitle">-->
+        @*<hr />*@
+        <!--<div class="col-xs-12">
+                <h4 class="title4 sub-title sub-title-margin d-inline-block">@DbRes.TResource("User.Departments")</h4>
+                <div id="CurrentDate" class="small d-inline-block"></div>
+            </div>
+        </div>-->
+        <form>
+            <div class="form-horizontal">
+                <div id="AddedEntities">
+                    @{
+                        //var list = ViewData["AssignmentPaperData"] as List<TransactionAssignmentVM> ?? new List<TransactionAssignmentVM>();
+                        //var list = Model.ToList();
+                    }
+                    @{
+                        var mainList = ViewData["AssignmentPaperData"] as List<VIPTransactionAssignmentVM> ?? new List<VIPTransactionAssignmentVM>();
+                        //var list = ViewData["AssignmentPaperData"] as List<VIPTransactionAssignmentVM> ?? new List<VIPTransactionAssignmentVM>();
+
+
+                        var assignedData = mainList.FirstOrDefault(a => a.IsAssigned.Value) ?? null;
+
+                        var _item = ViewData["BasicTransactionAssignmentData"] as BasicTransactionAssignmentNewVM ?? new BasicTransactionAssignmentNewVM();
+                    }
+
+
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; width:100%;">
+                        <div class="" style="width: 32%; text-align: center;">
+                            <h4 class="title2">
+                                المملكة العربيه السعودية
+                                <br />
+                                @_item.ParentOrgUnit
+
+                                <br />
+                                @_item.FromOrgUnit
+
+                            </h4>
+                        </div>
+                        <div class="" style="width: 32%; text-align: center;">
+                            <!--<img src="" alt="logo" style="height: 100px;">-->
+                            @if (ViewData["LogoFile"] != null)
+                            {
+                                <img class="circle-img d-inline-block" width="45" height="45" src="@("data:image/png;base64, " + ViewData["LogoFile"])" alt="Logo">
+                            }
+                            else
+                            {
+                                <img src="~/Content/User/lib/images/GAMI_Logo_Color-01.svg" alt="" width="300">
+
+                            }
+                            <br>
+                            مذكرة إحالة داخلية
+                            <br />
+                            @_item.DateTimeNowH
+
+                        </div>
+                        <div class="" style="width: 32%; text-align: center;">
+                            GAMI- Public عام
+                        </div>
+                    </div>
+                    <hr>
+
+
+                    <table>
+                        <thead>
+                        </thead>
+
+                        <tbody class="parent-table-body">
+                            <tr>
+                                <td colspan="5">
+                                    <table class="">
+                                        <tbody>
+                                            <tr>
+                                                <td class="title c-width">درجة الاطلاع :  </td>
+                                                <td colspan="4">
+                                                    <div class="checkbox" style="display: flex; justify-content:center;">
+                                                        <label class="col-lg-2">
+                                                            @if (_item.ConfedentialityId == 27)
+                                                            {
+
+                                                                <input type="checkbox" checked disabled>
+                                                            }
+                                                            else
+                                                            {
+
+                                                                <input type="checkbox" disabled>
+                                                            }
+                                                            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                                            <text style="color:black">عادي</text>
+                                                        </label>
+
+
+                                                        <label class="col-lg-2">
+                                                            @if (_item.ConfedentialityId == 28)
+                                                            {
+
+                                                                <input type="checkbox" checked disabled>
+                                                            }
+                                                            else
+                                                            {
+
+                                                                <input type="checkbox" disabled>
+                                                            }
+
+                                                            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                                            <text style="color:black">سري</text>
+                                                        </label>
+
+                                                        <label class="col-lg-2">
+                                                            @if (_item.ConfedentialityId == 29)
+                                                            {
+
+                                                                <input type="checkbox" checked disabled>
+                                                            }
+                                                            else
+                                                            {
+
+                                                                <input type="checkbox" disabled>
+                                                            }
+
+                                                            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                                            <text style="color:black">سري للغاية</text>
+                                                        </label>
+
+                                                        <label class="col-lg-2">
+
+                                                            @if (_item.ConfedentialityId == 121)
+                                                            {
+
+                                                                <input type="checkbox" checked disabled>
+                                                            }
+                                                            else
+                                                            {
+
+                                                                <input type="checkbox" disabled>
+                                                            }
+                                                            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                                            <text style="color:black">غير قابل للتداول</text>
+                                                        </label>
+                                                        <label class="col-lg-2">
+                                                            <input type="checkbox" disabled>
+                                                            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                                            <text style="color:black"> محدود التداول </text>
+                                                        </label>
+
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="5">
+                                    <table class="">
+                                        <tbody>
+                                            <tr>
+                                                <td class="title c-width">درجة الأسبقية :  </td>
+                                                <td colspan="4">
+                                                    <div class="checkbox" style="display: flex; justify-content: center;">
+                                                        <label class="col-lg-2">
+                                                            @if (_item.PriorityLevelId == (int)PriorityType.Normal)
+                                                            {
+
+                                                                <input type="checkbox" checked disabled>
+                                                            }
+                                                            else
+                                                            {
+
+                                                                <input type="checkbox" disabled>
+                                                            }
+
+                                                            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                                            <text style="color:black">عادي</text>
+                                                        </label>
+                                                        <label class="col-lg-2">
+                                                            @if (_item.PriorityLevelId == (int)PriorityType.Urgent)
+                                                            {
+
+                                                                <input type="checkbox" checked disabled>
+                                                            }
+                                                            else
+                                                            {
+
+                                                                <input type="checkbox" disabled>
+                                                            }
+                                                            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                                            <text style="color:black">عاجل</text>
+                                                        </label>
+
+                                                        <label class="col-lg-2">
+                                                            @if (_item.PriorityLevelId == (int)PriorityType.VeryUrgent)
+                                                            {
+
+                                                                <input type="checkbox" checked disabled>
+                                                            }
+                                                            else
+                                                            {
+
+                                                                <input type="checkbox" disabled>
+                                                            }
+
+                                                            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                                            <text style="color:black">عاجل جداً</text>
+                                                        </label>
+
+                                                        <label class="col-lg-2">
+                                                            @if (_item.PriorityLevelId == (int)PriorityType.Immediately)
+                                                            {
+
+                                                                <input type="checkbox" checked disabled>
+                                                            }
+                                                            else
+                                                            {
+
+                                                                <input type="checkbox" disabled>
+                                                            }
+
+                                                            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                                            <text style="color:black">حالاً</text>
+                                                        </label>
+
+                                                        <label class="col-lg-2">
+
+                                                            @if (_item.PriorityLevelId == (int)PriorityType.Now)
+                                                            {
+
+                                                                <input type="checkbox" checked disabled>
+                                                            }
+                                                            else
+                                                            {
+
+                                                                <input type="checkbox" disabled>
+                                                            }
+                                                            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                                                            <text style="color:black">فوري</text>
+                                                        </label>
+
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+
+
+                            <tr>
+                                <td colspan="5">
+                                    <table class="">
+                                        <tbody>
+                                            <tr>
+                                                <td class="title c-width">الجهة :  </td>
+                                                <td style="width: 35%;">
+                                                    @_item.ToOrgUnit
+                                                </td>
+                                                <td class="title c-width">الموضوع :  </td>
+                                                <td style="width: 35%;">
+                                                    @_item.Subject
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="5">
+                                    <table class="">
+                                        <tbody>
+                                            <tr>
+                                                <td class="title c-width">
+                                                    رقم المعاملة:
+                                                </td>
+                                                <td style="width:150px;">
+                                                    @_item.Number
+                                                </td>
+                                                <td class="title c-width">
+                                                    التاريخ:
+                                                </td>
+                                                <td style="width:150px;">
+                                                    @_item.TransactionDateH
+                                                </td>
+                                                <td class="title c-width">
+                                                    رقم الجهة :
+                                                </td>
+                                                <td style="width:150px;">
+                                                    @_item.InboundNumber
+                                                </td>
+                                                <td class="title c-width">
+                                                    التاريخ:
+                                                </td>
+                                                <td style="width:150px;">
+                                                    @_item.InboundDateH
+
+                                                </td>
+                                                <td class="">
+                                                    <label>
+                                                        <input type="checkbox" id="Generalizationid">
+                                                        <text style="color:black">تعميم</text>
+                                                    </label>
+                                                    <label>
+                                                        @if (_item.LetterTypeId == 58)
+                                                        {
+                                                            <input type="checkbox" checked>
+
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="checkbox">
+                                                        }
+                                                        <text style="color:black">الأوامر</text>
+                                                    </label>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+
+
+
+
+
+                            <tr style="background-color: #d8d8d8; ">
+                                <td colspan="5" style="width: 100%; display: flex; flex-wrap: wrap; justify-content: space-between;" id="AddedEn">
+                                    <!-- each group -->
+                                    @foreach (var firstgroup in mainList.OrderBy(x => x.GroupOrderNo).GroupBy(a => new { a.GroupName }).ToList())
+                                    {
+
+                                        var group = mainList.Where(a => a.GroupName == firstgroup.Key.GroupName).ToList();
+
+
+                                        <table class="TransactionAssignment" id="@Model.Key" style="width: 49%;background-color: #fff;border:0 !important; margin: 5px;">
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <table class="sub-table" style="background-color: #fff;">
+                                                            <thead style="border:0 !important;">
+                                                                <tr>
+                                                                    <th style="text-align: center;border:0 !important;">أصل</th>
+                                                                    <th style="text-align: center;border:0 !important;"> أصل فرعي</th>
+                                                                    <th style="text-align: center;border:0 !important;">الاحالة الى</th>
+                                                                    <th style="text-align: center;border:0 !important;">نسخة</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach (var item in group.OrderBy(x => x.OrderNo).ToList())
+                                                                {
+                                                                    item.Key = i;
+                                                                    Html.RenderPartial("~/Areas/User/Views/Vip/AssignmentPaper/_AddedAssignmentEntitiesNew.cshtml", item, Html.ViewData);
+                                                                    i++;
+                                                                }
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+
+
+                                    }
+
+                                </td>
+
+                            </tr>
+
+                            <tr>
+                                <td colspan="5">
+                                    <table class="">
+                                        <thead>
+                                            <tr>
+                                                <th class="" style="text-align: center;" colspan="7">
+                                                    التوجيه
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                @foreach (var action in actions.Take(7))
+                                                {
+                                                    <td class="">
+                                                        <label>
+                                                            <input type="radio" name="selectedAction" value="@action.Id" onclick="UpdateActionAssignment()" id="selectedActionRB" @(assignedData != null ? action.Id == assignedData.ActionId ? "checked" : "" : "")>
+                                                            <text style="color:black">@action.LocalName</text>
+                                                        </label>
+                                                    </td>
+                                                }
+                                            </tr>
+                                            <tr>
+                                                @foreach (var action in actions.Skip(7).Take(6))
+                                                {
+                                                    <td class="">
+                                                        <label>
+                                                            <input type="radio" name="selectedAction" value="@action.Id" onclick="UpdateActionAssignment()" id="selectedActionRB" @(assignedData != null ? action.Id == assignedData.ActionId ? "checked" : "" : "")>
+                                                            <text style="color:black">@action.LocalName</text>
+                                                        </label>
+                                                    </td>
+                                                }
+                                            </tr>
+                                        </tbody>
+
+                                    </table>
+                                </td>
+                            </tr>
+
+
+
+                            <tr>
+                                <td colspan="5">
+                                    <table class="">
+                                        <thead>
+                                            <tr>
+                                                <th class="" style="text-align: center;" colspan="6">
+                                                    الشرح
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody style="background-color: #D9D9D9;">
+                                            <tr>
+                                                <td class="title " style="width:150px">
+                                                    درجة سرية الشرح:
+                                                </td>
+                                                @*@Html.Hidden("hdnExplanationConfedentialityForAssignmentPaper", "", new { id = "hdnExplanationConfedentialityForAssignmentPaper" })*@
+                                                <td class="">
+                                                    <label>
+                                                        <input type="radio" name="selectedConfidentiality" id="hdnExplanationConfedentialityForAssignmentPaper" value="27">
+                                                        <text style="color:black">عادي</text>
+                                                    </label>
+                                                </td>
+                                                <td class="">
+                                                    <label>
+                                                        <input type="radio" name="selectedConfidentiality" id="hdnExplanationConfedentialityForAssignmentPaper" value="28">
+                                                        <text style="color:black">سري</text>
+                                                    </label>
+                                                </td>
+                                                <td class="">
+                                                    <label>
+                                                        <input type="radio" name="selectedConfidentiality" id="hdnExplanationConfedentialityForAssignmentPaper" value="29">
+                                                        <text style="color:black">سري للغاية</text>
+                                                    </label>
+                                                </td>
+                                                <td class="">
+                                                    <label>
+                                                        <input type="radio" name="selectedConfidentiality" id="hdnExplanationConfedentialityForAssignmentPaper" value="121">
+                                                        <text style="color:black">غير قابل للتداول</text>
+                                                    </label>
+                                                </td>
+                                                <td class="">
+                                                    <label>
+                                                        <input type="radio" name="selectedConfidentiality" id="hdnExplanationConfedentialityForAssignmentPaper" value="1353">
+                                                        <text style="color:black">محدود التداول</text>
+                                                    </label>
+                                                </td>
+
+<tr>
+                                                <td class="title " style="width:150px">
+                                                    درجة أسبقية الشرح:
+                                                </td>
+                                                <td class="">
+                                                    <label>
+                                                        <input type="radio" name="ExplanationPriority" id="hdnExplanationPriority" value="2">
+                                                        <text style="color:black">عاجل</text>
+                                                    </label>
+                                                </td>
+                                                <td class="">
+                                                    <label>
+                                                        <input type="radio" name="ExplanationPriority" id="hdnExplanationPriority" value="3">
+                                                        <text style="color:black"> عاجل جدا</text>
+                                                    </label>
+                                                </td>
+                                                <td class="">
+                                                    <label>
+                                                        <input type="radio" name="ExplanationPriority" id="hdnExplanationPriority" value="4">
+                                                        <text style="color:black">فوري</text>
+                                                    </label>
+                                                </td>
+                                                <td class="">
+                                                    <label>
+                                                        <input type="radio" name="ExplanationPriority" id="hdnExplanationPriority" value="5">
+                                                        <text style="color:black">حالا</text>
+                                                    </label>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                @if (mainList != null && mainList.Count > 0 && mainList.FirstOrDefault().Remarks != null)
+                                {
+                                    <td colspan="5">
+                                        <textarea style="width: 100%;" class="notes" name="explanationTxt" id="explanation" cols="100" rows="3"> @mainList.FirstOrDefault().Remarks</textarea>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td colspan="5">
+                                        <textarea style="width: 100%;" class="notes" name="explanationTxt" id="explanation" cols="100" rows="3"> @_item.Explanation</textarea>
+                                    </td>
+                                }
+                            </tr>
+                            @*<tr>
+                                    <td colspan="5">
+                                        <table class="">
+                                            <thead>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>التوقيع:</td>
+                                                    <td>التاريخ:</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>*@
+
+
+
+                        </tbody>
+                    </table>
+
+
+
+
+                </div>
+
+                <i id="CalMessageOrg" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                <span id="dateMessageOrg" style="color:red"></span>
+
+                <div class="row">
+                    <div class="col-xs-12">
+
+                    </div>
+                </div>
+
+                @*<div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3">
+                        @{ ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+                        <label class="w-100">@DbRes.TResource("User.Explanation.Confidentiality")<span class="stark NotIndividual">*</span></label>
+                        @Html.AutoCompleteBuilder("ddlExplanationConfedentialityForAssignmentPaper", "hdnExplanationConfedentialityForAssignmentPaper", ViewData["ConfidentialityData"].ToString(), ViewData["ConfidentialityId"].ToString(), true, "form-control", "", "", "", false)
+                        @Html.Hidden("ExplanationConfedentialityForAssignmentPaperId", "", new { id = "hdnExplanationConfedentialityForAssignmentPaper" })
+                    </div>
+                    <i id="CalMessageConfidentiality" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                    <span id="dateMessageConfidentiality" style="color:red"></span>
+
+                    <div class="form-group col-sm-10 col-xs-12 mb-3">
+                        @{ ViewData.TemplateInfo.HtmlFieldPrefix = null;}
+                        <label class="w-100">@DbRes.TResource("User.Transaction.Assignment.AssignmentPaper") </label>
+                        <textarea cols="20" rows="8" id="explanation" name="ExplanationForAssignmentPaper" class="form-control explanationDiv"></textarea>
+
+                    </div>*@
+
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-3" hidden>
+                    <label class="w-100">@DbRes.TResource("User.Transaction.Assignment.DeliveryMethod") <span class="stark"> *</span> </label>
+                    @Html.AutoCompleteBuilder("ddlDeliveryMethodForAssignmentPaper", "hdnDeliveryMethodForAssignmentPaper", ViewData["DeliveryMethod"].ToString(),
+                    Model != null ? Model.DeliveryMethodId.ToString() : null, true, "form-control", onChangeCallback: "onChangeAssinmentPaperMethod")
+                    @Html.Hidden("hdnDeliveryMethodForAssignmentPaper", "", new { @Value = "", id = "hdnDeliveryMethodForAssignmentPaper" })
+                    <i id="CalMessageDeliveryMethod" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                    <span id="dateMessageDeliveryMethod" style="color:red"></span>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-xs-12">
+
+                    </div>
+
+                </div>
+
+
+            </div>
+        </form>
+        <div class="row">
+            <div class="col-xs-12">
+            </div>
+            <div class="col-xs-12 text-right preview-mini-options">
+
+
+                @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Assignments.Save))
+                {
+                    <a class="btn-site btn-icon" onclick="SaveAssignmentPaper()">@DbRes.TResource("User.Transaction.Assignment.Save") </a>
+                }
+                @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Assignments.Approve))
+                {
+                    <a class="btn-site btn-icon" onclick="PdfAssignmentPaper()">@DbRes.TResource("User.Transaction.Assignment.Approve")</a>
+                }
+                @*<a class="btn-site btn-icon" onclick="PrintAssignmentPaper()"> @DbRes.TResource("User.Transaction.Assignment.PrintPaper") </a>*@
+
+
+            </div>
+        </div>
+    </div>
+    @Html.StickyHidden("hdnTransactionId", ViewData["TransactionId"].ToString(), new { id = "hdnAssignmentsTransactionId", @class = "TransactionId" })
+
+</div>
+<div class="modal fade" id="PrintDepartments" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="PrintBody" class="modal-body">
+
+            </div>
+            <div class="modal-footer text-right">
+                <button id="TransactionPrint" class="btn btn-site" onclick="PrintDepartment()"><i class="la la-print"></i> طباعة</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="UserDelegationsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">تفويضات الموظف </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="col-lg-12">
+                    <ul id="UserDelegationsList" style="list-style: disc;">
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnsConfirmSendEditorAssignments" class="btn-site">استمرار</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+
+
+
+
+
+
+
+
+
+
+
+    function GetDirectedToUsersByOrgUnitId_Assignment() {
+        debugger;
+
+        if ($("#AssignmentVM_ToOrgUnitId").val() != "") {
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("GetUsersByOrgUnitId", "VipInbound")',
+                data: { id: $("#AssignmentVM_ToOrgUnitId").val(), addSelectOption: true },
+                success:
+                    function (data) {
+                        AutoCompleteChangeList("ddlAssignmentPaperUsers", data);
+                        $("#ddlAssignmentPaperUsers").val('استقبال الادارة');
+                        $("#hdnAssignmentPaperUserName").val('استقبال الادارة');
+                        $("#hdnAssignmentPaperUserId").val('-1');
+                    //    $("#ddlAssignmentPaperUsers").prop('disabled', false);
+                    }
+            });
+            return false;
+        }
+        else {
+
+            //$("#ddlAssignmentPaperUsers").prop('disabled', true);
+            $("#ddlAssignmentPaperUsers").val("");
+            $("#hdnAssignmentPaperUserId").val("");
+            AutoCompleteChangeList("ddlAssignmentPaperUsers", "[]");
+        }
+    }
+    function GroupDisplay(id) {
+        var GroupData = document.getElementById('GroupData_' + id);
+        debugger
+        if (GroupData.style.display === "none") {
+            GroupData.style.display = "block";
+        }
+        else {
+            GroupData.style.display = "none";
+        }
+    }
+
+    var checkbox = document.querySelector("#followUpCheck");
+
+    checkbox.addEventListener('change', function ()
+    {
+        if (this.checked)
+        {
+            document.querySelector("#followupshow").style = "display:block;";
+            $("#AssignmentPaperFollowUpPeriodId").val(14);
+            $("#ddlAssignmentPaperFollowUpPeriod").val('أسبوعين');
+        }
+        else
+        {
+            document.querySelector("#followupshow").style = "display:none;";
+        }
+    });
+
+    function GetUserDelegationsById() {
+
+        debugger;
+
+             var errorCount = 0;
+        if (localStorage.getItem("selectedEntity") == null) {
+            $("#CalMessageOrg").removeClass("hidden_");
+            $("#CalMessageorg").show();
+            $("#dateMessageOrg").html('@Html.Raw(DbRes.TValidation("User.Transaction.AssignedToEntityValidation"))');
+            errorCount++;
+        }
+        if ($('#hdnDeliveryMethodForAssignmentPaper').val() == null || $('#hdnDeliveryMethodForAssignmentPaper').val() == "") {
+            $("#CalMessageDeliveryMethod").removeClass("hidden_");
+            $("#CalMessageDeliveryMethod").show();
+            $("#dateMessageDeliveryMethod").html('@Html.Raw(DbRes.TValidation("User.Transaction.AssignmentPaper.DeliveryMethodValidation"))');
+            errorCount++
+        }
+        if (($('#explanation').text() != null && $('#explanation').text().trim() != "") && ($('#hdnExplanationConfedentialityForAssignmentPaper').val() == null || $('#hdnExplanationConfedentialityForAssignmentPaper').val() == "")) {
+            $("#CalMessageConfidentiality").removeClass("hidden_");
+            $("#CalMessageConfidentiality").show();
+            $("#dateMessageConfidentiality").html('@Html.Raw(DbRes.TValidation("User.Explanation.ConfidentialityRequired"))');
+            errorCount++
+        }
+        if (errorCount > 0) {
+            return false;
+        }
+
+        var AssginmentIndividualToUserId = '';
+        var AssginmentIndividualToUserName = '';
+        $('input.isAssigned').each(function () {
+            if ($(this).attr('value')) {
+                AssginmentIndividualToUserId = $(this).parent().find('.ToUserId').val();
+                AssginmentIndividualToUserName = $(this).parent().parent().find("#ToUserNamelabel").text();
+            }
+
+        });
+        var del = "{0} مفوض بالعمل عن {1} من تاريخ {2} الى تاريخ {3}."
+        var DelegationsList = '';
+        $("ul#UserDelegationsList").html('');
+        if (AssginmentIndividualToUserId != '') {
+            $.ajax({
+                url: "@Url.Action("GetUserDelegationsById", "Inbound")",
+                type: 'GET',
+                data: { UserId: AssginmentIndividualToUserId },
+                success: function (data) {
+                    if (data.result != null) {
+                        if (data.result.length > 0) {
+                            data.result.forEach(element => {
+                                var Msg = del;
+                                Msg = Msg.replace('{0}', AssginmentIndividualToUserName);
+                                Msg = Msg.replace('{1}', element.UserPreferenceName);
+                                Msg = Msg.replace('{2}', new Date(parseInt(element.FromDate.replace('/Date(', '').replace(')/', ''))).toLocaleDateString());
+                                Msg = Msg.replace('{3}', new Date(parseInt(element.ToDate.replace('/Date(', '').replace(')/', ''))).toLocaleDateString());
+                                DelegationsList = DelegationsList + '<li>' + Msg + '</li>'
+                            });
+                            $("ul#UserDelegationsList").append(DelegationsList);
+                            $("#UserDelegationsModal").modal();
+                        }
+                        else {
+                            $("#UserDelegationsList").hide();
+                            $("#UserDelegationsModal").modal('hide');
+                            SendAssignmentPaper();
+                        }
+                    } else {
+                        $("#UserDelegationsModal").modal('hide');
+                        SendAssignmentPaper();
+                    }
+                },
+                error: function (a) {
+                }
+            });
+        } else {
+            $("#UserDelegationsModal").modal('hide');
+            SendAssignmentPaper();
+        }
+    }
+    function UpdateIsBCC(obj) {
+        debugger;
+        var objId = obj.id;
+        var hdnId = objId.replace("ch_", "hdn_");
+        if (obj.checked) {
+            $('#' + hdnId).val(true);
+        } else {
+            $('#' + hdnId).val(false);
+        }
+    }
+</script>
+<script>
+    function openPrintModal() {
+        debugger;
+
+        var PrintHtml = '<div class="col-xl-12">' + $(".DepartmentsTitle").find('.col-xs-12').html()+'<hr></div>'
+        $('#AddedEntities').find('div.row').each(function () {
+
+            var ToOrgUnitName =  $(this).find('.ToOrgUnitName').find('div label').html()
+            var ToUserId = $(this).find('.ToUserId').find('div label').html()
+            var Actiontext = $(this).find('.ActionId').find('.AutPosition .DDLClass').val()
+            var isAssigned = $(this).find('.divRadio').find('.isAssigned').val()
+            var IsCopy = $(this).find('.divRadio').find('.IsCopy').val()
+
+            PrintHtml = PrintHtml + '<div class="row">';
+            PrintHtml = PrintHtml + '<div class="form-group col-lg-3 col-md-3 col-sm-3 col-xs-3 mb-2">';
+            PrintHtml = PrintHtml + '<label class="control-label">اسم الادارة :</label>';
+            PrintHtml = PrintHtml + '<div><label>' + ToOrgUnitName + '</label></div>';
+            PrintHtml = PrintHtml + '</div>';
+
+            PrintHtml = PrintHtml + '<div class="form-group col-lg-3 col-md-3 col-sm-3 col-xs-3 mb-2">';
+            PrintHtml = PrintHtml + '<label class="control-label">الموظف  :</label>';
+            PrintHtml = PrintHtml + '<div><label>' + ToUserId + '</label></div>';
+            PrintHtml = PrintHtml + '</div>';
+
+            PrintHtml = PrintHtml + '<div class="form-group col-lg-3 col-md-3 col-sm-3 col-xs-3 mb-2">';
+            PrintHtml = PrintHtml + '<label class="control-label"> النوع :</label>';
+            PrintHtml = PrintHtml + '<div class="inline-radio mr-3 ml-3">';
+
+            if (isAssigned == 'true') {
+                PrintHtml = PrintHtml + '<div class="radio">  <input class="form-check-input" disabled type="radio" checked >  <label class="form-check-label"> إحالة </label> ';
+            }
+            else {
+                PrintHtml = PrintHtml + '<div class="radio">  <input class="form-check-input" disabled type="radio"   >   <label class="form-check-label"> إحالة </label> ';
+            }
+
+            PrintHtml = PrintHtml + '</div>';
+
+            if (IsCopy == 'true') {
+                PrintHtml = PrintHtml + '<div class="checkbox  mr-3 ml-3">  <input disabled class="form-check-input" type="checkbox"   checked ><label class="form-check-label"> صورة </label></div> ';
+            }
+            else {
+                PrintHtml = PrintHtml + '<div class="checkbox  mr-3 ml-3">  <input disabled class="form-check-input" type="checkbox"    ><label class="form-check-label"> صورة </label></div>';
+            }
+
+            PrintHtml = PrintHtml + '</div>';
+            PrintHtml = PrintHtml + '</div>';
+            PrintHtml = PrintHtml + '<div class="form-group col-lg-3 col-md-3 col-sm-3 col-xs-3 mb-2">';
+            PrintHtml = PrintHtml + '<label class="control-label">الإجراء  :</label>';
+            PrintHtml = PrintHtml + '<div><label>' + Actiontext + '</label></div>';
+            PrintHtml = PrintHtml + '</div>';
+            PrintHtml = PrintHtml + '</div>';
+        });
+
+        $("#PrintBody").html(PrintHtml);
+        $('#PrintDepartments').modal();
+    }
+
+
+    function PrintDepartment() {
+        debugger;
+
+        var cssUrl = '<link href="../../../Content/Admin/lib/bootstrap/css/bootstrap.min.rtl.css" rel="stylesheet">';
+        var cssUrl = cssUrl + '<link href="../../../Content/Admin/lib/bootstrap/css/bootstrap.form.rtl.css" rel="stylesheet">';
+        var cssUrl = cssUrl + '<link href="../../../Content/Admin/lib/bootstrap/css/bootstrap.grid.rtl.css" rel="stylesheet">';
+        var cssUrl = cssUrl + '<link href="../../../Content/Admin/lib/css/main.css" rel="stylesheet">';
+        var cssUrl = cssUrl + '<link href="../../../Content/Admin/lib/css/jquery-ui.css" rel="stylesheet">';
+        var cssUrl = cssUrl + '<link href="../../../Content/Admin/lib/css/style.css" rel="stylesheet">';
+
+
+        var contents = $("#dvContents").html();
+        var frame1 = $('<iframe />');
+        frame1[0].name = "frame1";
+        frame1.css({ "position": "absolute", "top": "-1000000px" });
+        $("body").append(frame1);
+        var frameDoc = frame1[0].contentWindow ? frame1[0].contentWindow : frame1[0].contentDocument.document ? frame1[0].contentDocument.document : frame1[0].contentDocument;
+        frameDoc.document.open();
+        //Create a new HTML document.
+        frameDoc.document.write('<html><head><title>DIV Contents</title>');
+        frameDoc.document.write('</head><body>');
+        //Append the external CSS file.
+        frameDoc.document.write(cssUrl);
+        //Append the DIV contents.
+        frameDoc.document.write($("#PrintBody").html());
+        frameDoc.document.write('</body></html>');
+        frameDoc.document.close();
+        setTimeout(function () {
+            window.frames["frame1"].focus();
+            window.frames["frame1"].print();
+            frame1.remove();
+        }, 500);
+
+
+
+    }
+    $(document).ready(function () {
+        onChangeAssinmentPaperMethod();
+        //ClearInputs('dvEditorTreeAssignmentPaper');
+        localStorage.removeItem("selectedEntity");
+        $("#btnsConfirmSendEditorAssignments").click(function () {
+
+            $("#UserDelegationsModal").modal('hide');
+            SendAssignmentPaper();
+        });
+        setTimeout(function () {
+            $('#EditorAssignmentPaper_rbSearchByOrgUnit').click();
+        }, 500);
+        setTimeout(function () {
+            GetDirectedToUsersByOrgUnitId_Assignment();
+        }, 1500);
+    });
+    function onChangeAssinmentPaperMethod() {
+        debugger;
+
+        var value = $('#hdnDeliveryMethodForAssignmentPaper').val();
+        switch (parseInt(value)) {
+            case DeliveryMethodType.Paper:
+                ShowHideAssinmentPaperReporterContent(true);
+                break;
+            case DeliveryMethodType.Electronic:
+                ShowHideAssinmentPaperReporterContent(false);
+                break;
+            case DeliveryMethodType.ElectronicPaper:
+                ShowHideAssinmentPaperReporterContent(true);
+                break;
+            default:
+        }
+    }
+
+    function ShowHideAssinmentPaperReporterContent(isShow) {
+        debugger;
+
+        if (isShow) {
+            $('#ReporterContentAssignmentPaper').removeClass('hide');
+        } else {
+            $('#ReporterContentAssignmentPaper').addClass('hide');
+        }
+    }
+
+    function ActionChanged() {
+        debugger;
+
+        var divrValue = $(".rValue:checked").closest(".divRadio").next(".divDDl").find(".AutPosition");
+        if (divrValue && divrValue.length > 0) {
+            var ddlControl = $(divrValue).find(".DDLClass");
+            if (ddlControl && ddlControl.length > 0) {
+                $('#explanation > .tag').remove();
+                $("#explanation").html('<span class="tag" contenteditable="false" style="display:inline-block;"><a class="d-flex flex-nowrap" data-editable="True"><span class="align-self-center">' + ddlControl.val() + '</span><span class="align-self-center removing_tag uicon icon_close" title="حذف"></span> </a> </span>' + ' ' + $("#explanation").html().trim() + '&nbsp;');
+            }
+        }
+    }
+
+    var urlAccordingToTransactionType;
+    var errorCount = 0;
+    function SendAssignmentPaper() {
+        debugger;
+        var AddFollowUp = false;
+        errorCount = 0;
+        if (localStorage.getItem("selectedEntity") == null) {
+            $("#CalMessageOrg").removeClass("hidden_");
+            $("#CalMessageorg").show();
+            $("#dateMessageOrg").html('@Html.Raw(DbRes.TValidation("User.Transaction.AssignedToEntityValidation"))');
+            errorCount++;
+        }
+        if ($('#hdnDeliveryMethodForAssignmentPaper').val() == null || $('#hdnDeliveryMethodForAssignmentPaper').val() == "") {
+            $("#CalMessageDeliveryMethod").removeClass("hidden_");
+            $("#CalMessageDeliveryMethod").show();
+            $("#dateMessageDeliveryMethod").html('@Html.Raw(DbRes.TValidation("User.Transaction.AssignmentPaper.DeliveryMethodValidation"))');
+            errorCount++
+        }
+        if (($('#explanation').text() != null && $('#explanation').text().trim() != "") && ($('#hdnExplanationConfedentialityForAssignmentPaper').val() == null || $('#hdnExplanationConfedentialityForAssignmentPaper').val() == "")) {
+            $("#CalMessageConfidentiality").removeClass("hidden_");
+            $("#CalMessageConfidentiality").show();
+            $("#dateMessageConfidentiality").html('@Html.Raw(DbRes.TValidation("User.Explanation.ConfidentialityRequired"))');
+            errorCount++
+        }
+
+        if (followUpCheck.checked == true) {
+            AddFollowUp = true;
+            AssignPaperCheckFollowUpDate();
+
+        }
+        else {
+            $('#hdnAssignmentPaperFolloupDateGreg').val(null);
+            $('#hdnAssignmentPaperFollowUpDateUm').val(null);
+            $('#AssignmentPaperFollowUpPeriodId').val(null);
+            $('#AssignmentPaperFollowUpProccessId').val(null);
+        }
+        if (errorCount > 0) {
+            return false;
+        }
+        var token = $("#frmAddTemporaryEntity").find("input[name='__RequestVerificationToken']").val();
+        var AddedEntities = $("#AddedEntities :input").serialize();
+        var explanation = $("#explanation").text().trim();
+        var Confedentiality = $('#hdnExplanationConfedentialityForAssignmentPaper').val();
+
+
+        var selectedConfidentiality = $("input[name='selectedConfidentiality']:checked").val() != undefined ? $("input[name='selectedConfidentiality']:checked").val() : $('#hdnExplanationConfedentialityForAssignmentPaper').val();
+        var selectedAction = $("input[name='selectedAction']:checked").val() != undefined ? $("input[name='selectedAction']:checked").val() : '';
+
+
+        var deliveryMethodId = $('#hdnDeliveryMethodForAssignmentPaper').val();
+        var TransactionId = @ViewData["TransactionId"];
+        var reporterId = $('#hdnAssignmentPaperReporter').val();
+        var FolloupDateTo = $('#hdnAssignmentPaperFolloupDateGreg').val();
+        var FolloupDateH = $('#hdnAssignmentPaperFollowUpDateUm').val();
+        var FollowUpPeriod = $('#AssignmentPaperFollowUpPeriodId').val();
+        if (FollowUpPeriod == "") {
+            FollowUpPeriod = "0"
+        }
+        var FollowUpProccess = $('#AssignmentPaperFollowUpProccessId').val();
+        if (FollowUpProccess == "") {
+            FollowUpProccess = "0"
+        }
+
+        var isConfirmed = $("#isConfirmed").val();
+
+        var requestData = "__RequestVerificationToken=" + token + "&" + AddedEntities +
+            "&explanationTxt=" + explanation +
+            "&ConfedentialityId=" + selectedConfidentiality +
+            "&TransactionId=" + TransactionId +
+            "&deliveryMethodId=" + deliveryMethodId +
+            "&reporterId=" + reporterId +
+            "&AddFollowUp=" + AddFollowUp +
+            "&FolloupDateTo=" + FolloupDateTo +
+            "&FolloupDateH=" + FolloupDateH +
+            "&FollowUpPeriod=" + FollowUpPeriod +
+            "&FollowUpProccess=" + FollowUpProccess +
+            "&isConfirmed=" + isConfirmed +
+            "&action=" + selectedAction;
+
+
+        if (AddedEntities != "") {
+            $.ajax({
+                type: 'post',
+                cache: false,
+                url: '@Url.Action("SendAssignmentPaper","Inbound")',
+                data: requestData,
+                success: function (data) {
+                        switch (data.MessageType)
+                        {
+                            case 0:
+                                break;
+                            case 1:
+                                return ShowConfirmMessage(data.MessageText, "ContinueAssigneTransaction");
+                                break;
+                            default:
+                                return ShowErrorMessage(data.MessageText);
+                        }
+                        if (data.MessageType != 2) {
+                            urlAccordingToTransactionType = data.returnUrl;
+                            if (false) {
+                                $.ajax({
+                                    type: 'post',
+                                    url: '@Url.Action("GetDeliveryReportByTransactionIds", "Inbound")',
+                                    data: { transactionIds: $('#hdnTransactionID').val(), __RequestVerificationToken: token },
+                                    success: function (data) {
+                                        if (data.MessageType != 2) {
+                                            PrintAssignmentPaperDeliveryReport(data.TransactionDeliveryReports);
+                                        }
+                                        else {
+                                            RedirectToTargetPage();
+                                            //ShowErrorMessage(data.MessageText);
+                                        }
+                                    }
+                                });
+                            }
+                            else {
+                                RedirectToTargetPage();
+                            }
+                        }
+                        else {
+                            debugger;
+                            //RedirectToTargetPage();
+                          ShowErrorMessage(data.MessageText);
+                        }
+                    }
+            });
+        }
+    }
+
+
+
+    function SaveAssignmentPaper() {
+        var AddFollowUp = false;
+        errorCount = 0;
+
+
+        var token = $("#frmAddTemporaryEntity").find("input[name='__RequestVerificationToken']").val();
+        var AddedEntities = $("#AddedEntities :input").serialize();
+        var TransactionId = @ViewData["TransactionId"];
+        var explanation = $("#explanationTxt").val();
+
+
+
+        var requestData = "__RequestVerificationToken=" + token + "&" + AddedEntities + "&TransactionId=" + $('#InboundId').val() + "&explanationTxt=" + explanation;
+
+
+        if (AddedEntities != "") {
+        $.ajax({
+            type: 'post',
+            cache: false,
+            url: '@Url.Action("SaveAssignmentPaperVip","Inbound")',
+            data: requestData,
+            success:
+                function (data) {
+                    debugger;
+                    if (data.MessageType != 2) {
+                        ShowSuccesMessage(data.MessageText);
+                    }
+                    else {
+                        debugger;
+                        ShowErrorMessage(data.MessageText);
+                    }
+                }
+            });
+        }
+    }
+        ///////////// اعتماد
+    function PdfAssignmentPaper() {
+        debugger;
+        checkIfHasMainDocument();
+        var hdnMainDocToken = $('#hdnMainDocTokenId').val();
+        var token = $("#frmAddTemporaryEntity").find("input[name='__RequestVerificationToken']").val();
+        var AddedEntities = $("#AddedEntities :input").serialize();
+        var Generalization = $("#Generalizationid:checked").val() == "on";
+        var explanation = $("#explanation").text();
+
+
+        var selectedConfidentiality = $("input[name='selectedConfidentiality']:checked").val() != undefined ? $("input[name='selectedConfidentiality']:checked").val() : $('#hdnExplanationConfedentialityForAssignmentPaper').val() != null ?
+            $('#hdnExplanationConfedentialityForAssignmentPaper').val() : '';
+        var selectedAction = $("input[name='selectedAction']:checked").val() != undefined ? $("input[name='selectedAction']:checked").val() : '';
+
+
+         var ExplanationPriority = $("input[name='ExplanationPriority']:checked").val() != undefined ? $("input[name='ExplanationPriority']:checked").val() : $('#hdnExplanationPriority').val();
+
+
+
+        var TransactionId = @ViewData["TransactionId"];
+
+        var requestData = "__RequestVerificationToken=" + token +
+            "&" + AddedEntities +
+            "&transactionId=" + TransactionId +
+            "&MainDocToken=" + hdnMainDocToken +
+            "&explanation=" + explanation +
+            "&Action=" + selectedAction +
+            "&Confidentiality=" + selectedConfidentiality +
+            "&ExplanationPriority" + ExplanationPriority +
+            "&Generalization=" + Generalization;
+
+
+
+            if (AddedEntities != "") {
+                $.ajax({
+                    type: 'post',
+                    cache: false,
+                    url: '@Url.Action("VIPPdfAssignmentPaper", "Inbound")',
+                    data: requestData,
+                    success:
+                    function (data) {
+                        if (data) {
+                            if (data.MessageType != 2) {
+
+                                //document.getElementById('frameViewerAttachment').contentWindow.location.reload();
+                                document.getElementById('frameViewer').contentWindow.location.reload();
+                                //refreshDoconut();
+                            }
+                            else {
+                                ShowErrorMessage(data.MessageText);
+                            }
+                        }
+                    }
+                });
+            }
+
+
+
+
+    }
+
+    function ContinueAssigneTransaction()
+    {
+        $("#isConfirmed").val(true);
+        SendAssignmentPaper();
+
+    }
+
+
+       $('#ddlAssignmentPaperFollowUpPeriod').change(function () {
+           debugger;
+
+            var selectedPeriod= $(this).val();
+
+            if (selectedPeriod == "أخرى") {
+                $('#AssignmentPaperFollowUpDateCal').attr('autocomplete', 'off');
+                $('#divAssignmentPaperFollowupDate').show();
+            } else {
+                $('#divAssignmentPaperFollowupDate').hide();
+
+            }
+
+        });
+        function AssignPaperCheckFollowUpDate() {
+            debugger;
+
+           var FollowUpPeriod = $('#AssignmentPaperFollowUpPeriodId').val();
+            var FollowUpProccess = $('#AssignmentPaperFollowUpProccessId').val();
+
+             if (FollowUpPeriod.val <= 0 || FollowUpProccess.length <= 0) {
+                $("#FollowCalMessageOrg").removeClass("hidden_");
+                $("#FollowCalMessageorg").show();
+                $("#FollowdateMessageOrg").html('@Html.Raw(DbRes.TValidation("User.Transaction.AssignedFollowUpToEntityValidation"))');
+                errorCount++
+                return false;
+            }
+            else {
+                $("#FollowCalMessageOrg").addClass("hidden_");
+                $("#FollowCalMessageorg").hide();
+
+            }
+            @*var dateNow = $.datepicker.formatDate('dd/mm/yy', new Date($.now()));
+            var currentDate = convertdate(dateNow);
+            if ($("#AssignmentPaperFollowUpDateCal").val() != "" ) {
+            if ($("#hdnAssignmentPaperFolloupDateGreg").val() != undefined  ) {
+                var selectedDate = convertdate($("#hdnAssignmentPaperFolloupDateGreg").val());
+
+                    if (selectedDate < currentDate) {
+                        $("#AssignPaperFollowUpMessage").removeClass("hidden_");
+                        $("#AssignPaperFollowUpMessage").show();
+                        $('#AssignmentPaperFollowUpDateCal').addClass('RedBorder');
+                        $("#AssignPaperFollowUpdateMessagee").html(' @Html.Raw(DbRes.TValidation("User.FollowUp.RemindDateCompare"))');
+                        errorCount++
+                        return false;
+                    }
+                    else {
+                        $('#AssignmentPaperFollowUpDateCal').removeClass('RedBorder');
+                        $("#AssignPaperFollowUpMessage").hide()
+                        $("#AssignPaperFollowUpdateMessagee").html('');
+
+
+                    }
+                }
+            }
+            else {
+            $("#AssignPaperFollowUpMessage").removeClass("hidden_");
+            $("#AssignPaperFollowUpMessage").show();
+            $('#AssignmentPaperFollowUpDateCal').addClass('RedBorder');
+            $("#AssignPaperFollowUpdateMessagee").html(' @Html.Raw(DbRes.TValidation("User.Report.TransactionsDeliveryReport.DateToRequired"))');
+            errorCount++
+            return false;
+            }*@
+        }
+    function PrintAssignment() {
+        debugger;
+
+            var TransactionId = $('#hdnAssignmentsTransactionId').val();
+            var url = '@Url.Action("GetTransactionAssignmentHistoryWithContent", "TransactionLog")' + '?transactionId=' + TransactionId;
+            ShowDialog(url, 'dialogbox col-md-12 ');
+    }
+    function PrintAssignmentPaper(){
+        debugger;
+        var token = $("input[name='__RequestVerificationToken']").val();
+        var AddedEntities = $("#AddedEntities :input").serialize();
+        var Generalization = $("#Generalizationid:checked").val()=="on";
+        var explanation = $("#explanation").val();
+
+        var ExplanationPriority = $("input[name='ExplanationPriority']:checked").val() != undefined ? $("input[name='ExplanationPriority']:checked").val() : $('#hdnExplanationPriority').val();
+
+        var selectedConfidentiality = $("input[name='selectedConfidentiality']:checked").val() != undefined ? $("input[name='selectedConfidentiality']:checked").val() : $('#hdnExplanationConfedentialityForAssignmentPaper').val();
+        var selectedAction = $("input[name='selectedAction']:checked").val() != undefined ? $("input[name='selectedAction']:checked").val() : '';
+
+
+
+
+        var TransactionId = @ViewData["TransactionId"];
+
+        var requestData = "__RequestVerificationToken=" + token +
+            "&" + AddedEntities +
+            "&transactionId=" + TransactionId +
+            "&explanation=" + explanation +
+            "&Action=" + selectedAction +
+            "&Confidentiality=" + selectedConfidentiality +
+            "&ExplanationPriority" + ExplanationPriority;
+
+
+
+        if (AddedEntities != "") {
+
+           $.ajax({
+                    type: 'post',
+                    cache: false,
+                    url: '@Url.Action("PrintAssignmentPaperVIP", "Inbound")',
+                    data: requestData,
+               success:
+                   function (data) {
+                       if (data) {
+                           if (data.MessageType != 2) {
+
+                               var TransactionAssignmentWindow = window.open('', '_blank', 'width=900,height=500');
+
+                               TransactionAssignmentWindow.document.write(data);
+                               TransactionAssignmentWindow.document.close();
+                               TransactionAssignmentWindow.focus();
+
+                               setTimeout(function () {
+                                   TransactionAssignmentWindow.print();
+                                   TransactionAssignmentWindow.close();
+                               }, 2000);
+                           }
+                           else {
+                               ShowErrorMessage(data.MessageText);
+                           }
+                       }
+                   }
+            });
+        }
+    }
+
+
+    function PrintAssignmentPaperDeliveryReport(data) {
+        debugger;
+
+            var reporterName = $('#ddlAssignmentPaperReporter').val();
+            var deliveryReportArray = [];
+            for (var i = 0; i < data.length; i++) {
+                var tranDeliveryReport = data[i];
+                deliveryReportArray.push({ TransactionId: tranDeliveryReport.TransactionId, ReportsIds: [] });
+                deliveryReportArray[i].ReportsIds.push(tranDeliveryReport.Id);
+            }
+            var reportType = @((int)DeliveryReportType.DeliveryReport);
+            var parameters = '?transactionReportInfo=' + JSON.stringify(deliveryReportArray) + '&isPerTransaction=true&group=false&reportType=' + reportType + '&reporterName=' + reporterName;
+            urlDeliveryReport = '@Url.Action("PrintDeliveryReportsByIds", "Reports")' + parameters
+            PrintReport(urlDeliveryReport, '', RedirectToTargetPage);
+        }
+
+    function RedirectToTargetPage() {
+        debugger;
+
+            setTimeout(function () {
+                window.location.href = urlAccordingToTransactionType;
+            }, 3000);
+        }
+
+    function AddNewEntity() {
+        debugger;
+            var token = $("input[name='__RequestVerificationToken']").val();
+            var AddedEntities = $("#AddedEntities :input").serialize();
+            var NewEntity = $("#dvAddTemporaryEntity :input").serialize();
+            var requestData = "__RequestVerificationToken=" + token + "&" + NewEntity + '&' + AddedEntities;
+            $.ajax({
+                type: 'post',
+                cache: false,
+                url: '@Url.Action("AddTemporaryEntityNewVip","Editor")',
+                data: requestData,
+                success:
+                    function (data) {
+                        debugger;
+                        if (data.MessageType == @((int)MessageType.Error)) {
+                            ShowErrorMessage(data.MessageText);
+                        } else {
+                            addEntitySuccess(data, "");
+                        }
+                    }
+                });
+        }
+
+        function UpdateAssignedToEntity(obj) {
+            debugger;
+            $(".isAssigned").each(function () {
+                $(this).val(false);
+            });
+
+            var objId = obj.id;
+            var hdnId = objId.replace("Radio_", "hdn_");
+            $('#' + hdnId).val(true);
+            localStorage.setItem('selectedEntity', objId);
+        }
+
+        function UpdateIsCopy(obj) {
+            debugger;
+            var objId = obj.id;
+            var hdnId = objId.replace("ch_", "hdn_");
+               var EnableBcc = objId.replace("IsCopy", "IsBcc");
+            if (obj.checked) {
+                $('#' + hdnId).val(true);
+                $('#' + EnableBcc).removeAttr("disabled");
+                $('#' + EnableBcc).removeClass("disabled");
+            } else {
+                $('#' + hdnId).val(false);
+                $('#' + EnableBcc).addClass("disabled");
+                $('#' + EnableBcc).attr("disabled", "disabled");
+                $('#' + EnableBcc).prop('checked', false); // Unchecks it
+            }
+        }
+
+    function addEntitySuccess(data, div) {
+        debugger;
+
+            var includeCopy = [];
+            $('input[type = "checkbox"]:checked').each(function (index, obj) {
+                includeCopy.push(obj.id);
+            });
+
+            if (data != "") {
+                $('#AddedEn').append(data.html);
+                //$('#' + localStorage.getItem("selectedEntity")).attr("checked", true);
+
+                //$.each(includeCopy, function (i, val) {
+                //    $('#' + val).attr("checked", true);
+                //});
+            }
+        }
+
+        function Clear(){
+            ClearInputs('dvAddTemporaryEntity');
+        }
+
+        function checkIfAnEntitySelected() {
+            debugger;
+
+            var ToOrgUnitId = $("#AssignmentVM_ToOrgUnitId").val();
+            if  (ToOrgUnitId == "") {
+                $("#dvAddTemporaryEntity .InboundDepName, #dvAddTemporaryEntity .InboundDepNum").addClass('RedBorder');
+            }
+            else {
+                $("#dvAddTemporaryEntity .InboundDepName, #dvAddTemporaryEntity .InboundDepNum").removeClass('RedBorder');
+            }
+
+            if (ToOrgUnitId.length == 0) {
+                $("#CalMessageIcon").removeClass("hidden_");
+                $("#CalMessageIcon").show();
+                $('#DepartmentValidateMessage').html('@DbRes.TValidation("User.UserDelegation.OrgUnitRequired")');
+                return false;
+            } else {
+                $('#DepartmentValidateMessage').html('');
+                $("#CalMessageIcon").addClass("hidden_");
+                return ChecktAllowedUserAssignment();
+            }
+
+        }
+
+        @*function DoCheckUser() {
+
+           AutoCompleteChangeSourceParameters("dddlAssignmentPaperUsers", '@Url.Action("AutoComplete_SearchUsersByOrgUnit", "Inbound")', "");
+        }*@
+    function DoCheckUser() {
+        debugger;
+            var rbSearchByUser = $("#EditorAssignmentPaper_rbSearchByUser");
+
+            if (rbSearchByUser.is(':checked')) {
+                ClearInputs('divOrgUnit')
+            }
+        }
+        function DoCheckOrgUnit() {
+            var rbSearchByOrgUnit = $("#EditorAssignmentPaper_rbSearchByOrgUnit");
+            //$('#ddlAssignmentPaperUsers').removeAttr('disabled');
+            if (rbSearchByOrgUnit.is(':checked')) {
+                ClearInputs('divUser')
+            }
+        }
+
+
+    function AddAssignmentPaperOnSuccess(data, div) {
+        debugger;
+
+            if (data.MessageType != 2) {
+                $("#" + div).html("");
+                $("#" + div).html(data.Html);
+                //ShowSuccesMessage(data.MessageText)
+            }
+            else {
+                ShowErrorMessage(data.MessageText);
+            }
+        }
+
+        $("#ddlAssignmentPaperUsers").change(function () {
+            $("#hdnAssignmentPaperUserName").val($(this).val());
+        })
+
+        $("#ddlAssignmentPaperAction").change( function () {
+            $("#hdnAssignmentPaperActionName").val($(this).val());
+        })
+
+
+        function toggleSearchMethod() {
+            var rbSearchByUser = $("#EditorAssignmentPaper_rbSearchByUser");
+            var rbSearchByOrgUnit = $("#EditorAssignmentPaper_rbSearchByOrgUnit");
+            var divUser = $("#divUser");
+            var divOrgUnit = $("#divOrgUnit");
+
+            if (rbSearchByUser.is(':checked')) {
+                divOrgUnit.insertAfter(divUser);
+                AutoCompleteChangeSourceParameters("ddlAssignmentPaperUsers", '@Url.Action("AutoComplete_SearchUsersByOrgUnit", "Inbound")', "");
+                TreeChangeGetChildrenParameters("ToOrgUnitId", { UserId: "##ddlAssignmentPaperUsers_hdnIdToSaveValue" });
+                ResetAutoComplete("ddlAssignmentPaperUsers");
+                ResetTree("ToOrgUnitId");
+            }
+            else {
+                divUser.insertAfter(divOrgUnit);
+                AutoCompleteChangeSourceParameters("ddlAssignmentPaperUsers", '@Url.Action("AutoComplete_SearchUsersByOrgUnit", "Inbound")', { orgUnitId: "#input[name ='EditorAssignmentPaper.ToOrgUnitId']" });
+                TreeChangeGetChildrenParameters("ToOrgUnitId", "");
+                ResetAutoComplete("ddlAssignmentPaperUsers");
+                ResetTree("ToOrgUnitId");
+                ClearInputs('divUser');
+            //    $('#ddlAssignmentPaperUsers').attr('disabled', 'disabled');
+            }
+        }
+        d = Date.now();
+        d = new Date(d);
+        d = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' ' + (d.getHours() > 12 ? d.getHours() - 12 : d.getHours()) + ':' + d.getMinutes() + ' ' + (d.getHours() >= 12 ? "PM" : "AM");
+
+        $('#CurrentDate').append(d);
+</script>
+<script>
+    function ChecktAllowedUserAssignment() {
+        debugger;
+        var UserId = $("#ddlAssignmentPaperUsers_hdnIdToSaveValue").val();
+         if (!UserId) {
+             AddNewEntity();
+             return;
+         }
+          $.ajax({
+            type: 'get',
+            data: { FromUserId: UserId },
+            url: '@Url.Action("GetAllowedUserAssignment", "Inbound")',
+              success: function (data) {
+                  debugger
+                  if (data.selectedUserAllowedAssignmentCount == 0) {
+                      AddNewEntity();
+                }
+                else {
+                    if (data.isUserAllowAssignment) {
+                        AddNewEntity();
+                    }
+                    else {
+                        ShowInformationMessage(data.MessageText);
+                    }
+                }
+
+
+            }
+        });
+    }
+
+</script>
+<style>
+    .RedBorder {
+        border: 1px solid #fe0000 !important
+    }
+
+    #CurrentDate {
+        direction: ltr;
+    }
+
+    .explanationDiv {
+        min-height: 70px;
+        height: auto;
+    }
+
+    .modal-lg {
+        min-width: 65vw !important;
+    }
+
+    #followupshow {
+        display: none;
+    }
+</style>
+<script>
+
+    function UpdateActionAssignment()
+    {
+        debugger;
+        $(".ActionId").each(function ()
+        {
+            debugger;
+            $(this).val($("#selectedActionRB:checked").val());
+        });
+
+        //class ActionId
+    }
+</script>

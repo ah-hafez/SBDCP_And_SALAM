@@ -1,0 +1,61 @@
+﻿@using MCS.UI.Areas.User.Models.UserPreferences
+@using MCS.Framework.Localization
+@model VerificationInfo
+
+@{
+    Layout = "~/Views/Shared/_DialogLayout.cshtml";
+}
+<style>
+    .rowhight {
+        height: 115px;
+    }
+</style>
+<div class="content-rtl panel panel-default dialogbox_panel" >
+    <div class="panel-heading">
+        <h3 class="title2">@Model.Title</h3>
+    </div>
+    <div class="modal-body">
+        <div class="panel-body">
+            @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmCheckVerification", @class = "form-horizontal" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="panel-body">
+                    @Html.HiddenFor(model => model.VerificationType)
+                    <div class="row rowhight">
+                        @if (Model.VerificationType == VerificationType.NeedEmail)
+                        {
+                            <div class="col-md-5">
+                                <fieldset>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Email, new { @class = "control-label" })<span class="stark">*</span>
+                                        <div>
+                                            @Html.TextBoxGroupFor(model => model.Email, "ValidationForm", new { @class = "form-control empty", @maxlength = "50" })
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        }
+                        else if (Model.VerificationType == VerificationType.NeedCode)
+                        {
+                            <div class="col-md-6">
+                                <fieldset>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Code, new { @class = "control-label" })<span class="stark">*</span>
+                                        <div>
+                                            @Html.NumericTextBoxFor(model => model.Code, new { @class = "form-control", maxlength = "6" }, "ValidationForm")
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="panel-footer middle">
+                    @Html.ActionButton(DbRes.TResource("Admin.UserCategory.Save"), Url.Action("GenerateVerificationCode").ToString(), null, null, null,
+                    "OnSuccessCheckVerification", null, "post", "ValidationForm", "btnUpdateEmail", "frmCheckVerification", "btn btn-save pull-right")
+                    @Html.ResetButton("ClearInputs('frmCheckVerification')")
+                </div>
+            }
+        </div>
+    </div>
+</div>

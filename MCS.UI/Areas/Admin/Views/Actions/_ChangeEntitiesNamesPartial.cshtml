@@ -1,0 +1,124 @@
+﻿@model MCS.UI.Areas.Admin.Models.Actions.ChangeEntityNameVM
+@using MCS.Common;
+@using MCS.Framework.Localization;
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmChangeEntitiesNames" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="modal fade in" id="myModal" role="dialog" style="display: block;">
+        <div class="modal-dialog" style="width:600px">
+            <!-- Modal content-->
+            <div class="modal-content modal-height">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" onclick="closeDialog()">×</button>
+
+                    <div class="d-sm-flex d-block">
+                        <div class="mr-auto mr-sm-5">
+                            <span class="site-color main-title2">@ViewData["PopUpTitle"].ToString()</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex">
+                        <div class="alert alert-danger w-100" role="alert" id="errorMessage">
+
+                        </div>
+                    </div>
+                    <div class="d-flex">
+                        <h3 class="m-0 pb-2"> @ViewData["EntityFromTitle"].ToString()</h3>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                            <label for="">@ViewData["EntityFromAr"].ToString()<span class="red-color ml-1">*</span></label>
+                            @Html.TextBoxFor(model => model.EntityFromLocalizations[0].Text, new { id = "EntityFromAr", @class = "form-control" })
+                            @Html.StickyHiddenFor(model => model.EntityFromLocalizations[0].CultureId, new { @Value = (int)CultureType.Arabic })
+                            <label style="color:red;" class="hidden_" id="lblEntityFromAr">*@DbRes.TValidation("Admin.Actions.ChangeEntityName.FromEntityArValidation")</label>
+                        </div>
+                        <div class="form-group col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                            <label for="">@ViewData["EntityFromEn"].ToString()<span class="red-color ml-1">*</span></label>
+                            @Html.TextBoxFor(model => model.EntityFromLocalizations[1].Text, new { id = "EntityFromEn", @class = "form-control" })
+                            @Html.StickyHiddenFor(model => model.EntityFromLocalizations[1].CultureId, new { @Value = (int)CultureType.English })
+                            <label style="color:red;" class="hidden_" id="lblEntityFromEn">*@DbRes.TValidation("Admin.Actions.ChangeEntityName.FromEntityEnValidation")</label>
+                        </div>
+                    </div>
+                    @Html.StickyHiddenFor(model => model.EntityFromId)
+                    <div class="d-flex">
+                        <h3 class="m-0 pb-2">@ViewData["EntityToTitle"].ToString()</h3>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                            <label for="">@ViewData["EntityToAr"].ToString()<span class="red-color ml-1">*</span></label>
+                            @Html.TextBoxFor(model => model.EntityToLocalizations[0].Text, new { id = "EntityToAr", @class = "form-control" })
+                            @Html.StickyHiddenFor(model => model.EntityToLocalizations[0].CultureId, new { @Value = (int)CultureType.Arabic })
+                            <label style="color:red;" class="hidden_" id="lblEntityToAr">*@DbRes.TValidation("Admin.Actions.ChangeEntityName.ToEntityArValidation")</label>
+                        </div>
+                        <div class="form-group col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                            <label for="">@ViewData["EntityToEn"].ToString()<span class="red-color ml-1">*</span></label>
+                            @Html.TextBoxFor(model => model.EntityToLocalizations[1].Text, new { id = "EntityToEn", @class = "form-control" })
+                            @Html.StickyHiddenFor(model => model.EntityToLocalizations[1].CultureId, new { @Value = (int)CultureType.English })
+                            <label style="color:red;" class="hidden_" id="lblEntityToEn">*@DbRes.TValidation("Admin.Actions.ChangeEntityName.ToEntityEnValidation")</label>
+                        </div>
+                    </div>
+                    @Html.StickyHiddenFor(model => model.EntityToId)
+                    <div class="form-group col-lg-12 col-md-12 col-xs-12 col-sm-12 d-flex">
+                        <small class="text-danger ml-auto">
+                            @*يرجى تعبئة الحقول التي تحتوي على إشارة **@
+                        </small>
+                    </div>
+                    <div class="py-3 text-right">
+                        @*<button type="submit" class="btn btn-st1 btn-lg">تغيير الأسماء</button>
+                            <button type="submit" class="btn btn-st1 btn-lg ml-2">إعادة الكتابة</button>*@
+                        @Html.ActionButton(DbRes.TResource("Admin.Actions.MoveEntity.ChangeNames"), "ChangeEntitiesNamesBeforeMove", null, null, null, "onChangeSuccess", "", "post", null, "btnChangeEntitiesNames", "frmChangeEntitiesNames", "btn btn-lg btn-st3 mx-1", "CheckInputs")
+                        @Html.ResetButton()
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    function onChangeSuccess(data) {
+        closeDialog();
+        if (data.MessageType != 2) {
+            ShowSuccesMessage(data.MessageText);
+            UpdateDepartmentsTree();
+        } else {
+            ShowErrorMessage(data.MessageText);
+        }
+
+    }
+
+    function closeDialog() {
+        $("#myModal").remove();
+    }
+
+    function CheckInputs() {
+
+        var errorCount = 0;
+        if ($("#EntityFromAr").val() == "") {
+            $("#lblEntityFromAr").removeClass("hidden_");
+            $("#EntityFromAr").css("border-color", "red");
+            errorCount++;
+        }
+        if ($("#EntityFromEn").val() == "") {
+            $("#lblEntityFromEn").removeClass("hidden_");
+            $("#EntityFromEn").css("border-color", "red");
+            errorCount++;
+        }
+        if ($("#EntityToAr").val() == "") {
+            $("#lblEntityToAr").removeClass("hidden_");
+            $("#EntityToAr").css("border-color", "red");
+            errorCount++;
+        }
+        if ($("#EntityToEn").val() == "") {
+            $("#lblEntityToEn").removeClass("hidden_");
+            $("#EntityToEn").css("border-color", "red");
+            errorCount++;
+        }
+        if (errorCount != 0) {
+            return false;
+        }
+        return true;
+    }
+</script>

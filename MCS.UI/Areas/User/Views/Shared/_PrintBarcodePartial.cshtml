@@ -1,0 +1,123 @@
+﻿@model TransactionBarcodesVM
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Transaction
+@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.Common;
+
+@{
+    Layout = "~/Views/Shared/_DialogLayout.cshtml";
+}
+
+@{string controller = TempData.Peek("ControllerName") != null ? TempData.Peek("ControllerName").ToString() : ViewContext.RouteData.Values["controller"].ToString();}
+
+<div class="content-rtl panel panel-default dialogbox_panel">
+    <div class="content_container content_container--header extra-padding">
+
+        <div class="row">
+            <div class="col-xs-12">
+                <h4 class="title4">@DbRes.TResource("User.Transaction.Print") </h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-body">
+        <div class="panel-body">
+            <div class="row dia_print">
+                @foreach (BarcodeVM barcodeVM in Model.BarcodeVMs)
+                {
+                    string source = string.Empty;
+                    string width = string.Empty;
+                    string height = string.Empty;
+                    //if (barcodeVM.Type == BarcodePrintType.Attachment)
+                    //{
+                    //    continue;
+                    //}
+
+                    width = Model.TransactionDesignWidth.ToString();
+                    height = Model.TransactionDesignHeight.ToString();
+
+                    switch (barcodeVM.Type)
+                    {
+                        case BarcodePrintType.Transaction:
+                            source = DbRes.TResource("User.Tranaction.Print.TransactionBarcode");
+                            break;
+
+                        case BarcodePrintType.Copy:
+                            source = DbRes.TResource("User.Tranaction.Print.CopyBarcode");
+                            break;
+
+                        case BarcodePrintType.Attachment:
+                            source = DbRes.TResource("User.Tranaction.Print.AttachmentBarcode");
+                            break;
+                    }
+                    @Html.Partial("~/Areas/User/Views/Transaction/_BarcodePartial.cshtml", barcodeVM, new ViewDataDictionary { { "Source", source }, { "Width", width }, { "Height", height } });
+                }
+
+                @Html.HiddenFor(model => model.TransactionDesignWidth, new { @id = "hdnTransactionDesignWidth" })
+                @Html.HiddenFor(model => model.TransactionDesignHeight, new { @id = "hdnTransactionDesignHeight" })
+                @Html.HiddenFor(model => model.TicketDesignHeight, new { @id = "hdnTicketDesignHeight" })
+                @Html.HiddenFor(model => model.TicketDesignWidth, new { @id = "hdnHtmlTicketDesignWidth" })
+                @Html.Hidden("hdntransId", ViewData["transId"])
+
+                <div class="check"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class=" btn-site " onclick="PrintAllBarcode()">@DbRes.TResource("User.Transaction.Print.Print")</button>
+        <button type="button" class=" btn-site" data-dismiss="modal" onclick="__dialog.close();">@DbRes.TResource("User.Transaction.Print.Close")</button>
+    </div>
+</div>
+<script type="text/javascript">
+
+    var transactionId = $("#hdntransId").val();
+
+    function PostTransactionLogBarCode(ActionCode, transactionId) {
+       
+    var token = $("#frmSearch").find("input[name='__RequestVerificationToken']").val();
+        $.ajax({
+            type: 'post',
+            url: '@Url.Action("LogTransactionAction", "Inbound")', //inbound controller used to access tranaction controller
+            data: { auditingActionCode: ActionCode, transactionId: transactionId , __RequestVerificationToken: token },
+            success:
+           function (data) {
+
+           }
+        })
+    }
+
+    function PrintContent(element, bodyWidth, bodyHeight) {
+         
+        var BarcodeWindow
+        var headstr = "<html><head><title>Barcode</title></head><body style='background: gray;'>";
+        var footstr = "</body>";
+        BarcodeWindow = window.open('', '_blank', 'width=500,height=500');
+       // BarcodeWindow.document.body.style.width = bodyWidth;
+       //BarcodeWindow.document.body.style.height = bodyHeight;
+        BarcodeWindow.document.write(headstr + element.html() + footstr);
+        BarcodeWindow.document.close();
+        BarcodeWindow.focus();
+        setTimeout(function () { BarcodeWindow.print(); BarcodeWindow.close(); }, 1000);
+    }
+
+    function PrintAllBarcode() {
+        $('.checkprint:checked').each(function () {
+                var divContent = $('#Content' + $(this).prop('id'));
+                PrintContent(divContent, $('#hdnTransactionDesignWidth').val(), $('#hdnTransactionDesignHeight').val());
+        });
+
+        var actionType=@Convert.ChangeType(MCS.Common.AuditingActionCode.PrintBarcode, MCS.Common.AuditingActionCode.PrintBarcode.GetTypeCode());
+        PostTransactionLogBarCode(actionType, transactionId);
+    }
+
+</script>
+
+
+
+
+
+
+
+

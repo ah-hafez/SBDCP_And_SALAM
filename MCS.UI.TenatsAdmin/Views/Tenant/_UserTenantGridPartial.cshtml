@@ -1,0 +1,24 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Framework.Controls.Mvc
+@using MCS.UI.TenantsAdmin.Models.Tenant;
+@model AjaxGrid<UserTenantVM>
+
+@{
+    ViewBag.Title = "_UserTenantLookupGridPartial";
+}
+
+@Html.Grid(Model, "_Grid").Named("UserTenant").Columns(columns =>
+{
+    columns.Add(model => model.Id, true);
+    columns.Add(model => model.LocalName).Titled(DbRes.TResource("Tenant.Name"));
+    columns.Add(model => model.UserName).Titled(DbRes.TResource("Tenant.Login.UserName"));
+    columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model =>
+    Html.GridImageButton(Url.Action("GetUserTenant", "Tenant"), "Tenant", 0, OperationType.Update, "dvUserTenantContent", null, null,"", "", "get"));
+
+    columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model =>
+    Html.ConfirmImageButton(Url.Action("DeleteUserTenant", "Tenant"), "Tenant", 0, "dvUserTenantGrid", "", null, "OnDeleteSuccessUserTenant", null, "post", 
+    DbRes.TResource("Tenant.DeleteMessage")));
+
+}).Sortable().Filterable().UpdateActionUrl("UpdateUserTenantGrid")
+
+

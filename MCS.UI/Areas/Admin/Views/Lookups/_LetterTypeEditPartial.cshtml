@@ -1,0 +1,104 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.Lookups
+@using MCS.Common
+@using UserLookups = MCS.UI.Areas.User.Models.Lookups
+@model LetterTypeEditVM
+@{
+    ViewBag.Title = "_TransactionTypeLookupEditPartial";
+}
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmEditLetterType", @class = "" }))
+{
+    @Html.AntiForgeryToken()
+    <div id="EditLetterTypeContent" class="form-row">
+        @{List<UserLookups.CultureVM> cultureVMs = (List<UserLookups.CultureVM>)ViewData["Culture"];}
+
+        @if (cultureVMs != null)
+        {
+            for (int i = 0; i < cultureVMs.Count; i++)
+            {
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                    @Html.CustomLabelFor(model => model.Description[i].CultureName, new { @class = "" }, DbRes.TResource("Admin.LetterType.Name." + cultureVMs[i].ShortName))
+                    @Html.StickyHiddenFor(model => model.Description[i].CultureId, new { Value = cultureVMs[i].Id })
+                    @Html.HiddenFor(model => model.Description[i].Id)
+                    @Html.TextBoxGroupFor(model => model.Description[i].Text, null, new { @class = "form-control" }, DbRes.TValidation("Admin.LetterType.NameRequired." + cultureVMs[i].ShortName))
+                </div>
+            }
+
+        }
+        @for (int i = 0; i < Model.TransactionCategories.Count; i++)
+        {
+            @Html.StickyHiddenFor(model => model.TransactionCategories[i].IsSelected, new { @Value = true })
+            @Html.StickyHiddenFor(model => model.TransactionCategories[i].Id)
+        }
+        @for (int i = 0; i < Model.List.Count; i++)
+        {
+            if (Model.List[i].Id == LetterListType.Formal.LookupIdentity(LookupCategory.LetterListType,SessionInfo.CultureShortName))
+            {
+                @Html.StickyHiddenFor(model => model.List[i].IsSelected, new { @Value = true })
+                @Html.StickyHiddenFor(model => model.List[i].Id)
+            }
+            else
+            {
+                @Html.StickyHiddenFor(model => model.List[i].IsSelected, new { @Value = false })
+                @Html.StickyHiddenFor(model => model.List[i].Id)
+            }
+
+         }
+    </div>
+    @Html.HiddenFor(model => model.Id, new { id = "hdnEditId" })
+}
+<div class="mx-3 mx-md-5 mb-4 d-flex">
+    <div class="ml-auto">
+        @Html.ActionButton(DbRes.TResource("Admin.LetterType.Edit"), "EditLetterType", "dvGrid", null, null, "OnEditSuccess", null, "post", null, "EditAdd", "frmEditLetterType", "btn btn-lg btn-st3 mx-1")
+        <a class="btn btn-lg btn-st3 mx-1" id="btnCancel" onclick="HideEditDiv()">@DbRes.TResource("Admin.LetterType.Cancel")</a>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        if ($(".ckSourceEdit").find("#TransactionSources_2__IsSelected").is(':checked'))
+            $("#dvEditPopularization").show();
+    });
+    $(".ckSourceEdit").find("#TransactionSources_2__IsSelected").change(function () {
+        if (this.checked) {
+            if (!$(".ckSourceEdit").find("#TransactionSources_0__IsSelected").is(':checked') && !$(".ckSourceEdit").find("#TransactionSources_1__IsSelected").is(':checked'))
+                $("#dvEditPopularization").show();
+        } else
+            $("#dvEditPopularization").hide();
+        $(".ckIsPopEdit").attr('checked', false);
+    });
+    $(".ckSourceEdit").find("#TransactionSources_0__IsSelected").change(function () {
+        if (this.checked) {
+            $("#dvEditPopularization").hide();
+            $(".ckIsPopEdit").attr('checked', false);
+        } else
+            if (!$(".ckSourceEdit").find("#TransactionSources_1__IsSelected").is(':checked') && $(".ckSourceEdit").find("#TransactionSources_2__IsSelected").is(':checked'))
+                $("#dvEditPopularization").show();
+    });
+    $(".ckSourceEdit").find("#TransactionSources_1__IsSelected").change(function () {
+        if (this.checked) {
+            $("#dvEditPopularization").hide();
+            $(".ckIsPopEdit").attr('checked', false);
+        } else
+            if (!$(".ckSourceEdit").find("#TransactionSources_0__IsSelected").is(':checked') && $(".ckSourceEdit").find("#TransactionSources_2__IsSelected").is(':checked'))
+                $("#dvEditPopularization").show();
+    });
+</script>
+<script>
+    $.validator.addMethod('require-oneEditLetter', function (value) {
+        return $('.require-oneEditLetter:checked').size() > 0;
+    });
+
+    var checkboxes = $('.require-oneEditLetter');
+    var checkbox_names = $.map(checkboxes, function (e, i) {
+        return $(e).attr("name")
+    }).join(" ");
+
+    $('.require-oneEditLetter').change(function () {
+        if ($(this).is(':checked')) {
+            $("#_msgvalEditLetter")
+                .removeClass("field-validation-error")
+                .addClass("field-validation-valid")
+        }
+    });
+</script>

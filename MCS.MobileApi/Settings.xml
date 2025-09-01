@@ -1,0 +1,100 @@
+﻿<SETTINGS uuid="9fd9033d-1267-4557-aa7d-d04cc717a425">
+  <SETTING>
+    <ID>app_name</ID>
+    <TITLE>App name</TITLE>
+    <TYPE>string</TYPE>
+    <KEY>app_name</KEY>
+    <VALUE>eMorasalat</VALUE>
+  </SETTING>
+  <SETTING>
+    <ID>corporateId</ID>
+    <TITLE>Corporate id</TITLE>
+    <TYPE>string</TYPE>
+    <KEY>corporateId</KEY>
+    <VALUE>???? ????????? ????????</VALUE>
+  </SETTING>
+  <SETTING>
+    <ID>app_default_language</ID>
+    <TITLE>App default language</TITLE>
+    <TYPE>string</TYPE>
+    <KEY>app_default_language</KEY>
+    <VALUE>ar</VALUE>
+  </SETTING>
+  <SETTING>
+    <ID>show_app_default_language</ID>
+    <TITLE>Show App default language</TITLE>
+    <TYPE>boolean</TYPE>
+    <KEY>show_app_default_language</KEY>
+    <VALUE>true</VALUE>
+  </SETTING>
+  <SETTING>
+    <ID>refresh_time_interval</ID>
+    <TITLE>Refresh time interval</TITLE>
+    <TYPE>string</TYPE>
+    <KEY>refresh_time_interval</KEY>
+    <VALUE>100000</VALUE>
+  </SETTING>
+  <SETTING>
+    <ID>show_refresh_time_interval</ID>
+    <TITLE>show_refresh_time_interval</TITLE>
+    <TYPE>boolean</TYPE>
+    <KEY>show_refresh_time_interval</KEY>
+    <VALUE>true</VALUE>
+  </SETTING>
+  <SETTING>
+    <ID>login_logo_url</ID>
+    <TITLE>login_logo_url</TITLE>
+    <TYPE>string</TYPE>
+    <KEY>login_logo_url</KEY>
+    <VALUE>http://213.210.205.6/iApproval/Images/Logo.png</VALUE>
+  </SETTING>
+  <SETTING>
+    <ID>root_logo_url</ID>
+    <TITLE>root_logo_url</TITLE>
+    <TYPE>string</TYPE>
+    <KEY>root_logo_url</KEY>
+    <VALUE>http://213.210.205.6/iApproval/Images/Cover.png</VALUE>
+  </SETTING>
+  <SETTING>
+    <ID>default_primary_url</ID>
+    <TITLE>Default Primary URL</TITLE>
+    <TYPE>string</TYPE>
+    <KEY>default_primary_url</KEY>
+    <VALUE>http://213.210.205.6/iApproval/NoPrimary.pdf</VALUE>
+  </SETTING>
+  <SETTING>
+    <ID>internal_outbound_permission_code</ID>
+    <TITLE>Internal Outbound permission code</TITLE>
+    <TYPE>string</TYPE>
+    <KEY>internal_outbound_permission_code</KEY>
+    <VALUE>ES.MCS.OUTBOUND.CREATE_INTERNAL_OUTBOUND</VALUE>
+  </SETTING>
+  <SETTING>
+    <ID>default_tray_id</ID>
+    <TITLE>Default Tray Id</TITLE>
+    <TYPE>string</TYPE>
+    <KEY>default_tray_id</KEY>
+    <VALUE>1</VALUE>
+  </SETTING>
+  <SETTING>
+    <ID>show_default_tray_id</ID>
+    <TITLE>Show Default Tray Id</TITLE>
+    <TYPE>string</TYPE>
+    <KEY>show_default_tray_id</KEY>
+    <VALUE>true</VALUE>
+  </SETTING>
+  <SETTING>
+    <ID>save_status_id</ID>
+    <TITLE>Save Status Id</TITLE>
+    <TYPE>string</TYPE>
+    <KEY>save_status_id</KEY>
+    <VALUE>9</VALUE>
+  </SETTING>
+  <SETTING>
+    <ID>undo_save_status_id</ID>
+    <TITLE>Undo Save Status Id</TITLE>
+    <TYPE>string</TYPE>
+    <KEY>undo_save_status_id</KEY>
+    <VALUE>6</VALUE>
+  </SETTING>
+</SETTINGS>

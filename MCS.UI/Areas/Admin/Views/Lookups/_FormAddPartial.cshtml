@@ -1,0 +1,224 @@
+﻿@model FormAddVM
+@using MCS.UI.Areas.Admin.Models.Lookups
+@using UserLookups = MCS.UI.Areas.User.Models.Lookups
+@using MCS.Common;
+@using MCS.Framework.Localization;
+
+@using MCS.Framework.Controls.Mvc;
+@{
+    /**/
+    ViewBag.Title = "_FormAddParial";
+    Layout = null;
+}
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmAddForm", @class = "" }))
+{
+    @Html.AntiForgeryToken()
+    <div id="formAdd" class="form-row">
+
+        @*<p>@DbRes.TResource("Global.Forms.MandatoryFields")</p>*@
+
+        @{List<UserLookups.CultureVM> cultureVMs = ViewData["Culture"] as List<UserLookups.CultureVM>;}
+
+        @if (cultureVMs != null)
+        {
+            for (int m = 0; m < cultureVMs.Count; m++)
+            {
+                <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                    @Html.CustomLabelFor(model => model.Description[m].CultureName, new { @class = "" }, DbRes.TResource(string.Format("Admin.Form.TemplateName.{0}", cultureVMs[m].ShortName)))<span class="stark">*</span>
+                    @Html.StickyHiddenFor(model => model.Description[m].CultureId, new { Value = cultureVMs[m].Id })
+                    @Html.TextBoxGroupFor(model => model.Description[m].Text, "", new { @class = "form-control" }, DbRes.TValidation("Admin.Forms.TemplateNameRequired." + cultureVMs[m].ShortName))
+                </div>
+            }
+        }
+        @Html.HiddenFor(model => model.FileName, new { id = "hdnFileName" })
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12" id="TransTypes" hidden>
+            @Html.CustomLabelFor(model => model.TransactionCategories, new { @class = "w-100" }, DbRes.TResource("Admin.Form.TransactionType"))
+            @Html.Partial("~/Areas/Admin/Views/Lookups/_TransactionSourcePartial.cshtml", Model.TransactionCategories, new ViewDataDictionary { TemplateInfo = new TemplateInfo { HtmlFieldPrefix = Html.NameFor(model => model.TransactionCategories).ToString() } })
+            <label id="noTransTypeselectedValidationMessage" style="display:none; color:red">@DbRes.TValidation("Admin.Form.AtLeastOneTransactionTypeValidation")</label>
+        </div>
+
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <div>
+                <fieldset class="field-set" id="dvDepartmentsTree">
+                    @Html.DepartmentsTree(ViewData["orgUnitDataInfo"] as TreeViewModel, model => model.OrgUnitIds, TreeMode.Single, "OrgUnitIds", false, "", "BasicInformation", "dvDepartmentsTree")
+                </fieldset>
+                <label id="OrgUnitValidationMessage" style="display:none; color:red">@DbRes.TValidation("Admin.Form.OrgUnitValidation")</label>
+                <label id="AtLeastOneOrgUnitValidationMessage" style="display:none; color:red">@DbRes.TValidation("Admin.Form.AtLeastOneOrgUnitValidation")</label>
+            </div>
+        </div>
+
+        @Html.HiddenFor(x => x.FileContent)
+
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            @Html.CustomLabelFor(model => model.AllOrgUnitsSelected, new { @class = "w-100" }, DbRes.TResource("الإدارات"))
+            <div class="form-check form-check-inline">
+                @Html.CheckBoxFor(model => model.AllOrgUnitsSelected, new { id = "AllOrgUnits", @class = "form-check-input" })
+                @Html.StickyHidden("hdnIsSelected")
+                @Html.Label(DbRes.TResource("Admin.Form.AllDepartment"), new { @class = "form-check-label" })
+            </div>
+        </div>
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <button type="button" id="btnAddOrgUnit" class="btn btn-st1 btn-lg w-xs-100">
+                @DbRes.TResource("Admin.Form.AddDepartment")
+            </button>
+        </div>
+        <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <div id="dvOrgUnitItems" class="added_departments d-flex flex-wrap">
+
+            </div>
+        </div>
+    </div>
+
+
+    @*@Html.Partial("~/Areas/Admin/Views/Lookups/_FormTextEditorPartial.cshtml", new FormContentVM(), new ViewDataDictionary { TemplateInfo = new TemplateInfo { HtmlFieldPrefix = Html.NameFor(model => model.FormContentVM).ToString() } })*@
+    <div id="uploadContainer">
+        @Html.Partial("~/Areas/Admin/Views/Lookups/_UploadFile.cshtml")
+        <br />
+    </div>
+    <br />
+    <br />
+    <br />
+    <div class="mx-3 mx-md-5 mb-4 d-flex">
+        <br />
+        <div class="ml-auto">
+            @Html.ActionButton(DbRes.TResource("Admin.Form.Add"), "AddForm", "dvGrid", null, null, "OnAddSuccess", null, "post", null, "btnAdd", "frmAddForm", "btn btn-lg btn-st3 mx-1", "")
+            @Html.ResetButton("ClearFormData('formAdd')")
+        </div>
+
+    </div>
+}
+
+<script>
+
+
+
+    $("#AllOrgUnits").on("change", function () {
+        if ($(this).prop("checked") == true) {
+            $("#dvDepartmentsTree .txtDepartmentNumber").attr("disabled", true);
+            $("#dvDepartmentsTree .txtDepartmentName").attr("disabled", true);
+            $("#btnAddOrgUnit").attr("disabled", true);
+            $("#dvOrgUnitItems").html("");
+            AddedOrgunitsIds = [];
+        } else {
+            $("#dvDepartmentsTree input").attr("disabled", false);
+            $("#btnAddOrgUnit").attr("disabled", false);
+        }
+    });
+
+    function ClearFormData(id) {
+        ClearInputs(id);
+        var txtEditorId = "";
+        var hdnEditorContentId = "";
+        $("#dvOrgUnitItems").html("");
+        AddedOrgunitsIds = [];
+        $("#dvDepartmentsTree input").attr("disabled", false);
+        $("#btnAddOrgUnit").attr("disabled", false);
+        $('#' + id + ' iframe[id^="txtEditor"]').filter(
+            function () {
+                txtEditorId = this.id.substring(0, this.id.length - 4);
+            });
+        $('#' + id+' input[id^="hdnContent"]').filter(
+            function () {
+
+                hdnEditorContentId = this.id;
+            })
+        ChangeTextEditorContent(txtEditorId, hdnEditorContentId, "");
+
+    }
+
+
+
+    function CheckContentOnAdd() {
+
+        var hdnEditorContentId = "";
+        var NoMissingData = true;
+        var noOfSelectedCheckedBoxes = $("#TransTypes input[type=checkbox]:checked").length
+        $('#frmAddForm input[id^="hdnContent"]').filter(
+           function () {
+
+               hdnEditorContentId = this.id;
+            })
+        if ($("#AllOrgUnits").prop("checked") == false && $(".added_item").length < 1) {
+            $("#OrgUnitValidationMessage").hide();
+            $("#AtLeastOneOrgUnitValidationMessage").show();
+
+
+            NoMissingData = false;
+        }
+        if (noOfSelectedCheckedBoxes == 0) {
+            $("#noTransTypeselectedValidationMessage").show();
+            NoMissingData = false;
+        } else {
+            $("#noTransTypeselectedValidationMessage").hide();
+        }
+
+        @*if ($("#" + hdnEditorContentId).length > 0) {
+            if ($("#" + hdnEditorContentId).val() == "") {
+                ShowErrorMessage('@Html.Raw(DbRes.TValidation("Admin.Form.ContentRequired"))');
+                NoMissingData = true;
+            }
+            GetOrganizationUnitIdsToForm();
+            if (NoMissingData) {
+
+            }
+
+            return NoMissingData;
+        }
+        else {
+            ShowErrorMessage('@Html.Raw(DbRes.TValidation("Admin.Form.ContentRequired"))');
+            return false;
+        }*@
+
+    }
+    var AddedOrgunitsIds = [];
+    $('#btnAddOrgUnit').on('click', function () {
+
+        var id = $('#OrgUnitIds_hdnDepartmentId').val();
+        var orgunitName = $('#OrgUnitIds_txtDepartmentName').val();
+        var exist = false;
+
+        if (id == "" && orgunitName == "") {
+            $("#OrgUnitValidationMessage").show();
+            return;
+        }
+        $("#OrgUnitValidationMessage").hide();
+        $("#AtLeastOneOrgUnitValidationMessage").hide();
+        AddedOrgunitsIds.forEach(function (item) {
+            if (item == id) {
+                ShowErrorMessage("Already exist");
+                exist = true;
+                return false;
+            }
+        });
+
+
+        if (!exist) {
+            var itemsCount = $(".added_item").length;
+            var OrgUnitItem = "<div id='div_" + id + "' class='added_item mr-4 mb-3'>";
+            OrgUnitItem += "<span class='added-class d-flex'>";
+            OrgUnitItem += "<span>" + orgunitName + "</span>";
+            OrgUnitItem += "<a onclick='DeleteOrgUnitItem(" + id + ")' class='color-burgundy ml-2'><i class='icon-tables-delete'></i></a>";
+            OrgUnitItem += "</span>";
+            OrgUnitItem += "<input type='hidden' name='OrgUnitIds' value='" + id + "'/>";
+            OrgUnitItem += "</div>";
+
+            $("#dvOrgUnitItems").append(OrgUnitItem);
+            AddedOrgunitsIds.push(id);
+
+            ClearInputs("dvDepartmentsTree");
+        }
+    });
+
+    function DeleteOrgUnitItem(OrgUnitItemId) {
+
+        var index = AddedOrgunitsIds.indexOf(OrgUnitItemId + "");
+        if (index > -1) {
+            AddedOrgunitsIds.splice(index, 1);
+        }
+
+        $("#div_" + OrgUnitItemId).remove();
+    }
+
+
+</script>

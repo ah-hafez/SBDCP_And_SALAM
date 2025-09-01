@@ -1,0 +1,44 @@
+﻿@using MCS.Framework.Localization;
+@using MCS.UI.Areas.Admin.Models.Lookups
+@using UserLookups = MCS.UI.Areas.User.Models.Lookups
+@using MCS.UI.Areas.User.Models.OrgUnit
+
+@model AssignmentPaperGroupEditVM
+@{
+    ViewBag.Title = "_AssignmentPaperGroupEditPartial";
+    Layout = null;
+}
+
+<div class="d-flex flex-column flex-md-row align-items-md-center flex-grow-1">
+    <h3 class="site-color mb-4">تعديل مجموعة</h3>
+</div>
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmEditAssignmentPaperGroup" }))
+{
+    @Html.AntiForgeryToken()
+<div id="EditAssignmentPaperGroupContent" class="form-row">
+    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+        @Html.CustomLabelFor(model => model.Name, new { @class = "" }, DbRes.TResource("اسم المجموعة"))
+        @*@Html.StickyHiddenFor(model => model.Name, new { Value = Model.Name })*@
+        @Html.TextBoxGroupFor(model => model.Name, "", new { @class = "form-control" }, DbRes.TValidation("الحقل مطلوب"))
+    </div>
+
+
+    <div class="form-group col-lg-3 col-md-4 col-sm-6 col-xs-12">
+        <label class="w-100">@DbRes.TResource("User.Transaction.Assignment.ActionId") <span class="stark">*</span></label>
+        @Html.AutoCompleteBuilder("ddlEditActionId", "hdnEditDefaultActionId", ViewData["ActionData"].ToString(), Model != null ? Model.DefaultActionId.ToString() : null, true, "form-control", "hdnEditActionTypeId")
+        @Html.HiddenGroupFor(model => model.DefaultActionId, new { @Value = Model.DefaultActionId, id = "hdnEditDefaultActionId" }, "AssignmentIndividual")
+        @Html.HiddenGroupFor(model => model.OrderNo, new { @Value = Model.OrderNo, id = "hdnOrderNo" }, "AssignmentIndividual")
+        @Html.Hidden("descriptionText", null, new { id = "hdnEditDefaultActionText" })
+        <span class="help-block"></span>
+    </div>
+</div>
+    
+    @Html.HiddenFor(model => model.Id, new { id = "hdnEditId" })
+}
+<div class="mx-3 mx-md-5 mb-4 d-flex">
+    <div class="ml-auto">
+        @Html.ActionButton(DbRes.TResource("تعديل"), "EditAssignmentPaperGroup", "dvGrid", null, null, "OnEditSuccess", null, "post", null, "btnEdit", "frmEditAssignmentPaperGroup", "btn btn-lg btn-st3 mx-1")
+        <a class="btn btn-lg btn-st3 mx-1" id="btnCancel" onclick="HideEditDiv()">@DbRes.TResource("الغاء")</a>
+    </div>
+</div>

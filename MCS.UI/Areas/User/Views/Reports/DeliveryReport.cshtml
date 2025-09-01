@@ -1,0 +1,118 @@
+﻿@model List<MCS.UI.Areas.User.Models.Transaction.DeliveryReportVM>
+@using MCS.Framework.Localization
+@using MCS.UI.Helpers;
+@using MCS.Common.Utility;
+@using MCS.UI.Common;
+@using ZXing;
+
+@{
+    //Layout = "~/Views/Shared/_EmptyLayout.cshtml";
+    Layout = null;
+}
+
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" id="theme" href="@Url.Content("~/Content/User/lib/css/theme_" + SessionInfo.CultureShortName + ".css")" />
+    @if (SessionInfo.CultureShortName == "ar")
+    {
+        <link rel="stylesheet" type="text/css" id="theme" href="@Url.Content("~/Content/User/lib/css/rtl.css")" />
+    }
+    <!-- EOF CSS INCLUDE -->
+    <!-- Theme -->
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/User/lib/fonts/fonts.css")" />
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/User/lib/css/style.css")" />
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/User/lib/css/responsive_table_" + SessionInfo.CultureShortName + ".css")" />
+
+    <style>
+        .pagebreak {
+            page-break-after: always;
+        }
+
+        table.rprt {
+            width: 100%;
+/*            border: 1px solid #000000;
+*/        }
+
+            table.rprt td {
+                padding: 5px;
+                text-align: center;
+            }
+    
+    </style>
+
+</head>
+<body style="height:100%">
+    @for (int i = 0; i < Model.Count; i++)
+    {
+    <div style="height:100%">
+        <table class="rprt">
+            <tr>
+                <td colspan="2">
+                    <div class="report_logo">
+                        <img src="~/Content/User/lib/images/GAMI_Logo_Color-01.svg" width="200" style="margin-top:5px;">
+                    </div>
+                    <img align="left" style='max-width:80%;max-height:80%;width:80px;height:80px ; margin-top:-20px' src="@Barcode.DrawBarcode(@DbRes.TResource("User.Transaction.ReportNumber")  + @Model[i].ReportNumber   , BarcodeFormat.QR_CODE, 100, 100)" />
+
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div class="style_a">@DbRes.TResource("User.Transaction.DeliveryReport")  </div>
+                    @*<div class="style_b">@Model[i].RootName</div>*@
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="">
+                        @DbRes.TResource("User.Transaction.ReportNumber")<div>@Model[i].ReportNumber</div>
+                        <span>
+                            @{
+                                if (@Model[i].TransactionTypeName == "سري")
+                                {
+                                    @Model[i].TransactionTypeName
+                                }
+                            }
+                        </span>
+                    </div>
+                    <div class="">
+                        @DbRes.TResource("User.Transaction.Date")
+                        <span>
+                            @ArabicDigitConverter.ConvertToArabic(@DateHelper.GetDate(@Model[i].DateH))
+                        </span>
+                    </div>
+                </td>
+                <td>
+                    <div class="style_b">@DbRes.TResource("User.Transaction.Reports.ConstructiveManagement"):<div>@Model[i].OrgUnitName</div></div>
+                    <div class="">@DbRes.TResource("User.Transaction.Reporter"):<span>@Model[i].ReporterName</span></div>
+                </td>
+
+            </tr>
+            <tr>
+                <td style="width:60%">
+                    الموظف المنشىء:<span>@SessionInfo.CurrentUser.Name</span>
+                </td>
+                <td style="width:40%">
+                </td>
+            </tr>
+            <tr></tr>
+            <tr>
+                <td colspan="2">
+                    <div class="row">
+                        @Html.Partial("~/Areas/User/Views/Shared/_DeliveryReportGridPartial.cshtml", Model[i].Transactions)
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    }
+</body>
+</html>
+
+
+
+
+
+

@@ -1,0 +1,437 @@
+﻿/* styles for validation helpers */
+.field-validation-error {
+    color: #b94a48;
+    margin-bottom: 0px;
+    margin-top: 3px;
+    font-size: 12px;
+    font-weight: normal;
+    display: block !important;
+}
+
+.field-validation-valid {
+    display: none;
+}
+
+input.input-validation-error {
+    border: 1px solid #b94a48 !important;
+}
+
+select.input-validation-error {
+    border: 1px solid #b94a48 !important;
+}
+
+input[type="checkbox"].input-validation-error {
+    border: 0 none;
+}
+
+.validation-summary-valid {
+    display: none;
+}
+/* */
+
+/* styles for validation helpers */
+.login-container .field-validation-error {
+    color: #5DC9E6 !important;
+}
+
+.login-container input.input-validation-error {
+    border: 1px solid #5DC9E6 !important;
+}
+
+.login-container .field-validation-valid {
+    display: none;
+}
+
+.login-container input.input-validation-error {
+    border: 1px solid #2ca4da !important;
+}
+
+.login-container select.input-validation-error {
+    border: 1px solid #2ca4da !important;
+}
+
+.login-container input[type="checkbox"].input-validation-error {
+    border: 0 none;
+}
+
+.login-container .validation-summary-valid {
+    display: none;
+}
+/* */
+
+.noPaddingRight {
+    padding-right: 0 !important;
+}
+
+.grid-filter .grid-dropdown:after, .grid-filter .grid-dropdown:before {
+    display: none !important;
+}
+
+.grid-dropdown {
+    text-align: right !important;
+}
+
+select.h_select {
+    height: 31px;
+}
+/*.grid-wrap {
+    position:relative;
+}*/
+.table-responsive {
+    position: relative;
+}
+
+form.form-horizontal {
+    margin: 0 !important;
+    padding: 0px !important;
+}
+
+table.grid-table tr.grid-row-selected td {
+    background: rgba(52, 103, 167, 0.15) !important;
+    color: #656D78 !important;
+}
+
+table.grid-table tr.grid-row-selected a {
+    color: #2DA5DA !important;
+}
+
+table.grid-table .grid-filter {
+    margin-left: 7px !important;
+}
+
+.grid-mvc {
+    /*min-height:205px !important;*/
+}
+
+th.fixed_col {
+    width: 40px !important;
+}
+/*.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+  padding: 5px 8px;
+}*/
+
+.tbl-responsive {
+    overflow: auto !important;
+}
+
+.content-rtl .checkbox label label.none, .content-rtl .radio label label.none {
+    padding-right: 0px !important;
+    margin: 0px !important;
+}
+
+.hidden {
+    display: none;
+}
+
+.hidden-important {
+    display: none !important;
+}
+
+.overflow-auto {
+    overflow: auto !important;
+}
+
+.tree_parties {
+}
+
+    .tree_parties ul {
+        list-style: none;
+        margin: 0px;
+        padding: 0px;
+    }
+
+        .tree_parties ul li {
+            list-style: none;
+            margin: 0px;
+            padding: 0px;
+        }
+
+            .tree_parties ul li.selected_top .row_directory {
+                margin: 0px;
+                padding: 0px;
+                border-bottom: 1px solid #D2D2D2;
+                cursor: pointer;
+                background: #ECECEC;
+                color: #1C0B77;
+            }
+
+            .tree_parties ul li.selected_top ul li.selected_bottom .row_directory {
+                margin: 0px;
+                padding: 0px;
+                border-bottom: 1px solid #E3E3E3;
+                cursor: pointer;
+                background: #FFFFFF;
+            }
+
+#progress {
+    position: fixed;
+    z-index: 99999999;
+    bottom: 0px;
+    right: 0px;
+    background: #5DC9E6;
+    color: #3467A5 !important;
+}
+
+.autocomplete_scroll {
+    max-height: 350px !important;
+    overflow: hidden !important;
+    overflow-y: scroll !important;
+}
+
+.jconfirm-box .buttons button {
+    float: right !important;
+}
+
+.faq .faq-item.active .faq-text {
+    overflow: inherit !important;
+}
+
+
+
+.toolbarButtonFrame {
+    width: auto !important;
+    height: auto !important;
+    position: relative !important;
+    margin: 0px 5px !important;
+    padding: 0px 3px !important;
+}
+
+    .toolbarButtonFrame:hover {
+        border: 1px solid #A6A8A8 !important;
+        -moz-box-shadow: inset 0 0 5px #8A8B8B !important;
+        -webkit-box-shadow: inset 0 0 5px #8A8B8B !important;
+        box-shadow: inset 0 0 5px #8A8B8B !important;
+    }
+
+.toolbarButton {
+    position: relative !important;
+    width: auto !important;
+    height: auto !important;
+    cursor: pointer !important;
+}
+
+    .toolbarButton:hover {
+        background: none !important;
+    }
+
+.form-group:before {
+    display: table;
+    content: " ";
+}
+
+.form-group:after {
+    clear: both;
+}
+
+.clear {
+    clear: both;
+}
+
+.encryption_code {
+    margin: 0px 0px;
+    padding: 0px;
+    background: #FFFFFF;
+    border: 1px solid #2E8BEF;
+    -moz-box-shadow: 0px 0px 10px 0px #8A8B8B;
+    -webkit-box-shadow: 0px 0px 10px 0px #8A8B8B;
+    box-shadow: 0px 0px 10px 0px #8A8B8B;
+    font-size: 12px;
+    direction: ltr;
+    position: relative;
+}
+
+/*.ui-widget-header {
+    border: 1px solid #3467A5;
+    background: #2DA5DA !important;
+    color: #fff;
+    font-weight: bold;
+}*/
+
+.ui-dialog .ui-dialog-title {
+    float: right;
+    margin: .1em 0;
+    white-space: nowrap;
+    width: 90%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0px 20px 0px 0px;
+}
+
+.form-control.fx_control {
+    height: 27px !important;
+    padding: 3px 12px 2px 12px !important;
+}
+
+.margin-right {
+    margin-right: 30px !important;
+}
+
+.fx_linking {
+    margin-top: 10px !important;
+    padding: 0px 0px 0px 0px !important;
+}
+
+.spinner {
+    margin: 300px auto 0;
+    width: 70px;
+    text-align: center;
+    position: fixed;
+    z-index: 99999999999999999999999;
+    overflow: show;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+    .spinner:before {
+        content: '';
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.3);
+    }
+
+    .spinner > div {
+        width: 18px;
+        height: 18px;
+        background-color: white;
+        border-radius: 100%;
+        display: inline-block;
+        -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+        animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+    }
+
+    .spinner .bounce1 {
+        -webkit-animation-delay: -0.32s;
+        animation-delay: -0.32s;
+    }
+
+    .spinner .bounce2 {
+        -webkit-animation-delay: -0.16s;
+        animation-delay: -0.16s;
+    }
+
+@-webkit-keyframes sk-bouncedelay {
+    0%, 80%, 100% {
+        -webkit-transform: scale(0);
+    }
+
+    40% {
+        -webkit-transform: scale(1.0);
+    }
+}
+
+@keyframes sk-bouncedelay {
+    0%, 80%, 100% {
+        -webkit-transform: scale(0);
+        transform: scale(0);
+    }
+
+    40% {
+        -webkit-transform: scale(1.0);
+        transform: scale(1.0);
+    }
+}
+
+.alert {
+    padding: 5px 15px !important;
+}
+
+.alert-warning {
+    background-color: #F2E325 !important;
+    color: #3467A5 !important;
+    border-color: #EDF225 !important;
+}
+
+
+.calendars-popup {
+    z-index: 99999999 !important;
+}
+
+.ui-front {
+    z-index: 99999999999 !important;
+}
+
+.disable_a {
+    border-color: #C1C2C2;
+    color: #C1C2C2;
+    pointer-events: none;
+    cursor: default;
+}
+
+.xn-openable:empty {
+    display: none;
+}
+
+.btn-close-margin {
+    margin-right: 50px !important;
+}
+
+/*.breadcrumb-div ul {
+  padding: 8px 15px;
+  margin-bottom: 20px;
+  list-style: none;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+
+.breadcrumb-div ul > li {
+  display: inline-block;
+}
+
+.breadcrumb-div ul > li + li:before {
+  padding: 0 5px;
+  color: #cccccc;
+  content: "/\00a0";
+}
+
+.breadcrumb-div ul > .active {
+  color: #999999;
+}*/
+
+.grid-mvc .dropdown-menu {
+    direction: rtl;
+}
+
+.stage_structure .administration {
+    direction: rtl !important;
+}
+
+.jstree-default .jstree-search {
+    font-style: normal !important;
+    color: #656d78 !important;
+    font-weight: normal !important;
+}
+
+.grid-mvc .dropdown-menu .form-control {
+    padding: 0px !important;
+}
+
+div.mce-fullscreen {
+    z-index: 99999999;
+}
+
+ .row.row_directory.edit .control_name {
+    display:block !important;
+}
+
+ .glyphicon_ok {
+    height:100%;
+    display:block;
+    min-height:30px !important;
+}
+.glyphicon_ok:after, .glyphicon_ok:before {
+    content:" ";
+    display:table;
+}
+.glyphicon_ok:after {
+    clear:both;
+}
+
+.panel_org{
+    margin-bottom:0px !important;
+}

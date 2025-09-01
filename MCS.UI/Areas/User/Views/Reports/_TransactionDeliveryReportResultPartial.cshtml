@@ -1,0 +1,27 @@
+﻿@using MCS.UI.Areas.User.Models.Report;
+@model TransactionDeliveryReportResult
+<div class="content_container">
+    <div class="content_container content_container--header">
+        @foreach (var party in Model.Parties)
+        {
+            <div class="extraOption">
+                <h4>
+                    <a role="button" style="display:flex">
+                        <span onclick="CollapseDiv('divDelivery_@party.Key'); return false;" style="cursor: pointer;">
+                            <img src="~/Content/User/lib/images/plus-icon.svg" id="divPartyPlusIcon_divDelivery_@party.Key" width="25" />
+                            <img src="~/Content/User/lib/images/Dash-icon.svg" id="divPartDashIcon_divDelivery_@party.Key" width="25" style="display: none;" />
+                        </span>
+                        <span class="ml-3 mt-1">@party.Value</span>
+                        @Html.StickyHidden("hdnpartyId", "", new { @Value = party.Key, id = "hdnpartyId" })
+                    </a>
+                </h4>
+                <div role="tabpanel" class="tab-pane" id="divDelivery_@party.Key" style="display:none">
+                    <div>
+                        @Html.Partial("_TransactionsDeliveryReportGridPartial",
+                       Model.transactionDeliveryReportResultGrids.Where(p => p.PartyId == party.Key).FirstOrDefault().TransactionGridResultVMs, ViewData)
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

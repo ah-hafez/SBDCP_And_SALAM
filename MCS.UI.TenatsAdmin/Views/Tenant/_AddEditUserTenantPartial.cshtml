@@ -1,0 +1,39 @@
+﻿@using MCS.Framework.Localization
+@model MCS.UI.TenantsAdmin.Models.Tenant.UserTenantVM
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { @id = "frmUserTenant", @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="panel-body" id="DivUserTenant">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.UserName, new { @class = "control-label" }) <span class="stark NotIndividual">*</span>
+                    <div class="col-md-8">
+                        <div class="">
+                            @Html.TextBoxGroupFor(model => model.UserName, "BasicInformation", new { @class = "form-control" }, DbRes.TValidation("Tenant.NameRequired.ar"))
+                            @Html.HiddenFor(model => model.Id)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TenantId, new { @class = " control-label" })  <span class="stark">*</span>
+                    <div class="col-md-8">
+                        <div class="">
+                            @Html.AutoCompleteBuilder("ddlTenantName", "hdnTenantName", ViewData["Tenants"].ToString(),
+                             Model != null ? Model.TenantId.ToString() : null, true, "form-control", "", "", "", false)
+                            @Html.HiddenGroupFor(model => model.TenantId, new { @Value = "", id = "hdnTenantName" }, "BasicInformation")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel-footer middle">
+        @Html.ActionButton(DbRes.TResource("Tenant.Save"), Url.Action("UserTenant", "Tenant"), "dvUserTenantGrid", null, null, "OnSuccessAddUserTenant", null, "post", "BasicInformation",
+        "btnAddTenant", "frmUserTenant", "btn btn-save pull-right")
+        @Html.ResetButton("ClearInputsUserTenant('DivUserTenant')")
+    </div>
+}

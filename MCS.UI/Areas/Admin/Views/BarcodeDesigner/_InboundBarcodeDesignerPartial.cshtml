@@ -1,0 +1,115 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.Admin.Models.BarcodeDesigner
+@model BarcodeDesignerVM
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmAddDesign", @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="panel-body">
+        @Html.HiddenFor(model => model.IsGeneral, new { @Value = true })
+        <div class="row editbar">
+            <div class="col-md-5">
+                <div class="form-group">
+                    <label class="col-md-2 control-label">@DbRes.TResource("Admin.BarcodeDesigner.Size")</label>
+                    <div class="col-md-5">
+                        <div class="input-group">
+                            @Html.TextBox("txtSizeHeightValue", null, new { @class = "form-control size-Settings" })
+                            <span class="input-group-addon add-on"> x </span>
+                            @Html.TextBox("txtSizeWidthValue", null, new { @class = "form-control size-Settings" })
+                        </div>
+                    </div>
+                    <label class="col-md-2 control-label">@DbRes.TResource("Admin.BarcodeDesigner.SizeUnit")</label>
+                    <div class="col-md-3">
+                        <select class="form-control select size-Settings" id="SizeUnit">
+                            <option value="cm">cm</option>
+                            <option value="in">in</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">@DbRes.TResource("Admin.BarcodeDesigner.FontFamily")</label>
+                        <div class="col-md-5">
+                            <select class=" form-control select" id="fs">
+                                <option value="Droid Arabic Kufi">Arabic Kufi</option>
+                                <option value="Arial">Arial</option>
+                                <option value="Verdana ">Verdana </option>
+                                <option value="Impact ">Impact </option>
+                                <option value="Comic Sans MS">Comic Sans MS</option>
+                                <option value="Al-Jazeera-Arabic-Regular">Aljazeera</option>
+                                <option value="AmiriWeb">Amiri</option>
+                                <option value="Droid Arabic Kufi">Kufi</option>
+                                <option value="Droid Arabic Naskh">Naskh</option>
+                                <option value="Thabit">Thabit</option>
+                                <option value="Greta">Greta</option>
+                                <option value="Tahoma">Tahoma</option>
+                                <option value="Open Sans">Opensans</option>
+                                <option value="Josefin Slab">Josefin Slab</option>
+                                <option value="Vollkorn">Vollkorn</option>
+                                <option value="Old Standard TT">Old Standard TT</option>
+                                <option value="PT Sans">PT Sans</option>
+                            </select>
+                        </div>
+                        <label class="col-md-2 control-label">@DbRes.TResource("Admin.BarcodeDesigner.FontSize")</label>
+                        <div class="col-md-3">
+                            <select class="form-control select" id="size">
+                                <option value="7">7</option>
+                                <option value="10">10</option>
+                                <option value="15">15</option>
+                                <option value="20">20</option>
+                                <option value="30">30</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-1" onclick="DeleteAll();">
+                <div class="col-md-6"></div>
+                <div class="col-md-6">
+                    <a class="delete" href="#" data-bs-toggle="tooltip" data-placement="bottom" title="@DbRes.TResource("Admin.BarcodeDesigner.Delete")">
+                        <i class="glyphicon glyphicon-trash"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <span id="errorMessage" class="field-validation-error"></span>
+    </div>
+    <div class="panel-body">
+        <div id="dvNoItemsAddedValidationMessage" style="display:none; color:red;">* @DbRes.TValidation("Admin.BarcodeDesigner.NoItemsAdded")</div>
+        <h3 class="push-up-20">@DbRes.TResource("Admin.BarcodeDesigner.MainTransactionAndCopies")</h3>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="menu_code center py2 ml4" id="menu">
+                    <div class="double"><i class="fa fa-angle-double-left"></i></div>
+                    <div data-id="1" onclick="Select(1);" class="dataid1 draggable2 Box row li"><a class="ui-widget-content" href="#"><i class="fa fa-angle-left"></i> <i><img src="~/Content/Admin/Lib/images/morasalat/code_3d.png" alt=""></i> @DbRes.TResource("Admin.BarcodeDesigner.3DBarcode")</a></div>
+                    <div data-id="3" onclick="Select(3);" class="dataid3 draggable2 Box row li"><a class="ui-widget-content" href="#"><i class="fa fa-angle-left"></i> <i><img src="~/Content/Admin/Lib/images/morasalat/code_2d.png" alt=""></i> @DbRes.TResource("Admin.BarcodeDesigner.2DBarcode")</a></div>
+                    <div data-id="5" onclick="Select(5);" class="dataid5 draggable2 Box row li"><a class="ui-widget-content"><i class="fa fa-angle-left"></i> @DbRes.TResource("Admin.BarcodeDesigner.DepartmentPreparedInbound")</a></div>
+                    <div data-id="7" onclick="Select(7);" class="dataid7 draggable2 Box row li"><a class="ui-widget-content"><i class="fa fa-angle-left"></i> @DbRes.TResource("Admin.BarcodeDesigner.TransactionDate")</a></div>
+                    <div data-id="9" onclick="Select(9);" class="dataid9 draggable2 Box row li"><a class="ui-widget-content"><i class="fa fa-angle-left"></i> @DbRes.TResource("Admin.BarcodeDesigner.TransactionNumber")</a></div>
+                    <div data-id="11" onclick="Select(11);" class="dataid11 draggable2 Box row li"><a class="ui-widget-content"><i class="fa fa-angle-left"></i> @DbRes.TResource("Admin.BarcodeDesigner.Attachments")</a></div>
+                </div>
+            </div>
+            <div class="col-md-1"></div>
+
+            @Html.Raw(Model.Html)
+
+            <div class="col-md-2"></div>
+        </div>
+    </div>
+
+    @Html.Partial("_AttachmentBarcodeDesignerPartial")
+
+    @Html.HiddenFor(model => model.Html, new { @id = "hdnHtml" })
+    @Html.HiddenFor(model => model.Id, new { @id = "hdnId" })
+    @Html.HiddenFor(model => model.TypeId, new { @id = "typeID" })
+    @Html.HiddenFor(model => model.Width, new { @id = "hdnWidth" })
+    @Html.HiddenFor(model => model.Height, new { @id = "hdnHeight" })
+    @Html.HiddenFor(model => model.HtmlAttachment, new { @id = "hdnHtmlAttachment" })
+    @Html.HiddenFor(model => model.orgUnitKey, new { @id = "hdnorgUnitKey" })
+
+    <input type="hidden" id="hdnSelected">
+}

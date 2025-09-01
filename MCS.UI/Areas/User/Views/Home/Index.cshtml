@@ -1,0 +1,99 @@
+﻿
+@using MCS.UI.Areas.User.Models.File
+@using MCS.UI.Areas.User.Models
+@using MCS.Framework.Controls
+@using MCS.Framework.Controls.Mvc
+@using MCS.Framework.Localization
+@model HomeViewModel
+
+@{
+    ViewBag.Title = DbRes.TResource("Admin.Home.Title");
+    Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="page-content-wrap index">
+    <div class="row">
+        <div class="col-md-7">
+            @if (Model.TransactionTrayInfos == null)
+            {
+                Model.TransactionTrayInfos = new List<TransactionTrayInfoVM>();
+            }
+            @Html.Partial("~/Areas/User/Views/Home/_PopulariazationsPartial.cshtml", Model.TransactionTrayInfos)
+        </div>
+
+        <div class="col-md-5">
+            @Html.Partial("~/Areas/User/Views/Home/_TaskStasusPercentagePartial.cshtml", Model.TasksStatus)
+        </div>
+    </div>
+
+    @Html.Partial("~/Areas/User/Views/Home/_TraysPartial.cshtml", Model.TrayDetails, Html.ViewData)
+    <div style="clear:both;"></div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="panel-title-box">
+                        <h3>
+                            @DbRes.TResource("User.Home.AllTransactionsChart")
+                        </h3>
+                    </div>
+                </div>
+                <div class="panel-body padding-0" style="min-height:200px;">
+                    <div class="chart-holder" style="min-height:200px;">
+
+                        @if (SessionInfo.CurrentUser.Claims.Contains(MCS.Common.UserClaims.DashboardsChart.TransactionsCountInSystem))
+                        {
+                            @Html.Chart("AllTransactionsBarChart", null, ChartType.Line, Newtonsoft.Json.JsonConvert.SerializeObject(ViewData["AllTransactionsBarChart"]).ToString(), "1", "", "", "Droid Arabic Kufi", DbRes.TResource("User.Home.EmptyDataMsg"))
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="panel-title-box">
+                        <h3>
+                            @DbRes.TResource("User.Home.TransactionsByEmployeeTypeChart")
+                        </h3>
+                    </div>
+                </div>
+                <div class="panel-body padding-0" style="min-height:200px;">
+                    <div class="chart-holder" style="min-height:200px;">
+
+                        @if (SessionInfo.CurrentUser.Claims.Contains(MCS.Common.UserClaims.DashboardsChart.TransactionsCountByUser))
+                        {
+                            @Html.Chart("TransactionsByEmployeeTypeBarChart", null, ChartType.Bar, ViewData["TransactionsByEmployeeTypeBarChart"].ToString(), "1", "", "", DbRes.TResource("User.Home.EmptyDataMsg"))
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="panel-title-box">
+                        <h3>
+                            @DbRes.TResource("User.Home.ThisDayTransactionsChart")
+                        </h3>
+                    </div>
+                </div>
+                <div class="panel-body padding-0" style="min-height:200px;">
+                    <div class="chart-holder" style="min-height:200px;">
+
+                        @if (SessionInfo.CurrentUser.Claims.Contains(MCS.Common.UserClaims.DashboardsChart.TransactionsCountByDay))
+                        {
+                            @Html.Chart("ThisDayTransactionsBarChart", null, ChartType.Pie, ViewData["ThisDayTransactionsPieChart"].ToString(), "1", "", "", "Droid Arabic Kufi", DbRes.TResource("User.Home.EmptyDataMsg"))
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

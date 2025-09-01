@@ -1,0 +1,87 @@
+﻿
+<div class="px-2">
+    <a href="#" id="chatNotificationFlag" data-bs-toggle="tooltip" data-placement="bottom" title="" class="chatbtn" data-original-title="@DbRes.TResource("Global.Chat")">
+        <em class="notification_sticky" id="chatNotificationCounter"></em>
+        <i class="la la-comments "></i>
+    </a>
+</div>
+
+
+<script src="~/Scripts/ChatHubManager.js"></script>
+<script src="~/Scripts/CollaborationManager.js"></script>
+<script>
+
+    var chatHubResources = {
+        waitingReply : '@DbRes.TResource("User.Transaction.Chat.WaitingReply")',
+        terminateConfirm : '@DbRes.TResource("User.Transaction.Chat.TerminateConfirm")',
+        inviteReject : '@DbRes.TResource("User.Transaction.Chat.InviteReject")',
+        inviteRequest : '@DbRes.TResource("User.Transaction.Chat.InviteRequest") ',
+        inviteTerminated: '@DbRes.TResource("User.Transaction.Chat.InviteTerminated")',
+        busySharing : '@DbRes.TResource("User.Transaction.Chat.BusySharing")',
+    };
+
+    $(function () {
+        $(".chatbtn").click(function () {
+            InitChatWindow('general', null, null, false);
+            $(this).addClass("active_notification");
+        });
+
+        $(".showpopchat").click(function () {
+            if ((screen.width >= 768)) {
+                $(".carddiv").css("width", "50%");
+                $(".sendfield").css("display", "flex");
+                $(".firstcard").css("width", "50%");
+                $(".popchat").fadeIn();
+                $(".purple").css("width", "200%");
+                $(".showpopchat").removeClass("highlight");
+                $(this).toggleClass("highlight");
+                $(".purple .la-close").css("left", "5px");
+            }
+        });
+
+        $(".showpopchat").click(function () {
+            if ((screen.width < 768)) {
+                $(".carddiv").css("width", "100%");
+                $(".sendfield").css("display", "flex");
+                $(".firstcard").css("display", "none");
+                $(".popchat").css("width", "100%");
+                $(".popchat").css("top", "0");
+                $(".popchat").fadeIn();
+                $(".showpopchat").removeClass("highlight");
+                $(this).toggleClass("highlight");
+                $(".card-header2").css("display", "block");
+            }
+        });
+
+        $(".purple2 .fa-times").click(function () {
+            if ($(".popchat").css('display') == 'block') {
+                $(".popchat").css("display", "none");
+                $(".firstcard").css("display", "block");
+                $(".showpopchat").removeClass("highlight");
+
+            }
+            else {
+                $(".carddiv").css("display", "none");
+                $("a.chatbtn").removeClass("active_notification");
+            }
+        });
+
+        $(".purple .la-close").click(function () {
+            if ($(".popchat").css('display') == 'block') {
+                $(".popchat").css("display", "none");
+                $(".carddiv").css("width", "25%");
+                $(".firstcard").css("width", "100%");
+                $(".purple").css("width", "100%");
+                $(".showpopchat").removeClass("highlight");
+            }
+            else {
+                $(".carddiv").css("display", "none");
+                $("a.chatbtn").removeClass("active_notification");
+            }
+
+            if (chatHubOptions.currentRoomName != undefined && chatHubOptions.currentRoomName != null && chatHubOptions.currentRoomName != '' && !chatHubOptions.isShareEnabled) {
+                LeaveChatRoom(chatHubOptions.currentRoomName);
+            }
+        });
+    });
+</script>

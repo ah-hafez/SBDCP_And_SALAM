@@ -1,0 +1,89 @@
+﻿@using MCS.Framework.Localization
+@using MCS.Common;
+@using MCS.UI.Areas.User.Models.Assignment
+@model VIPTransactionAssignmentVM
+
+@{
+    bool selectfirst = false;
+    if (Model.ActionId == 0)
+    {
+        selectfirst = true;
+    }
+}
+@using (Html.BeginCollectionItem("AssignmentVMs"))
+{
+    <tr>
+        <td style="border:0 !important;">
+            <div class="radio">
+                <label>
+                    @{bool isAssigned = (Model.IsAssigned.HasValue && Model.IsAssigned.Value);}
+                    @if (isAssigned)
+                    {
+                        <input onchange="UpdateAssignedToEntity(this); ActionChanged();" type="radio" class="rValue" name="Radio" id="Radio_@Html.IdFor(a => a.IsAssigned).ToString()" checked />
+                    }
+                    else
+                    {
+                        <input onchange="UpdateAssignedToEntity(this); ActionChanged();" type="radio" class="rValue" name="Radio" id="Radio_@Html.IdFor(a => a.IsAssigned).ToString()" />
+                    }
+                    <span class="cr"><i class="cr-icon"></i></span>
+                </label>
+            </div>
+        </td>
+        <td style="border:0 !important;">
+            <div class="checkbox">
+                <label>
+                    @{bool isCopyChecked = (Model.ChkConstant || (Model.IsCopy.HasValue && Model.IsCopy.Value));}
+                    @if (isCopyChecked)
+                    {
+                        <input onchange="UpdateIsCopy(this); ActionChanged();" type="checkbox" id="ch_@Html.IdFor(a => a.IsCopy).ToString()" value="@isCopyChecked.ToString()" checked>
+                    }
+                    else
+                    {
+
+                        <input onchange="UpdateIsCopy(this); ActionChanged();" type="checkbox" id="ch_@Html.IdFor(a => a.IsCopy).ToString()" value="@isCopyChecked.ToString()">
+                    }
+                    <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                </label>
+            </div>
+        </td>
+        <td style="border:0 !important;" class="ToOrgUnitName">
+            <b> @Model.ToOrgUnitName </b> / @Model.ToUserName
+        </td>
+        <td style="border:0 !important;">
+            <div class="checkbox">
+                <label>
+                    @if (isCopyChecked)
+                    {
+                        <input onchange="UpdateIsCopy(this); ActionChanged();" type="checkbox" id="ch_@Html.IdFor(a => a.IsCopy).ToString()" value="@isCopyChecked.ToString()" checked>
+                    }
+                    else
+                    {
+
+                        <input onchange="UpdateIsCopy(this); ActionChanged();" type="checkbox" id="ch_@Html.IdFor(a => a.IsCopy).ToString()" value="@isCopyChecked.ToString()">
+                    }
+                    <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                </label>
+            </div>
+        </td>
+    </tr>
+    @Html.HiddenFor(a => a.IsAssigned, new { id = "hdn_" + Html.IdFor(a => a.IsAssigned).ToString(), @class = "isAssigned", @Value = isAssigned })
+    @Html.HiddenFor(a => a.IsCopy, new { id = "hdn_" + Html.IdFor(a => a.IsCopy).ToString(), @class = "IsCopy", @Value = isCopyChecked })
+    @Html.HiddenFor(a => a.IsBcc, new { id = "hdn_" + Html.IdFor(a => a.IsBcc).ToString(), @class = "IsBcc" })
+    @Html.HiddenFor(a => a.ActionId, new { id = "hdn_" + Html.IdFor(a => a.ActionId).ToString(), @class = "ActionId" })
+    @Html.HiddenFor(a => a.ToOrgUnitId)
+    @Html.HiddenFor(a => a.ToOrgUnitName)
+    @Html.HiddenFor(a => a.ToUserId, new { @class = "ToUserId" })
+    @Html.HiddenFor(a => a.ToUserName)
+    @Html.HiddenFor(a => a.DeliveryMethodId)
+    @Html.HiddenFor(a => a.GroupId)
+
+}
+<script>
+    function DeleteAssignment(id)
+    {
+
+        var value;
+        value = '#' + id;
+        $(value).remove();
+    }
+</script>

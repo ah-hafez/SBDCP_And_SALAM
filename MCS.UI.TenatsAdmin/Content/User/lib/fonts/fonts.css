@@ -1,0 +1,96 @@
+
+@charset "UTF-8";
+@import "amiri/amiri.css";
+@import "kufi/kufi.css";
+@import "naskh/naskh.css";
+@import "scheherazade/scheherazade.css";
+@import "thabit/thabit.css";
+@import "aljazeera/aljazeera.css";
+
+@import "tahoma/tahoma.css";
+@import "opensans/opensans.css";
+@import "josefinslab/josefinslab.css";
+@import "vollkorn/vollkorn.css";
+@import "oldstandardtt/oldstandardtt.css";
+@import "ptsans/ptsans.css";
+
+
+
+
+/*** Arabic ***/
+
+/* Amiri */
+.amiri{font-family: AmiriWeb;}
+.amiri_quran{font-family: Amiri QuranWeb;}
+.amiri_quran_colored{font-family: Amiri Quran ColoredWeb;}
+
+/* Kufi */
+.kufi{font-family: 'Droid Arabic Kufi';}
+
+/* Naskh */
+.naskh{font-family: 'Droid Arabic Naskh';}
+
+/* Scheherazade */
+.scheherazade{font-family: 'Scheherazade';}
+
+/* Thabit */
+.thabit{font-family: 'Thabit';}
+
+/* Aljazeera */
+.aljazeera{font-family: Al-Jazeera-Arabic-Regular;}
+.aljazeera_bold{font-family: Al-Jazeera-Arabic-Regular;}
+.aljazeera_light{font-family: Al-Jazeera-Arabic-Regular;}
+
+/* Greta */
+.greta{font-family: Greta;}
+
+
+
+/*** English ***/
+
+/* Tahoma */
+.tahoma{font-family: 'Tahoma';}
+
+/* Opensans */
+.opensans{font-family: 'Open Sans';}
+
+/* Josefin Slab */
+.josefinslab{font-family: 'Josefin Slab';}
+
+/* Vollkorn */
+.vollkorn{font-family: 'Vollkorn';}
+
+/* Old Standard TT */
+.oldstandardtt{font-family: 'Old Standard TT';}
+
+/* PT Sans */
+.ptsans{font-family: 'PT Sans';}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

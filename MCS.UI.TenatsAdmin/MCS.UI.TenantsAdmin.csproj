@@ -1,0 +1,2229 @@
+﻿<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{2CB055C0-6222-4B30-9560-5B9EF961AED6}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MCS.UI.TenantsAdmin</RootNamespace>
+    <AssemblyName>MCS.UI.TenantsAdmin</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <UseIISExpress>false</UseIISExpress>
+    <Use64BitIISExpress />
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CommonServiceLocator, Version=2.0.4.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\Binaries\Common\CommonServiceLocator.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework">
+      <HintPath>..\Binaries\Common\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Owin, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.AspNet.Identity.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform">
+      <HintPath>..\Binaries\Common\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.IdentityModel, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.IdentityModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin">
+      <HintPath>..\Binaries\Common\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb">
+      <HintPath>..\Binaries\Common\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security">
+      <HintPath>..\Binaries\Common\Microsoft.Owin.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Cookies, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.Owin.Security.Cookies.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.OAuth, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\Binaries\Common\Microsoft.Owin.Security.OAuth.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Logging, Version=6.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.Practices.EnterpriseLibrary.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\Microsoft.Practices.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Configuration">
+      <HintPath>..\Binaries\Common\Microsoft.Practices.Unity.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Mvc">
+      <HintPath>..\Binaries\Common\Microsoft.Practices.Unity.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.13.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Owin">
+      <HintPath>..\Binaries\Common\Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Refit">
+      <HintPath>..\Binaries\Common\Refit.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Configuration.ConfigurationManager, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Configuration.ConfigurationManager.4.4.1\lib\net461\System.Configuration.ConfigurationManager.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Helpers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http">
+      <HintPath>..\Binaries\Common\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Optimization">
+      <HintPath>..\Binaries\Common\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\Common\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="WebActivatorEx, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebActivatorEx.2.2.0\lib\net40\WebActivatorEx.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\Admin\lib\assets\fileupload\cors\postmessage.html" />
+    <Content Include="Content\Admin\lib\assets\fileupload\cors\result.html" />
+    <Content Include="Content\Admin\lib\assets\images\users\avatar.jpg" />
+    <Content Include="Content\Admin\lib\assets\images\users\no-image.jpg" />
+    <Content Include="Content\Admin\lib\assets\images\users\no-image.png" />
+    <Content Include="Content\Admin\lib\assets\images\users\user.jpg" />
+    <Content Include="Content\Admin\lib\css\admin_ar.css" />
+    <Content Include="Content\Admin\lib\css\admin_en.css" />
+    <Content Include="Content\Admin\lib\css\animate\animate.css" />
+    <Content Include="Content\Admin\lib\css\animate\animate.min.css" />
+    <Content Include="Content\Admin\lib\css\blueimp\blueimp-gallery.min.css" />
+    <Content Include="Content\Admin\lib\css\bootstrap\bootstrap.min.css" />
+    <Content Include="Content\Admin\lib\css\circle_ar.css" />
+    <Content Include="Content\Admin\lib\css\circle_en.css" />
+    <Content Include="Content\Admin\lib\css\codemirror\codemirror.css" />
+    <Content Include="Content\Admin\lib\css\codemirror\theme\3024-day.css" />
+    <Content Include="Content\Admin\lib\css\codemirror\theme\3024-night.css" />
+    <Content Include="Content\Admin\lib\css\codemirror\theme\ambiance-mobile.css" />
+    <Content Include="Content\Admin\lib\css\codemirror\theme\ambiance.css" />
+    <Content Include="Content\Admin\lib\css\codemirror\theme\base16-dark.css" />
+    <Content Include="Content\Admin\lib\css\codemirror\theme\base16-light.css" />
+    <Content Include="Content\Admin\lib\css\codemirror\theme\blackboard.css" />
+    <Content Include="Content\Admin\lib\css\codemirror\theme\cobalt.css" />
+    <Content Include="Content\Admin\lib\css\codemirror\theme\eclipse.css" />
+    <Content Include="Content\Admin\lib\css\codemirror\theme\elegant.css" />
+    <Content Include="Content\Admin\lib\css\codemirror\theme\erlang-dark.css" />
+    <Content Include="Content\Admin\lib\css\codemirror\theme\lesser-dark.css" />
+    <Content Include="Content\Admin\lib\css\codemirror\theme\mbo.css" />
+    <Content Include="Content\Admin\lib\css\codemirror\theme\mdn-like.css" />
+    <Content Include="Content\Admin\lib\css\codemirror\theme\midnight.css" />
+    <Content Include="Content\Admin\lib\css\codemirror\theme\monokai.css" />
+    <Content Include="Content\Admin\lib\css\codemirror\theme\neat.css" />
+    <Content Include="Content\Admin\lib\css\codemirror\theme\neo.css" />
+    <Content Include="Content\Admin\lib\css\codemirror\theme\night.css" />
+    <Content Include="Content\Admin\lib\css\codemirror\theme\paraiso-dark.css" />
+    <Content Include="Content\Admin\lib\css\codemirror\theme\paraiso-light.css" />
+    <Content Include="Content\Admin\lib\css\codemirror\theme\pastel-on-dark.css" />
+    <Content Include="Content\Admin\lib\css\codemirror\theme\rubyblue.css" />
+    <Content Include="Content\Admin\lib\css\codemirror\theme\solarized.css" />
+    <Content Include="Content\Admin\lib\css\codemirror\theme\the-matrix.css" />
+    <Content Include="Content\Admin\lib\css\codemirror\theme\tomorrow-night-eighties.css" />
+    <Content Include="Content\Admin\lib\css\codemirror\theme\twilight.css" />
+    <Content Include="Content\Admin\lib\css\codemirror\theme\vibrant-ink.css" />
+    <Content Include="Content\Admin\lib\css\codemirror\theme\xq-dark.css" />
+    <Content Include="Content\Admin\lib\css\codemirror\theme\xq-light.css" />
+    <Content Include="Content\Admin\lib\css\cropper\cropper.min.css" />
+    <Content Include="Content\Admin\lib\css\dropzone\dropzone.css" />
+    <Content Include="Content\Admin\lib\css\fontawesome\font-awesome.min.css" />
+    <Content Include="Content\Admin\lib\css\fonts\fontawesome-webfont.svg" />
+    <Content Include="Content\Admin\lib\css\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Content\Admin\lib\css\fullcalendar\fullcalendar.css" />
+    <Content Include="Content\Admin\lib\css\introjs\introjs.min.css" />
+    <Content Include="Content\Admin\lib\css\ion\ion.rangeSlider.css" />
+    <Content Include="Content\Admin\lib\css\ion\ion.rangeSlider.skinFlat.css" />
+    <Content Include="Content\Admin\lib\css\ion\ion.rangeSlider.skinHTML5.css" />
+    <Content Include="Content\Admin\lib\css\ion\ion.rangeSlider.skinModern.css" />
+    <Content Include="Content\Admin\lib\css\ion\ion.rangeSlider.skinNice.css" />
+    <Content Include="Content\Admin\lib\css\ion\ion.rangeSlider.skinSimple.css" />
+    <Content Include="Content\Admin\lib\css\jquery\jquery-ui.min.css" />
+    <Content Include="Content\Admin\lib\css\jstree\jstree.min.css" />
+    <Content Include="Content\Admin\lib\css\mcustomscrollbar\jquery.mCustomScrollbar.css" />
+    <Content Include="Content\Admin\lib\css\nvd3\nv.d3.css" />
+    <Content Include="Content\Admin\lib\css\responsive_table_ar.css" />
+    <Content Include="Content\Admin\lib\css\responsive_table_en.css" />
+    <Content Include="Content\Admin\lib\css\rickshaw\rickshaw.css" />
+    <Content Include="Content\Admin\lib\css\rtl.css" />
+    <Content Include="Content\Admin\lib\css\style_ar.css" />
+    <Content Include="Content\Admin\lib\css\style_en.css" />
+    <Content Include="Content\Admin\lib\css\summernote\summernote.css" />
+    <Content Include="Content\Admin\lib\css\theme_ar.css" />
+    <Content Include="Content\Admin\lib\css\theme_en.css" />
+    <Content Include="Content\Admin\lib\favicon.ico" />
+    <Content Include="Content\Admin\lib\favicon.png" />
+    <Content Include="Content\Admin\lib\fonts\aljazeera\aljazeera.css" />
+    <Content Include="Content\Admin\lib\fonts\amiri\amiri.css" />
+    <Content Include="Content\Admin\lib\fonts\amiri\OFL.txt" />
+    <Content Include="Content\Admin\lib\fonts\fonts.css" />
+    <Content Include="Content\Admin\lib\fonts\josefinslab\josefinslab.css" />
+    <Content Include="Content\Admin\lib\fonts\kufi\kufi.css" />
+    <Content Include="Content\Admin\lib\fonts\naskh\naskh.css" />
+    <Content Include="Content\Admin\lib\fonts\oldstandardtt\oldstandardtt.css" />
+    <Content Include="Content\Admin\lib\fonts\opensans\opensans.css" />
+    <Content Include="Content\Admin\lib\fonts\ptsans\ptsans.css" />
+    <Content Include="Content\Admin\lib\fonts\scheherazade\FONTLOG.txt" />
+    <Content Include="Content\Admin\lib\fonts\scheherazade\OFL-FAQ.txt" />
+    <Content Include="Content\Admin\lib\fonts\scheherazade\OFL.txt" />
+    <Content Include="Content\Admin\lib\fonts\scheherazade\scheherazade.css" />
+    <Content Include="Content\Admin\lib\fonts\tahoma\tahoma.css" />
+    <Content Include="Content\Admin\lib\fonts\tahoma\Tahoma.svg" />
+    <Content Include="Content\Admin\lib\fonts\thabit\thabit.css" />
+    <Content Include="Content\Admin\lib\fonts\vollkorn\vollkorn.css" />
+    <Content Include="Content\Admin\lib\img\bg-dot.png" />
+    <Content Include="Content\Admin\lib\img\bg.png" />
+    <Content Include="Content\Admin\lib\img\blueimp\error.png" />
+    <Content Include="Content\Admin\lib\img\blueimp\error.svg" />
+    <Content Include="Content\Admin\lib\img\blueimp\loading.gif" />
+    <Content Include="Content\Admin\lib\img\blueimp\play-pause.png" />
+    <Content Include="Content\Admin\lib\img\blueimp\play-pause.svg" />
+    <Content Include="Content\Admin\lib\img\blueimp\video-play.png" />
+    <Content Include="Content\Admin\lib\img\blueimp\video-play.svg" />
+    <Content Include="Content\Admin\lib\img\colorpicker\alpha.png" />
+    <Content Include="Content\Admin\lib\img\colorpicker\hue.png" />
+    <Content Include="Content\Admin\lib\img\colorpicker\saturation.png" />
+    <Content Include="Content\Admin\lib\img\dropzone\spritemap%402x.png" />
+    <Content Include="Content\Admin\lib\img\dropzone\spritemap.png" />
+    <Content Include="Content\Admin\lib\img\fileinput\loading.gif" />
+    <Content Include="Content\Admin\lib\img\icheck\grey%402x.png" />
+    <Content Include="Content\Admin\lib\img\icheck\grey.png" />
+    <Content Include="Content\Admin\lib\img\icheck\New folder\grey%402x.png" />
+    <Content Include="Content\Admin\lib\img\icheck\New folder\grey.png" />
+    <Content Include="Content\Admin\lib\img\ion\sprite-skin-flat.png" />
+    <Content Include="Content\Admin\lib\img\ion\sprite-skin-modern.png" />
+    <Content Include="Content\Admin\lib\img\ion\sprite-skin-nice.png" />
+    <Content Include="Content\Admin\lib\img\ion\sprite-skin-simple.png" />
+    <Content Include="Content\Admin\lib\img\jquery\animated-overlay.gif" />
+    <Content Include="Content\Admin\lib\img\jquery\resize-icon%402x.png" />
+    <Content Include="Content\Admin\lib\img\jquery\resize-icon.png" />
+    <Content Include="Content\Admin\lib\img\jquery\ui-bg_diagonals-thick_18_b81900_40x40.png" />
+    <Content Include="Content\Admin\lib\img\jquery\ui-bg_diagonals-thick_20_666666_40x40.png" />
+    <Content Include="Content\Admin\lib\img\jquery\ui-bg_flat_10_000000_40x100.png" />
+    <Content Include="Content\Admin\lib\img\jquery\ui-bg_glass_100_f6f6f6_1x400.png" />
+    <Content Include="Content\Admin\lib\img\jquery\ui-bg_glass_100_fdf5ce_1x400.png" />
+    <Content Include="Content\Admin\lib\img\jquery\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\Admin\lib\img\jquery\ui-bg_gloss-wave_35_f6a828_500x100.png" />
+    <Content Include="Content\Admin\lib\img\jquery\ui-bg_highlight-soft_100_eeeeee_1x100.png" />
+    <Content Include="Content\Admin\lib\img\jquery\ui-bg_highlight-soft_75_ffe45c_1x100.png" />
+    <Content Include="Content\Admin\lib\img\jquery\ui-icons_222222_256x240.png" />
+    <Content Include="Content\Admin\lib\img\jquery\ui-icons_228ef1_256x240.png" />
+    <Content Include="Content\Admin\lib\img\jquery\ui-icons_ef8c08_256x240.png" />
+    <Content Include="Content\Admin\lib\img\jquery\ui-icons_ffd27a_256x240.png" />
+    <Content Include="Content\Admin\lib\img\jquery\ui-icons_ffffff_256x240.png" />
+    <Content Include="Content\Admin\lib\img\jstree\32px.png" />
+    <Content Include="Content\Admin\lib\img\jstree\40px.png" />
+    <Content Include="Content\Admin\lib\img\jstree\throbber.gif" />
+    <Content Include="Content\Admin\lib\img\loaders\default.gif" />
+    <Content Include="Content\Admin\lib\img\loaders\page-loader.gif" />
+    <Content Include="Content\Admin\lib\img\loading.gif" />
+    <Content Include="Content\Admin\lib\img\logo%402x.png" />
+    <Content Include="Content\Admin\lib\img\logo-grey%402x.png" />
+    <Content Include="Content\Admin\lib\img\logo-grey-big%402x.png" />
+    <Content Include="Content\Admin\lib\img\logo-grey-big.png" />
+    <Content Include="Content\Admin\lib\img\logo-grey.png" />
+    <Content Include="Content\Admin\lib\img\logo-lr%402x.png" />
+    <Content Include="Content\Admin\lib\img\logo-lr.png" />
+    <Content Include="Content\Admin\lib\img\logo-small%402x.png" />
+    <Content Include="Content\Admin\lib\img\logo-small-grey%402x.png" />
+    <Content Include="Content\Admin\lib\img\logo-small-grey.png" />
+    <Content Include="Content\Admin\lib\img\logo-small.png" />
+    <Content Include="Content\Admin\lib\img\logo.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\ads_informal_content.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\ads_informal_title.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\advance_search.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\arrow.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\bg.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\bg_baskets.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\code_2d.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\code_2d_v.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\code_3d.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\code_3d_v.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\editor\icon_01.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\editor\icon_01.svg" />
+    <Content Include="Content\Admin\lib\img\morasalat\editor\icon_02.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\editor\icon_02.svg" />
+    <Content Include="Content\Admin\lib\img\morasalat\editor\icon_03.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\editor\icon_03.svg" />
+    <Content Include="Content\Admin\lib\img\morasalat\editor\icon_04.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\editor\icon_04.svg" />
+    <Content Include="Content\Admin\lib\img\morasalat\editor\icon_05.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\editor\icon_05.svg" />
+    <Content Include="Content\Admin\lib\img\morasalat\editor\icon_06.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\editor\icon_06.svg" />
+    <Content Include="Content\Admin\lib\img\morasalat\editor\icon_07.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\editor\icon_07.svg" />
+    <Content Include="Content\Admin\lib\img\morasalat\editor\icon_08.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\editor\icon_08.svg" />
+    <Content Include="Content\Admin\lib\img\morasalat\editor\icon_09.svg" />
+    <Content Include="Content\Admin\lib\img\morasalat\editor\icon_10.svg" />
+    <Content Include="Content\Admin\lib\img\morasalat\editor\icon_11.svg" />
+    <Content Include="Content\Admin\lib\img\morasalat\employees\avatar1.jpg" />
+    <Content Include="Content\Admin\lib\img\morasalat\employees\avatar2.jpg" />
+    <Content Include="Content\Admin\lib\img\morasalat\employees\avatar3.jpg" />
+    <Content Include="Content\Admin\lib\img\morasalat\employees\avatar4.jpg" />
+    <Content Include="Content\Admin\lib\img\morasalat\employees\avatar5.jpg" />
+    <Content Include="Content\Admin\lib\img\morasalat\export_icon.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\fa-indent.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\fa-outdent.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\file\01.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\file\01_b.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\file\02.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\file\02_b.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\file\03.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\file\03_b.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\file\04.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\file\04_b.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\file\05.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\file\05_b.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\file\06.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\file\06_b.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\file\07.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\file\07_b.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\file\color\01.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\file\color\01_b.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\file\color\02.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\file\color\02_b.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\file\color\03.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\file\color\03_b.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\file\color\04.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\file\color\04_b.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\file\color\05.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\file\color\05_b.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\file\color\06.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\file\color\06_b.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\file\color\07.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\file\color\07_b.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\icon-box\icon-box1.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\icon-box\icon-box1_en.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\icon-box\icon-box2.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\icon-box\icon-box2_en.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\icon-box\icon-box3.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\icon-box\icon-box3_en.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\icon-box\icon-box4.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\icon-box\icon-box4_en.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\icon-box\icon-box5.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\icon-box\icon-box5_en.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\icon-box\icon-box6.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\icon-box\icon-box6_en.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\icon-box\icon-box7.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\icon-box\icon-box7_en.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\icon_exporting_slider.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\icon_file_slider.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\icon_incoming_slider.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\icon_reports_slider.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\img_ck.jpg" />
+    <Content Include="Content\Admin\lib\img\morasalat\index_none.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\logo-lr.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\logo_login.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\logo_morasalat.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\logo_report.jpg" />
+    <Content Include="Content\Admin\lib\img\morasalat\main_icon_boxes.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\navigation_icon.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\navigation_icon\fa-actions.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\navigation_icon\fa-actions_hover.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\navigation_icon\fa-agencies.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\navigation_icon\fa-agencies_hover.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\navigation_icon\fa-dashboard.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\navigation_icon\fa-dashboard_hover.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\navigation_icon\fa-encryption.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\navigation_icon\fa-encryption_hover.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\navigation_icon\fa-exporting.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\navigation_icon\fa-exporting_hover.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\navigation_icon\fa-file.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\navigation_icon\fa-file_hover.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\navigation_icon\fa-incoming.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\navigation_icon\fa-incoming_hover.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\navigation_icon\fa-lookup.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\navigation_icon\fa-lookup_hover.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\navigation_icon\fa-management.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\navigation_icon\fa-management_hover.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\navigation_icon\fa-permission.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\navigation_icon\fa-permission_hover.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\navigation_icon\fa-reports.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\navigation_icon\fa-reports_hover.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\navigation_icon\fa-search.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\navigation_icon\fa-search_hover.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\navigation_icon\fa-structure.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\navigation_icon\fa-structure_hover.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\navigation_icon\fa-tasks.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\navigation_icon\fa-tasks_hover.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\navigation_icon\fa-user.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\navigation_icon\fa-user_hover.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\notes.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\nothing_on.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\print_icon.svg" />
+    <Content Include="Content\Admin\lib\img\morasalat\scanner.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\secure_transactions_icon.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\secure_transactions_icon_a.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\secure_transactions_icon_a_b.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\secure_transactions_icon_b.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\secure_transactions_icon_b_b.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\signatures.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\text_editer.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\title_baskets_icons.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\title_box_icons.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\toolbar_icon_01.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\toolbar_icon_02.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\toolbar_icon_03.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\toolbar_icon_04.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\toolbar_icon_05.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\toolbar_icon_06.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\toolbar_icon_07.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\top_directory_shadow.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\tree-control_icon.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\type_of_transaction_icon.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\type_of_transaction_icon_a.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\type_of_transaction_icon_a_b.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\type_of_transaction_icon_b.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\type_of_transaction_icon_b_b.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\type_of_transaction_icon_c.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\type_of_transaction_icon_c_b.png" />
+    <Content Include="Content\Admin\lib\img\morasalat\under_procedure_icon.svg" />
+    <Content Include="Content\Admin\lib\img\morasalat\welcome_logo.png" />
+    <Content Include="Content\Admin\lib\img\owl\AjaxLoader.gif" />
+    <Content Include="Content\Admin\lib\img\owl\grabbing.png" />
+    <Content Include="Content\Admin\lib\img\themes\dark-head-light.jpg" />
+    <Content Include="Content\Admin\lib\img\themes\dark.jpg" />
+    <Content Include="Content\Admin\lib\img\themes\default-head-light.jpg" />
+    <Content Include="Content\Admin\lib\img\themes\default.jpg" />
+    <Content Include="Content\Admin\lib\img\themes\forest-head-light.jpg" />
+    <Content Include="Content\Admin\lib\img\themes\forest.jpg" />
+    <Content Include="Content\Admin\lib\img\themes\light.jpg" />
+    <Content Include="Content\Admin\lib\img\themes\night-head-light.jpg" />
+    <Content Include="Content\Admin\lib\img\themes\night.jpg" />
+    <Content Include="Content\Admin\lib\img\themes\serenity-head-light.jpg" />
+    <Content Include="Content\Admin\lib\img\themes\serenity.jpg" />
+    <Content Include="Content\Admin\lib\js\actions.js" />
+    <Content Include="Content\Admin\lib\js\demo_charts_morris.js" />
+    <Content Include="Content\Admin\lib\js\demo_charts_nvd3.js" />
+    <Content Include="Content\Admin\lib\js\demo_charts_rickshaw.js" />
+    <Content Include="Content\Admin\lib\js\demo_dashboard.js" />
+    <Content Include="Content\Admin\lib\js\demo_edit_profile.js" />
+    <Content Include="Content\Admin\lib\js\demo_file_handling.js" />
+    <Content Include="Content\Admin\lib\js\demo_icons.js" />
+    <Content Include="Content\Admin\lib\js\demo_maps.js" />
+    <Content Include="Content\Admin\lib\js\demo_sliders.js" />
+    <Content Include="Content\Admin\lib\js\demo_tables.js" />
+    <Content Include="Content\Admin\lib\js\demo_tasks.js" />
+    <Content Include="Content\Admin\lib\js\faq.js" />
+    <Content Include="Content\Admin\lib\js\plugins.js" />
+    <Content Include="Content\Admin\lib\js\plugins\blueimp\jquery.blueimp-gallery.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\bootstrap\bootstrap-colorpicker.js" />
+    <Content Include="Content\Admin\lib\js\plugins\bootstrap\bootstrap-datepicker.js" />
+    <Content Include="Content\Admin\lib\js\plugins\bootstrap\bootstrap-file-input.js" />
+    <Content Include="Content\Admin\lib\js\plugins\bootstrap\bootstrap-select.js" />
+    <Content Include="Content\Admin\lib\js\plugins\bootstrap\bootstrap-timepicker.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\bootstrap\bootstrap.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\bootstrap\npm.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\codemirror.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\apl\apl.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\asterisk\asterisk.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\clike\clike.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\clojure\clojure.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\cobol\cobol.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\coffeescript\coffeescript.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\commonlisp\commonlisp.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\css\css.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\css\less_test.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\css\scss_test.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\css\test.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\cypher\cypher.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\diff\diff.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\django\django.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\dtd\dtd.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\dylan\dylan.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\d\d.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\ecl\ecl.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\eiffel\eiffel.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\erlang\erlang.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\fortran\fortran.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\gas\gas.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\gfm\gfm.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\gfm\test.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\gherkin\gherkin.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\go\go.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\groovy\groovy.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\haml\haml.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\haml\test.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\haskell\haskell.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\haxe\haxe.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\htmlembedded\htmlembedded.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\htmlmixed\htmlmixed.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\http\http.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\jade\index.html" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\javascript\javascript.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\javascript\test.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\jinja2\jinja2.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\julia\julia.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\kotlin\kotlin.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\livescript\livescript.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\lua\lua.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\markdown\markdown.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\markdown\test.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\meta.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\mirc\mirc.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\mllike\mllike.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\nginx\nginx.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\ntriples\ntriples.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\octave\octave.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\pascal\pascal.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\pegjs\pegjs.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\perl\perl.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\php\php.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\php\test.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\pig\pig.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\properties\properties.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\puppet\puppet.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\python\python.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\q\q.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\rpm\changes\index.html" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\rpm\rpm.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\rst\rst.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\ruby\ruby.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\ruby\test.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\rust\rust.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\r\r.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\sass\sass.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\scheme\scheme.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\shell\shell.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\shell\test.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\sieve\sieve.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\slim\slim.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\slim\test.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\smalltalk\smalltalk.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\smartymixed\smartymixed.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\smarty\smarty.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\solr\solr.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\sparql\sparql.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\sql\sql.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\stex\stex.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\stex\test.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\tcl\tcl.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\tiddlywiki\tiddlywiki.css" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\tiddlywiki\tiddlywiki.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\tiki\tiki.css" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\tiki\tiki.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\toml\toml.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\turtle\turtle.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\vbscript\vbscript.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\vb\vb.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\velocity\velocity.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\verilog\test.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\verilog\verilog.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\xml\test.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\xml\xml.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\xquery\test.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\xquery\xquery.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\yaml\yaml.js" />
+    <Content Include="Content\Admin\lib\js\plugins\codemirror\mode\z80\z80.js" />
+    <Content Include="Content\Admin\lib\js\plugins\cropper\cropper.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\datatables\jquery.dataTables.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\daterangepicker\daterangepicker.js" />
+    <Content Include="Content\Admin\lib\js\plugins\dropzone\dropzone.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fileinput\fileinput.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\filetree\jqueryFileTree.js" />
+    <Content Include="Content\Admin\lib\js\plugins\form\jquery.form.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\fullcalendar.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\ar-ma.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\ar-sa.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\ar.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\bg.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\ca.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\cs.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\da.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\de-at.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\de.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\el.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\en-au.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\en-ca.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\en-gb.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\es.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\fa.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\fi.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\fr-ca.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\fr.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\hi.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\hr.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\hu.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\id.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\is.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\it.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\ja.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\ko.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\lt.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\lv.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\nl.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\pl.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\pt-br.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\pt.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\ro.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\ru.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\sk.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\sl.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\sr-cyrl.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\sr.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\sv.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\th.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\tr.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\uk.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\vi.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\zh-cn.js" />
+    <Content Include="Content\Admin\lib\js\plugins\fullcalendar\lang\zh-tw.js" />
+    <Content Include="Content\Admin\lib\js\plugins\highlight\jquery.highlight-4.js" />
+    <Content Include="Content\Admin\lib\js\plugins\icheck\icheck.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\ion\ion.rangeSlider.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\accept.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\additional.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\alphanumeric.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\bankaccountNL.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\bankorgiroaccountNL.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\bic.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\cifES.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\creditcardtypes.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\currency.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\dateFA.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\dateITA.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\dateNL.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\extension.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\giroaccountNL.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\iban.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\integer.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\ipv4.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\ipv6.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\lettersonly.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\letterswithbasicpunc.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\mobileNL.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\mobileUK.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\nieES.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\nifES.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\nowhitespace.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\pattern.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\phoneNL.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\phonesUK.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\phoneUK.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\phoneUS.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\postalCodeCA.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\postalcodeIT.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\postalcodeNL.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\postcodeUK.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\require_from_group.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\skip_or_fill_minimum.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\statesUS.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\strippedminlength.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\time.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\time12h.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\url2.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\vinUS.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\zipcodeUS.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\additional\ziprange.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\jquery.validate.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_ar.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_bg.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_ca.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_cs.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_da.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_de.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_el.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_es.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_es_AR.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_et.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_eu.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_fa.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_fi.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_fr.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_gl.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_he.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_hr.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_hu.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_id.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_is.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_it.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_ja.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_ka.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_kk.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_ko.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_lt.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_lv.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_my.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_nl.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_no.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_pl.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_pt_BR.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_pt_PT.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_ro.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_ru.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_si.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_sk.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_sl.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_sr.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_sr_lat.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_sv.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_th.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_tj.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_tr.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_uk.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_vi.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_zh.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\messages_zh_TW.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\methods_de.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\methods_es_CL.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\methods_fi.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\methods_nl.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery-validation\localization\methods_pt.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery\jquery-migrate.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery\jquery-ui.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery\jquery.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jstree\intro.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jstree\jstree.checkbox.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jstree\jstree.contextmenu.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jstree\jstree.dnd.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jstree\jstree.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jstree\jstree.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jstree\jstree.search.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jstree\jstree.sort.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jstree\jstree.state.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jstree\jstree.types.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jstree\jstree.unique.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jstree\jstree.wholerow.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jstree\misc.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jstree\outro.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jstree\sample.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jstree\vakata-jstree.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jvectormap\jquery-jvectormap-1.2.2.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jvectormap\jquery-jvectormap-europe-mill-en.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jvectormap\jquery-jvectormap-uakraine-merc-en.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jvectormap\jquery-jvectormap-us-aea-en.js" />
+    <Content Include="Content\Admin\lib\js\plugins\jvectormap\jquery-jvectormap-world-mill-en.js" />
+    <Content Include="Content\Admin\lib\js\plugins\knob\jquery.knob.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\lesscss\less.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\maskedinput\jquery.maskedinput.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\mcustomscrollbar\jquery.mCustomScrollbar.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\moment.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\morris\morris.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\morris\raphael-min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nestable\jquery.nestable-rtl.css" />
+    <Content Include="Content\Admin\lib\js\plugins\nestable\jquery.nestable-rtl.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nestable\jquery.nestable.js" />
+    <Content Include="Content\Admin\lib\js\plugins\noty\jquery.noty.js" />
+    <Content Include="Content\Admin\lib\js\plugins\noty\layouts\bottom.js" />
+    <Content Include="Content\Admin\lib\js\plugins\noty\layouts\bottomCenter.js" />
+    <Content Include="Content\Admin\lib\js\plugins\noty\layouts\bottomLeft.js" />
+    <Content Include="Content\Admin\lib\js\plugins\noty\layouts\bottomRight.js" />
+    <Content Include="Content\Admin\lib\js\plugins\noty\layouts\center.js" />
+    <Content Include="Content\Admin\lib\js\plugins\noty\layouts\centerLeft.js" />
+    <Content Include="Content\Admin\lib\js\plugins\noty\layouts\centerRight.js" />
+    <Content Include="Content\Admin\lib\js\plugins\noty\layouts\inline.js" />
+    <Content Include="Content\Admin\lib\js\plugins\noty\layouts\top.js" />
+    <Content Include="Content\Admin\lib\js\plugins\noty\layouts\topCenter.js" />
+    <Content Include="Content\Admin\lib\js\plugins\noty\layouts\topLeft.js" />
+    <Content Include="Content\Admin\lib\js\plugins\noty\layouts\topRight.js" />
+    <Content Include="Content\Admin\lib\js\plugins\noty\promise.js" />
+    <Content Include="Content\Admin\lib\js\plugins\noty\themes\default.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\lib\cie.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\lib\colorbrewer.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\lib\crossfilter.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\lib\crossfilter.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\lib\d3.v2.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\lib\d3.v2.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\lib\d3.v3.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\lib\fisheye.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\lib\hive.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\lib\horizon.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\lib\sankey.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\nv.d3.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\core.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\interactiveLayer.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\intro.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\axis.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\backup\bullet.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\backup\bulletChart.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\boilerplate.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\bullet.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\bulletChart.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\cumulativeLineChart.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\discreteBar.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\discreteBarChart.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\distribution.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\historicalBar.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\historicalBarChart.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\indentedTree.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\legend.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\line.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\lineChart.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\linePlusBarChart.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\linePlusBarWithFocusChart.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\lineWithFisheye.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\lineWithFisheyeChart.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\lineWithFocusChart.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\multiBar.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\multiBarChart.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\multiBarHorizontal.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\multiBarHorizontalChart.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\multiBarTimeSeries.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\multiBarTimeSeriesChart.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\multiChart.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\ohlcBar.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\parallelCoordinates.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\pie.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\pieChart.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\scatter.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\scatterChart.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\scatterPlusLineChart.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\sparkline.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\sparklinePlus.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\stackedArea.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\models\stackedAreaChart.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\outro.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\tooltip.js" />
+    <Content Include="Content\Admin\lib\js\plugins\nvd3\src\utils.js" />
+    <Content Include="Content\Admin\lib\js\plugins\owl\owl.carousel.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\rangeslider\jQAllRangeSliders-min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\rickshaw\d3.layout.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\rickshaw\d3.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\rickshaw\d3.v2.js" />
+    <Content Include="Content\Admin\lib\js\plugins\rickshaw\d3.v3.js" />
+    <Content Include="Content\Admin\lib\js\plugins\rickshaw\rickshaw.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\scrolltotop\scrolltopcontrol.js" />
+    <Content Include="Content\Admin\lib\js\plugins\slidingmenu\jquery-sliding-menu.js" />
+    <Content Include="Content\Admin\lib\js\plugins\smartwizard\jquery.smartWizard-2.0.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\sparkline\jquery.sparkline.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\summernote\summernote.js" />
+    <Content Include="Content\Admin\lib\js\plugins\tableexport\html2canvas.js" />
+    <Content Include="Content\Admin\lib\js\plugins\tableexport\jquery.base64.js" />
+    <Content Include="Content\Admin\lib\js\plugins\tableexport\jspdf\jspdf.js" />
+    <Content Include="Content\Admin\lib\js\plugins\tableexport\jspdf\libs\base64.js" />
+    <Content Include="Content\Admin\lib\js\plugins\tableexport\jspdf\libs\sprintf.js" />
+    <Content Include="Content\Admin\lib\js\plugins\tableexport\tableExport.js" />
+    <Content Include="Content\Admin\lib\js\plugins\tagsinput\jquery.tagsinput.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\tocify\jquery.tocify.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\tour\bootstrap-tour-standalone.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\tour\bootstrap-tour.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\tour\intro.min.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\jquery.validationEngine.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-ar.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-ca.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-cz.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-da.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-de.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-el.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-en.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-es.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-et.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-fa.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-fi.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-fr.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-he.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-hr.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-hu.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-id.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-it.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-ja.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-lt.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-nl.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-no.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-pl.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-pt.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-pt_BR.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-ro.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-ru.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-sr_Cyrl.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-sr_Latn.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-sv.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-tr.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-vi.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-zh_CN.js" />
+    <Content Include="Content\Admin\lib\js\plugins\validationengine\languages\jquery.validationEngine-zh_TW.js" />
+    <Content Include="Content\Admin\lib\js\portlet.js" />
+    <Content Include="Content\Admin\lib\js\settings.js" />
+    <Content Include="Content\Admin\lib\js\theme\autonumeric\autoNumeric.js" />
+    <Content Include="Content\Admin\lib\js\theme\autonumeric\jquery.min.js" />
+    <Content Include="Content\Admin\lib\js\theme\autosize-textarea\autosize.js" />
+    <Content Include="Content\Admin\lib\js\theme\autosize-textarea\autosize.min.js" />
+    <Content Include="Content\Admin\lib\js\theme\droppable\droppable_style.css" />
+    <Content Include="Content\Admin\lib\js\theme\droppable\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\Admin\lib\js\theme\droppable\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\Admin\lib\js\theme\droppable\jquery-1.10.2.js" />
+    <Content Include="Content\Admin\lib\js\theme\droppable\jquery-ui.css" />
+    <Content Include="Content\Admin\lib\js\theme\droppable\jquery-ui.js" />
+    <Content Include="Content\Admin\lib\js\theme\ie9\html5shiv.js" />
+    <Content Include="Content\Admin\lib\js\theme\ie9\respond.min.js" />
+    <Content Include="Content\Admin\lib\js\theme\jquery-confirm\css\jquery-confirm.css" />
+    <Content Include="Content\Admin\lib\js\theme\jquery-confirm\jquery-1.10.2.js" />
+    <Content Include="Content\Admin\lib\js\theme\jquery-confirm\js\jquery-confirm.js" />
+    <Content Include="Content\Admin\lib\js\theme\owlcarousel\docs.theme.min.css" />
+    <Content Include="Content\Admin\lib\js\theme\owlcarousel\jquery.min.js" />
+    <Content Include="Content\Admin\lib\js\theme\owlcarousel\owl.carousel.js" />
+    <Content Include="Content\Admin\lib\js\theme\owlcarousel\owl.carousel.min.css" />
+    <Content Include="Content\Admin\lib\js\theme\owlcarousel\owl.theme.default.min.css" />
+    <Content Include="Content\Admin\lib\js\theme\pie\PIE.htc" />
+    <Content Include="Content\Admin\lib\js\theme\pie\PIE.js" />
+    <Content Include="Content\Admin\lib\js\theme\pie\PIE_uncompressed.htc" />
+    <Content Include="Content\Admin\lib\js\theme\pie\PIE_uncompressed.js" />
+    <Content Include="Content\Admin\lib\js\theme\pushslide\css\slidebars-theme_ar.css" />
+    <Content Include="Content\Admin\lib\js\theme\pushslide\css\slidebars-theme_en.css" />
+    <Content Include="Content\Admin\lib\js\theme\pushslide\css\slidebars.min_ar.css" />
+    <Content Include="Content\Admin\lib\js\theme\pushslide\css\slidebars.min_en.css" />
+    <Content Include="Content\Admin\lib\js\theme\pushslide\js\jquery.min.js" />
+    <Content Include="Content\Admin\lib\js\theme\pushslide\js\slidebars-theme.js" />
+    <Content Include="Content\Admin\lib\js\theme\pushslide\js\slidebars.min.js" />
+    <Content Include="Content\Admin\lib\js\theme\toastmessage\images\close.gif" />
+    <Content Include="Content\Admin\lib\js\theme\toastmessage\images\error.png" />
+    <Content Include="Content\Admin\lib\js\theme\toastmessage\images\notice.png" />
+    <Content Include="Content\Admin\lib\js\theme\toastmessage\images\success.png" />
+    <Content Include="Content\Admin\lib\js\theme\toastmessage\images\warning.png" />
+    <Content Include="Content\Admin\lib\js\theme\toastmessage\jquery-1.5.min.js" />
+    <Content Include="Content\Admin\lib\js\theme\toastmessage\jquery.toastmessage-min.js" />
+    <Content Include="Content\Admin\lib\js\theme\toastmessage\jquery.toastmessage-min_ar.css" />
+    <Content Include="Content\Admin\lib\js\theme\toastmessage\jquery.toastmessage-min_en.css" />
+    <Content Include="Content\Admin\Site.css" />
+    <Content Include="Content\jquery.calendars.picker.css" />
+    <Content Include="Content\Site.css" />
+    <Content Include="Content\style\jquery-ui-1.9.2.css" />
+    <Content Include="Content\style\jquery-ui.css" />
+    <Content Include="Content\style\jquery.contextMenu.css" />
+    <Content Include="Content\User\lib\assets\fileupload\cors\postmessage.html" />
+    <Content Include="Content\User\lib\assets\fileupload\cors\result.html" />
+    <Content Include="Content\User\lib\assets\images\users\avatar.jpg" />
+    <Content Include="Content\User\lib\assets\images\users\no-image.jpg" />
+    <Content Include="Content\User\lib\assets\images\users\no-image.png" />
+    <Content Include="Content\User\lib\assets\images\users\user.jpg" />
+    <Content Include="Content\User\lib\css\admin_ar.css" />
+    <Content Include="Content\User\lib\css\admin_en.css" />
+    <Content Include="Content\User\lib\css\animate\animate.css" />
+    <Content Include="Content\User\lib\css\animate\animate.min.css" />
+    <Content Include="Content\User\lib\css\blueimp\blueimp-gallery.min.css" />
+    <Content Include="Content\User\lib\css\bootstrap\bootstrap.min.css" />
+    <Content Include="Content\User\lib\css\codemirror\codemirror.css" />
+    <Content Include="Content\User\lib\css\codemirror\theme\3024-day.css" />
+    <Content Include="Content\User\lib\css\codemirror\theme\3024-night.css" />
+    <Content Include="Content\User\lib\css\codemirror\theme\ambiance-mobile.css" />
+    <Content Include="Content\User\lib\css\codemirror\theme\ambiance.css" />
+    <Content Include="Content\User\lib\css\codemirror\theme\base16-dark.css" />
+    <Content Include="Content\User\lib\css\codemirror\theme\base16-light.css" />
+    <Content Include="Content\User\lib\css\codemirror\theme\blackboard.css" />
+    <Content Include="Content\User\lib\css\codemirror\theme\cobalt.css" />
+    <Content Include="Content\User\lib\css\codemirror\theme\eclipse.css" />
+    <Content Include="Content\User\lib\css\codemirror\theme\elegant.css" />
+    <Content Include="Content\User\lib\css\codemirror\theme\erlang-dark.css" />
+    <Content Include="Content\User\lib\css\codemirror\theme\lesser-dark.css" />
+    <Content Include="Content\User\lib\css\codemirror\theme\mbo.css" />
+    <Content Include="Content\User\lib\css\codemirror\theme\mdn-like.css" />
+    <Content Include="Content\User\lib\css\codemirror\theme\midnight.css" />
+    <Content Include="Content\User\lib\css\codemirror\theme\monokai.css" />
+    <Content Include="Content\User\lib\css\codemirror\theme\neat.css" />
+    <Content Include="Content\User\lib\css\codemirror\theme\neo.css" />
+    <Content Include="Content\User\lib\css\codemirror\theme\night.css" />
+    <Content Include="Content\User\lib\css\codemirror\theme\paraiso-dark.css" />
+    <Content Include="Content\User\lib\css\codemirror\theme\paraiso-light.css" />
+    <Content Include="Content\User\lib\css\codemirror\theme\pastel-on-dark.css" />
+    <Content Include="Content\User\lib\css\codemirror\theme\rubyblue.css" />
+    <Content Include="Content\User\lib\css\codemirror\theme\solarized.css" />
+    <Content Include="Content\User\lib\css\codemirror\theme\the-matrix.css" />
+    <Content Include="Content\User\lib\css\codemirror\theme\tomorrow-night-eighties.css" />
+    <Content Include="Content\User\lib\css\codemirror\theme\twilight.css" />
+    <Content Include="Content\User\lib\css\codemirror\theme\vibrant-ink.css" />
+    <Content Include="Content\User\lib\css\codemirror\theme\xq-dark.css" />
+    <Content Include="Content\User\lib\css\codemirror\theme\xq-light.css" />
+    <Content Include="Content\User\lib\css\cropper\cropper.min.css" />
+    <Content Include="Content\User\lib\css\dropzone\dropzone.css" />
+    <Content Include="Content\User\lib\css\fontawesome\font-awesome.min.css" />
+    <Content Include="Content\User\lib\css\fonts\fontawesome-webfont.svg" />
+    <Content Include="Content\User\lib\css\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Content\User\lib\css\fullcalendar\fullcalendar.css" />
+    <Content Include="Content\User\lib\css\introjs\introjs.min.css" />
+    <Content Include="Content\User\lib\css\ion\ion.rangeSlider.css" />
+    <Content Include="Content\User\lib\css\ion\ion.rangeSlider.skinFlat.css" />
+    <Content Include="Content\User\lib\css\ion\ion.rangeSlider.skinHTML5.css" />
+    <Content Include="Content\User\lib\css\ion\ion.rangeSlider.skinModern.css" />
+    <Content Include="Content\User\lib\css\ion\ion.rangeSlider.skinNice.css" />
+    <Content Include="Content\User\lib\css\ion\ion.rangeSlider.skinSimple.css" />
+    <Content Include="Content\User\lib\css\jquery\jquery-ui.min.css" />
+    <Content Include="Content\User\lib\css\jstree\jstree.min.css" />
+    <Content Include="Content\User\lib\css\mcustomscrollbar\jquery.mCustomScrollbar.css" />
+    <Content Include="Content\User\lib\css\nvd3\nv.d3.css" />
+    <Content Include="Content\User\lib\css\responsive_table_ar.css" />
+    <Content Include="Content\User\lib\css\responsive_table_en.css" />
+    <Content Include="Content\User\lib\css\rickshaw\rickshaw.css" />
+    <Content Include="Content\User\lib\css\rtl.css" />
+    <Content Include="Content\User\lib\css\style_ar.css" />
+    <Content Include="Content\User\lib\css\style_en.css" />
+    <Content Include="Content\User\lib\css\summernote\summernote.css" />
+    <Content Include="Content\User\lib\css\theme_ar.css" />
+    <Content Include="Content\User\lib\css\theme_en.css" />
+    <Content Include="Content\User\lib\favicon.ico" />
+    <Content Include="Content\User\lib\fonts\aljazeera\aljazeera.css" />
+    <Content Include="Content\User\lib\fonts\amiri\amiri.css" />
+    <Content Include="Content\User\lib\fonts\amiri\OFL.txt" />
+    <Content Include="Content\User\lib\fonts\fonts.css" />
+    <Content Include="Content\User\lib\fonts\josefinslab\josefinslab.css" />
+    <Content Include="Content\User\lib\fonts\kufi\kufi.css" />
+    <Content Include="Content\User\lib\fonts\naskh\naskh.css" />
+    <Content Include="Content\User\lib\fonts\oldstandardtt\oldstandardtt.css" />
+    <Content Include="Content\User\lib\fonts\opensans\opensans.css" />
+    <Content Include="Content\User\lib\fonts\ptsans\ptsans.css" />
+    <Content Include="Content\User\lib\fonts\scheherazade\FONTLOG.txt" />
+    <Content Include="Content\User\lib\fonts\scheherazade\OFL-FAQ.txt" />
+    <Content Include="Content\User\lib\fonts\scheherazade\OFL.txt" />
+    <Content Include="Content\User\lib\fonts\scheherazade\scheherazade.css" />
+    <Content Include="Content\User\lib\fonts\tahoma\tahoma.css" />
+    <Content Include="Content\User\lib\fonts\tahoma\Tahoma.svg" />
+    <Content Include="Content\User\lib\fonts\thabit\thabit.css" />
+    <Content Include="Content\User\lib\fonts\vollkorn\vollkorn.css" />
+    <Content Include="Content\User\lib\img\bg-dot.png" />
+    <Content Include="Content\User\lib\img\bg.png" />
+    <Content Include="Content\User\lib\img\blueimp\error.png" />
+    <Content Include="Content\User\lib\img\blueimp\error.svg" />
+    <Content Include="Content\User\lib\img\blueimp\loading.gif" />
+    <Content Include="Content\User\lib\img\blueimp\play-pause.png" />
+    <Content Include="Content\User\lib\img\blueimp\play-pause.svg" />
+    <Content Include="Content\User\lib\img\blueimp\video-play.png" />
+    <Content Include="Content\User\lib\img\blueimp\video-play.svg" />
+    <Content Include="Content\User\lib\img\colorpicker\alpha.png" />
+    <Content Include="Content\User\lib\img\colorpicker\hue.png" />
+    <Content Include="Content\User\lib\img\colorpicker\saturation.png" />
+    <Content Include="Content\User\lib\img\dropzone\spritemap%402x.png" />
+    <Content Include="Content\User\lib\img\dropzone\spritemap.png" />
+    <Content Include="Content\User\lib\img\fileinput\loading.gif" />
+    <Content Include="Content\User\lib\img\icheck\grey%402x.png" />
+    <Content Include="Content\User\lib\img\icheck\grey.png" />
+    <Content Include="Content\User\lib\img\icheck\New folder\grey%402x.png" />
+    <Content Include="Content\User\lib\img\icheck\New folder\grey.png" />
+    <Content Include="Content\User\lib\img\ion\sprite-skin-flat.png" />
+    <Content Include="Content\User\lib\img\ion\sprite-skin-modern.png" />
+    <Content Include="Content\User\lib\img\ion\sprite-skin-nice.png" />
+    <Content Include="Content\User\lib\img\ion\sprite-skin-simple.png" />
+    <Content Include="Content\User\lib\img\jquery\animated-overlay.gif" />
+    <Content Include="Content\User\lib\img\jquery\resize-icon%402x.png" />
+    <Content Include="Content\User\lib\img\jquery\resize-icon.png" />
+    <Content Include="Content\User\lib\img\jquery\ui-bg_diagonals-thick_18_b81900_40x40.png" />
+    <Content Include="Content\User\lib\img\jquery\ui-bg_diagonals-thick_20_666666_40x40.png" />
+    <Content Include="Content\User\lib\img\jquery\ui-bg_flat_10_000000_40x100.png" />
+    <Content Include="Content\User\lib\img\jquery\ui-bg_glass_100_f6f6f6_1x400.png" />
+    <Content Include="Content\User\lib\img\jquery\ui-bg_glass_100_fdf5ce_1x400.png" />
+    <Content Include="Content\User\lib\img\jquery\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\User\lib\img\jquery\ui-bg_gloss-wave_35_f6a828_500x100.png" />
+    <Content Include="Content\User\lib\img\jquery\ui-bg_highlight-soft_100_eeeeee_1x100.png" />
+    <Content Include="Content\User\lib\img\jquery\ui-bg_highlight-soft_75_ffe45c_1x100.png" />
+    <Content Include="Content\User\lib\img\jquery\ui-icons_222222_256x240.png" />
+    <Content Include="Content\User\lib\img\jquery\ui-icons_228ef1_256x240.png" />
+    <Content Include="Content\User\lib\img\jquery\ui-icons_ef8c08_256x240.png" />
+    <Content Include="Content\User\lib\img\jquery\ui-icons_ffd27a_256x240.png" />
+    <Content Include="Content\User\lib\img\jquery\ui-icons_ffffff_256x240.png" />
+    <Content Include="Content\User\lib\img\jstree\32px.png" />
+    <Content Include="Content\User\lib\img\jstree\40px.png" />
+    <Content Include="Content\User\lib\img\jstree\throbber.gif" />
+    <Content Include="Content\User\lib\img\loaders\default.gif" />
+    <Content Include="Content\User\lib\img\loaders\page-loader.gif" />
+    <Content Include="Content\User\lib\img\loading.gif" />
+    <Content Include="Content\User\lib\img\logo%402x.png" />
+    <Content Include="Content\User\lib\img\logo-grey%402x.png" />
+    <Content Include="Content\User\lib\img\logo-grey-big%402x.png" />
+    <Content Include="Content\User\lib\img\logo-grey-big.png" />
+    <Content Include="Content\User\lib\img\logo-grey.png" />
+    <Content Include="Content\User\lib\img\logo-lr%402x.png" />
+    <Content Include="Content\User\lib\img\logo-lr.png" />
+    <Content Include="Content\User\lib\img\logo-small%402x.png" />
+    <Content Include="Content\User\lib\img\logo-small-grey%402x.png" />
+    <Content Include="Content\User\lib\img\logo-small-grey.png" />
+    <Content Include="Content\User\lib\img\logo-small.png" />
+    <Content Include="Content\User\lib\img\logo.png" />
+    <Content Include="Content\User\lib\img\morasalat\ads_informal_content.png" />
+    <Content Include="Content\User\lib\img\morasalat\ads_informal_title.png" />
+    <Content Include="Content\User\lib\img\morasalat\advance_search.png" />
+    <Content Include="Content\User\lib\img\morasalat\arrow.png" />
+    <Content Include="Content\User\lib\img\morasalat\bg.png" />
+    <Content Include="Content\User\lib\img\morasalat\bg_baskets.png" />
+    <Content Include="Content\User\lib\img\morasalat\code_2d.png" />
+    <Content Include="Content\User\lib\img\morasalat\code_2d_v.png" />
+    <Content Include="Content\User\lib\img\morasalat\code_3d.png" />
+    <Content Include="Content\User\lib\img\morasalat\code_3d_v.png" />
+    <Content Include="Content\User\lib\img\morasalat\editor\icon_01.png" />
+    <Content Include="Content\User\lib\img\morasalat\editor\icon_02.png" />
+    <Content Include="Content\User\lib\img\morasalat\editor\icon_03.png" />
+    <Content Include="Content\User\lib\img\morasalat\editor\icon_04.png" />
+    <Content Include="Content\User\lib\img\morasalat\editor\icon_05.png" />
+    <Content Include="Content\User\lib\img\morasalat\editor\icon_06.png" />
+    <Content Include="Content\User\lib\img\morasalat\editor\icon_07.png" />
+    <Content Include="Content\User\lib\img\morasalat\editor\icon_08.png" />
+    <Content Include="Content\User\lib\img\morasalat\employees\avatar1.jpg" />
+    <Content Include="Content\User\lib\img\morasalat\employees\avatar2.jpg" />
+    <Content Include="Content\User\lib\img\morasalat\employees\avatar3.jpg" />
+    <Content Include="Content\User\lib\img\morasalat\employees\avatar4.jpg" />
+    <Content Include="Content\User\lib\img\morasalat\employees\avatar5.jpg" />
+    <Content Include="Content\User\lib\img\morasalat\export_icon.png" />
+    <Content Include="Content\User\lib\img\morasalat\fa-indent.png" />
+    <Content Include="Content\User\lib\img\morasalat\fa-outdent.png" />
+    <Content Include="Content\User\lib\img\morasalat\file\01.png" />
+    <Content Include="Content\User\lib\img\morasalat\file\01_b.png" />
+    <Content Include="Content\User\lib\img\morasalat\file\02.png" />
+    <Content Include="Content\User\lib\img\morasalat\file\02_b.png" />
+    <Content Include="Content\User\lib\img\morasalat\file\03.png" />
+    <Content Include="Content\User\lib\img\morasalat\file\03_b.png" />
+    <Content Include="Content\User\lib\img\morasalat\file\04.png" />
+    <Content Include="Content\User\lib\img\morasalat\file\04_b.png" />
+    <Content Include="Content\User\lib\img\morasalat\file\05.png" />
+    <Content Include="Content\User\lib\img\morasalat\file\05_b.png" />
+    <Content Include="Content\User\lib\img\morasalat\file\06.png" />
+    <Content Include="Content\User\lib\img\morasalat\file\06_b.png" />
+    <Content Include="Content\User\lib\img\morasalat\file\07.png" />
+    <Content Include="Content\User\lib\img\morasalat\file\07_b.png" />
+    <Content Include="Content\User\lib\img\morasalat\file\color\01.png" />
+    <Content Include="Content\User\lib\img\morasalat\file\color\01_b.png" />
+    <Content Include="Content\User\lib\img\morasalat\file\color\02.png" />
+    <Content Include="Content\User\lib\img\morasalat\file\color\02_b.png" />
+    <Content Include="Content\User\lib\img\morasalat\file\color\03.png" />
+    <Content Include="Content\User\lib\img\morasalat\file\color\03_b.png" />
+    <Content Include="Content\User\lib\img\morasalat\file\color\04.png" />
+    <Content Include="Content\User\lib\img\morasalat\file\color\04_b.png" />
+    <Content Include="Content\User\lib\img\morasalat\file\color\05.png" />
+    <Content Include="Content\User\lib\img\morasalat\file\color\05_b.png" />
+    <Content Include="Content\User\lib\img\morasalat\file\color\06.png" />
+    <Content Include="Content\User\lib\img\morasalat\file\color\06_b.png" />
+    <Content Include="Content\User\lib\img\morasalat\file\color\07.png" />
+    <Content Include="Content\User\lib\img\morasalat\file\color\07_b.png" />
+    <Content Include="Content\User\lib\img\morasalat\icon-box\icon-box1_ar.png" />
+    <Content Include="Content\User\lib\img\morasalat\icon-box\icon-box1_en.png" />
+    <Content Include="Content\User\lib\img\morasalat\icon-box\icon-box2_ar.png" />
+    <Content Include="Content\User\lib\img\morasalat\icon-box\icon-box2_en.png" />
+    <Content Include="Content\User\lib\img\morasalat\icon-box\icon-box3_ar.png" />
+    <Content Include="Content\User\lib\img\morasalat\icon-box\icon-box3_en.png" />
+    <Content Include="Content\User\lib\img\morasalat\icon-box\icon-box4_ar.png" />
+    <Content Include="Content\User\lib\img\morasalat\icon-box\icon-box4_en.png" />
+    <Content Include="Content\User\lib\img\morasalat\icon-box\icon-box5_ar.png" />
+    <Content Include="Content\User\lib\img\morasalat\icon-box\icon-box5_en.png" />
+    <Content Include="Content\User\lib\img\morasalat\icon-box\icon-box6_ar.png" />
+    <Content Include="Content\User\lib\img\morasalat\icon-box\icon-box6_en.png" />
+    <Content Include="Content\User\lib\img\morasalat\icon-box\icon-box7_ar.png" />
+    <Content Include="Content\User\lib\img\morasalat\icon-box\icon-box7_en.png" />
+    <Content Include="Content\User\lib\img\morasalat\icon_exporting_slider.png" />
+    <Content Include="Content\User\lib\img\morasalat\icon_file_slider.png" />
+    <Content Include="Content\User\lib\img\morasalat\icon_incoming_slider.png" />
+    <Content Include="Content\User\lib\img\morasalat\icon_reports_slider.png" />
+    <Content Include="Content\User\lib\img\morasalat\img_ck.jpg" />
+    <Content Include="Content\User\lib\img\morasalat\index_none.png" />
+    <Content Include="Content\User\lib\img\morasalat\logo-lr.png" />
+    <Content Include="Content\User\lib\img\morasalat\logo_login.png" />
+    <Content Include="Content\User\lib\img\morasalat\logo_morasalat.png" />
+    <Content Include="Content\User\lib\img\morasalat\logo_report.jpg" />
+    <Content Include="Content\User\lib\img\morasalat\main_icon_boxes.png" />
+    <Content Include="Content\User\lib\img\morasalat\navigation_icon.png" />
+    <Content Include="Content\User\lib\img\morasalat\navigation_icon\fa-actions.png" />
+    <Content Include="Content\User\lib\img\morasalat\navigation_icon\fa-actions_hover.png" />
+    <Content Include="Content\User\lib\img\morasalat\navigation_icon\fa-agencies.png" />
+    <Content Include="Content\User\lib\img\morasalat\navigation_icon\fa-agencies_hover.png" />
+    <Content Include="Content\User\lib\img\morasalat\navigation_icon\fa-dashboard.png" />
+    <Content Include="Content\User\lib\img\morasalat\navigation_icon\fa-dashboard_hover.png" />
+    <Content Include="Content\User\lib\img\morasalat\navigation_icon\fa-encryption.png" />
+    <Content Include="Content\User\lib\img\morasalat\navigation_icon\fa-encryption_hover.png" />
+    <Content Include="Content\User\lib\img\morasalat\navigation_icon\fa-exporting.png" />
+    <Content Include="Content\User\lib\img\morasalat\navigation_icon\fa-exporting_hover.png" />
+    <Content Include="Content\User\lib\img\morasalat\navigation_icon\fa-file.png" />
+    <Content Include="Content\User\lib\img\morasalat\navigation_icon\fa-file_hover.png" />
+    <Content Include="Content\User\lib\img\morasalat\navigation_icon\fa-incoming.png" />
+    <Content Include="Content\User\lib\img\morasalat\navigation_icon\fa-incoming_hover.png" />
+    <Content Include="Content\User\lib\img\morasalat\navigation_icon\fa-lookup.png" />
+    <Content Include="Content\User\lib\img\morasalat\navigation_icon\fa-lookup_hover.png" />
+    <Content Include="Content\User\lib\img\morasalat\navigation_icon\fa-management.png" />
+    <Content Include="Content\User\lib\img\morasalat\navigation_icon\fa-management_hover.png" />
+    <Content Include="Content\User\lib\img\morasalat\navigation_icon\fa-permission.png" />
+    <Content Include="Content\User\lib\img\morasalat\navigation_icon\fa-permission_hover.png" />
+    <Content Include="Content\User\lib\img\morasalat\navigation_icon\fa-reports.png" />
+    <Content Include="Content\User\lib\img\morasalat\navigation_icon\fa-reports_hover.png" />
+    <Content Include="Content\User\lib\img\morasalat\navigation_icon\fa-search.png" />
+    <Content Include="Content\User\lib\img\morasalat\navigation_icon\fa-search_hover.png" />
+    <Content Include="Content\User\lib\img\morasalat\navigation_icon\fa-structure.png" />
+    <Content Include="Content\User\lib\img\morasalat\navigation_icon\fa-structure_hover.png" />
+    <Content Include="Content\User\lib\img\morasalat\navigation_icon\fa-tasks.png" />
+    <Content Include="Content\User\lib\img\morasalat\navigation_icon\fa-tasks_hover.png" />
+    <Content Include="Content\User\lib\img\morasalat\navigation_icon\fa-user.png" />
+    <Content Include="Content\User\lib\img\morasalat\navigation_icon\fa-user_hover.png" />
+    <Content Include="Content\User\lib\img\morasalat\notes.png" />
+    <Content Include="Content\User\lib\img\morasalat\nothing_on.png" />
+    <Content Include="Content\User\lib\img\morasalat\scanner.png" />
+    <Content Include="Content\User\lib\img\morasalat\secure_transactions_icon.png" />
+    <Content Include="Content\User\lib\img\morasalat\secure_transactions_icon_a.png" />
+    <Content Include="Content\User\lib\img\morasalat\secure_transactions_icon_a_b.png" />
+    <Content Include="Content\User\lib\img\morasalat\secure_transactions_icon_b.png" />
+    <Content Include="Content\User\lib\img\morasalat\secure_transactions_icon_b_b.png" />
+    <Content Include="Content\User\lib\img\morasalat\signatures.png" />
+    <Content Include="Content\User\lib\img\morasalat\text_editer.png" />
+    <Content Include="Content\User\lib\img\morasalat\title_baskets_icons.png" />
+    <Content Include="Content\User\lib\img\morasalat\title_box_icons.png" />
+    <Content Include="Content\User\lib\img\morasalat\toolbar_icon_01.png" />
+    <Content Include="Content\User\lib\img\morasalat\toolbar_icon_02.png" />
+    <Content Include="Content\User\lib\img\morasalat\toolbar_icon_03.png" />
+    <Content Include="Content\User\lib\img\morasalat\toolbar_icon_04.png" />
+    <Content Include="Content\User\lib\img\morasalat\toolbar_icon_05.png" />
+    <Content Include="Content\User\lib\img\morasalat\toolbar_icon_06.png" />
+    <Content Include="Content\User\lib\img\morasalat\toolbar_icon_07.png" />
+    <Content Include="Content\User\lib\img\morasalat\top_directory_shadow.png" />
+    <Content Include="Content\User\lib\img\morasalat\tree-control_icon.png" />
+    <Content Include="Content\User\lib\img\morasalat\type_of_transaction_icon.png" />
+    <Content Include="Content\User\lib\img\morasalat\type_of_transaction_icon_a.png" />
+    <Content Include="Content\User\lib\img\morasalat\type_of_transaction_icon_a_b.png" />
+    <Content Include="Content\User\lib\img\morasalat\type_of_transaction_icon_b.png" />
+    <Content Include="Content\User\lib\img\morasalat\type_of_transaction_icon_b_b.png" />
+    <Content Include="Content\User\lib\img\morasalat\type_of_transaction_icon_c.png" />
+    <Content Include="Content\User\lib\img\morasalat\type_of_transaction_icon_c_b.png" />
+    <Content Include="Content\User\lib\img\morasalat\welcome_logo.png" />
+    <Content Include="Content\User\lib\img\owl\AjaxLoader.gif" />
+    <Content Include="Content\User\lib\img\owl\grabbing.png" />
+    <Content Include="Content\User\lib\img\themes\dark-head-light.jpg" />
+    <Content Include="Content\User\lib\img\themes\dark.jpg" />
+    <Content Include="Content\User\lib\img\themes\default-head-light.jpg" />
+    <Content Include="Content\User\lib\img\themes\default.jpg" />
+    <Content Include="Content\User\lib\img\themes\forest-head-light.jpg" />
+    <Content Include="Content\User\lib\img\themes\forest.jpg" />
+    <Content Include="Content\User\lib\img\themes\light.jpg" />
+    <Content Include="Content\User\lib\img\themes\night-head-light.jpg" />
+    <Content Include="Content\User\lib\img\themes\night.jpg" />
+    <Content Include="Content\User\lib\img\themes\serenity-head-light.jpg" />
+    <Content Include="Content\User\lib\img\themes\serenity.jpg" />
+    <Content Include="Content\User\lib\js\actions.js" />
+    <Content Include="Content\User\lib\js\demo_charts_morris.js" />
+    <Content Include="Content\User\lib\js\demo_charts_nvd3.js" />
+    <Content Include="Content\User\lib\js\demo_charts_rickshaw.js" />
+    <Content Include="Content\User\lib\js\demo_dashboard.js" />
+    <Content Include="Content\User\lib\js\demo_edit_profile.js" />
+    <Content Include="Content\User\lib\js\demo_file_handling.js" />
+    <Content Include="Content\User\lib\js\demo_icons.js" />
+    <Content Include="Content\User\lib\js\demo_maps.js" />
+    <Content Include="Content\User\lib\js\demo_sliders.js" />
+    <Content Include="Content\User\lib\js\demo_tables.js" />
+    <Content Include="Content\User\lib\js\demo_tasks.js" />
+    <Content Include="Content\User\lib\js\faq.js" />
+    <Content Include="Content\User\lib\js\plugins.js" />
+    <Content Include="Content\User\lib\js\plugins\blueimp\jquery.blueimp-gallery.min.js" />
+    <Content Include="Content\User\lib\js\plugins\bootstrap\bootstrap-colorpicker.js" />
+    <Content Include="Content\User\lib\js\plugins\bootstrap\bootstrap-datepicker.js" />
+    <Content Include="Content\User\lib\js\plugins\bootstrap\bootstrap-file-input.js" />
+    <Content Include="Content\User\lib\js\plugins\bootstrap\bootstrap-select.js" />
+    <Content Include="Content\User\lib\js\plugins\bootstrap\bootstrap-timepicker.min.js" />
+    <Content Include="Content\User\lib\js\plugins\bootstrap\bootstrap.min.js" />
+    <Content Include="Content\User\lib\js\plugins\bootstrap\npm.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\codemirror.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\apl\apl.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\asterisk\asterisk.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\clike\clike.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\clojure\clojure.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\cobol\cobol.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\coffeescript\coffeescript.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\commonlisp\commonlisp.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\css\css.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\css\less_test.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\css\scss_test.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\css\test.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\cypher\cypher.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\diff\diff.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\django\django.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\dtd\dtd.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\dylan\dylan.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\d\d.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\ecl\ecl.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\eiffel\eiffel.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\erlang\erlang.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\fortran\fortran.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\gas\gas.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\gfm\gfm.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\gfm\test.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\gherkin\gherkin.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\go\go.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\groovy\groovy.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\haml\haml.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\haml\test.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\haskell\haskell.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\haxe\haxe.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\htmlembedded\htmlembedded.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\htmlmixed\htmlmixed.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\http\http.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\jade\index.html" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\javascript\javascript.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\javascript\test.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\jinja2\jinja2.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\julia\julia.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\kotlin\kotlin.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\livescript\livescript.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\lua\lua.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\markdown\markdown.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\markdown\test.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\meta.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\mirc\mirc.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\mllike\mllike.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\nginx\nginx.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\ntriples\ntriples.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\octave\octave.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\pascal\pascal.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\pegjs\pegjs.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\perl\perl.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\php\php.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\php\test.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\pig\pig.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\properties\properties.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\puppet\puppet.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\python\python.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\q\q.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\rpm\changes\index.html" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\rpm\rpm.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\rst\rst.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\ruby\ruby.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\ruby\test.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\rust\rust.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\r\r.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\sass\sass.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\scheme\scheme.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\shell\shell.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\shell\test.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\sieve\sieve.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\slim\slim.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\slim\test.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\smalltalk\smalltalk.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\smartymixed\smartymixed.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\smarty\smarty.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\solr\solr.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\sparql\sparql.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\sql\sql.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\stex\stex.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\stex\test.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\tcl\tcl.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\tiddlywiki\tiddlywiki.css" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\tiddlywiki\tiddlywiki.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\tiki\tiki.css" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\tiki\tiki.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\toml\toml.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\turtle\turtle.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\vbscript\vbscript.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\vb\vb.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\velocity\velocity.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\verilog\test.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\verilog\verilog.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\xml\test.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\xml\xml.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\xquery\test.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\xquery\xquery.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\yaml\yaml.js" />
+    <Content Include="Content\User\lib\js\plugins\codemirror\mode\z80\z80.js" />
+    <Content Include="Content\User\lib\js\plugins\cropper\cropper.min.js" />
+    <Content Include="Content\User\lib\js\plugins\datatables\jquery.dataTables.min.js" />
+    <Content Include="Content\User\lib\js\plugins\daterangepicker\daterangepicker.js" />
+    <Content Include="Content\User\lib\js\plugins\dropzone\dropzone.min.js" />
+    <Content Include="Content\User\lib\js\plugins\fileinput\fileinput.min.js" />
+    <Content Include="Content\User\lib\js\plugins\filetree\jqueryFileTree.js" />
+    <Content Include="Content\User\lib\js\plugins\form\jquery.form.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\fullcalendar.min.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\ar-ma.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\ar-sa.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\ar.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\bg.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\ca.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\cs.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\da.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\de-at.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\de.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\el.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\en-au.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\en-ca.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\en-gb.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\es.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\fa.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\fi.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\fr-ca.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\fr.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\hi.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\hr.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\hu.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\id.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\is.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\it.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\ja.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\ko.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\lt.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\lv.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\nl.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\pl.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\pt-br.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\pt.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\ro.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\ru.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\sk.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\sl.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\sr-cyrl.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\sr.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\sv.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\th.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\tr.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\uk.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\vi.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\zh-cn.js" />
+    <Content Include="Content\User\lib\js\plugins\fullcalendar\lang\zh-tw.js" />
+    <Content Include="Content\User\lib\js\plugins\highlight\jquery.highlight-4.js" />
+    <Content Include="Content\User\lib\js\plugins\icheck\icheck.min.js" />
+    <Content Include="Content\User\lib\js\plugins\ion\ion.rangeSlider.min.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\accept.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\additional.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\alphanumeric.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\bankaccountNL.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\bankorgiroaccountNL.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\bic.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\cifES.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\creditcardtypes.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\currency.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\dateFA.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\dateITA.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\dateNL.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\extension.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\giroaccountNL.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\iban.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\integer.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\ipv4.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\ipv6.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\lettersonly.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\letterswithbasicpunc.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\mobileNL.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\mobileUK.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\nieES.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\nifES.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\nowhitespace.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\pattern.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\phoneNL.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\phonesUK.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\phoneUK.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\phoneUS.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\postalCodeCA.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\postalcodeIT.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\postalcodeNL.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\postcodeUK.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\require_from_group.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\skip_or_fill_minimum.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\statesUS.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\strippedminlength.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\time.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\time12h.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\url2.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\vinUS.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\zipcodeUS.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\additional\ziprange.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\jquery.validate.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_ar.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_bg.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_ca.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_cs.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_da.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_de.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_el.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_es.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_es_AR.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_et.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_eu.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_fa.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_fi.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_fr.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_gl.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_he.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_hr.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_hu.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_id.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_is.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_it.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_ja.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_ka.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_kk.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_ko.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_lt.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_lv.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_my.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_nl.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_no.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_pl.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_pt_BR.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_pt_PT.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_ro.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_ru.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_si.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_sk.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_sl.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_sr.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_sr_lat.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_sv.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_th.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_tj.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_tr.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_uk.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_vi.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_zh.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\messages_zh_TW.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\methods_de.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\methods_es_CL.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\methods_fi.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\methods_nl.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery-validation\localization\methods_pt.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery\jquery-migrate.min.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery\jquery-ui.min.js" />
+    <Content Include="Content\User\lib\js\plugins\jquery\jquery.min.js" />
+    <Content Include="Content\User\lib\js\plugins\jstree\intro.js" />
+    <Content Include="Content\User\lib\js\plugins\jstree\jstree.checkbox.js" />
+    <Content Include="Content\User\lib\js\plugins\jstree\jstree.contextmenu.js" />
+    <Content Include="Content\User\lib\js\plugins\jstree\jstree.dnd.js" />
+    <Content Include="Content\User\lib\js\plugins\jstree\jstree.js" />
+    <Content Include="Content\User\lib\js\plugins\jstree\jstree.min.js" />
+    <Content Include="Content\User\lib\js\plugins\jstree\jstree.search.js" />
+    <Content Include="Content\User\lib\js\plugins\jstree\jstree.sort.js" />
+    <Content Include="Content\User\lib\js\plugins\jstree\jstree.state.js" />
+    <Content Include="Content\User\lib\js\plugins\jstree\jstree.types.js" />
+    <Content Include="Content\User\lib\js\plugins\jstree\jstree.unique.js" />
+    <Content Include="Content\User\lib\js\plugins\jstree\jstree.wholerow.js" />
+    <Content Include="Content\User\lib\js\plugins\jstree\misc.js" />
+    <Content Include="Content\User\lib\js\plugins\jstree\outro.js" />
+    <Content Include="Content\User\lib\js\plugins\jstree\sample.js" />
+    <Content Include="Content\User\lib\js\plugins\jstree\vakata-jstree.js" />
+    <Content Include="Content\User\lib\js\plugins\jvectormap\jquery-jvectormap-1.2.2.min.js" />
+    <Content Include="Content\User\lib\js\plugins\jvectormap\jquery-jvectormap-europe-mill-en.js" />
+    <Content Include="Content\User\lib\js\plugins\jvectormap\jquery-jvectormap-uakraine-merc-en.js" />
+    <Content Include="Content\User\lib\js\plugins\jvectormap\jquery-jvectormap-us-aea-en.js" />
+    <Content Include="Content\User\lib\js\plugins\jvectormap\jquery-jvectormap-world-mill-en.js" />
+    <Content Include="Content\User\lib\js\plugins\knob\jquery.knob.min.js" />
+    <Content Include="Content\User\lib\js\plugins\lesscss\less.min.js" />
+    <Content Include="Content\User\lib\js\plugins\maskedinput\jquery.maskedinput.min.js" />
+    <Content Include="Content\User\lib\js\plugins\mcustomscrollbar\jquery.mCustomScrollbar.min.js" />
+    <Content Include="Content\User\lib\js\plugins\moment.min.js" />
+    <Content Include="Content\User\lib\js\plugins\morris\morris.min.js" />
+    <Content Include="Content\User\lib\js\plugins\morris\raphael-min.js" />
+    <Content Include="Content\User\lib\js\plugins\nestable\jquery.nestable - Copy.js" />
+    <Content Include="Content\User\lib\js\plugins\nestable\jquery.nestable-rtl.css" />
+    <Content Include="Content\User\lib\js\plugins\nestable\jquery.nestable-rtl.js" />
+    <Content Include="Content\User\lib\js\plugins\nestable\jquery.nestable.js" />
+    <Content Include="Content\User\lib\js\plugins\noty\jquery.noty.js" />
+    <Content Include="Content\User\lib\js\plugins\noty\layouts\bottom.js" />
+    <Content Include="Content\User\lib\js\plugins\noty\layouts\bottomCenter.js" />
+    <Content Include="Content\User\lib\js\plugins\noty\layouts\bottomLeft.js" />
+    <Content Include="Content\User\lib\js\plugins\noty\layouts\bottomRight.js" />
+    <Content Include="Content\User\lib\js\plugins\noty\layouts\center.js" />
+    <Content Include="Content\User\lib\js\plugins\noty\layouts\centerLeft.js" />
+    <Content Include="Content\User\lib\js\plugins\noty\layouts\centerRight.js" />
+    <Content Include="Content\User\lib\js\plugins\noty\layouts\inline.js" />
+    <Content Include="Content\User\lib\js\plugins\noty\layouts\top.js" />
+    <Content Include="Content\User\lib\js\plugins\noty\layouts\topCenter.js" />
+    <Content Include="Content\User\lib\js\plugins\noty\layouts\topLeft.js" />
+    <Content Include="Content\User\lib\js\plugins\noty\layouts\topRight.js" />
+    <Content Include="Content\User\lib\js\plugins\noty\promise.js" />
+    <Content Include="Content\User\lib\js\plugins\noty\themes\default.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\lib\cie.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\lib\colorbrewer.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\lib\crossfilter.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\lib\crossfilter.min.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\lib\d3.v2.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\lib\d3.v2.min.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\lib\d3.v3.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\lib\fisheye.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\lib\hive.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\lib\horizon.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\lib\sankey.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\nv.d3.min.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\core.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\interactiveLayer.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\intro.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\axis.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\backup\bullet.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\backup\bulletChart.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\boilerplate.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\bullet.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\bulletChart.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\cumulativeLineChart.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\discreteBar.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\discreteBarChart.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\distribution.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\historicalBar.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\historicalBarChart.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\indentedTree.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\legend.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\line.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\lineChart.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\linePlusBarChart.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\linePlusBarWithFocusChart.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\lineWithFisheye.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\lineWithFisheyeChart.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\lineWithFocusChart.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\multiBar.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\multiBarChart.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\multiBarHorizontal.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\multiBarHorizontalChart.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\multiBarTimeSeries.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\multiBarTimeSeriesChart.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\multiChart.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\ohlcBar.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\parallelCoordinates.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\pie.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\pieChart.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\scatter.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\scatterChart.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\scatterPlusLineChart.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\sparkline.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\sparklinePlus.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\stackedArea.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\models\stackedAreaChart.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\outro.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\tooltip.js" />
+    <Content Include="Content\User\lib\js\plugins\nvd3\src\utils.js" />
+    <Content Include="Content\User\lib\js\plugins\owl\owl.carousel.min.js" />
+    <Content Include="Content\User\lib\js\plugins\rangeslider\jQAllRangeSliders-min.js" />
+    <Content Include="Content\User\lib\js\plugins\rickshaw\d3.layout.min.js" />
+    <Content Include="Content\User\lib\js\plugins\rickshaw\d3.min.js" />
+    <Content Include="Content\User\lib\js\plugins\rickshaw\d3.v2.js" />
+    <Content Include="Content\User\lib\js\plugins\rickshaw\d3.v3.js" />
+    <Content Include="Content\User\lib\js\plugins\rickshaw\rickshaw.min.js" />
+    <Content Include="Content\User\lib\js\plugins\scrolltotop\scrolltopcontrol.js" />
+    <Content Include="Content\User\lib\js\plugins\slidingmenu\jquery-sliding-menu.js" />
+    <Content Include="Content\User\lib\js\plugins\smartwizard\jquery.smartWizard-2.0.min.js" />
+    <Content Include="Content\User\lib\js\plugins\sparkline\jquery.sparkline.min.js" />
+    <Content Include="Content\User\lib\js\plugins\summernote\summernote.js" />
+    <Content Include="Content\User\lib\js\plugins\tableexport\html2canvas.js" />
+    <Content Include="Content\User\lib\js\plugins\tableexport\jquery.base64.js" />
+    <Content Include="Content\User\lib\js\plugins\tableexport\jspdf\jspdf.js" />
+    <Content Include="Content\User\lib\js\plugins\tableexport\jspdf\libs\base64.js" />
+    <Content Include="Content\User\lib\js\plugins\tableexport\jspdf\libs\sprintf.js" />
+    <Content Include="Content\User\lib\js\plugins\tableexport\tableExport.js" />
+    <Content Include="Content\User\lib\js\plugins\tagsinput\jquery.tagsinput.min.js" />
+    <Content Include="Content\User\lib\js\plugins\tocify\jquery.tocify.min.js" />
+    <Content Include="Content\User\lib\js\plugins\tour\bootstrap-tour-standalone.min.js" />
+    <Content Include="Content\User\lib\js\plugins\tour\bootstrap-tour.min.js" />
+    <Content Include="Content\User\lib\js\plugins\tour\intro.min.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\jquery.validationEngine.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-ar.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-ca.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-cz.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-da.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-de.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-el.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-en.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-es.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-et.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-fa.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-fi.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-fr.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-he.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-hr.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-hu.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-id.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-it.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-ja.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-lt.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-nl.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-no.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-pl.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-pt.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-pt_BR.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-ro.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-ru.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-sr_Cyrl.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-sr_Latn.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-sv.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-tr.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-vi.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-zh_CN.js" />
+    <Content Include="Content\User\lib\js\plugins\validationengine\languages\jquery.validationEngine-zh_TW.js" />
+    <Content Include="Content\User\lib\js\portlet.js" />
+    <Content Include="Content\User\lib\js\settings.js" />
+    <Content Include="Content\User\lib\js\theme\autonumeric\autoNumeric.js" />
+    <Content Include="Content\User\lib\js\theme\autonumeric\jquery.min.js" />
+    <Content Include="Content\User\lib\js\theme\autosize-textarea\autosize.js" />
+    <Content Include="Content\User\lib\js\theme\autosize-textarea\autosize.min.js" />
+    <Content Include="Content\User\lib\js\theme\droppable\droppable_style.css" />
+    <Content Include="Content\User\lib\js\theme\droppable\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\User\lib\js\theme\droppable\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\User\lib\js\theme\droppable\jquery-1.10.2.js" />
+    <Content Include="Content\User\lib\js\theme\droppable\jquery-ui.css" />
+    <Content Include="Content\User\lib\js\theme\droppable\jquery-ui.js" />
+    <Content Include="Content\User\lib\js\theme\ie9\html5shiv.js" />
+    <Content Include="Content\User\lib\js\theme\ie9\respond.min.js" />
+    <Content Include="Content\User\lib\js\theme\jquery-confirm\css\jquery-confirm.css" />
+    <Content Include="Content\User\lib\js\theme\jquery-confirm\jquery-1.10.2.js" />
+    <Content Include="Content\User\lib\js\theme\jquery-confirm\js\jquery-confirm.js" />
+    <Content Include="Content\User\lib\js\theme\owlcarousel\docs.theme.min.css" />
+    <Content Include="Content\User\lib\js\theme\owlcarousel\jquery.min.js" />
+    <Content Include="Content\User\lib\js\theme\owlcarousel\owl.carousel.js" />
+    <Content Include="Content\User\lib\js\theme\owlcarousel\owl.carousel.min.css" />
+    <Content Include="Content\User\lib\js\theme\owlcarousel\owl.theme.default.min.css" />
+    <Content Include="Content\User\lib\js\theme\pie\PIE.htc" />
+    <Content Include="Content\User\lib\js\theme\pie\PIE.js" />
+    <Content Include="Content\User\lib\js\theme\pie\PIE_uncompressed.htc" />
+    <Content Include="Content\User\lib\js\theme\pie\PIE_uncompressed.js" />
+    <Content Include="Content\User\lib\js\theme\pushslide\css\slidebars-theme_ar.css" />
+    <Content Include="Content\User\lib\js\theme\pushslide\css\slidebars-theme_en.css" />
+    <Content Include="Content\User\lib\js\theme\pushslide\css\slidebars.min_ar.css" />
+    <Content Include="Content\User\lib\js\theme\pushslide\css\slidebars.min_en.css" />
+    <Content Include="Content\User\lib\js\theme\pushslide\js\jquery.min.js" />
+    <Content Include="Content\User\lib\js\theme\pushslide\js\slidebars-theme.js" />
+    <Content Include="Content\User\lib\js\theme\pushslide\js\slidebars.min.js" />
+    <Content Include="Content\User\lib\js\theme\toastmessage\images\close.gif" />
+    <Content Include="Content\User\lib\js\theme\toastmessage\images\error.png" />
+    <Content Include="Content\User\lib\js\theme\toastmessage\images\notice.png" />
+    <Content Include="Content\User\lib\js\theme\toastmessage\images\success.png" />
+    <Content Include="Content\User\lib\js\theme\toastmessage\images\warning.png" />
+    <Content Include="Content\User\lib\js\theme\toastmessage\jquery-1.5.min.js" />
+    <Content Include="Content\User\lib\js\theme\toastmessage\jquery.toastmessage-min.js" />
+    <Content Include="Content\User\lib\js\theme\toastmessage\jquery.toastmessage-min_ar.css" />
+    <Content Include="Content\User\lib\js\theme\toastmessage\jquery.toastmessage-min_en.css" />
+    <Content Include="Content\User\Site.css" />
+    <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Global.asax" />
+    <Content Include="Scripts\ActionButtonsHelper.js" />
+    <Content Include="Scripts\AutoCompleteScript.js" />
+    <Content Include="Scripts\AutoCompleteScript.min.js" />
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\Colaboration.js" />
+    <Content Include="Scripts\Common.js" />
+    <Content Include="Scripts\CustomValidation\CustomValidation.js" />
+    <None Include="Scripts\CustomValidation\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\CustomValidation\jquery.validate.js" />
+    <Content Include="Scripts\CustomValidation\jquery.validate.min.js" />
+    <Content Include="Scripts\CustomValidation\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\CustomValidation\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\gridmvc-ext.js" />
+    <Content Include="Scripts\gridmvc.customwidgets.js" />
+    <Content Include="Scripts\gridmvc.customwidgetsText.js" />
+    <Content Include="Scripts\gridmvc.js" />
+    <Content Include="Scripts\gridmvcAR.js" />
+    <Content Include="Scripts\GridViewActions.js" />
+    <Content Include="Scripts\HtmlHelper.js" />
+    <None Include="Scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="Scripts\jquery-1.10.2.js" />
+    <Content Include="Scripts\jquery-1.10.2.min.js" />
+    <None Include="Scripts\jquery-1.6.4-vsdoc.js" />
+    <Content Include="Scripts\jquery-1.6.4.js" />
+    <Content Include="Scripts\jquery-1.6.4.min.js" />
+    <Content Include="Scripts\jquery-ui-1.9.2.min.js" />
+    <Content Include="Scripts\jquery-ui.js" />
+    <Content Include="Scripts\jquery-ui.min.js" />
+    <Content Include="Scripts\jquery.contextMenu.js" />
+    <Content Include="Scripts\jquery.min.js" />
+    <Content Include="Scripts\jquery.navgoco.js" />
+    <Content Include="Scripts\jquery.nestable-rtl.js" />
+    <Content Include="Scripts\jquery.plugin.js" />
+    <Content Include="Scripts\jquery.plugin.min.js" />
+    <Content Include="Scripts\jquery.quickflip.min.js" />
+    <Content Include="Scripts\jquery.signalR-2.1.2.js" />
+    <Content Include="Scripts\jquery.signalR-2.2.0.js" />
+    <Content Include="Scripts\jquery.signalR-2.2.0.min.js" />
+    <Content Include="Scripts\jquery.tooltip.js" />
+    <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.validate.js" />
+    <Content Include="Scripts\jquery.validate.min.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\jSignature\jSignature.js" />
+    <Content Include="Scripts\jSignature\plugins\jSignature.CompressorBase30.js" />
+    <Content Include="Scripts\jSignature\plugins\jSignature.CompressorSVG.js" />
+    <Content Include="Scripts\jSignature\plugins\jSignature.UndoButton.js" />
+    <Content Include="Scripts\jSignature\plugins\signhere\jSignature.SignHere.js" />
+    <Content Include="Scripts\jSignature\plugins\signhere\signhere.svg" />
+    <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Scripts\OrgStructureValidation.js" />
+    <Content Include="Scripts\respond.js" />
+    <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\Tree.js" />
+    <Content Include="Scripts\URI.js" />
+    <None Include="Scripts\_references.js" />
+    <Content Include="Views\Error\Error.cshtml" />
+    <Content Include="Views\Error\Unauthorized.cshtml" />
+    <Content Include="Views\Login\Login.cshtml" />
+    <Content Include="Views\ResetPassword\ResetPasswordStepTwo.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\ResetPasswordStepOne.cshtml" />
+    <Content Include="Views\Shared\_AjaxGridPager.cshtml" />
+    <Content Include="Views\Shared\_EmptyLayout.cshtml" />
+    <Content Include="Views\Shared\_Grid.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\Tenant\Index.cshtml" />
+    <Content Include="Views\Tenant\_TenantAddPartial.cshtml" />
+    <Content Include="Views\Tenant\_TenantEditPartial.cshtml" />
+    <Content Include="Views\Tenant\_TenantGridPartial.cshtml" />
+    <Content Include="Views\web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ApplicationOAuthProvider.cs" />
+    <Compile Include="App_GlobalResources\StatusCode.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>StatusCode.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\StatusCode.en-US.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>StatusCode.en-US.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\IdentityConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Bootstrapper.cs" />
+    <Compile Include="Common\SerivceException.cs" />
+    <Compile Include="Common\SessionInfo.cs" />
+    <Compile Include="Enums.cs" />
+    <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
+    <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\ResetPasswordController.cs" />
+    <Compile Include="Controllers\TenantController.cs" />
+    <Compile Include="CustomAuthorizationAttribute.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers\ActionButtonHelperExt.cs" />
+    <Compile Include="Helpers\HtmlHelperExt.cs" />
+    <Compile Include="Helpers\ResourceHelper.cs" />
+    <Compile Include="Helpers\SessionInfoHelper.cs" />
+    <Compile Include="Helpers\UIHelper.cs" />
+    <Compile Include="Helpers\UrlHelper.cs" />
+    <Compile Include="Mappers\CultureMapper.cs" />
+    <Compile Include="Mappers\LocalizationIdentifierMapper.cs" />
+    <Compile Include="Mappers\Lookups\LocalizationMapper.cs" />
+    <Compile Include="Mappers\TenantMapper.cs" />
+    <Compile Include="Models\Account\AccountViewModels.cs" />
+    <Compile Include="Models\Account\LoginInfoVM.cs" />
+    <Compile Include="Models\Account\ResetPasswordVM.cs" />
+    <Compile Include="Models\ApplicationUserVM.cs" />
+    <Compile Include="Models\CultureVM.cs" />
+    <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\Lookups\LocalizationVM.cs" />
+    <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\Tenant\AddTenantVM.cs" />
+    <Compile Include="Models\Tenant\EditTenantVM.cs" />
+    <Compile Include="Models\Tenant\TenantCultureVM.cs" />
+    <Compile Include="Models\Tenant\TenantViewModel.cs" />
+    <Compile Include="Models\Tenant\TenantVM.cs" />
+    <Compile Include="Models\Tenant\UserTenantVM.cs" />
+    <Compile Include="Models\TokenResponseModel.cs" />
+    <Compile Include="Models\UserOrganizationUnitVM.cs" />
+    <Compile Include="Models\UserVM.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SessionInfo.cs" />
+    <Compile Include="Startup.cs" />
+    <Compile Include="Wrappers\AuthenticatedHttpClientHandler.cs" />
+    <Compile Include="Wrappers\BasicAuthenticationHttpClientHandler.cs" />
+    <Compile Include="Wrappers\HttpClientHandlerWithData.cs" />
+    <Compile Include="Wrappers\HttpClientWrapper.cs" />
+    <Compile Include="Wrappers\Services\ServiceHttpClientHandler.cs" />
+    <Compile Include="Wrappers\Services\ServiceResult.cs" />
+    <Compile Include="Wrappers\SimpleAuthenticatedHttpClientHandler.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\Startup.Auth.cs" />
+    <Content Include="CONFIG\Notification.config" />
+    <Content Include="Content\Admin\lib\assets\fileupload\files\.htaccess" />
+    <Content Include="Content\Admin\lib\assets\plugins\nvd3\cumulativeLineData.json" />
+    <Content Include="Content\Admin\lib\assets\plugins\nvd3\linePlusBarData.json" />
+    <Content Include="Content\Admin\lib\assets\plugins\nvd3\multiBarHorizontalData.json" />
+    <Content Include="Content\Admin\lib\assets\plugins\nvd3\stackedAreaData.json" />
+    <Content Include="Content\Admin\lib\css\bootstrap\bootstrap.css.map" />
+    <Content Include="Content\Admin\lib\css\fonts\fontawesome-webfont.eot" />
+    <Content Include="Content\Admin\lib\css\fonts\fontawesome-webfont.ttf" />
+    <Content Include="Content\Admin\lib\css\fonts\fontawesome-webfont.woff" />
+    <Content Include="Content\Admin\lib\css\fonts\FontAwesome.otf" />
+    <Content Include="Content\Admin\lib\css\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\Admin\lib\css\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Content\Admin\lib\css\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Content\Admin\lib\css\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="Content\Admin\lib\fonts\aljazeera\Al-Jazeera-Arabic-Bold.eot" />
+    <Content Include="Content\Admin\lib\fonts\aljazeera\Al-Jazeera-Arabic-Bold.ttf" />
+    <Content Include="Content\Admin\lib\fonts\aljazeera\Al-Jazeera-Arabic-Bold.woff" />
+    <Content Include="Content\Admin\lib\fonts\aljazeera\Al-Jazeera-Arabic-Light.eot" />
+    <Content Include="Content\Admin\lib\fonts\aljazeera\Al-Jazeera-Arabic-Light.ttf" />
+    <Content Include="Content\Admin\lib\fonts\aljazeera\Al-Jazeera-Arabic-Light.woff" />
+    <Content Include="Content\Admin\lib\fonts\aljazeera\Al-Jazeera-Arabic-Regular.eot" />
+    <Content Include="Content\Admin\lib\fonts\aljazeera\Al-Jazeera-Arabic-Regular.ttf" />
+    <Content Include="Content\Admin\lib\fonts\aljazeera\Al-Jazeera-Arabic-Regular.woff" />
+    <Content Include="Content\Admin\lib\fonts\aljazeera\Greta_Arabic_Regular.otf" />
+    <Content Include="Content\Admin\lib\fonts\amiri\amiri-bold.eot" />
+    <Content Include="Content\Admin\lib\fonts\amiri\amiri-bold.ttf" />
+    <Content Include="Content\Admin\lib\fonts\amiri\amiri-bold.woff" />
+    <Content Include="Content\Admin\lib\fonts\amiri\amiri-bold.woff2" />
+    <Content Include="Content\Admin\lib\fonts\amiri\amiri-boldslanted.eot" />
+    <Content Include="Content\Admin\lib\fonts\amiri\amiri-boldslanted.ttf" />
+    <Content Include="Content\Admin\lib\fonts\amiri\amiri-boldslanted.woff" />
+    <Content Include="Content\Admin\lib\fonts\amiri\amiri-boldslanted.woff2" />
+    <Content Include="Content\Admin\lib\fonts\amiri\amiri-quran-colored.eot" />
+    <Content Include="Content\Admin\lib\fonts\amiri\amiri-quran-colored.ttf" />
+    <Content Include="Content\Admin\lib\fonts\amiri\amiri-quran-colored.woff" />
+    <Content Include="Content\Admin\lib\fonts\amiri\amiri-quran-colored.woff2" />
+    <Content Include="Content\Admin\lib\fonts\amiri\amiri-quran.eot" />
+    <Content Include="Content\Admin\lib\fonts\amiri\amiri-quran.ttf" />
+    <Content Include="Content\Admin\lib\fonts\amiri\amiri-quran.woff" />
+    <Content Include="Content\Admin\lib\fonts\amiri\amiri-quran.woff2" />
+    <Content Include="Content\Admin\lib\fonts\amiri\amiri-regular.eot" />
+    <Content Include="Content\Admin\lib\fonts\amiri\amiri-regular.ttf" />
+    <Content Include="Content\Admin\lib\fonts\amiri\amiri-regular.woff" />
+    <Content Include="Content\Admin\lib\fonts\amiri\amiri-regular.woff2" />
+    <Content Include="Content\Admin\lib\fonts\amiri\amiri-slanted.eot" />
+    <Content Include="Content\Admin\lib\fonts\amiri\amiri-slanted.ttf" />
+    <Content Include="Content\Admin\lib\fonts\amiri\amiri-slanted.woff" />
+    <Content Include="Content\Admin\lib\fonts\amiri\amiri-slanted.woff2" />
+    <Content Include="Content\Admin\lib\fonts\amiri\README" />
+    <Content Include="Content\Admin\lib\fonts\josefinslab\46aYWdgz-1oFX11flmyEfegdm0LZdjqr5-oayXSOefg.woff2" />
+    <Content Include="Content\Admin\lib\fonts\kufi\DroidKufi-Bold.eot" />
+    <Content Include="Content\Admin\lib\fonts\kufi\DroidKufi-Bold.ttf" />
+    <Content Include="Content\Admin\lib\fonts\kufi\DroidKufi-Bold.woff" />
+    <Content Include="Content\Admin\lib\fonts\kufi\DroidKufi-Bold.woff2" />
+    <Content Include="Content\Admin\lib\fonts\kufi\DroidKufi-Regular.eot" />
+    <Content Include="Content\Admin\lib\fonts\kufi\DroidKufi-Regular.ttf" />
+    <Content Include="Content\Admin\lib\fonts\kufi\DroidKufi-Regular.woff" />
+    <Content Include="Content\Admin\lib\fonts\kufi\DroidKufi-Regular.woff2" />
+    <Content Include="Content\Admin\lib\fonts\naskh\DroidNaskh-Bold.eot" />
+    <Content Include="Content\Admin\lib\fonts\naskh\DroidNaskh-Bold.ttf" />
+    <Content Include="Content\Admin\lib\fonts\naskh\DroidNaskh-Bold.woff" />
+    <Content Include="Content\Admin\lib\fonts\naskh\DroidNaskh-Bold.woff2" />
+    <Content Include="Content\Admin\lib\fonts\naskh\DroidNaskh-Regular.eot" />
+    <Content Include="Content\Admin\lib\fonts\naskh\DroidNaskh-Regular.ttf" />
+    <Content Include="Content\Admin\lib\fonts\naskh\DroidNaskh-Regular.woff" />
+    <Content Include="Content\Admin\lib\fonts\naskh\DroidNaskh-Regular.woff2" />
+    <Content Include="Content\Admin\lib\fonts\oldstandardtt\n6RTCDcIPWSE8UNBa4k-DG75SyxP8F_Nt1CRRMel2UU.woff2" />
+    <Content Include="Content\Admin\lib\fonts\opensans\59ZRklaO5bWGqF5A9baEERJtnKITppOI_IvcXXDNrsc.woff2" />
+    <Content Include="Content\Admin\lib\fonts\opensans\cJZKeOuBrn4kERxqtaUH3VtXRa8TVwTICgirnJhmVJw.woff2" />
+    <Content Include="Content\Admin\lib\fonts\opensans\K88pR3goAWT7BTt32Z01mxJtnKITppOI_IvcXXDNrsc.woff2" />
+    <Content Include="Content\Admin\lib\fonts\opensans\LWCjsQkB6EMdfHrEVqA1KRJtnKITppOI_IvcXXDNrsc.woff2" />
+    <Content Include="Content\Admin\lib\fonts\opensans\RjgO7rYTmqiVp7vzi-Q5URJtnKITppOI_IvcXXDNrsc.woff2" />
+    <Content Include="Content\Admin\lib\fonts\opensans\u-WUoqrET9fUeobQW7jkRRJtnKITppOI_IvcXXDNrsc.woff2" />
+    <Content Include="Content\Admin\lib\fonts\opensans\xozscpT2726on7jbcb_pAhJtnKITppOI_IvcXXDNrsc.woff2" />
+    <Content Include="Content\Admin\lib\fonts\ptsans\9kaD4V2pNPMMeUVBHayd7vY6323mHUZFJMgTvxaG2iE.woff2" />
+    <Content Include="Content\Admin\lib\fonts\ptsans\ATKpv8nLYAKUYexo8iqqrg.woff2" />
+    <Content Include="Content\Admin\lib\fonts\ptsans\JX7MlXqjSJNjQvI4heMMGvY6323mHUZFJMgTvxaG2iE.woff2" />
+    <Content Include="Content\Admin\lib\fonts\ptsans\vtwNVMP8y9C17vLvIBNZI_Y6323mHUZFJMgTvxaG2iE.woff2" />
+    <Content Include="Content\Admin\lib\fonts\scheherazade\AuKlqGWzUC-8XqMOmsqXi-gdm0LZdjqr5-oayXSOefg.woff2" />
+    <Content Include="Content\Admin\lib\fonts\scheherazade\AuKlqGWzUC-8XqMOmsqXiy9v-EK_Ded0-YUWZQf3ru4.woff2" />
+    <Content Include="Content\Admin\lib\fonts\scheherazade\C1wtT46acJkQxc6mPHwvHHNuWYKPzoeKl5tYj8yhly0.woff2" />
+    <Content Include="Content\Admin\lib\fonts\scheherazade\C1wtT46acJkQxc6mPHwvHOrSe37bsKuxrWvNpCsQRCI.woff2" />
+    <Content Include="Content\Admin\lib\fonts\scheherazade\ScheherazadeRegOT.ttf" />
+    <Content Include="Content\Admin\lib\fonts\tahoma\Tahoma.eot" />
+    <Content Include="Content\Admin\lib\fonts\tahoma\Tahoma.ttf" />
+    <Content Include="Content\Admin\lib\fonts\tahoma\Tahoma.woff" />
+    <Content Include="Content\Admin\lib\fonts\thabit\Thabit-Bold.eot" />
+    <Content Include="Content\Admin\lib\fonts\thabit\Thabit-Bold.ttf" />
+    <Content Include="Content\Admin\lib\fonts\thabit\Thabit-Bold.woff" />
+    <Content Include="Content\Admin\lib\fonts\thabit\Thabit-Bold.woff2" />
+    <Content Include="Content\Admin\lib\fonts\thabit\Thabit-BoldOblique.eot" />
+    <Content Include="Content\Admin\lib\fonts\thabit\Thabit-BoldOblique.ttf" />
+    <Content Include="Content\Admin\lib\fonts\thabit\Thabit-BoldOblique.woff" />
+    <Content Include="Content\Admin\lib\fonts\thabit\Thabit-BoldOblique.woff2" />
+    <Content Include="Content\Admin\lib\fonts\thabit\Thabit-Oblique.eot" />
+    <Content Include="Content\Admin\lib\fonts\thabit\Thabit-Oblique.ttf" />
+    <Content Include="Content\Admin\lib\fonts\thabit\Thabit-Oblique.woff" />
+    <Content Include="Content\Admin\lib\fonts\thabit\Thabit-Oblique.woff2" />
+    <Content Include="Content\Admin\lib\fonts\thabit\Thabit.eot" />
+    <Content Include="Content\Admin\lib\fonts\thabit\Thabit.ttf" />
+    <Content Include="Content\Admin\lib\fonts\thabit\Thabit.woff" />
+    <Content Include="Content\Admin\lib\fonts\thabit\Thabit.woff2" />
+    <Content Include="Content\Admin\lib\fonts\vollkorn\idGKtgpe38okB6bfeHMsLPesZW2xOQ-xsNqO47m55DA.woff2" />
+    <Content Include="Content\Admin\lib\js\plugins\jquery\jquery-2.1.1.min.map" />
+    <Content Include="Content\Admin\lib\js\theme\jquery-confirm\css\jquery-confirm.less" />
+    <Content Include="Content\User\lib\assets\fileupload\files\.htaccess" />
+    <Content Include="Content\User\lib\assets\plugins\nvd3\cumulativeLineData.json" />
+    <Content Include="Content\User\lib\assets\plugins\nvd3\linePlusBarData.json" />
+    <Content Include="Content\User\lib\assets\plugins\nvd3\multiBarHorizontalData.json" />
+    <Content Include="Content\User\lib\assets\plugins\nvd3\stackedAreaData.json" />
+    <Content Include="Content\User\lib\css\bootstrap\bootstrap.css.map" />
+    <Content Include="Content\User\lib\css\fonts\fontawesome-webfont.eot" />
+    <Content Include="Content\User\lib\css\fonts\fontawesome-webfont.ttf" />
+    <Content Include="Content\User\lib\css\fonts\fontawesome-webfont.woff" />
+    <Content Include="Content\User\lib\css\fonts\FontAwesome.otf" />
+    <Content Include="Content\User\lib\css\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\User\lib\css\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Content\User\lib\css\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Content\User\lib\css\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="Content\User\lib\fonts\aljazeera\Al-Jazeera-Arabic-Bold.eot" />
+    <Content Include="Content\User\lib\fonts\aljazeera\Al-Jazeera-Arabic-Bold.ttf" />
+    <Content Include="Content\User\lib\fonts\aljazeera\Al-Jazeera-Arabic-Bold.woff" />
+    <Content Include="Content\User\lib\fonts\aljazeera\Al-Jazeera-Arabic-Light.eot" />
+    <Content Include="Content\User\lib\fonts\aljazeera\Al-Jazeera-Arabic-Light.ttf" />
+    <Content Include="Content\User\lib\fonts\aljazeera\Al-Jazeera-Arabic-Light.woff" />
+    <Content Include="Content\User\lib\fonts\aljazeera\Al-Jazeera-Arabic-Regular.eot" />
+    <Content Include="Content\User\lib\fonts\aljazeera\Al-Jazeera-Arabic-Regular.ttf" />
+    <Content Include="Content\User\lib\fonts\aljazeera\Al-Jazeera-Arabic-Regular.woff" />
+    <Content Include="Content\User\lib\fonts\aljazeera\Greta_Arabic_Regular.otf" />
+    <Content Include="Content\User\lib\fonts\amiri\amiri-bold.eot" />
+    <Content Include="Content\User\lib\fonts\amiri\amiri-bold.ttf" />
+    <Content Include="Content\User\lib\fonts\amiri\amiri-bold.woff" />
+    <Content Include="Content\User\lib\fonts\amiri\amiri-bold.woff2" />
+    <Content Include="Content\User\lib\fonts\amiri\amiri-boldslanted.eot" />
+    <Content Include="Content\User\lib\fonts\amiri\amiri-boldslanted.ttf" />
+    <Content Include="Content\User\lib\fonts\amiri\amiri-boldslanted.woff" />
+    <Content Include="Content\User\lib\fonts\amiri\amiri-boldslanted.woff2" />
+    <Content Include="Content\User\lib\fonts\amiri\amiri-quran-colored.eot" />
+    <Content Include="Content\User\lib\fonts\amiri\amiri-quran-colored.ttf" />
+    <Content Include="Content\User\lib\fonts\amiri\amiri-quran-colored.woff" />
+    <Content Include="Content\User\lib\fonts\amiri\amiri-quran-colored.woff2" />
+    <Content Include="Content\User\lib\fonts\amiri\amiri-quran.eot" />
+    <Content Include="Content\User\lib\fonts\amiri\amiri-quran.ttf" />
+    <Content Include="Content\User\lib\fonts\amiri\amiri-quran.woff" />
+    <Content Include="Content\User\lib\fonts\amiri\amiri-quran.woff2" />
+    <Content Include="Content\User\lib\fonts\amiri\amiri-regular.eot" />
+    <Content Include="Content\User\lib\fonts\amiri\amiri-regular.ttf" />
+    <Content Include="Content\User\lib\fonts\amiri\amiri-regular.woff" />
+    <Content Include="Content\User\lib\fonts\amiri\amiri-regular.woff2" />
+    <Content Include="Content\User\lib\fonts\amiri\amiri-slanted.eot" />
+    <Content Include="Content\User\lib\fonts\amiri\amiri-slanted.ttf" />
+    <Content Include="Content\User\lib\fonts\amiri\amiri-slanted.woff" />
+    <Content Include="Content\User\lib\fonts\amiri\amiri-slanted.woff2" />
+    <Content Include="Content\User\lib\fonts\amiri\README" />
+    <Content Include="Content\User\lib\fonts\josefinslab\46aYWdgz-1oFX11flmyEfegdm0LZdjqr5-oayXSOefg.woff2" />
+    <Content Include="Content\User\lib\fonts\kufi\DroidKufi-Bold.eot" />
+    <Content Include="Content\User\lib\fonts\kufi\DroidKufi-Bold.ttf" />
+    <Content Include="Content\User\lib\fonts\kufi\DroidKufi-Bold.woff" />
+    <Content Include="Content\User\lib\fonts\kufi\DroidKufi-Bold.woff2" />
+    <Content Include="Content\User\lib\fonts\kufi\DroidKufi-Regular.eot" />
+    <Content Include="Content\User\lib\fonts\kufi\DroidKufi-Regular.ttf" />
+    <Content Include="Content\User\lib\fonts\kufi\DroidKufi-Regular.woff" />
+    <Content Include="Content\User\lib\fonts\kufi\DroidKufi-Regular.woff2" />
+    <Content Include="Content\User\lib\fonts\naskh\DroidNaskh-Bold.eot" />
+    <Content Include="Content\User\lib\fonts\naskh\DroidNaskh-Bold.ttf" />
+    <Content Include="Content\User\lib\fonts\naskh\DroidNaskh-Bold.woff" />
+    <Content Include="Content\User\lib\fonts\naskh\DroidNaskh-Bold.woff2" />
+    <Content Include="Content\User\lib\fonts\naskh\DroidNaskh-Regular.eot" />
+    <Content Include="Content\User\lib\fonts\naskh\DroidNaskh-Regular.ttf" />
+    <Content Include="Content\User\lib\fonts\naskh\DroidNaskh-Regular.woff" />
+    <Content Include="Content\User\lib\fonts\naskh\DroidNaskh-Regular.woff2" />
+    <Content Include="Content\User\lib\fonts\oldstandardtt\n6RTCDcIPWSE8UNBa4k-DG75SyxP8F_Nt1CRRMel2UU.woff2" />
+    <Content Include="Content\User\lib\fonts\opensans\59ZRklaO5bWGqF5A9baEERJtnKITppOI_IvcXXDNrsc.woff2" />
+    <Content Include="Content\User\lib\fonts\opensans\cJZKeOuBrn4kERxqtaUH3VtXRa8TVwTICgirnJhmVJw.woff2" />
+    <Content Include="Content\User\lib\fonts\opensans\K88pR3goAWT7BTt32Z01mxJtnKITppOI_IvcXXDNrsc.woff2" />
+    <Content Include="Content\User\lib\fonts\opensans\LWCjsQkB6EMdfHrEVqA1KRJtnKITppOI_IvcXXDNrsc.woff2" />
+    <Content Include="Content\User\lib\fonts\opensans\RjgO7rYTmqiVp7vzi-Q5URJtnKITppOI_IvcXXDNrsc.woff2" />
+    <Content Include="Content\User\lib\fonts\opensans\u-WUoqrET9fUeobQW7jkRRJtnKITppOI_IvcXXDNrsc.woff2" />
+    <Content Include="Content\User\lib\fonts\opensans\xozscpT2726on7jbcb_pAhJtnKITppOI_IvcXXDNrsc.woff2" />
+    <Content Include="Content\User\lib\fonts\ptsans\9kaD4V2pNPMMeUVBHayd7vY6323mHUZFJMgTvxaG2iE.woff2" />
+    <Content Include="Content\User\lib\fonts\ptsans\ATKpv8nLYAKUYexo8iqqrg.woff2" />
+    <Content Include="Content\User\lib\fonts\ptsans\JX7MlXqjSJNjQvI4heMMGvY6323mHUZFJMgTvxaG2iE.woff2" />
+    <Content Include="Content\User\lib\fonts\ptsans\vtwNVMP8y9C17vLvIBNZI_Y6323mHUZFJMgTvxaG2iE.woff2" />
+    <Content Include="Content\User\lib\fonts\scheherazade\AuKlqGWzUC-8XqMOmsqXi-gdm0LZdjqr5-oayXSOefg.woff2" />
+    <Content Include="Content\User\lib\fonts\scheherazade\AuKlqGWzUC-8XqMOmsqXiy9v-EK_Ded0-YUWZQf3ru4.woff2" />
+    <Content Include="Content\User\lib\fonts\scheherazade\C1wtT46acJkQxc6mPHwvHHNuWYKPzoeKl5tYj8yhly0.woff2" />
+    <Content Include="Content\User\lib\fonts\scheherazade\C1wtT46acJkQxc6mPHwvHOrSe37bsKuxrWvNpCsQRCI.woff2" />
+    <Content Include="Content\User\lib\fonts\scheherazade\ScheherazadeRegOT.ttf" />
+    <Content Include="Content\User\lib\fonts\tahoma\Tahoma.eot" />
+    <Content Include="Content\User\lib\fonts\tahoma\Tahoma.ttf" />
+    <Content Include="Content\User\lib\fonts\tahoma\Tahoma.woff" />
+    <Content Include="Content\User\lib\fonts\thabit\Thabit-Bold.eot" />
+    <Content Include="Content\User\lib\fonts\thabit\Thabit-Bold.ttf" />
+    <Content Include="Content\User\lib\fonts\thabit\Thabit-Bold.woff" />
+    <Content Include="Content\User\lib\fonts\thabit\Thabit-Bold.woff2" />
+    <Content Include="Content\User\lib\fonts\thabit\Thabit-BoldOblique.eot" />
+    <Content Include="Content\User\lib\fonts\thabit\Thabit-BoldOblique.ttf" />
+    <Content Include="Content\User\lib\fonts\thabit\Thabit-BoldOblique.woff" />
+    <Content Include="Content\User\lib\fonts\thabit\Thabit-BoldOblique.woff2" />
+    <Content Include="Content\User\lib\fonts\thabit\Thabit-Oblique.eot" />
+    <Content Include="Content\User\lib\fonts\thabit\Thabit-Oblique.ttf" />
+    <Content Include="Content\User\lib\fonts\thabit\Thabit-Oblique.woff" />
+    <Content Include="Content\User\lib\fonts\thabit\Thabit-Oblique.woff2" />
+    <Content Include="Content\User\lib\fonts\thabit\Thabit.eot" />
+    <Content Include="Content\User\lib\fonts\thabit\Thabit.ttf" />
+    <Content Include="Content\User\lib\fonts\thabit\Thabit.woff" />
+    <Content Include="Content\User\lib\fonts\thabit\Thabit.woff2" />
+    <Content Include="Content\User\lib\fonts\vollkorn\idGKtgpe38okB6bfeHMsLPesZW2xOQ-xsNqO47m55DA.woff2" />
+    <Content Include="Content\User\lib\js\plugins\jquery\jquery-2.1.1.min.map" />
+    <Content Include="Content\User\lib\js\theme\jquery-confirm\css\jquery-confirm.less" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Scripts\jquery-1.10.2.min.map" />
+    <Content Include="Views\Tenant\UserTenant.cshtml" />
+    <Content Include="Views\Tenant\_UserTenantGridPartial.cshtml" />
+    <Content Include="Views\Tenant\_AddEditUserTenantPartial.cshtml" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+    <Folder Include="Content\Admin\lib\assets\cropping\" />
+    <Folder Include="Content\Admin\lib\assets\fileupload\files\thumbnail\" />
+    <Folder Include="Content\Admin\lib\assets\images\blog\" />
+    <Folder Include="Content\Admin\lib\assets\images\gallery\" />
+    <Folder Include="Content\Admin\lib\assets\uploads\" />
+    <Folder Include="Content\Admin\lib\js\plugins\fileinput\fileinput\" />
+    <Folder Include="Content\theme\jquery-confirm\old\" />
+    <Folder Include="Content\theme\New folder\" />
+    <Folder Include="Content\theme\swiper\New folder\" />
+    <Folder Include="Content\User\lib\assets\cropping\" />
+    <Folder Include="Content\User\lib\assets\fileupload\files\thumbnail\" />
+    <Folder Include="Content\User\lib\assets\images\blog\" />
+    <Folder Include="Content\User\lib\assets\images\gallery\" />
+    <Folder Include="Content\User\lib\assets\uploads\" />
+    <Folder Include="Content\User\lib\js\plugins\fileinput\fileinput\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MCS.FRAMEWORK.Controls\MCS.Framework.Controls.csproj">
+      <Project>{937ede88-192c-40f7-990e-d60f271a96c2}</Project>
+      <Name>MCS.Framework.Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MCS.FRAMEWORK\MCS.Framework.csproj">
+      <Project>{5b5b0b7b-1a75-4a12-9cea-5b527af8b6e5}</Project>
+      <Name>MCS.Framework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MCS.Business\MCS.Business.csproj">
+      <Project>{985450a5-143c-47df-a92b-416b6dbd284c}</Project>
+      <Name>MCS.Business</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MCS.Common\MCS.Common.csproj">
+      <Project>{dd463041-b635-4b24-b3e1-0a942ab358e0}</Project>
+      <Name>MCS.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MCS.Domain\MCS.Domain.csproj">
+      <Project>{affe1dc1-c4bb-4219-9362-eed2d4f08ea9}</Project>
+      <Name>MCS.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MCS.DTO\MCS.DTO.csproj">
+      <Project>{dc0986f3-608b-43c7-a722-136283073f66}</Project>
+      <Name>MCS.DTO</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\StatusCode.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>StatusCode.Designer.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\StatusCode.en-US.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>StatusCode.en-US.designer.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>51420</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost/MCS.UI.TenantsAdmin</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

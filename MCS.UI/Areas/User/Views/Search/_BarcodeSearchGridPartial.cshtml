@@ -1,0 +1,43 @@
+﻿@model AjaxGrid<MCS.UI.Areas.User.Models.Search.BarcodeSearchResultVM>
+
+@Html.Grid(Model).Named("InboundSearch").Columns(columns =>
+    {
+        columns.Add(model => model.Id, true);
+        columns.Add(model => model.ColorCode).Titled("").Encoded(false).Sanitized(false).RenderValueAs(m => m.WithArchiving ? @Html.Raw("<div class='rans_color a_search " + Helpers.GetTransactionColor(@m.ColorCode) + "'></div><span class='archive_search'><i class='fa fa-inbox'></i></span>") : Html.Raw("<div class='rans_color a_search " + Helpers.GetTransactionColor(@m.ColorCode) + "'></div>"));
+        columns.Add(model => model.Number).Encoded(false).Sanitized(false).Titled(DbRes.TResource("User.InboundSearch.InboundNumber"));
+        columns.Add(model => model.DateH).Titled(DbRes.TResource("User.InboundSearch.Date"));
+        columns.Add(model => model.PartyName).Titled(DbRes.TResource("User.InboundAdvancedSearch.InboundFromParty"));
+        columns.Add(model => model.OrgUnitName).Titled(DbRes.TResource("User.InboundAdvancedSearch.Department"));
+        columns.Add(model => model.ConfidentialityName).Titled(DbRes.TResource("User.InboundAdvancedSearch.ConfedentialityLevel"));
+        columns.Add(model => model.PriorityName).Titled(DbRes.TResource("User.InboundAdvancedSearch.PriorityLevel"));
+        columns.Add(model => model.StatusName).Titled(DbRes.TResource("User.InboundSearch.Status"));
+        columns.Add(model => model.Subject).Titled(DbRes.TResource("User.InboundSearch.Subject"));
+        columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => "<a   id='aPrint' data-placement='top' title='' data-original-title='" + DbRes.TResource("User.InboundSearch.InboundCertificate") + "' class='edit_trash' onclick='InboundCertificate(" + model.Id + " ); return false;'><i class='fa fa-certificate'></i>");
+        columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => "<a   id='aPrint' data-placement='top' title='' data-original-title='" + DbRes.TResource("User.InboundSearch.PrintBarcode") + "' class='edit_trash' onclick='ShowPrintDialog(" + model.Id + "); return false;'><i class='glyphicon glyphicon-qrcode'></i>");
+        columns.Add().Encoded(false).Sanitized(false).Css("fixed_col").RenderValueAs(model => "<a   id='aPrint' data-placement='top' title='' data-original-title='" + DbRes.TResource("User.InboundSearch.PrintVisitTicket") + "' class='edit_trash' onclick='ShowVisitTickect(" + model.Id + "); return false;'><i class='fa fa-ticket'></i>");
+    }).WithPaging(GridHelper.PageSize).Sortable().Selectable(true).UpdateActionUrl(Url.Action("UpdateInboundSearchGrid", "Search"))
+
+<script>
+  
+    function ShowPrintDialog(id) {
+        var params = { transactionId: id };
+
+        ShowDialogAjaxPrintingBarcodes('@Url.Action("PrinttingBarcodes","Shared")' + "?" + $.param(params), {}, 'OpenPrintDialogSuccess', 'dialogbox col-md-12 ');
+    }
+    function OpenPrintDialogSuccess(data, $obj) {
+        if (data.MessageType != 2) {
+            $obj.setContent(data.Html);
+        }
+        else {
+            __dialog.close();
+            ShowErrorMessage(data.MessageText);
+        }
+    }
+
+    function ShowVisitTickect(id) {
+        var actionUrl = '@Url.Action("PrintTicket", "Shared")' + "?transactionId=" + id;
+
+        PrintButton(actionUrl);
+
+    }
+</script>

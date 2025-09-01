@@ -1,0 +1,19 @@
+﻿@using MCS.UI.Helpers
+@model AjaxGrid<MCS.UI.Areas.User.Models.Transaction.TransactionCopyVM>
+@Html.Grid(Model).Named("grdCopies").Columns(columns =>
+{
+    columns.Add(true).RenderValueAs(model => Html.HiddenFor(mvcgridcolumn => model.IsBcc, new { id = "hdn_" + model.Key }).FixIDAndName("mvcgridcolumn.", "mvcgridcolumn_")).Sanitized(false).Encoded(false);
+    columns.Add(model => model.FromUserName).Titled(DbRes.TResource("User.TransactionCertificate.SenderName"));
+    columns.Add(model => model.FromOrgUnitName).Titled(DbRes.TResource("User.TransactionCertificate.SenderDepartmentName"));
+    columns.Add(model => model.ViewedBy).Titled(DbRes.TResource("User.TransactionCertificate.ReceiverName"));
+    columns.Add(model => model.OrgUnitName).Titled(DbRes.TResource("User.TransactionCertificate.ReceiverDepartmentName"));
+    columns.Add(model => model.DateH).Titled(DbRes.TResource("User.TransactionCertificate.AssignmentDateTime"));
+    columns.Add(model => model.ViewedOnDateH).Titled(DbRes.TResource("User.TransactionCertificate.RecivedAssignmentDateTime"));
+    columns.Add(model => model.ActionName).Titled(DbRes.TResource("User.TransactionCertificate.Copies.ActionName"));
+})
+
+<style>
+    .PrivateCopyCs {
+        background-color: #e91e1e61 !important;
+    }
+</style>

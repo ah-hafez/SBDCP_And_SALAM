@@ -1,0 +1,45 @@
+﻿@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.Framework.Localization;
+@using MCS.UI.Areas.User.Models.Report;
+@model AdditionalFieldsOutboundVM
+@{
+    Html.ViewData.TemplateInfo.HtmlFieldPrefix = "AdditionalFieldsOutboundVM";
+}
+<div id="hidden_fields_three" class="" style="display: none;">
+    <h3 class="site-color sub-title ml-3">@DbRes.TResource("User.Transaction.Search.AdditionalFieldsExternal")</h3>
+    <div class="col-sm-4">
+        <fieldset>
+            <div class="form-group">
+                <label class="control-label">@DbRes.TResource("User.OutboundExternal.BasicInfo.Date")</label>
+                <div class="with-icon" >
+                    @Html.Calendar("HasOutboundDateCal", "hdnHasOutboundDateGreg", "hdnHasOutboundDateUm", CalenderType.Ummalqura,
+                    SessionInfo.CultureShortName.ToString(), Model != null ? Model.OutboundDateH : null, "form-control")
+                    <a href="javascript:void(0)" class="date-icon date-icon1"><img src="~/Content/User/lib/images/SystemIcon/main bar-08.svg" width="30" /></a>
+                    @Html.StickyHidden("hdnHasOutboundDateGreg", null, new { id = "hdnHasOutboundDateGreg" })
+                    <i id="OutboundDateHIcon" style="color:red" class="glyphicon glyphicon-exclamation-sign hidden_"></i>
+                    <span id="OutboundDateHMessage" style="color:red"></span>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+    <div class="col-sm-4 TreeHeight">
+        <fieldset>
+            <div id="divContainerExternalParties">
+                @Html.Partial("~/Areas/User/Views/OutboundExternal/_ExternalPartiesPartial.cshtml", new ViewDataDictionary { { "ExternalPartiesData", ViewData["ExternalPartiesData"] } })
+            </div>
+            @Html.HiddenFor(model => model.ExternalPartiesId, new { id = "hdnExternalPartiesId" })
+
+        </fieldset>
+    </div>
+</div>
+<hr />
+<script>
+    $(document).ready(function () {
+        $('#HasOutboundDateCal').attr('autocomplete', 'off');
+    });
+    function GetUsersByPartyId() {
+        
+        $('#AdditionalFieldsOutboundVM_ExternalPartiesId').val(parseInt($('#DestinationId').val()));
+    }
+</script>

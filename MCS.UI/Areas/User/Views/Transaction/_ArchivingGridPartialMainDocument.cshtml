@@ -1,0 +1,13 @@
+﻿@model AjaxGrid<MCS.UI.Areas.User.Models.Transaction.TransactionArchiveVM>
+
+@{string controller = TempData.Peek("ControllerName") != null ? TempData.Peek("ControllerName").ToString() : ViewContext.RouteData.Values["controller"].ToString();}
+
+
+@Html.Grid(Model, "_Grid").Named("grdMainDocumentArchiving").Columns(columns =>
+{
+columns.Add(m => m.Id, true);
+columns.Add(model => model.ArcivingTypeName).Titled(DbRes.TResource("User.Transaction.Archive.ArchiveType"));
+
+columns.Add().Encoded(false).Sanitized(false).Css("fixed_col text-right color-danger  action-icon").RenderValueAs(model => @Html.GridImageButton(Url.Action("ViewArchiveMainDocument", controller), "grdMainDocumentArchiving", 0, OperationType.Update, "dvEdit", "dvArchivingMainDocumentBody :input", null, "GetArchiveMainDocument", "", "get", UserClaims.Archiving.EditArchiving));
+columns.Add().Encoded(false).Sanitized(false).Css("fixed_col text-right color-danger  action-icon").RenderValueAs(model => @Html.ConfirmImageButton(Url.Action("DeleteArchiveMainDocument", controller), "grdMainDocumentArchiving", 0, "dvArchivingMainDocumentGrid", "dvArchivingMainDocumentBody :input", null, "OnDeleteArchiveMainDocumentSuccess", null, "post", null, UserClaims.Archiving.DeleteArchiving));
+})

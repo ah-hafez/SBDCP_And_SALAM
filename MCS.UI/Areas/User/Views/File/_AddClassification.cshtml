@@ -1,0 +1,131 @@
+﻿@model Classification
+@using MCS.Common
+@using MCS.Framework.Controls.Mvc
+@using MCS.Framework.Controls
+@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Archives
+
+
+<!-- ******************************Content ************************* -->
+<div class="mt-5" style="
+    margin-top: 3rem;
+">
+    <label style="
+    font-size: 30px;
+    text-align: center;
+    display: grid;
+">انشاء تصنيف</label>
+</div>
+
+<div class="white-container mx-md-5 mx-3">
+
+    <div class="form-row center">
+
+        @*<div class="col-lg-3 col-md-6 col-sm-12 col-xs-12 mb-3">
+            <fieldset>
+                <div class="form-group">
+                    <label class="w-100">@DbRes.TResource("User.OutboundInternal.BasicInfo.Type") <span class="stark">*</span></label>
+                    <div>
+                        @Html.AutoCompleteBuilder("ddlInboundDocumentType", "hdnInboundDocumentType", ViewData["LetterTypeData"].ToString(), Model != null ? ViewData["LetterTypeData"].ToString() : null, true, "form-control", "", "", "", true)
+                        @Html.HiddenGroupFor(model => model.LetterTypeId, new { @Value = "", id = "hdnInboundDocumentType" }, "BasicInformation")
+
+                    </div>
+                </div>
+            </fieldset>
+        </div>*@
+        <div class="row col-lg-12 col-md-12 col-sm-9">
+            <div class="form-group col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">
+                <label>@DbRes.TResource("User.Archive.Directory")<span class="stark">*</span></label>
+                @Html.TextBoxFor(Model => Model.DirectoryNum, new { @class = "form-control" })
+            </div>
+        </div>
+
+        <div class="row col-lg-12 col-md-12 col-sm-9">
+            <div class="form-group col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">
+                <label>@DbRes.TResource("User.Archive.Transaction.Number") <span class="stark">*</span></label>
+                @Html.TextBoxGroupFor(model => model.TransactionNum, "", new { @class = "form-control", maxlength = "5" })
+            </div>
+        </div>
+
+        <div class="row col-lg-12 col-md-12 col-sm-9">
+            <div class="form-group col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">
+                <label>@DbRes.TResource("User.Archive.Classification.Year") <span class="stark">*</span></label>
+                @Html.TextBoxGroupFor(model => model.Year, "", new { @class = "form-control", maxlength = "5" })
+            </div>
+        </div>
+
+        <div class="row col-lg-12 col-md-12 col-sm-9">
+            <div class="form-group col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">
+                <label>@DbRes.TResource("User.Archive.Classification.Type") <span class="stark">*</span></label>
+                @Html.TextBoxGroupFor(model => model.Type, "", new { @class = "form-control", maxlength = "5" })
+            </div>
+        </div>
+        <div class="row col-lg-12 col-md-12 col-sm-9">
+            <div class="form-group col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">
+                <label>@DbRes.TResource("User.Archive.Classification") <span class="stark">*</span></label>
+                @Html.TextBoxGroupFor(model => model.classification, "", new { @class = "form-control", maxlength = "5" })
+            </div>
+        </div>
+        <div class="row col-lg-12 col-md-12 col-sm-9">
+            <div class="form-group col-lg-6 col-md-12 col-sm-12 col-xs-12  mb-3">
+                <div class="input-group w-100">
+                    <div class="form-group w-100">
+                        <label class="w-100">@DbRes.TResource("User.Inbound.BasicInfo.Subject") <span class="stark">*</span></label>
+                        @Html.TextAreaGroupFor(model => model.Remark, new { id = "txtAreaSubject", @class = "form-control", @rows = "5" }, "BasicInformation")
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row col-lg-12 col-md-12 col-sm-9" style="direction:ltr">
+            <div class="form-group col-lg-6 col-md-12 col-sm-12 col-xs-12  mb-3">
+                <div class="input-group w-100">
+                    <div class="form-group w-100">
+                        @Html.ConfirmAction(OperationType.Save, "btnSaveOutboundExternal", DbRes.TResource("User.OutboundExternal.Save"), "AddOutboundExternal", null, null, null, "OnSuccess", null, DbRes.TResource("User.OutboundExternal.SaveMessage"), "post", "frmAddOutboundExternal", "BasicInformation", "btn btn-st1 btn-lg", "CheckPriorityIfHasDate", "", "NotValid")
+                        <input class="btnSendOutbound btn-site" style="display:none;" type="button" value="@DbRes.TResource("User.OutboundExternal.Add.sent")" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+    <!-- ****************************** end Content ************************* -->
+
+    <style>
+        .RedBorder {
+            border: 1px solid #fe0000 !important
+        }
+
+        .center {
+            position: absolute;
+            left: -36%;
+            margin-right:135px;
+        }
+
+        .white-container {
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            padding: 15px 25px;
+            box-shadow: 0px 8px 20px 5px #00000017 !important;
+            clear: both;
+            margin-bottom: 30px;
+            box-shadow: none !important;
+            border: 1px solid #e2e2e2;
+            width: 40%;
+            position: absolute;
+            /* top: 50%; */
+            /* margin: -25px 0 0 -25px; */
+            height: 100%;
+            left: 27%;
+        }
+
+        label {
+            font-size: 20px;
+        }
+        .app-content.center-layout, html body .content.app-content {
+            overflow: scroll
+        }
+    </style>
+

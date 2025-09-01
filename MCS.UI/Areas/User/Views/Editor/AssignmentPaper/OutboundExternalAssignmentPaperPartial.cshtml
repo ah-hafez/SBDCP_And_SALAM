@@ -1,0 +1,114 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.Transaction.Inbound
+@using MCS.UI.Areas.User.Models.Assignment
+@using MCS.UI.Areas.User.Models.Transaction
+@using MCS.Common
+@using MCS.UI.Helpers
+
+
+<ul class="nav nav-pills MCShomeTabs" id="navMenus" style="gap:20px;">
+    <li class="active">
+        <a href="#dvDirectAssignment" id="DirectAssignment">
+            <div>@DbRes.TResource("User.AssignmentPaper.DirectAssignment")</div>
+        </a>
+    </li>
+    <li class="">
+        <a href="#dvTemplateAssignment" id="TemplateAssignment">
+            <div>@DbRes.TResource("User.File.AssignmentPaper")</div>
+        </a>
+    </li>
+</ul>
+@using (Html.BeginForm("SendAssignment", "OutboundInternal", FormMethod.Post, new { id = "EditorAssignmentForm" }))
+{
+    <div id="dvDirectAssignment">
+        @Html.AntiForgeryToken()
+        @{Html.ViewData.TemplateInfo.HtmlFieldPrefix = "EditorAssignment";}
+        @Html.Partial("~/Areas/User/Views/Shared/_AssignmentsPartial.cshtml", new TransactionAssignmentVM(), Html.ViewData)
+    </div>
+}
+<div id="dvTemplateAssignment" style="display:none">
+    @{ViewData.TemplateInfo.HtmlFieldPrefix = "EditorAssignmentPaper";}
+
+    @if (SessionInfo.CurrentUser.DefaultAssignmentPaper == false)
+    {
+        @Html.Partial("~/Areas/User/Views/Editor/AssignmentPaper/_OutboundExternalAssignmentPaperPartial.cshtml", new TransactionAssignmentVM(), Html.ViewData)
+    }
+    else
+    {
+        @Html.Partial("~/Areas/User/Views/Editor/AssignmentPaper/_AssignmentPaperPartialNewCopis.cshtml", new TransactionAssignmentVM { ToOrgUnitId = SessionInfo.OrgUnitId }, Html.ViewData)
+    }
+
+</div>
+
+
+<script>
+
+        var TemplateAssignment = document.getElementById('TemplateAssignment');
+        var DirectAssignment = document.getElementById('DirectAssignment');
+        TemplateAssignment.addEventListener('click', () => {
+            debugger
+            if (dvTemplateAssignment.style.display === "none") {
+                dvTemplateAssignment.style.display = "block";
+                dvDirectAssignment.style.display = "none";
+            }
+        });
+
+        DirectAssignment.addEventListener('click', () => {
+            debugger
+            if (dvDirectAssignment.style.display === "none") {
+                dvDirectAssignment.style.display = "block";
+                dvTemplateAssignment.style.display = "none";
+            }
+        });
+
+        $("#navMenus").on('click', 'li', function () {
+            $("#navMenus li.active").removeClass("active");
+            $(this).addClass("active");
+        });
+
+
+     function GetDirectedToUsersByOrgUnitId_Assignment() {
+             $("#hdnAssignmentPaperUserId").val('')
+             if ($("#EditorAssignmentPaper_ToOrgUnitId").val() != "") {
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("GetUsersByOrgUnitId")',
+                data: { id: $("#EditorAssignmentPaper_ToOrgUnitId").val() },
+                success:
+                    function (data) {
+                        $("#ddlAssignmentPaperUsers").val("");
+                        $("#hdnAssignmentPaperUserId").val("");
+                        AutoCompleteChangeList("ddlAssignmentPaperUsers", data);
+                        $("#ddlAssignmentPaperUsers").prop('disabled', false);
+                    }
+            });
+            return false;
+        }
+        else {
+
+            $("#ddlAssignmentPaperUsers").prop('disabled', true);
+            $("#ddlAssignmentPaperUsers").val("");
+            $("#hdnAssignmentPaperUserId").val("");
+            AutoCompleteChangeList("ddlAssignmentPaperUsers", "[]");
+        }
+    }
+</script>
+<style>
+
+    ul > li.navMenusTab.active {
+        background: #29504D;
+    }
+
+    ul > li.navMenusTab {
+        border: 1px solid #bebebe;
+    }
+
+        ul > li.navMenusTab.active > a > div {
+            color: white;
+        }
+
+
+    .navMenusTab {
+        padding: 5px;
+    }
+</style>

@@ -1,0 +1,208 @@
+﻿@using MCS.Framework.Controls;
+@using MCS.Framework.Controls.Mvc;
+@using MCS.Common
+@using MCS.Framework.Localization
+@model MCS.UI.Areas.User.Models.Search.SearchCriteriaByNamesVM
+
+    <div class="panel-body panel_dark">
+        <div class="col-md-4 col-xs-6">
+            <fieldset>
+                <label class="control-label">@DbRes.TResource("User.InboundSearch.DateBetween")</label>
+                <div class="input-group">
+                    @Html.Hidden("hdnFromDateUm", "", new { id = "hdnFromDateUm" })
+                    @Html.CalendarCustom("fromDateCal", "hdnFromDateGreg", "hdnFromDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">-</span>
+                    </div>
+                    @Html.Hidden("hdnToDateUm", "", new { id = "hdnToDateUm" })
+                    @Html.CalendarCustom("toDateCal", "hdnToDateGreg", "hdnToDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+                </div>
+
+
+            </fieldset>
+            @Html.HiddenGroupFor(model => model.DateTo, new { id = "hdnToDateGreg" }, "Search")
+            @Html.HiddenGroupFor(model => model.DateFrom, new { id = "hdnFromDateGreg" }, "Search")
+        </div>
+        <div class="row">
+            <div class="panel-body">
+                <div class="col-md-4">
+                    <div class="form-group">
+
+                        <label class="w-100">@DbRes.TResource("User.Search.SearchTypeForFilters")<span class="stark">*</span></label>
+                        @Html.AutoCompleteBuilder("SearchNamesTypeId", "hdnSearchNamesTypeId", ViewData["SearchTypeForFilters"].ToString(), null, true, "form-control", "", "", "", true)
+                        @Html.HiddenGroupFor(model => model.SearchNamesType, new { @Value = "1", id = "hdnSearchNamesTypeId" }, "Search")
+
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FirstName, new { @class = "control-label" })<span class="stark">*</span>
+                        <div>
+                            @Html.TextBoxGroupFor(model => model.FirstName, "Search", new { @Value = "", @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+              
+               
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="panel-body">
+                <div class="col-md-2 col-xs-3">
+                    <div class="radio">
+                        <label>
+                            @Html.CustomRadioButtonFor(model => model.TransactionCategory, (int)TransactionCategory.All, new { @class = "iradio", @onclick = "SetType(this)", id = "chkAll", Checked = "checked" })
+                            @DbRes.TResource("User.TransactionType.All")
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-2 col-xs-3">
+                    <div class="radio">
+                        <label>
+                            @Html.CustomRadioButtonFor(model => model.TransactionCategory, (int)TransactionCategory.Inbound, new { @class = "iradio", @onclick = "SetType(this)", id = "chkInbound" })
+                            @DbRes.TResource("User.SubjectSearch.Inbound")
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-2 col-xs-3">
+                    <div class="radio">
+                        <label>
+                            @Html.CustomRadioButtonFor(model => model.TransactionCategory, (int)TransactionCategory.ExternalOutbound, new { @class = "iradio", @onclick = "SetType(this)", id = "chkOutbound" })
+                            @DbRes.TResource("User.OutboundExternal.ExternalOutbound")
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-2 col-xs-3">
+                    <div class="radio">
+                        <label>
+                            @Html.CustomRadioButtonFor(model => model.TransactionCategory, (int)TransactionCategory.InternalOutbound, new { @class = "iradio", @onclick = "SetType(this)", id = "chkOutboundInternal" })
+                            @DbRes.TResource("User.Editor.InternalOutbound")
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-2 col-xs-3">
+                    <div class="radio">
+                        <label>
+                            @Html.CustomRadioButtonFor(model => model.TransactionCategory, (int)TransactionCategory.DraftOutbound, new { @class = "iradio", @onclick = "SetType(this)", id = "chkOutboundDraft" })
+                            @DbRes.TResource("User.OutboundDraft.OutboundDraft")
+                        </label>
+                    </div>
+                </div>
+                
+
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <div class="col-md-8">
+                    @Html.HiddenFor(model => model.TransactionTypeId, new { id = "hdnTypeID" })
+                </div>
+            </div>
+        </div>
+        @Html.EncryptedStickyHidden("EncryptedFalse", "false", new { id = "EncryptedFalse" })
+        @Html.EncryptedStickyHidden("EncryptedTrue", "true", new { id = "EncryptedTrue" })
+
+    <div class="col-lg-12 mt-3">
+        <h4>
+            <a role="button" style="display:flex" onclick="GetAdvancedSearch(@Convert.ToInt32(SearchType.SearchByNames))">
+                <span onclick="CollapseDiv('AdvancedDiv'); return false;" style="cursor: pointer;">
+                    <img src="~/Content/User/lib/images/plus-icon.svg" id="AdvancedDivPlusIcon" width="25" />
+                    <img src="~/Content/User/lib/images/Dash-icon.svg" id="AdvancedDivDashIcon" width="25" style="display: none;" />
+                </span>
+                <span class="ml-3 mt-1">@DbRes.TResource("User.Names.ExtraOptions")</span>
+            </a>
+        </h4>
+        <div role="tabpanel" class="tab-pane" id="AdvancedDiv" style="display:none">
+        </div>
+    </div>
+
+        @*<a class="btn btn-st2 btn-lg pull-right mr-1 " id="btnAdvancedSearch" onclick="GetAdvancedSearch(@Convert.ToInt32(SearchType.SearchByNames))">اضافية</a>
+        <a class="btn btn-st2 btn-lg pull-right mr-1 hidden" id="btnCloseAdvancedSearch" onclick="CloseAdvancedSearch()">أغلاق</a>*@
+
+    </div>
+
+            <script>
+    $(function () {
+        $('#btnSearch').removeClass('hidden_');
+          $("#hdnTypeID").val(-1); 
+    });
+    $(document).ready(function () {
+        $('#fromDateCal').attr('autocomplete', 'off');
+        $('#toDateCal').attr('autocomplete', 'off');
+        $('#btnSearch').removeClass('hidden_');
+
+    var year = @DateTimeUtility.GetHijriYear(DateTime.Now).ToString();
+        var type = '@CalenderType.Ummalqura.ToString().ToLower()';
+        SetStartEndDate(year, 'fromDateCal', 'toDateCal', type);
+    });
+  
+                function CollapseDiv(divName) {
+                    if ($('#' + divName).css('display') == 'block') {
+                        $('#' + divName).css("display", "none");
+                        $('#' + divName + 'PlusIcon').css("display", "inline-block");
+                        $('#' + divName + 'DashIcon').css("display", "none");
+                    }
+                    else {
+                        $('#' + divName).css("display", "block");
+                        $('#' + divName + 'PlusIcon').css("display", "none");
+                        $('#' + divName + 'DashIcon').css("display", "inline-block");
+                    }
+                }
+
+    $('#fromDateCal, #toDateCal').change(function () {
+
+        var dateFrom = $('#hdnFromDateUm').val();
+        var dateTo = $('#hdnToDateUm').val();
+    });
+        
+    $('#ddlHourTo').change(function () {
+
+        $('#hdnHourTo').val($('#ddlHourTo').val());
+    });
+
+    $('#ddlMinuteTo').change(function () {
+
+        $('#hdnMinuteTo').val($('#ddlMinuteTo').val());
+    });
+
+    $('#ddlHourFrom').change(function () {
+
+        $('#hdnHourFrom').val($('#ddlHourFrom').val());
+    });
+
+    $('#ddlMinuteFrom').change(function () {
+
+        $('#hdnMinuteFrom').val($('#ddlMinuteFrom').val());
+    });
+
+   function CloseAdvancedSearch() {
+          $("#AdvancedDiv").html("");
+        $("#btnAdvancedSearch").removeClass("hidden");
+           $("#btnCloseAdvancedSearch").addClass("hidden");
+
+    }
+   function GetAdvancedSearch(id)
+       {
+      
+        $.ajax({
+            type: 'Get',
+            url: '@Url.Action("GetAdvancedSearchView")',
+            data: { SearchTypeId: id , TransactionCategoryId :   $("#hdnTypeID").val()},
+            success:
+                function (response) { 
+                    $("#AdvancedDiv").html(response.html);
+                     $("#btnAdvancedSearch").addClass("hidden");
+                    $("#btnCloseAdvancedSearch").removeClass("hidden");
+               
+           }
+        });
+                    }
+       function SetType(e) { 
+           $("#hdnTypeID").val(e.value); 
+           $("#AdvancedDiv").html("");
+             $("#btnAdvancedSearch").removeClass("hidden");
+                    $("#btnCloseAdvancedSearch").addClass("hidden");
+    }
+
+ </script>

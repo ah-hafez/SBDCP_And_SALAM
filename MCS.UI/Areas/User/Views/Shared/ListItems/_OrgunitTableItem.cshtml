@@ -1,0 +1,323 @@
+﻿@using MCS.UI.Helpers
+@using MCS.Common
+@using MCS.UI.Areas.User.Models.File
+@model TransactionTrayInfoVM
+@{
+    bool isPermition = false;
+    string Confidentiality = "ConfidentialityNormal";
+    string ConfidentialityBac = "ConfidentialityNormalBackg";
+    string transType = string.Empty;
+
+    if (Model.TransactionDetailsInfoVM.TransactionCategoryId == (int)TransactionCategorieColor.InternalOutbound)
+    {
+
+        transType = "InternalOutboundLineTable";
+
+    }
+    else if (Model.TransactionDetailsInfoVM.TransactionCategoryId == (int)TransactionCategorieColor.Inbound)
+    {
+
+        transType = "InboundLineTable";
+
+
+    }
+    else
+    {
+        transType = "OutboundExternalTable";
+    }
+    switch (Model.TransactionDetailsInfoVM.ConfidentialityId)
+    {
+        case (int)Confedentiality.HandDelivered:
+            {
+                Confidentiality = "ConfidentialityVeryRed";
+                ConfidentialityBac = "ConfidentialityVeryRedBackg";
+
+                if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.ConfidentialityOfTransactions.HandDelivered))
+                {
+                    isPermition = true;
+                }
+
+                break;
+            }
+        case (int)Confedentiality.HighConfidential:
+            {
+                Confidentiality = "ConfidentialityMidRed";
+                ConfidentialityBac = "ConfidentialityMidRedBackg";
+
+                if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.ConfidentialityOfTransactions.HandDelivered) || SessionInfo.CurrentUser.Claims.Contains(UserClaims.ConfidentialityOfTransactions.ExtremlyConfidential))
+                {
+                    isPermition = true;
+                }
+
+                break;
+            }
+        case (int)Confedentiality.Secret:
+            {
+                Confidentiality = "ConfidentialityRed";
+                ConfidentialityBac = "ConfidentialityRedBackg";
+
+                if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.ConfidentialityOfTransactions.HandDelivered) || SessionInfo.CurrentUser.Claims.Contains(UserClaims.ConfidentialityOfTransactions.ExtremlyConfidential) || SessionInfo.CurrentUser.Claims.Contains(UserClaims.ConfidentialityOfTransactions.Secret))
+                {
+                    isPermition = true;
+                }
+
+                break;
+            }
+        case (int)Confedentiality.Normal:
+            {
+                isPermition = true;
+                break;
+            }
+    }
+
+}
+<style>
+    .ConfidentialityNormal {
+    }
+
+    .ConfidentialityRed {
+        border-right: 4px solid #c41c0e;
+    }
+
+    .ConfidentialityMidRed {
+        border-right: 4px solid #c41c0e;
+    }
+
+    .ConfidentialityVeryRed {
+        border-right: 4px solid #c41c0e;
+    }
+</style>
+<tr class="bg-white @Confidentiality @transType" style="cursor: pointer; " data-id="@Model.TransactionDetailsInfoVM.Id">
+    <td>
+        <div class="checkbox">
+            @if (Model.TransactionDetailsInfoVM.HasPermission)
+            {
+                <label>
+                    <input type="checkbox" value="" onchange="holdDataFromBox(this); EnablePrint(this);" id="ch_@Model.TransactionDetailsInfoVM.Id" data-id="@Model.TransactionDetailsInfoVM.Id" data-encryptedid="@Model.TransactionDetailsInfoVM.EncryptedId" class="FillIds">
+                    <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+                </label>
+            }
+        </div>
+    </td>
+    <td>
+
+        <div class="pl-2" id="Number_@Model.TransactionDetailsInfoVM.Id">@Model.TransactionDetailsInfoVM.Number</div>
+        @*<div class="pr-1" id="Number_@Model.TransactionDetailsInfoVM.Id">@Model.TransactionDetailsInfoVM.Number</div>*@
+    </td>
+    @*<td onclick="redirect()">
+            @Model.TransactionDetailsInfoVM.TransactionCategory
+        </td>*@
+    <td class="title" id="entityName_5306" onclick="redirect()">
+        @if (Model.TransactionDetailsInfoVM.TransactionCategoryId != TransactionCategory.InternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName))
+        {
+            if (Model.TransactionDetailsInfoVM.ExternalPartyName == null)
+            {
+                <div></div>
+            }
+            else
+            {
+                <div class="title" id="entityName_@Model.TransactionDetailsInfoVM.Id">@Model.TransactionDetailsInfoVM.ExternalPartyName</div>
+                <div>
+                    @*@(Model.TransactionAssignmentInfoVMs[0].FromUser.CompareTo(Model.TransactionAssignmentInfoVMs[0].ToUser) == 0 ? "" : Model.TransactionAssignmentInfoVMs[0].FromUser)*@
+                </div>
+            }
+
+        }
+
+        else
+        {
+            <div class="title" id="entityName_@Model.TransactionDetailsInfoVM.Id">
+                @Model.TransactionDetailsInfoVM.EntityName
+            </div>
+            <div class="">
+                @*@(Model.TransactionAssignmentInfoVMs[0].FromUser.CompareTo(Model.TransactionAssignmentInfoVMs[0].ToUser) == 0 ? "" : Model.TransactionAssignmentInfoVMs[0].FromUser)*@
+            </div>
+        }
+    </td>
+
+
+    <td class="subject-td" onclick="redirect()">
+        @if (Model.TransactionDetailsInfoVM.HasPermission)
+        {
+
+            <div id="example" class="Tabledescription">
+                @Model.TransactionDetailsInfoVM.Subject
+            </div>
+
+        }
+        else
+        {
+            <div class="Tabledescription">***</div>
+        }
+    </td>
+    <td onclick="redirect()">
+        <div class="" style="text-align: right;">
+            @DateHelper.GetDate(@Model.TransactionDetailsInfoVM.DateH)
+            @Model.TransactionDetailsInfoVM.Date.ToShortTimeString()
+        </div>
+    </td>
+    @*<td><div class="result">@Model.TransactionDetailsInfoVM.DeliveryMethodName</div></td>*@
+    <td onclick="redirect()">
+        <div class="result">
+            @if (Model.TransactionDetailsInfoVM.PriorityName != null && Model.TransactionDetailsInfoVM.PriorityName.Length > 15)
+            {
+                <div class="" data-bs-toggle="tooltip" data-placement="bottom" title="@Model.TransactionDetailsInfoVM.PriorityName">
+                    @Model.TransactionDetailsInfoVM.PriorityName
+                </div>
+            }
+            else
+            {
+                <div class="">
+                    @Model.TransactionDetailsInfoVM.PriorityName
+                </div>
+            }
+        </div>
+    </td>
+    <td onclick="redirect()">
+        @if (Model.TransactionDetailsInfoVM.ConfidentialityName != null && Model.TransactionDetailsInfoVM.ConfidentialityName.Length > 5)
+
+        {
+            <div class="@ViewData["className"]" data-bs-toggle="tooltip" data-placement="bottom" title="@Model.TransactionDetailsInfoVM.ConfidentialityName">
+                @Model.TransactionDetailsInfoVM.ConfidentialityName.Substring(0, 5)
+            </div>
+        }
+        else
+        {
+            <div class="@ViewData["className"]">
+                @Model.TransactionDetailsInfoVM.ConfidentialityName
+            </div>
+        }
+    </td>
+
+
+    @*<td>
+            @if (Model.TransactionAssignmentInfoVMs != null && Model.TransactionAssignmentInfoVMs.Count > 0)
+            {
+                <div class="">
+
+                    @Model.TransactionAssignmentInfoVMs.FirstOrDefault().Action
+                    @if (Model.TransactionAssignmentInfoVMs.FirstOrDefault().Action == null)
+                    {
+                        <div class="">
+                            ---
+                        </div>
+                    }
+
+                </div>
+            }
+            else
+            {
+                <div class="">
+                    ---
+                </div>
+            }
+        </td>*@
+
+    @*<td>
+            @Model.TransactionAssignmentInfoVMs[0].FromUser
+        </td>*@
+
+    <td onclick="redirect()">
+        @if (Model.TransactionAssignmentInfoVMs.FirstOrDefault().FromEntity != null && Model.TransactionAssignmentInfoVMs.FirstOrDefault().Action != null)
+        {
+            <div class="" data-bs-toggle="tooltip" data-placement="bottom" title="@Model.TransactionAssignmentInfoVMs.FirstOrDefault().FromEntity">
+
+                @if (Model.TransactionAssignmentInfoVMs.FirstOrDefault().FromEntity.Length > 15)
+                {
+                    @Model.TransactionAssignmentInfoVMs.FirstOrDefault().FromEntity.Substring(0, 10)
+                }
+                else
+                {
+                    @Model.TransactionAssignmentInfoVMs.FirstOrDefault().FromEntity
+                }
+            </div>
+        }
+        else
+        {
+            <div class="">
+                ---
+            </div>
+        }
+    </td>
+    <td onclick="redirect()">
+        @if (Model.TransactionAssignmentInfoVMs.FirstOrDefault().Date != null && Model.TransactionAssignmentInfoVMs.FirstOrDefault().Action != null)
+        {
+            <div class="" data-bs-toggle="tooltip" data-placement="bottom" title="@Model.TransactionAssignmentInfoVMs.FirstOrDefault().Date">
+                @if (Model.TransactionAssignmentInfoVMs.FirstOrDefault().Date.ToString().Length > 10)
+                {
+                    @Model.TransactionAssignmentInfoVMs.FirstOrDefault().Date.ToString().Substring(0, 10)
+                }
+                else
+                {
+                    @Model.TransactionAssignmentInfoVMs.FirstOrDefault().Date.ToString()
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="">
+                ---
+            </div>
+        }
+    </td>
+
+    <td class="">
+        <div class="correspondence-icon-table d-flex">
+            @Html.CheckTransactionChatStatus(Model.TransactionAssignmentInfoVMs[0].HasCollaboration)
+            @if (Model.TransactionDetailsInfoVM.HasPermission)
+            {
+                @*in BRS must be show button*@
+                bool isViewed = false;
+                if (Model.TransactionAssignmentInfoVMs != null && Model.TransactionAssignmentInfoVMs.Count > 0)
+                {
+                    isViewed = Model.TransactionAssignmentInfoVMs.FirstOrDefault().Viewed;
+                }
+                <a id="link" href="#" onclick="InboundCertificate(@Model.TransactionDetailsInfoVM.Id)" data-TransactionTypeId="@Model.TransactionDetailsInfoVM.TransactionCategoryId"
+                   title="@DbRes.TResource("User.InboundSearch.InboundCertificate")" data-id="@Model.TransactionDetailsInfoVM.Id">
+                    <img src="~/Content/User/lib/images/SystemIcon/main bar-14.svg" width="30" />
+                </a>
+                <a title="@DbRes.TResource("User.File.Assign")" data-id="@Model.TransactionDetailsInfoVM.Id"
+                   data-IdEncrypt="@Model.TransactionDetailsInfoVM.EncryptedId"
+                   data-Viewed="@isViewed" data-DeliveryMethodId="@Model.TransactionDetailsInfoVM.DeliveryMethodId"
+                   data-TransactionTypeId="@Model.TransactionDetailsInfoVM.TransactionCategoryId" data-type="@TrayActionType.Assign"
+                   onclick="AssignToSelf(this)" class="aAssign referral">
+                    <img src="~/Content/User/lib/images/SystemIcon/main bar-27.svg" width="30" />
+                </a>
+            }
+            @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.GeneralPermissions.PreviewArchiving))
+            {
+                <a id="ShowArchiving" class="" title="معاينة" data-Viewed=""
+                   data-DeliveryMethodId=""
+                   onclick="showArchiving(@Model.TransactionDetailsInfoVM.Id)">
+                    <img src="~/Content/User/lib/images/SystemIcon/main bar-22.svg" width="30" />
+                </a>
+
+            }
+             @if (Model.TransactionDetailsInfoVM.HasPermission)
+            {
+            <a id="ShowAssignmentHistories" class="" title="عرض الاحالات" data-Viewed=""
+               data-DeliveryMethodId=""
+               onclick="showAssignmentHistories(@Model.TransactionDetailsInfoVM.Id)">
+                <img src="~/Content/User/lib/images/SystemIcon/main bar-28.svg" width="40" />
+            </a>
+            <a title=@DbRes.TResource("User.Task.Reject.Send")
+               data-id="@Model.TransactionDetailsInfoVM.Id" data-DeliveryMethodId="@Model.TransactionDetailsInfoVM.DeliveryMethodId"
+               data-TransactionTypeId="@Model.TransactionDetailsInfoVM.TransactionCategoryId"
+               onclick="showRejectionPopup(@Model.TransactionDetailsInfoVM.Id)">
+                <img src="~/Content/User/lib/images/SystemIcon/main bar-29.svg" width="20" />
+            </a>
+              }
+            @Html.StickyHidden("transId")
+        </div>
+    </td>
+</tr>
+
+
+<script>
+    function redirect()
+    {
+        var link = $(event.currentTarget).parent().find('.correspondence-icon-table').children()[0];
+        $(link).children()[0].click();
+    }
+</script>

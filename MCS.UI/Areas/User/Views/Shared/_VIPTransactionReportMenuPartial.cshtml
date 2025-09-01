@@ -1,0 +1,156 @@
+﻿@using MCS.Framework.Localization
+@using MCS.UI.Areas.User.Models.File
+@using MCS.Common
+
+@{
+    var controllerName = HttpContext.Current.Request.RequestContext.RouteData.Values["controller"].ToString();
+    var actionName = ViewContext.RouteData.GetRequiredString("action").ToString();
+}
+
+
+
+
+<div class="menu-vip d-flex flex-row flex-wrap justify-content-center align-items-center mt-5">
+    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Reports.TransactionReports))
+    {
+        <div id="divTransactionReport" class=" mv-list active">
+            <a href="@Url.Action("TransactionReport", "Reports", new { area = "user" })">
+                <div class="d-flex flex-column justify-content-center align-items-center">
+                    <div class="mv-icon d-flex justify-content-center align-items-center">
+                        <span class="icon2-menu-vip-2 min"><span class="path1"></span><span class="path2"></span></span>
+                    </div>
+
+                    <div class="d-flex mv-label">
+                        <span id="ctl00_ctl00_Label7">@DbRes.TResource("User.Layout.TransactionReport")</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+    }
+    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Reports.SecretaryTransactionReport))
+    {
+        <div id="divSecretaryTransactionReport" class=" mv-list">
+            <a href="@Url.Action("SecretaryTransactionReport", "Reports", new { area = "user" })">
+                <div class="d-flex flex-column justify-content-center align-items-center">
+                    <div class="mv-icon d-flex justify-content-center align-items-center">
+                        <i class="fa fa-user" style="font-size:20px; font-weight:bold;"></i>
+                    </div>
+
+                    <div class="d-flex mv-label">
+                        <span id="ctl00_ctl00_Label9">@DbRes.TResource("User.Layout.SecretaryTransactionReport")</span>
+
+                    </div>
+                </div>
+            </a>
+        </div>
+    }
+    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Reports.UserPerformanceReports))
+    {
+        <div id="divPerformanceMeasurementReport" class=" mv-list">
+            <a href="@Url.Action("PerformanceMeasurementReport", "Reports", new { area = "user" })">
+                <div class="d-flex flex-column justify-content-center align-items-center">
+                    <div class="mv-icon d-flex justify-content-center align-items-center">
+                        <i class="la la-flash" style="font-size:20px; font-weight:bold"></i>
+                    </div>
+
+                    <div class="d-flex mv-label">
+                        <span id="ctl00_ctl00_Label11">@DbRes.TResource("User.Layout.PerformanceMeasurementReport")</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div id="divTasksReport" class=" mv-list">
+            <a href="@Url.Action("TasksReport", "Reports", new { area = "user" })">
+                <div class="d-flex flex-column justify-content-center align-items-center">
+                    <div class="mv-icon d-flex justify-content-center align-items-center">
+                        <i class="la la-list-alt" style="font-size:20px; font-weight:bold"></i>
+                    </div>
+
+                    <div class="d-flex mv-label">
+                        <span id="ctl00_ctl00_Label8">@DbRes.TResource("User.Layout.TasksReport") </span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div id="divFollowupReport" class=" mv-list">
+            <a href="@Url.Action("FollowupReport", "Reports", new { area = "user" })">
+                <div class="d-flex flex-column justify-content-center align-items-center">
+                    <div class="mv-icon d-flex justify-content-center align-items-center">
+                        <i class="fa fa-check-square" style="font-size:20px; font-weight:bold;"></i>
+                    </div>
+
+                    <div class="d-flex mv-label">
+                        <span id="ctl00_ctl00_Label8">@DbRes.TResource("User.Layout.FollowupReport") </span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div id="divSentTransactionReport" class=" mv-list">
+            <a href="@Url.Action("SentTransactionReport", "Reports", new { area = "user" })">
+                <div class="d-flex flex-column justify-content-center align-items-center">
+                    <div class="mv-icon d-flex justify-content-center align-items-center">
+                        <i class="fa fa-paper-plane" style="font-size:20px; font-weight:bold;"></i>
+                    </div>
+
+                    <div class="d-flex mv-label">
+                        <span id="ctl00_ctl00_Label10">@DbRes.TResource("User.Layout.SentTransactionReport")</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+    }
+    <div>
+        <a href='@Url.Action("MyTransactions", "File", new { area = "user" })'>
+            <i class="fa fa-arrow-left" style="font-size:25px; position:absolute; left:40px;" title="@DbRes.TResource("User.Internalinbound.Back")"></i>
+        </a>
+    </div>
+
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        var actionUrl = window.location.pathname.split("/")[4];
+        $("#divTransactionReport").removeClass("active");
+        $("#divSecretaryTransactionReport").removeClass("active");
+        $("#divPerformanceMeasurementReport").removeClass("active");
+        $("#divTasksReport").removeClass("active");
+        $("#divFollowupReport").removeClass("active");
+        $("#divSentTransactionReport").removeClass("active");
+
+        switch (actionUrl) {
+            case "TransactionReport":
+                $("#divTransactionReport").addClass("active");
+
+                break;
+            case "SecretaryTransactionReport":
+                $("#divSecretaryTransactionReport").addClass("active");
+                break;
+            case "PerformanceMeasurementReport":
+                $("#divPerformanceMeasurementReport").addClass("active");
+                break;
+            case "TasksReport":
+                $("#divTasksReport").addClass("active");
+                break;
+            case "FollowupReport":
+                $("#divFollowupReport").addClass("active");
+                break;
+            case "SentTransactionReport":
+                $("#divSentTransactionReport").addClass("active");
+                break;
+
+            default:
+                $("#selected").addClass("active");
+                break;
+
+
+
+        }
+    });
+
+
+
+
+
+
+</script>
