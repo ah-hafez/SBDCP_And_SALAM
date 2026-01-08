@@ -1,0 +1,30 @@
+﻿
+
+
+@{
+    string GUID = Guid.NewGuid().ToString();
+}
+
+
+<div id="dvCerCopies" class="tabscontent ">
+    <ul class="nav nav-tabs custom-sub-nav-tabs mb-3" role="tablist">
+        @Html.StickyHidden("hdnGUID", GUID, new { @class = "hdnGUID" })
+        <li role="presentation" class="active">
+            <a href="@("#" + GUID + "_sub-tab-1")" aria-controls="@(GUID + "_sub-tab-1")" role="tab" data-toggle="tab">
+                @DbRes.TResource("الارشيف")
+            </a>
+        </li>
+
+    </ul>
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="@(GUID + "_sub-tab-1")">
+
+            <div class="row">
+                <div class="col-md-12">
+                    @Html.Partial("~/Areas/User/Views/Shared/TransactionCertificate/ICForTransactionLogGridPartial.cshtml", ViewData["ICData"])
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

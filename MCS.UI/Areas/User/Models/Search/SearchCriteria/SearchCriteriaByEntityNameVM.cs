@@ -37,6 +37,9 @@ namespace MCS.UI.Areas.User.Models.Search
 
         [CustomTimeSpanCompareAttribute("TimeFrom", Operation.GreaterThanOrEqual)]
         public TimeSpan? TimeTo { get; set; }
+        [CustomDisplayName("User.Transaction.Link.TransactionType")]
+        [CustomRequired("User.Transaction.Link.TransactionTypeRequired")]
+        public int TransactionCategory { get; set; }
         public InboundAdvancedVM InboundAdvanced { get; set; }
 
         public OutboundAdvancedVM OutboundAdvanced { get; set; }

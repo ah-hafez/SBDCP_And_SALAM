@@ -721,7 +721,8 @@
     }
     function onContextMenu(e) {
         e.preventDefault();
-        showMenu(e.pageX, e.pageY);
+        debugger
+        showMenu(e.pageX, e.pageY-100);
         document.addEventListener('click', onClick, false);
     }
     function onClick(e) {

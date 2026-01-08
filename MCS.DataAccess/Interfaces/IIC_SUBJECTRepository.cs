@@ -16,7 +16,7 @@ namespace MCS.DataAccess
         void RemoveIC_SUBJECT_TRANSACTION(int transId, int ic_id);
         List<IC_CLASSIFICATION> GetClassificationTypes();
         IList<IC_SUBJECT> GetIC_SUBJECTByParentId(int? Id, string name);
-        int AddIC_SUBJECT_TRANSACTION(int transId, int ic_id, int? number, string description);
+        int AddIC_SUBJECT_TRANSACTION(int transId, int ic_id, int? number, string description,int createdBy);
         IC_SUBJECTS_TRANSACTION IC_GetTransaction(int transId);
 
     }

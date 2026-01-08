@@ -51,12 +51,12 @@
                 }
 
 
-            @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.TransactionCertificate.Attachments) || SessionInfo.CurrentUser.Claims.Contains(UserClaims.TransactionCertificate.Explanations))
-            {
-                <li role="presentation" class="flex-fill liTransaction">
-                    <a href="#tab-3" aria-controls="tab-3" role="tab" data-bs-toggle="tab" onclick="GetCertificateAttachments(@id, this)">
-                        @*<i class="icon-tab3"></i><br>*@
-                        @Html.Raw(DbRes.TResource("User.TransactionLog.AttachmentAndExplanations"))
+                @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.TransactionCertificate.Attachments) || SessionInfo.CurrentUser.Claims.Contains(UserClaims.TransactionCertificate.Explanations))
+                {
+                    <li role="presentation" class="flex-fill liTransaction">
+                        <a href="#tab-3" aria-controls="tab-3" role="tab" data-bs-toggle="tab" onclick="GetCertificateAttachments(@id, this)">
+                            @*<i class="icon-tab3"></i><br>*@
+                            @Html.Raw(DbRes.TResource("User.TransactionLog.AttachmentAndExplanations"))
 
                         </a>
                     </li>
@@ -76,13 +76,13 @@
 
 
                 <!--@if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.TransactionCertificate.Names))
-                { }
-                    <li role="presentation" class="flex-fill">
-                        <a href="#tab-4" aria-controls="tab-4" role="tab" data-bs-toggle="tab" onclick="GetCertificateNames(@id,this)">-->
+    { }
+        <li role="presentation" class="flex-fill">
+            <a href="#tab-4" aria-controls="tab-4" role="tab" data-bs-toggle="tab" onclick="GetCertificateNames(@id,this)">-->
                 @*<i class="icon-tab4"></i><br>*@
                 @*@Html.Raw(DbRes.TResource("User.TransactionLog.TransactionRelatedPersons"))*@
 
-            <!--</a>
+                <!--</a>
         </li>
     }
     <div style="border-left:2px solid  #0E8270; height:28px; margin-top:18px; margin-left:10px"></div>-->
@@ -90,13 +90,13 @@
 
 
 
-            @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.TransactionCertificate.CopiesInternal) || SessionInfo.CurrentUser.Claims.Contains(UserClaims.TransactionCertificate.CopiesExternal))
-            {
-                <li role="presentation" class="flex-fill liTransaction">
-                    <a href="#tab-5" aria-controls="tab-5" role="tab" data-bs-toggle="tab" onclick="GetCertificateCopies(@id, this , false); GetCertificateExternalCopies(@id, this); ">
-                        @*<i class="icon-tab5"></i><br>*@
-                        @*@Html.Raw(DbRes.TResource("User.TransactionLog.TransactionInternalElectronicCopies"))*@
-                        @Html.Raw(DbRes.TResource("User.TransactionLog.ElectronicCopies"))
+                @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.TransactionCertificate.CopiesInternal) || SessionInfo.CurrentUser.Claims.Contains(UserClaims.TransactionCertificate.CopiesExternal))
+                {
+                    <li role="presentation" class="flex-fill liTransaction">
+                        <a href="#tab-5" aria-controls="tab-5" role="tab" data-bs-toggle="tab" onclick="GetCertificateCopies(@id, this , false); GetCertificateExternalCopies(@id, this); ">
+                            @*<i class="icon-tab5"></i><br>*@
+                            @*@Html.Raw(DbRes.TResource("User.TransactionLog.TransactionInternalElectronicCopies"))*@
+                            @Html.Raw(DbRes.TResource("User.TransactionLog.ElectronicCopies"))
 
                         </a>
                     </li>
@@ -106,9 +106,9 @@
 
 
                 <!--@if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.TransactionCertificate.CopiesExternal))
-                { }
-                    <li role="presentation" class="flex-fill">
-                        <a href="#tab-6" aria-controls="tab-6" role="tab" data-bs-toggle="tab" onclick="GetCertificateExternalCopies(@id,this)">-->
+    { }
+        <li role="presentation" class="flex-fill">
+            <a href="#tab-6" aria-controls="tab-6" role="tab" data-bs-toggle="tab" onclick="GetCertificateExternalCopies(@id,this)">-->
                 @*<i class="icon-tab6"></i><br>*@
                 <!--@Html.Raw(DbRes.TResource("User.TransactionLog.TransactionExternalElectronicCopies"))
                         </a>
@@ -132,12 +132,12 @@
                 }
                 <div class="border-left"></div>
 
-            <!--@if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.TransactionCertificate.Explanations))
+                <!--@if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.TransactionCertificate.Explanations))
     { }
         <li role="presentation" class="flex-fill">
             <a href="#tab-8" aria-controls="tab-8" role="tab" data-bs-toggle="tab" onclick="GetCertificateExplanations(@id,this)">-->
-            @*<i class="icon-tab8"></i><br>*@
-            <!--@Html.Raw(DbRes.TResource("User.TransactionLog.ExplanationLog"))
+                @*<i class="icon-tab8"></i><br>*@
+                <!--@Html.Raw(DbRes.TResource("User.TransactionLog.ExplanationLog"))
             </a>
         </li>
     }
@@ -151,20 +151,34 @@
                             @*@Html.Raw(DbRes.TResource("User.TransactionLog.FollowUpLog"))*@
                             @Html.Raw(DbRes.TResource("User.TransactionLog.FollowUpLogAndTasks"))
 
-                    </a>
-                </li>
-            }
-            <!--<div style="border-left:2px solid  #0E8270; height:28px; margin-top:18px; margin-left:10px"></div>
-
-                @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.TransactionCertificate.Tasks))
-                { }
-                    <li role="presentation" class="flex-fill">
-                        <a href="#tab-10" aria-controls="tab-10" role="tab" data-bs-toggle="tab" onclick="GetCertificateTasks(@id,this)">-->
-                @*<i class="icon-tab10"></i><br>*@
-                <!--@Html.Raw(DbRes.TResource("User.TransactionLog.TasksLog"))
                         </a>
                     </li>
-                }-->
+                }
+                <div class="border-left"></div>
+                @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.IC.ViewArchiveInTransactionLog))
+                {
+                    <li role="presentation" class="flex-fill liTransaction">
+                        <a href="#tab-10" aria-controls="tab-10" role="tab" data-bs-toggle="tab" onclick="SearchICByTransactionID(@id, this); ">
+                            @*<i class="icon-tab9"></i><br>*@
+                            @*@Html.Raw(DbRes.TResource("User.TransactionLog.FollowUpLog"))*@
+                            @Html.Raw(DbRes.TResource("الأرشيف"))
+
+                        </a>
+                    </li>
+                }
+
+
+                <!--<div style="border-left:2px solid  #0E8270; height:28px; margin-top:18px; margin-left:10px"></div>
+
+    @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.TransactionCertificate.Tasks))
+    { }
+        <li role="presentation" class="flex-fill">
+            <a href="#tab-10" aria-controls="tab-10" role="tab" data-bs-toggle="tab" onclick="GetCertificateTasks(@id,this)">-->
+                @*<i class="icon-tab10"></i><br>*@
+                <!--@Html.Raw(DbRes.TResource("User.TransactionLog.TasksLog"))
+            </a>
+        </li>
+    }-->
 
             </ul>
             <hr class="hr" />
@@ -450,7 +464,21 @@
                 }
         });
     }
+    function SearchICByTransactionID(transactionId, element) {
+    var id = transactionId;
 
+    $.ajax({
+        type: 'Get',
+        cache: false,
+        url: '@Url.Action("SearchByTransactionID", "IC")',
+        data: { transactionId: id},
+        success:
+            function (data) {
+                debugger
+                UpdateDivContent(data.Html, element, false);
+            }
+    });
+}
     function UpdateDivContent(data, element, doAppend) {
         debugger
         if (doAppend) {

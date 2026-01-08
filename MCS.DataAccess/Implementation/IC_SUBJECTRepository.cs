@@ -257,7 +257,7 @@ namespace MCS.DataAccess
             }
         }
 
-        public int AddIC_SUBJECT_TRANSACTION(int transId, int ic_id, int? number, string description)
+        public int AddIC_SUBJECT_TRANSACTION(int transId, int ic_id, int? number, string description, int createdBy)
         {
             try
             {
@@ -267,6 +267,7 @@ namespace MCS.DataAccess
                 icTrns.IC_SUBJECTId = ic_id;
                 icTrns.Number = number;
                 icTrns.Description = description;
+                icTrns.CreatedBy = createdBy;
                 IC_SUBJECTS_TRANSACTION icTrnsOld = _oMCSDbContext.IC_SUBJECTS_TRANSACTIONS.Where(x => x.TransactionId == transId).FirstOrDefault();
 
                 if (icTrnsOld != null)

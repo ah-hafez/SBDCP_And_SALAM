@@ -41,35 +41,63 @@
                 </fieldset>
             </div>
             </div>
-            <div class="row">
-                <div class="col-md-4 col-xs-6">
-                    <fieldset>
-                        <label class="control-label">@DbRes.TResource("User.InboundSearch.DateBetween")</label>
-                        @*<div class="form-group input-group">
+        <div class="row">
+            <div class="col-md-4 col-xs-6">
+                <fieldset>
+                    <label class="control-label">@DbRes.TResource("User.InboundSearch.DateBetween")</label>
+                    @*<div class="form-group input-group">
+                    @Html.Hidden("hdnFromDateUm", "", new { id = "hdnFromDateUm" })
+                    @Html.CalendarCustom("fromDateCal", "hdnFromDateGreg", "hdnFromDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+                    <span class="input-group-addon add-on"> - </span>
+                    @Html.Hidden("hdnToDateUm", "", new { id = "hdnToDateUm" })
+                    @Html.CalendarCustom("toDateCal", "hdnToDateGreg", "hdnToDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
+                </div>*@
+
+
+                    <div class="input-group">
                         @Html.Hidden("hdnFromDateUm", "", new { id = "hdnFromDateUm" })
                         @Html.CalendarCustom("fromDateCal", "hdnFromDateGreg", "hdnFromDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
-                        <span class="input-group-addon add-on"> - </span>
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">-</span>
+                        </div>
                         @Html.Hidden("hdnToDateUm", "", new { id = "hdnToDateUm" })
                         @Html.CalendarCustom("toDateCal", "hdnToDateGreg", "hdnToDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
-                    </div>*@
+                    </div>
 
 
-                        <div class="input-group">
-                            @Html.Hidden("hdnFromDateUm", "", new { id = "hdnFromDateUm" })
-                            @Html.CalendarCustom("fromDateCal", "hdnFromDateGreg", "hdnFromDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">-</span>
-                            </div>
-                            @Html.Hidden("hdnToDateUm", "", new { id = "hdnToDateUm" })
-                            @Html.CalendarCustom("toDateCal", "hdnToDateGreg", "hdnToDateUm", CalenderType.Ummalqura, SessionInfo.CultureShortName.ToString(), null, "form-control")
-                        </div>
-
-
-                    </fieldset>
-                    @Html.HiddenGroupFor(model => model.DateTo, new { id = "hdnToDateGreg" }, "Search")
-                    @Html.HiddenGroupFor(model => model.DateFrom, new { id = "hdnFromDateGreg" }, "Search")
-                </div>
+                </fieldset>
+                @Html.HiddenGroupFor(model => model.DateTo, new { id = "hdnToDateGreg" }, "Search")
+                @Html.HiddenGroupFor(model => model.DateFrom, new { id = "hdnFromDateGreg" }, "Search")
             </div>
+            <div class="panel-body">
+                <div class="col-md-1 col-xs-3">
+                    <div class="radio">
+                        <label>
+                            @Html.CustomRadioButtonFor(model => model.TransactionCategory, (int)TransactionCategory.All, new { @class = "iradio", id = "chkAll", @onclick = "SetType(this)", Checked = "checked" })
+                            @DbRes.TResource("User.TransactionType.All")
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-2 col-xs-3">
+                    <div class="radio">
+                        <label>
+                            @Html.CustomRadioButtonFor(model => model.TransactionCategory, (int)TransactionCategory.Inbound, new { @class = "iradio", @onclick = "SetType(this)", id = "chkInbound" })
+                            @DbRes.TResource("User.SubjectSearch.Inbound")
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-2 col-xs-3">
+                    <div class="radio">
+                        <label>
+                            @Html.CustomRadioButtonFor(model => model.TransactionCategory, (int)TransactionCategory.ExternalOutbound, new { @class = "iradio", @onclick = "SetType(this)", id = "chkOutbound" })
+                            @DbRes.TResource("User.OutboundExternal.ExternalOutbound")
+                        </label>
+                    </div>
+                </div>
+               
+
+            </div>
+        </div>
             <!--<div class="col-md-4 col-xs-6 TimeBetween">
     <fieldset>
 

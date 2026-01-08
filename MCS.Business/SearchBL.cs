@@ -681,6 +681,28 @@ namespace MCS.Business
             return socialNumberSearchResults;
         }
 
+        public static IList<ICSearchResult> ICSearchByTransactionID(int transactionID, int userId, string culutre)
+        {
+            ISearchWrapper searchWrapper = IoC.Resolve<ISearchWrapper>();
 
+            IPermissionBL permissionBL = new PermissionBL();
+
+            IList<Permission> permissions = permissionBL.GetUserPermissionsByGroupId(PermissionGroupName.TransactiosConfidentiality);
+
+            IList<ICSearchResult> socialNumberSearchResults = searchWrapper.ICSearchByTransactionID(transactionID, userId, culutre);
+
+            int? userWeigth = permissions.Max(s => s.Weight);
+
+            foreach (ICSearchResult socialNumberSearchResult in socialNumberSearchResults)
+            {
+
+                if (socialNumberSearchResult.Weight <= userWeigth)
+                {
+                    socialNumberSearchResult.HasPermission = true;
+                }
+            }
+
+            return socialNumberSearchResults;
+        }
     }
 }

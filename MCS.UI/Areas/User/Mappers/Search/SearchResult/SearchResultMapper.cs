@@ -101,7 +101,10 @@ namespace MCS.UI.Areas.User.Mappers.Search
                     IsInIc = searchResultDTO.IsInIc,
                     IcName = searchResultDTO.IcName,
                     Description = searchResultDTO.Description,
-                    OrderFileNumber = searchResultDTO.OrderFileNumber
+                    OrderFileNumber = searchResultDTO.OrderFileNumber,
+                    ModifiedUser = searchResultDTO.ModifiedUser,
+                    FullClassificationName = searchResultDTO.FullClassificationName,
+
 
 
 

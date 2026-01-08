@@ -9,6 +9,7 @@ namespace MCS.DTO
         public int IcId { get; set; }
         public int? Number { get; set; }
         public string Description { get; set; }
+        public int CreatedBy { get; set; }
 
     }
 }

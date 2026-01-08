@@ -1853,7 +1853,71 @@ namespace MCS.DataAccess
                                         IcName = X.IcName,
                                         OrderFileNumber = X.OrderFileNumber,
                                         Description = X.Description,
+                                        ModifiedUser = X.ModifiedUser,
 
+                                    }).ToList();
+
+
+
+                return ICSearchResultList;
+
+
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+        IList<ICSearchResult> ISearchWrapper.ICSearchByTransactionID(int transactionID, int userId, string culutre)
+        {
+            try
+            {
+                List<ICSearchResult> ICSearchResultList = null;
+
+                ICSearchResultList =
+
+           _oMCSDbContext.Database.SqlQuery<ICSearchResult>("SearchICByTransactionID @TransactionID,@culutre ,@userId",
+                                    new SqlParameter("TransactionID", transactionID),
+                                    new SqlParameter("culutre", culutre),
+                                    new SqlParameter("userId", userId)
+
+                                    ).Select(X => new ICSearchResult()
+                                    {
+                                        Id = X.Id,
+                                        //ColorCode = 0,
+                                        ConfidentialityName = X.ConfidentialityName,
+                                        ConfidentialityId = X.ConfidentialityId,
+                                        Date = X.Date,
+                                        DateH = X.DateH,
+                                        HasLinks = 0,
+                                        //HasPermission = X.HasPermission,
+                                        IsDeleted = 0,
+                                        Number = X.Number,
+                                        OrgUnitName = X.OrgUnitName,
+                                        PartyName = X.PartyName, // transaction.ExternalParty.LocalName,
+                                        PriorityName = X.PriorityName,
+                                        StatusId = X.StatusId,
+                                        StatusName = X.StatusName,
+                                        Subject = X.Subject,
+                                        ToEntityId = X.ToEntityId,
+                                        //TotalCount = 1,
+                                        ToUserId = X.ToUserId,
+                                        TransactionCategoryId = X.TransactionCategoryId,
+                                        TransactionCategoryName = "معاملة داخلية",
+                                        //TransactionType = "Ehab",
+                                        Weight = X.Weight,
+                                        WithArchiving = 0,
+                                        RemindDate = X.RemindDate,
+                                        RemindDateH = X.RemindDateH,
+                                        MainDocId = X.MainDocId,
+                                        IsInIc = X.IsInIc,
+                                        IcName = X.IcName,
+                                        OrderFileNumber = X.OrderFileNumber,
+                                        Description = X.Description,
+                                        ModifiedUser = X.ModifiedUser,
+                                        FullClassificationName=X.FullClassificationName
                                     }).ToList();
 
 
@@ -1901,6 +1965,7 @@ namespace MCS.DataAccess
         IList<SubjectLetterSearchResult> SearchSubjectLetter(SearchCriteriaBySubjectLetter searchCriteriaBySubjectLetter, out int TotalCount);
         IList<TransactionNumberSearchResult> SearchTransactionNumber(SearchCriteriaByTransactionNumber searchCriteriaByTransactionNumber, out int TotalCount);
         IList<ICSearchResult> ICSearch(int year, string transNumber, int orgId, int type, int userId, string culutre);
+        IList<ICSearchResult> ICSearchByTransactionID(int transactionID, int userId, string culutre);
 
     }
 }

@@ -469,6 +469,7 @@ namespace MCS.UI.Areas.User.Controllers
                                         searchCriteriaByEntityNameDTO.FromDateTime.Value.Add(fromTime);
                                 }
                             }
+
                             if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.Search.SearchAll))
                             {
                                 searchCriteriaByEntityNameDTO.Global = true;
@@ -504,8 +505,48 @@ namespace MCS.UI.Areas.User.Controllers
 
 
 
-                            searchCriteriaByEntityNameDTO.TransactionCategoryId = TransactionCategory.ExternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName);
-                            searchCriteriaByEntityNameDTO.AdvancedSearch.FromPartyId = advancedSearchVM.EntitySearch.OutboundAdvanced.DestinationPartyId.HasValue ? advancedSearchVM.EntitySearch.OutboundAdvanced.DestinationPartyId.Value : -1;
+                            //searchCriteriaByEntityNameDTO.TransactionCategoryId = TransactionCategory.ExternalOutbound.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName);
+                            TransactionCategory transactionCategory = TransactionCategory.None;
+                            switch ((TransactionCategory)advancedSearchVM.EntitySearch.TransactionCategoryId)
+                            {
+                                case TransactionCategory.Inbound:
+                                case TransactionCategory.All:
+                                    {
+                                        searchCriteriaByEntityNameDTO.AdvancedSearch.ConfidentialityId = advancedSearchVM.EntitySearch.InboundAdvanced.ConfidentialityId.HasValue ? advancedSearchVM.EntitySearch.InboundAdvanced.ConfidentialityId.Value : -1;
+                                        searchCriteriaByEntityNameDTO.AdvancedSearch.FromPartyId = advancedSearchVM.EntitySearch.InboundAdvanced.FromPartyId.HasValue ? advancedSearchVM.EntitySearch.InboundAdvanced.FromPartyId.Value : -1;
+                                        searchCriteriaByEntityNameDTO.AdvancedSearch.LetterTypeId = advancedSearchVM.EntitySearch.InboundAdvanced.LetterTypeId.HasValue ? advancedSearchVM.EntitySearch.InboundAdvanced.LetterTypeId.Value : -1;
+                                        searchCriteriaByEntityNameDTO.AdvancedSearch.PriorityId = advancedSearchVM.EntitySearch.InboundAdvanced.PriorityId.HasValue ? advancedSearchVM.EntitySearch.InboundAdvanced.PriorityId.Value : -1;
+                                        searchCriteriaByEntityNameDTO.AdvancedSearch.SignedByDepartmentId = advancedSearchVM.EntitySearch.InboundAdvanced.SignedByDepartmentId.HasValue ? advancedSearchVM.EntitySearch.InboundAdvanced.SignedByDepartmentId.Value : -1;
+                                        searchCriteriaByEntityNameDTO.AdvancedSearch.SignedById = advancedSearchVM.EntitySearch.InboundAdvanced.SignedById.HasValue ? advancedSearchVM.EntitySearch.InboundAdvanced.SignedById.Value : -1;
+                                        searchCriteriaByEntityNameDTO.AdvancedSearch.StatusId = advancedSearchVM.EntitySearch.InboundAdvanced.StatusId.HasValue ? advancedSearchVM.EntitySearch.InboundAdvanced.StatusId.Value : -1;
+                                        transactionCategory = (TransactionCategory)advancedSearchVM.EntitySearch.TransactionCategoryId == TransactionCategory.Inbound ? TransactionCategory.Inbound : TransactionCategory.InternalOutbound;
+                                        searchCriteriaByEntityNameDTO.TransactionCategoryId = transactionCategory.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName);
+
+                                        if ((TransactionCategory)advancedSearchVM.EntitySearch.TransactionCategoryId == TransactionCategory.All)
+                                            searchCriteriaByEntityNameDTO.TransactionCategoryId = (int)TransactionCategory.All;
+                                        break;
+                                    }
+                                case TransactionCategory.ExternalOutbound:
+                                    {
+                                        searchCriteriaByEntityNameDTO.AdvancedSearch.ConfidentialityId = advancedSearchVM.EntitySearch.OutboundAdvanced.ConfidentialityId.HasValue ? advancedSearchVM.EntitySearch.OutboundAdvanced.ConfidentialityId.Value : -1;
+                                        searchCriteriaByEntityNameDTO.AdvancedSearch.CreatedDepartmentId = advancedSearchVM.EntitySearch.OutboundAdvanced.CreatedDepartmentId.HasValue ? advancedSearchVM.EntitySearch.OutboundAdvanced.CreatedDepartmentId.Value : -1;
+                                        searchCriteriaByEntityNameDTO.AdvancedSearch.DestinationPartyId = advancedSearchVM.EntitySearch.OutboundAdvanced.DestinationPartyId.HasValue ? advancedSearchVM.EntitySearch.OutboundAdvanced.DestinationPartyId.Value : -1;
+                                        searchCriteriaByEntityNameDTO.AdvancedSearch.DirectedToId = advancedSearchVM.EntitySearch.OutboundAdvanced.DirectedToId.HasValue ? advancedSearchVM.EntitySearch.OutboundAdvanced.DirectedToId.Value : -1;
+                                        searchCriteriaByEntityNameDTO.AdvancedSearch.PriorityId = advancedSearchVM.EntitySearch.OutboundAdvanced.PriorityId.HasValue ? advancedSearchVM.EntitySearch.OutboundAdvanced.PriorityId.Value : -1;
+                                        searchCriteriaByEntityNameDTO.AdvancedSearch.StatusId = advancedSearchVM.EntitySearch.OutboundAdvanced.StatusId.HasValue ? advancedSearchVM.EntitySearch.OutboundAdvanced.StatusId.Value : -1;
+                                        searchCriteriaByEntityNameDTO.AdvancedSearch.FromPartyId = advancedSearchVM.EntitySearch.OutboundAdvanced.DestinationPartyId.HasValue ? advancedSearchVM.EntitySearch.OutboundAdvanced.DestinationPartyId.Value : -1;
+                                        searchCriteriaByEntityNameDTO.AdvancedSearch.DirectedToId = advancedSearchVM.EntitySearch.OutboundAdvanced.DirectedToId.HasValue ? advancedSearchVM.EntitySearch.OutboundAdvanced.DirectedToId.Value : -1;
+                                        searchCriteriaByEntityNameDTO.AdvancedSearch.CreatedDepartmentId = advancedSearchVM.EntitySearch.OutboundAdvanced.CreatedDepartmentId.HasValue ? advancedSearchVM.EntitySearch.OutboundAdvanced.CreatedDepartmentId.Value : -1;
+                                        searchCriteriaByEntityNameDTO.AdvancedSearch.StatusId = advancedSearchVM.EntitySearch.OutboundAdvanced.StatusId.HasValue ? advancedSearchVM.EntitySearch.OutboundAdvanced.StatusId.Value : -1;
+                                        searchCriteriaByEntityNameDTO.AdvancedSearch.PriorityId = advancedSearchVM.EntitySearch.OutboundAdvanced.PriorityId.HasValue ? advancedSearchVM.EntitySearch.OutboundAdvanced.PriorityId.Value : -1;
+                                        searchCriteriaByEntityNameDTO.AdvancedSearch.ConfidentialityId = advancedSearchVM.EntitySearch.OutboundAdvanced.ConfidentialityId.HasValue ? advancedSearchVM.EntitySearch.OutboundAdvanced.ConfidentialityId.Value : -1;
+
+                                        transactionCategory = TransactionCategory.ExternalOutbound;
+                                        searchCriteriaByEntityNameDTO.TransactionCategoryId = transactionCategory.LookupIdentity(LookupCategory.TransactionCategory, SessionInfo.CultureShortName);
+                                        break;
+                                    }
+                            }
+                                    searchCriteriaByEntityNameDTO.AdvancedSearch.FromPartyId = advancedSearchVM.EntitySearch.OutboundAdvanced.DestinationPartyId.HasValue ? advancedSearchVM.EntitySearch.OutboundAdvanced.DestinationPartyId.Value : -1;
                             searchCriteriaByEntityNameDTO.AdvancedSearch.DirectedToId = advancedSearchVM.EntitySearch.OutboundAdvanced.DirectedToId.HasValue ? advancedSearchVM.EntitySearch.OutboundAdvanced.DirectedToId.Value : -1;
                             searchCriteriaByEntityNameDTO.AdvancedSearch.CreatedDepartmentId = advancedSearchVM.EntitySearch.OutboundAdvanced.CreatedDepartmentId.HasValue ? advancedSearchVM.EntitySearch.OutboundAdvanced.CreatedDepartmentId.Value : -1;
                             searchCriteriaByEntityNameDTO.AdvancedSearch.StatusId = advancedSearchVM.EntitySearch.OutboundAdvanced.StatusId.HasValue ? advancedSearchVM.EntitySearch.OutboundAdvanced.StatusId.Value : -1;

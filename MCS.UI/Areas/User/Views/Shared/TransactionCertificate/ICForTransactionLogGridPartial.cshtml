@@ -48,7 +48,7 @@
      MvcHtmlString.Create(
          "<div class='table-icon d-flex align-items-center' style='' > " +
              ((model.HasPermission) ?
-             @Html.ClientLinkTag("", null, "color-blue", null, "اسم الارشيف", "CertificateAssignmentOnly(" + model.Id + "," + model.TransactionCategoryId + ")", null, "<i  id='Ic_Icon_"+ model.Id + "' class=''>" + model.IcName+ "</i>")
+             @Html.ClientLinkTag("", null, "color-blue", null, "اسم الارشيف", "CertificateAssignmentOnly(" + model.Id + "," + model.TransactionCategoryId + ")", null, "<i  id='Ic_Icon_" + model.Id + "' class=''>" + model.IcName + "</i>")
 
              : MvcHtmlString.Empty)
              +
@@ -68,7 +68,7 @@
     columns.Add().Encoded(false).Sanitized(false).Css("").Titled("ترتيب الملف").RenderValueAs(model =>
 
      MvcHtmlString.Create(
-         "<label id='Ic_OrderFileNumber_" + model.Id + "' >" + model.OrderFileNumber + "<label/> " ));
+         "<label id='Ic_OrderFileNumber_" + model.Id + "' >" + model.OrderFileNumber + "<label/> "));
     //columns.Add(model => model.OrderFileNumber, "OrderFileNumber").Titled("ترتيب الملف");
     columns.Add().Encoded(false).Sanitized(false).Css("").Titled("الوصف").RenderValueAs(model =>
 
@@ -80,35 +80,36 @@
     //columns.Add(model => model.TransactionAssignmentInfoVM.FromEntity, "FromEntity").Titled("المرسلة");
     //columns.Add(model => model.TransactionAssignmentInfoVM.FromUser, "FromUser").Titled("المرسل");
     columns.Add(model => model.ModifiedUser, "ModifiedUser").Titled("المؤرشف");
-    columns.Add().Encoded(false).Sanitized(false).Css("").RenderValueAs(model =>
+    columns.Add(model => model.FullClassificationName, "FullClassificationName").Titled("ملف الحفظ");
+    //columns.Add().Encoded(false).Sanitized(false).Css("").RenderValueAs(model =>
 
-      MvcHtmlString.Create(
-          "<div class='table-icon d-flex align-items-center'>" +
-              ((SessionInfo.CurrentUser.Claims.Contains(UserClaims.Outbound.CreateExternalOutbound) && model.HasPermission) ?
-              @Html.ClientLinkTag("", null, "color-blue", null, "تعديل ارشيف المعاملة ", "ShowEditeIcItem(" + model.Id + ")", null, "<i class='icon-outline-edit color-red'></i>")
+    //  MvcHtmlString.Create(
+    //      "<div class='table-icon d-flex align-items-center'>" +
+    //          ((SessionInfo.CurrentUser.Claims.Contains(UserClaims.Outbound.CreateExternalOutbound) && model.HasPermission) ?
+    //          @Html.ClientLinkTag("", null, "color-blue", null, "تعديل ارشيف المعاملة ", "ShowEditeIcItem(" + model.Id + ")", null, "<i class='icon-outline-edit color-red'></i>")
 
 
-                  : MvcHtmlString.Empty)
+    //              : MvcHtmlString.Empty)
 
-                  +
-                  ((SessionInfo.CurrentUser.Claims.Contains(UserClaims.Outbound.CreateInternalOutbound) && model.HasPermission) ?
-                  @Html.ClientLinkTag("", null, "color-blue", null, "استرجاع ", "RemoveIcItem(" + model.Id + ")", null, "<i class='icon-outline-note-add color-blue'></i>")
-                   : MvcHtmlString.Empty)
-                  +
-                  ((model.HasPermission) ?
-                  @Html.ClientLinkTag("", null, "color-blue", null, "معاينة", "ShowDocumentViewer(" + model.MainDocId + ")", null, "<i class='fa fa-solid fa-eye'></i>")
-                   : MvcHtmlString.Empty)
-                  +
-               // ((SessionInfo.CurrentUser.Claims.Contains(UserClaims.GeneralPermissions.PrintReviewTicket) && model.HasPermission && (model.TransactionCategoryId == (int)TransactionCategorieColor.Inbound || model.TransactionCategoryId == (int)TransactionCategorieColor.Outbound)) ?
-               //@Html.ClientLinkTag("", null, "color-blue", null, DbRes.TResource("User.InboundSearch.PrintVisitTicket"), "ShowVisitTickect(" + model.Id + ")", null, "<i class='la la-print color-blue'></i>")
-               // : MvcHtmlString.Empty)
-               //+
-               //@Html.ClientLinkTag(text: "", cssClass: "color-grey", title: DbRes.TResource("Admin.Lookups.Deactivate"), clientFunctionToCall: "ActiveDeactiveLookup(" + (int)LookupType.Link + "," + (int)LookupOperationType.Deactivate + " , " + model.Id + ")", innerHtml: "<i class='icon-tables-lamp-off'></i>") : MvcHtmlString.Empty) +
-               //(!model.IsLocked ?
-               //@Html.GridImageButton("GetLink", "Link", 0, OperationType.Update, "dvEdit", null, null, "ShowEditDiv", "", "get") : MvcHtmlString.Empty) +
-               //(!model.IsLocked ?
-               //@Html.GridImageButton("DeleteLink", "Link", 0, OperationType.Delete, "dvGrid", "EditLinkContent", null, "OnDeleteSuccess") : MvcHtmlString.Empty) +
-               "</div>"));
+    //              +
+    //              ((SessionInfo.CurrentUser.Claims.Contains(UserClaims.Outbound.CreateInternalOutbound) && model.HasPermission) ?
+    //              @Html.ClientLinkTag("", null, "color-blue", null, "استرجاع ", "RemoveIcItem(" + model.Id + ")", null, "<i class='icon-outline-note-add color-blue'></i>")
+    //               : MvcHtmlString.Empty)
+    //              +
+    //              ((model.HasPermission) ?
+    //              @Html.ClientLinkTag("", null, "color-blue", null, "معاينة", "ShowDocumentViewer(" + model.MainDocId + ")", null, "<i class='fa fa-solid fa-eye'></i>")
+    //               : MvcHtmlString.Empty)
+    //              +
+    //           // ((SessionInfo.CurrentUser.Claims.Contains(UserClaims.GeneralPermissions.PrintReviewTicket) && model.HasPermission && (model.TransactionCategoryId == (int)TransactionCategorieColor.Inbound || model.TransactionCategoryId == (int)TransactionCategorieColor.Outbound)) ?
+    //           //@Html.ClientLinkTag("", null, "color-blue", null, DbRes.TResource("User.InboundSearch.PrintVisitTicket"), "ShowVisitTickect(" + model.Id + ")", null, "<i class='la la-print color-blue'></i>")
+    //           // : MvcHtmlString.Empty)
+    //           //+
+    //           //@Html.ClientLinkTag(text: "", cssClass: "color-grey", title: DbRes.TResource("Admin.Lookups.Deactivate"), clientFunctionToCall: "ActiveDeactiveLookup(" + (int)LookupType.Link + "," + (int)LookupOperationType.Deactivate + " , " + model.Id + ")", innerHtml: "<i class='icon-tables-lamp-off'></i>") : MvcHtmlString.Empty) +
+    //           //(!model.IsLocked ?
+    //           //@Html.GridImageButton("GetLink", "Link", 0, OperationType.Update, "dvEdit", null, null, "ShowEditDiv", "", "get") : MvcHtmlString.Empty) +
+    //           //(!model.IsLocked ?
+    //           //@Html.GridImageButton("DeleteLink", "Link", 0, OperationType.Delete, "dvGrid", "EditLinkContent", null, "OnDeleteSuccess") : MvcHtmlString.Empty) +
+    //           "</div>"));
 })
 
     @*if (Model.TransactionCategoryId == (int)TransactionCategorieColor.Inbound || Model.TransactionCategoryId == (int)TransactionCategorieColor.Outbound)
@@ -139,7 +140,7 @@
 
     }
 
-     
+
 
 
 

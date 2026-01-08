@@ -264,6 +264,7 @@
     <Compile Include="Search\SearchCriteria\SearchCriteriaByAssignmentNoteDTO.cs" />
     <Compile Include="Search\SearchCriteria\SearchCriteriaByCopyAssignemntDTO.cs" />
     <Compile Include="Search\SearchCriteria\SearchCriteriaByExternalPartyCopiesDTO.cs" />
+    <Compile Include="Search\SearchCriteria\SearchCriteriaByICAndTransactionIdDTO.cs" />
     <Compile Include="Search\SearchCriteria\SearchCriteriaByICDTO.cs" />
     <Compile Include="Search\SearchCriteria\SearchCriteriaByTransactionNumberDTO.cs" />
     <Compile Include="Search\SearchCriteria\SearchCriteriaByTransactionNotsDTO.cs" />

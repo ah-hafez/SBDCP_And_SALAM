@@ -13,6 +13,8 @@
         public string IcName { get; set; }
         public int? OrderFileNumber { get; set; }
         public string Description { get; set; }
+        public string ModifiedUser { get; set; }
+        public string FullClassificationName { get; set; }
 
     }
 }

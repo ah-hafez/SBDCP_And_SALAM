@@ -10,6 +10,7 @@ using MCS.Common.ApiControllerResults;
 using MCS.DTO;
 using MCS.Service.Mappers;
 using MCS.Domain;
+using MCS.DTO.Search.SearchCriteria;
 
 namespace MCS.Service.Controllers
 {
@@ -301,7 +302,42 @@ namespace MCS.Service.Controllers
         }
 
 
+        [HttpPost]
+        public HttpResponseMessage ICSearchByTransactionID(SearchCriteriaByICAndTransactionIdDTO searchCriteriaByICDTO)
+        {
+            StatusCode statusCode = Common.StatusCode.Ok;
+            GetResult<List<ICSearchResultDTO>> getResult = null;
 
+            try
+            {
+                using (var transactionContextScope = context.CreateReadOnly())
+                {
+                    List<ICSearchResultDTO> socialNumberSearchResultDTO = SearchMapper.Map(SearchBL.ICSearchByTransactionID(searchCriteriaByICDTO.transactionId, searchCriteriaByICDTO.userId, searchCriteriaByICDTO.culutre));
+
+                    getResult = GetResult<List<ICSearchResultDTO>>.Create(statusCode, socialNumberSearchResultDTO, null);
+
+                    return Request.CreateResponse(HttpStatusCode.OK, getResult);
+                }
+            }
+            catch (BusinessException ex)
+            {
+                statusCode = (StatusCode)Enum.Parse(typeof(StatusCode), ex.Message);
+
+                getResult = GetResult<List<ICSearchResultDTO>>.Create(statusCode, null, null);
+
+                return Request.CreateResponse(HttpStatusCode.OK, getResult);
+            }
+            catch (Exception ex)
+            {
+                ExceptionHelper.HandleException(ex);
+
+                statusCode = Common.StatusCode.GeneralError;
+
+                getResult = GetResult<List<ICSearchResultDTO>>.Create(statusCode, null, null);
+
+                return Request.CreateResponse(HttpStatusCode.OK, getResult);
+            }
+        }
 
 
 
@@ -316,6 +352,7 @@ namespace MCS.Service.Controllers
                 using (var transactionContextScope = context.CreateReadOnly())
                 {
                     IIC_SUBJECTBL icSubjectBL = new IC_SUBJECTBL();
+
                     int result = icSubjectBL.AddIC_SUBJECT_TRANSACTION(icSubjectDTO);
                     postResult = PostResult.Create(statusCode, result);
                     return Request.CreateResponse(HttpStatusCode.OK, postResult);

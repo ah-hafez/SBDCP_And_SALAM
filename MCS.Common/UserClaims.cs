@@ -442,6 +442,7 @@
             public const string ICUpdate = "IC.Update";
             public const string ICDelete = "IC.Delete";
             public const string ICClassification = "IC.Classification";
+            public const string ViewArchiveInTransactionLog = "IC.ViewArchiveInTransactionLog";
         }
 
         public static class Names

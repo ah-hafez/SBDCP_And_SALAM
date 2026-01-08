@@ -1034,8 +1034,10 @@ namespace MCS.Service.Mappers
                                 IsInIc = s.IsInIc,
                                 IcName = s.IcName,
                                 Description = s.Description,
-                                OrderFileNumber=s.OrderFileNumber
-                                
+                                OrderFileNumber=s.OrderFileNumber,
+                                ModifiedUser=s.ModifiedUser,
+                                FullClassificationName=s.FullClassificationName
+
 
                             }).ToList();
 

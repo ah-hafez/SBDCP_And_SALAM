@@ -4622,6 +4622,10 @@
     <Content Include="Areas\User\Views\Reports\_SentTransactionStautsResultReportPartial.cshtml" />
     <None Include="Areas\User\Views\RibbonExtensions\SignTab\SignTab.cshtml" />
     <None Include="Areas\User\Views\RibbonExtensions\SignTab\SignTabContent.cshtml" />
+    <Content Include="icDbScript\Scripts_8_1_2026\addPermissionViewArchiveinTransactionLog.sql" />
+    <Content Include="icDbScript\Scripts_8_1_2026\AddViewArchiveinTransactionLogSB.sql" />
+    <Content Include="icDbScript\Scripts_8_1_2026\ModifySearchIC.sql" />
+    <Content Include="icDbScript\Scripts_8_1_2026\UpdateSearchEntitySB.sql" />
     <Content Include="icDbScript\SearchEntity_31-10-2024.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -4636,6 +4640,8 @@
     <Content Include="Content\User\lib\Icomon\icomoon.woff" />
     <Content Include="Areas\User\Views\Vip\AssignmentPaper\_AddedAssignmentEntitiesNew2.cshtml" />
     <Content Include="Areas\User\Views\Shared\TransactionCertificate\_DocumentExternalViewerPartial.cshtml" />
+    <Content Include="Areas\User\Views\Search\_ICPartial.cshtml" />
+    <Content Include="Areas\User\Views\Shared\TransactionCertificate\ICForTransactionLogGridPartial.cshtml" />
     <None Include="Scripts\jquery-1.6.4-vsdoc.js" />
     <Content Include="Scripts\jquery-1.6.4.js" />
     <Content Include="Scripts\jquery-1.6.4.min.js" />

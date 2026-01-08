@@ -23,6 +23,7 @@ using MCS.UI.Areas.Admin.Mappers;
 using MobileApi.Domain;
 using MCS.Framework.Controls;
 using MCS.UI.Areas.Admin.Models;
+using MCS.DTO.Search.SearchCriteria;
 
 namespace MCS.UI.Areas.User.Controllers
 {
@@ -228,20 +229,45 @@ namespace MCS.UI.Areas.User.Controllers
             return Json(new { Html = UIHelper.RenderRazorViewToHtml(ControllerContext, "~/Areas/User/Views/Search/_ICSearchGridPartial.cshtml", grid), MessageType = MessageType.Information }, JsonRequestBehavior.AllowGet);
         }
 
+        [HttpGet]
+        public ActionResult SearchByTransactionID(int transactionId)
+        {
+
+
+            SearchCriteriaByICAndTransactionIdDTO searchCriteriaByICDTO = new SearchCriteriaByICAndTransactionIdDTO();
+
+            searchCriteriaByICDTO.culutre = SessionInfo.CultureShortName;
+            searchCriteriaByICDTO.transactionId = transactionId;
+            searchCriteriaByICDTO.userId = SessionInfo.CurrentUser.Id;
+
+
+
+            GetResult<List<ICSearchResultDTO>> result =
+                               HttpClientWrapper<GetResult<List<ICSearchResultDTO>>>.PostRequest("api/IC/ICSearchByTransactionID", searchCriteriaByICDTO).Result;
+
+
+            List<SearchICTransactionResultVM> searchResultVMs = SearchResultMapper.Map(result.Result, HasPermissionSearch);
+
+            IAjaxGrid grid = new AjaxGridFactory().CreateAjaxGrid(searchResultVMs, 1, 1, false, UIHelper.PageSize);
+
+            ViewData["ICData"] = grid;
+            //~/Areas/User/Views/File/_ClassificationCard.cshtml"
+            return Json(new { Html = UIHelper.RenderRazorViewToHtml(ControllerContext, "~/Areas/User/Views/Search/_ICPartial.cshtml",null), MessageType = MessageType.Information }, JsonRequestBehavior.AllowGet);
+        }
 
         [HttpGet]
         public ActionResult AddIC_SUBJECT_TRANSACTION(int transId, int ic_id, int? number, string description)
         {
             try
             {
-
+                
                 IC_SUBJECTTransactionDTO icSubjectDTO = new IC_SUBJECTTransactionDTO
                 {
                     Description = description,
                     IcId = ic_id,
                     Number = number,
                     TransactionId = transId,
-
+                    CreatedBy=SessionInfo.CurrentUser.Id
 
                 };
 
