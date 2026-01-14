@@ -256,7 +256,7 @@ namespace MCS.UI.Areas.User.Controllers
         }
 
         [HttpGet]
-        public ActionResult AddIC_SUBJECT_TRANSACTION(int transId, int ic_id, int? number, string description)
+        public ActionResult AddIC_SUBJECT_TRANSACTION(int transId, int ic_id, int? number, string description,string part)
         {
             try
             {
@@ -267,6 +267,7 @@ namespace MCS.UI.Areas.User.Controllers
                     IcId = ic_id,
                     Number = number,
                     TransactionId = transId,
+                    Part=part,
                     CreatedBy=SessionInfo.CurrentUser.Id
 
                 };

@@ -80,6 +80,7 @@
     //columns.Add(model => model.TransactionAssignmentInfoVM.FromEntity, "FromEntity").Titled("المرسلة");
     //columns.Add(model => model.TransactionAssignmentInfoVM.FromUser, "FromUser").Titled("المرسل");
     columns.Add(model => model.ModifiedUser, "ModifiedUser").Titled("المؤرشف");
+    columns.Add(model => model.Part, "Part").Titled("الجزء");
     columns.Add().Encoded(false).Sanitized(false).Css("").RenderValueAs(model =>
 
       MvcHtmlString.Create(

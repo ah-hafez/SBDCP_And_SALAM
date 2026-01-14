@@ -211,7 +211,7 @@ namespace MCS.Business
             {
                 IC_SUBJECTRepository repository = IoC.Resolve<IC_SUBJECTRepository>();
                 
-                return repository.AddIC_SUBJECT_TRANSACTION(icSubjectDTO.TransactionId, icSubjectDTO.IcId, icSubjectDTO.Number, icSubjectDTO.Description,icSubjectDTO.CreatedBy);
+                return repository.AddIC_SUBJECT_TRANSACTION(icSubjectDTO.TransactionId, icSubjectDTO.IcId, icSubjectDTO.Number, icSubjectDTO.Description,icSubjectDTO.CreatedBy,icSubjectDTO.Part);
             }
             catch (BusinessException)
             {

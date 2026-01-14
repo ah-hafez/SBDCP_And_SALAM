@@ -1854,6 +1854,7 @@ namespace MCS.DataAccess
                                         OrderFileNumber = X.OrderFileNumber,
                                         Description = X.Description,
                                         ModifiedUser = X.ModifiedUser,
+                                        Part=X.Part
 
                                     }).ToList();
 
@@ -1917,7 +1918,8 @@ namespace MCS.DataAccess
                                         OrderFileNumber = X.OrderFileNumber,
                                         Description = X.Description,
                                         ModifiedUser = X.ModifiedUser,
-                                        FullClassificationName=X.FullClassificationName
+                                        FullClassificationName=X.FullClassificationName,
+                                        Part=X.Part,
                                     }).ToList();
 
 

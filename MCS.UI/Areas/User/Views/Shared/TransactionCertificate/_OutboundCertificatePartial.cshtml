@@ -64,7 +64,17 @@
                     </a>
                 </li>
             }
+            @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.IC.ViewArchiveInTransactionLog))
+            {
+                <li role="presentation" class="flex-fill liTransaction">
+                    <a href="#tab-10" aria-controls="tab-10" role="tab" data-bs-toggle="tab" onclick="SearchICByTransactionID(@id, this); ">
+                        @*<i class="icon-tab9"></i><br>*@
+                        @*@Html.Raw(DbRes.TResource("User.TransactionLog.FollowUpLog"))*@
+                        @Html.Raw(DbRes.TResource("الأرشيف"))
 
+                    </a>
+                </li>
+            }
 
 
         </ul>
@@ -80,7 +90,21 @@
 </div>
 </div>
 <script>
+        function SearchICByTransactionID(transactionId, element) {
+    var id = transactionId;
 
+    $.ajax({
+        type: 'Get',
+        cache: false,
+        url: '@Url.Action("SearchByTransactionID", "IC")',
+        data: { transactionId: id},
+        success:
+            function (data) {
+                debugger
+                UpdateDivContentForArchive(data.Html, element, false, id);
+            }
+    });
+}
     $("div.anchor a").click(function () {
         $("div.anchor a").removeClass("active");
         $("div.anchor a").addClass("disabled");
@@ -281,5 +305,15 @@
             $("#dvContent_" + transactionId).html(data);
         }
     }
-
+    function UpdateDivContentForArchive(data, element, doAppend, transactionId) {
+        debugger
+        if (doAppend) {
+            $("#dvContent_" + transactionId).append(data);
+        }
+        else {
+            $("#dvContent_" + transactionId).html("");
+            $("#dvContent_" + transactionId).html(data);
+      
+        }
+    }
 </script>

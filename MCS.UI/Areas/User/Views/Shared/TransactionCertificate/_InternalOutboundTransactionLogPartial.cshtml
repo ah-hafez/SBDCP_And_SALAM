@@ -154,7 +154,21 @@
 
 
 <script>
+        function SearchICByTransactionID(transactionId, element) {
+    var id = transactionId;
 
+    $.ajax({
+        type: 'Get',
+        cache: false,
+        url: '@Url.Action("SearchByTransactionID", "IC")',
+        data: { transactionId: id},
+        success:
+            function (data) {
+                debugger
+                UpdateDivContent(data.Html, element, false);
+            }
+    });
+}
     $("div.anchor a").click(function () {
         $("div.anchor a").removeClass("active");
         $("div.anchor a").addClass("disabled");

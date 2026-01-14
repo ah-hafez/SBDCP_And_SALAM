@@ -4626,6 +4626,8 @@
     <Content Include="icDbScript\Scripts_8_1_2026\AddViewArchiveinTransactionLogSB.sql" />
     <Content Include="icDbScript\Scripts_8_1_2026\ModifySearchIC.sql" />
     <Content Include="icDbScript\Scripts_8_1_2026\UpdateSearchEntitySB.sql" />
+    <Content Include="icDbScript\Script_14_1_2026\Part in IC.sql.txt" />
+    <Content Include="icDbScript\Script_14_1_2026\PartinIC.sql" />
     <Content Include="icDbScript\SearchEntity_31-10-2024.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

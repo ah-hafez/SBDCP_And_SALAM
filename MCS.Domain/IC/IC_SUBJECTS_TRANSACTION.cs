@@ -12,6 +12,7 @@ namespace MCS.Domain
         public virtual IC_SUBJECT IC_SUBJECTS { get; set; }
         public int? Number { get; set; }
         public string  Description{ get; set; }
+        public string  Part{ get; set; }
 
 
 

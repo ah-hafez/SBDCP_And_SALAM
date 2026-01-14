@@ -1036,7 +1036,8 @@ namespace MCS.Service.Mappers
                                 Description = s.Description,
                                 OrderFileNumber=s.OrderFileNumber,
                                 ModifiedUser=s.ModifiedUser,
-                                FullClassificationName=s.FullClassificationName
+                                FullClassificationName=s.FullClassificationName,
+                                Part=s.Part
 
 
                             }).ToList();

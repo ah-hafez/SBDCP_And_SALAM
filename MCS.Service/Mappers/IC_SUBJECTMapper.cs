@@ -83,6 +83,7 @@ namespace MCS.Service.Mappers
                 IcId = input.Id,
                 Number = input.Number,
                 TransactionId = input.TransactionId,
+                Part=input.Part,
             };
         }
 

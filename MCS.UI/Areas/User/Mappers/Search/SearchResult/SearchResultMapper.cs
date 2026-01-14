@@ -104,6 +104,7 @@ namespace MCS.UI.Areas.User.Mappers.Search
                     OrderFileNumber = searchResultDTO.OrderFileNumber,
                     ModifiedUser = searchResultDTO.ModifiedUser,
                     FullClassificationName = searchResultDTO.FullClassificationName,
+                    Part=searchResultDTO.Part
 
 
 

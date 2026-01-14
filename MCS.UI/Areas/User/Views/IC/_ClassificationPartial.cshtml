@@ -151,7 +151,7 @@ else
          $.ajax({
             url: '@Url.Action("AddIC_SUBJECT_TRANSACTION", "IC")',
             cache: false,
-             data: { transId: IcSelectecdTransactionId, ic_id: IcId, number: $("#IC_Number").val(), description: $("#IC_Description").val() },
+             data: { transId: IcSelectecdTransactionId, ic_id: IcId, number: $("#IC_Number").val(), description: $("#IC_Description").val(), part: $("#IC_Part").val() },
              success: function (data) {
 
                  if (data.Id > 0) {
@@ -163,6 +163,7 @@ else
                      $("#Ic_Description_" + IcSelectecdTransactionId).text($("#IC_Description").val());
                      $("#IC_Number").val('');
                      $("#IC_Description").val('');
+                     $("#IC_Part").val('');
                      $("#icEditItem").hide();
                      $("#icSerach").show();
                       window.location.href = '@Url.Action("SubjectClassificationIndex", "IC")';
@@ -220,6 +221,7 @@ else
                {
                    $("#IC_Number").val(data.Result.Number);
                    $("#IC_Description").val(data.Result.Description);
+                   $("#IC_Part").val(data.Result.Part);
                }
 
                $("#icEditItem").show();
