@@ -2,7 +2,7 @@
 INSERT INTO [Lookups] 
 ([CategoryId], [IsActive], [Sort], [EnumReference], [CreatedOn], [CreatedBy], [ModefiedOn], [ModefiedBy]) 
 VALUES 
-(23, 1, 24, 27, GETDATE(), 1, NULL, NULL);
+(13, 1, 0, 0, GETDATE(), 1, NULL, NULL);
 
 -- Capture the generated Lookup Id
 DECLARE @LookupId INT = SCOPE_IDENTITY();

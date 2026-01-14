@@ -45,8 +45,8 @@ BEGIN
     FROM @Temp;
 
     RETURN @FullName;
-END;
-
+END
+GO
  Create or  ALTER    PROCEDURE [dbo].[SearchICByTransactionID]
  
 @TransactionID	int, 
