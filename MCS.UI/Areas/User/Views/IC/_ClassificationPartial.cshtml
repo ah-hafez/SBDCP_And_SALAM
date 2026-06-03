@@ -222,12 +222,15 @@ else
                    $("#IC_Number").val(data.Result.Number);
                    $("#IC_Description").val(data.Result.Description);
                    $("#IC_Part").val(data.Result.Part);
+                   $("#icSpanText_" + data.Result.lastIcId).click();
+                   var elmnt = $(".selectedDataItem")[0];
+                   $(elmnt).attr('data-storeID', data.Result.lastIcId);
                }
 
                $("#icEditItem").show();
 
                $("#icSerach").hide();
-
+             
                IcSelectecdTransactionId = transId;
              }
          });

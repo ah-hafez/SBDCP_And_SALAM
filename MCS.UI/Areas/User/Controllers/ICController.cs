@@ -309,9 +309,9 @@ namespace MCS.UI.Areas.User.Controllers
         {
             try
             {
-
+                
                 GetResult<IC_SUBJECTTransactionDTO> result =
-             HttpClientWrapper<GetResult<IC_SUBJECTTransactionDTO>>.GetItemRequest("api/IC/GetSubject_TransactionById?id=" + id.ToString()).Result;
+             HttpClientWrapper<GetResult<IC_SUBJECTTransactionDTO>>.GetItemRequest("api/IC/GetSubject_TransactionById?id=" + id.ToString()+ "&createdby="+ SessionInfo.CurrentUser.Id).Result;
 
                 return Json(new { Result = result.Result }, JsonRequestBehavior.AllowGet); ;
             }

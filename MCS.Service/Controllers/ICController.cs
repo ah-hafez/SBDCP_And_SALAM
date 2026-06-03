@@ -451,7 +451,7 @@ namespace MCS.Service.Controllers
         }
 
         [HttpGet]
-        public HttpResponseMessage GetSubject_TransactionById(int id)
+        public HttpResponseMessage GetSubject_TransactionById(int id,int createdby)
         {
             StatusCode statusCode = Common.StatusCode.Ok;
             GetResult<IC_SUBJECTTransactionDTO> getResult = null;
@@ -463,8 +463,11 @@ namespace MCS.Service.Controllers
 
                     IIC_SUBJECTBL icSubjectBL = new IC_SUBJECTBL();
                     var subjectTransaction = icSubjectBL.IC_GetTransaction(id);
-
+                    var lastICId = icSubjectBL.GetLastIC_SUBJECT_TRANSACTION(createdby);
                     IC_SUBJECTTransactionDTO iC_SUBJECTTransactionDTO = IC_SUBJECTMapper.Map(subjectTransaction);
+
+                    if(iC_SUBJECTTransactionDTO !=null)
+                    iC_SUBJECTTransactionDTO.lastIcId = lastICId.HasValue?lastICId:0;
 
                     getResult = GetResult<IC_SUBJECTTransactionDTO>.Create(statusCode, iC_SUBJECTTransactionDTO, null);
 

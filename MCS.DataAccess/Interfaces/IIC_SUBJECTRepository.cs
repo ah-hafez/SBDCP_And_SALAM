@@ -18,6 +18,7 @@ namespace MCS.DataAccess
         IList<IC_SUBJECT> GetIC_SUBJECTByParentId(int? Id, string name);
         int AddIC_SUBJECT_TRANSACTION(int transId, int ic_id, int? number, string description,int createdBy,string part);
         IC_SUBJECTS_TRANSACTION IC_GetTransaction(int transId);
+        int? GetLastIC_SUBJECT_TRANSACTION(int createdby);
 
     }
 }

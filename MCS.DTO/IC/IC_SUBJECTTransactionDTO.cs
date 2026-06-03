@@ -11,6 +11,7 @@ namespace MCS.DTO
         public string Description { get; set; }
         public string Part { get; set; }
         public int CreatedBy { get; set; }
+        public int? lastIcId { get; set; }
 
     }
 }

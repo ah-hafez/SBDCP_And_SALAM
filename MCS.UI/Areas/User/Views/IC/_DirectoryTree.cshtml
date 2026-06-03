@@ -329,14 +329,14 @@
 
     @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.IC.ICUpdate))
     {
-        <li class="menu-item">
+        <li class="menu-item" id="updateIcMenu">
             <button type="button" class="menu-btn" onclick="UpdateICView()"> <i class="fa fa-edit"></i> <span class="menu-text">تعديل الدليل</span> </button>
         </li>
     }
 
     @if (SessionInfo.CurrentUser.Claims.Contains(UserClaims.IC.ICDelete))
     {
-        <li class="menu-item">
+        <li class="menu-item" id="deleteIcMenu">
             <button type="button" class="menu-btn" onclick="DeleteIC()"> <i class="fa fa-trash"></i> <span class="menu-text">حذف الدليل</span> </button>
         </li>
     }
@@ -349,6 +349,11 @@
     <div class="form-group col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">
         <label class="col-lg-1">بحث</label>
         <input id="searchControl" type="text" class="form-control" />
+
+    </div>
+    <div class="form-group col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-3" style="margin-top:30px">
+        <button type="button" class="menu-btn" onclick="CreateICView()"> <i class="fa fa-download"></i> <span class="menu-text">انشاء دليل رئيسي </span> </button>
+
 
     </div>
     <br />
@@ -367,7 +372,7 @@
     var PublishId = 0;
     var toggler = document.getElementsByClassName("caretNode");
     var i;
-
+  
     for (i = 0; i < toggler.length; i++) {
         toggler[i].addEventListener("click", function () {
             this.parentElement.querySelector(".nested").classList.toggle("active");
@@ -377,7 +382,7 @@
 
     $('#searchControl').on('keyup', function (keyEvent)
     {
-        debugger;
+     
         if (keyEvent.keyCode == 13)
         {
             CallMainNode();
@@ -468,8 +473,8 @@
                     } else {
                         $("#icSpanText_" + activeId).addClass("caretNode")
                     }
-
-                    GetChild(activeId);
+                    CallMainNode();
+                   
                 }
             }
         });
@@ -544,12 +549,7 @@
     function UpdateICView() {
 
 
-        if ($("#ic_li_" + PublishId).hasClass('mainNode')) {
-
-            ShowSuccesMessage("لا يمكن التعديل على الدليل الرئيسي ");
-
-            return
-        }
+     
 
 
         var url = '@Url.Action("UpdateIC_SUBJECTView", "IC")'
@@ -574,9 +574,9 @@
             cache: false,
             data: { id: PublishId},
             success: function (data) {
-                console.log(data);
+                
 
-                debugger;
+           
 
                 ShowSuccesMessage(data.MessageText);
 
@@ -603,8 +603,8 @@
             data: { query: query},
             cache: false,
             success: function (data) {
-                console.log(data);
-                debugger
+               
+               
                 if (data.Node.length > 0)
                 {
                     $('#myUL li').each(function (i) {
@@ -649,16 +649,16 @@
              data: { query:query,id:id},
             cache: false,
              success: function (data) {
-                 debugger;
-                console.log(data);
+               
                  if (data.Node.length <= 0) { return; }
 
                  $("#icNode_" + id).html("");
 
                  for (i = 0; i < data.Node.length; i++) {
-
+                     
+                    
                      if (data.Node[i].HasChilds == true || data.Node[i].HasChilds == 'true' || data.Node[i].HasChilds == '1' || data.Node[i].IsLeaf == 1) {
-
+                         
                          $("#icNode_" + id).append("<li  data-storeID=" + data.Node[i].Id +" id='ic_li_" + data.Node[i].Id + "'  data-parentID='" + id + "'> <span  id='icSpanText_" + data.Node[i].Id + "' class='caretNode' onclick=GetChild(" + data.Node[i].Id + ") >" + data.Node[i].ITEM_DESCRIPTION_AR + "</span> <ul class='nested'  id='icNode_" + data.Node[i].Id + "'> </ul> </li>");
 
                      } else {
@@ -668,8 +668,9 @@
                      }
                  }
 
-
+                 
                  if (data.Node.length == 0) {
+                     
                      $("#icSpanText_" + id).removeClass("caretNode-down");
                      $("#icSpanText_" + id).removeClass("caretNode");
                      $("#icNode_" + id).removeClass("active");
@@ -703,25 +704,34 @@
             let text = $(event.target).attr("id");
             const myArray = text.split("_");
             PublishId = myArray[1];
+            
             event.preventDefault();
         }
     });
 
     var menu = document.querySelector('.menu');
     function showMenu(x, y) {
-        if (IsShowMenu == true) {
+        
             menu.style.left = x + 'px';
             menu.style.top = y + 'px';
-            menu.classList.add('show-menu');
-            IsShowMenu == false;
+        menu.classList.add('show-menu');
+        if (PublishId == 0) {
+            $("#updateIcMenu").hide();
+            $("#deleteIcMenu").hide();
+        } else {
+            $("#updateIcMenu").show();
+            $("#deleteIcMenu").show();
         }
+        IsShowMenu == false;
+        
+      
     }
     function hideMenu() {
         menu.classList.remove('show-menu');
     }
     function onContextMenu(e) {
         e.preventDefault();
-        debugger
+        
         showMenu(e.pageX, e.pageY-100);
         document.addEventListener('click', onClick, false);
     }

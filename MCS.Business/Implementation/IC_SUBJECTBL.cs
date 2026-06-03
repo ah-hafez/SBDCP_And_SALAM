@@ -8,6 +8,7 @@ using MCS.Domain;
 using IC_SUBJECT = MCS.Domain.IC_SUBJECT;
 using MCS.Domain.IC;
 using MCS.DTO;
+using MobileApi.Domain;
 
 namespace MCS.Business
 {
@@ -248,7 +249,27 @@ namespace MCS.Business
                 throw BusinessException.Translate(ex);
             }
         }
+        public int? GetLastIC_SUBJECT_TRANSACTION(int createdby)
+        {
+            try
+            {
+                IC_SUBJECTRepository repository = IoC.Resolve<IC_SUBJECTRepository>();
 
+                return repository.GetLastIC_SUBJECT_TRANSACTION(createdby);
+            }
+            catch (BusinessException)
+            {
+                throw;
+            }
+            catch (DataAccessException)
+            {
+                throw new BusinessException(StatusCode.GeneralError);
+            }
+            catch (Exception ex)
+            {
+                throw BusinessException.Translate(ex);
+            }
+        }
         public IC_SUBJECTS_TRANSACTION IC_GetTransaction(int transId)
         {
             try

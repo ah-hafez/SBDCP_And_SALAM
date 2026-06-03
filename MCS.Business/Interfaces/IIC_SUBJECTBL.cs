@@ -19,5 +19,6 @@ namespace MCS.Business
         IList<IC_SUBJECT> GetIC_SUBJECTByParentId(int? Id, string query);
         int AddIC_SUBJECT_TRANSACTION(IC_SUBJECTTransactionDTO icSubjectDTO);
         IC_SUBJECTS_TRANSACTION IC_GetTransaction(int transId);
+        int? GetLastIC_SUBJECT_TRANSACTION(int createdby);
     }
 }
