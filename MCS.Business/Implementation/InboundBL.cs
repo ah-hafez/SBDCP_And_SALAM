@@ -6,6 +6,7 @@ using MCS.Framework.Security;
 using MCS.Common;
 using MCS.DataAccess;
 using MCS.Domain;
+using System.Text.RegularExpressions;
 
 namespace MCS.Business
 {
@@ -17,13 +18,37 @@ namespace MCS.Business
             {
                 return;
             }
+            int YearH = ExtractHijriYear(transaction.InboundDateH.ToString());
 
-            int? transactionId = GetTransactionId(transaction.DocumentNumber, transaction.ExternalPartyId ?? 0, transaction.TransactionTypeId ?? 0);
+            int? transactionId = GetTransactionId(transaction.DocumentNumber, transaction.ExternalPartyId ?? 0, YearH);
 
             if (transactionId != null && transaction.Id != transactionId)
             {
                 throw new BusinessException(StatusCode.DocumentNumberAlreadyExist);
             }
+        }
+        public static int ExtractHijriYear(string hijriDate)
+        {
+            if (string.IsNullOrWhiteSpace(hijriDate))
+                return 0;
+
+            // توحيد الأرقام العربية إلى إنجليزية
+            hijriDate = hijriDate
+                .Replace("٠", "0").Replace("١", "1").Replace("٢", "2")
+                .Replace("٣", "3").Replace("٤", "4").Replace("٥", "5")
+                .Replace("٦", "6").Replace("٧", "7").Replace("٨", "8")
+                .Replace("٩", "9");
+
+            // استخراج سنة هجرية (1300 - 1599)
+            var match = Regex.Match(
+                hijriDate,
+                @"\b(1[3-5]\d{2})\b"
+            );
+
+            if (match.Success && int.TryParse(match.Value, out int year))
+                return year;
+
+            return 0;
         }
 
         protected override void PreUpdate(Transaction transaction)
@@ -281,7 +306,7 @@ namespace MCS.Business
         private int? GetTransactionId(string documentNumber, int ExternalPartyId, int transactionTypeId)
         {
             ITransactionRepository transactionRepository = IoC.Resolve<TransactionRepository>();
-            return transactionRepository.GetTransactionId(t => t.DocumentNumber == documentNumber && t.ExternalParty.Id == ExternalPartyId && t.TransactionType.Id == transactionTypeId);
+            return transactionRepository.GetTransactionId(t => t.DocumentNumber == documentNumber && t.ExternalParty.Id == ExternalPartyId && t.YearH == transactionTypeId);
         }
         private void SendTransactionNotification(Transaction transaction, NotificationSource notificationSource, NotificationTemplateType notificationTemplateType,
 NotificationTemplateType notificationEmailTemplateType, NotificationEmailSubject notificationEmailSubject, NotificationWebSubject notificationWebSubject,
